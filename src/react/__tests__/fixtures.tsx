@@ -173,9 +173,11 @@ export const cases: SmokeCase[] = [
   { name: "TrendChart", element: <TrendChart data={series} width={400} height={260} /> },
   {
     name: "StructureChart",
+    // Same `category` key as `series` itself — the point of the alias is that
+    // no renaming map is needed; this one keeps the subset explicit.
     element: (
       <StructureChart
-        data={series.map((d) => ({ label: d.category, AC: d.AC, PY: d.PY }))}
+        data={series.map((d) => ({ category: d.category, AC: d.AC, PY: d.PY }))}
         width={400}
         height={260}
       />

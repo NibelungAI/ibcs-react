@@ -639,13 +639,13 @@ export const sampleBalanceSheet: StatementLine[] = [
  * (last year), with each region's share of the whole. Ranked largest-first by
  * the structure chart. The components sum to the P&L revenue line.
  */
-export const sampleRevenueStructure: StructureDatum[] = [
-  { label: "North America", AC: 12_400_000, PY: 11_100_000, PL: 12_000_000 },
-  { label: "Europe", AC: 8_900_000, PY: 8_000_000, PL: 8_600_000 },
-  { label: "Asia Pacific", AC: 5_600_000, PY: 4_200_000, PL: 5_200_000 },
-  { label: "Latin America", AC: 2_100_000, PY: 1_500_000, PL: 2_000_000 },
-  { label: "Middle East & Africa", AC: 1_100_000, PY: 800_000, PL: 700_000 },
-];
+export const sampleRevenueStructure = [
+  { category: "North America", AC: 12_400_000, PY: 11_100_000, PL: 12_000_000 },
+  { category: "Europe", AC: 8_900_000, PY: 8_000_000, PL: 8_600_000 },
+  { category: "Asia Pacific", AC: 5_600_000, PY: 4_200_000, PL: 5_200_000 },
+  { category: "Latin America", AC: 2_100_000, PY: 1_500_000, PL: 2_000_000 },
+  { category: "Middle East & Africa", AC: 1_100_000, PY: 800_000, PL: 700_000 },
+] satisfies StructureDatum[];
 
 /* ============================================================================ *
  * IBCS TABLE TEMPLATES (T01 / T02 / T03) — data for the general DataTable.

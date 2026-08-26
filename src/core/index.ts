@@ -43,10 +43,11 @@ export {
   mergeTokens,
   monoTokens,
   oceanTokens,
+  tokenPresetLabels,
   tokenPresets,
   vividTokens,
 } from "./tokens";
-export type { IbcsScenarioStyle, IbcsTokens, IbcsTokensOverride } from "./tokens";
+export type { IbcsScenarioStyle, IbcsTokens, IbcsTokensOverride, TokenPresetId } from "./tokens";
 
 /* ./format — number, percent and signed-value formatting */
 export { formatPercent, formatPercentPlain, formatSigned, formatValue } from "./format";
@@ -70,6 +71,7 @@ export type { ComputeTrendOptions, TrendCell, TrendDatum, TrendLayout } from "./
 export { computeStructure } from "./structure";
 export type {
   ComputeStructureOptions,
+  StructureComponentValues,
   StructureDatum,
   StructureLayout,
   StructureSegment,

@@ -2,13 +2,8 @@ import { isFiniteNumber } from "./domain";
 import type { ScenarioKey, Variance } from "./types";
 import { computeVariance } from "./variance";
 
-/**
- * One component of a composition (a part of a whole): a labelled item carrying
- * up to four scenario values. The "current" series is the actual (`AC`) when
- * present, otherwise the forecast (`FC`).
- */
-export interface StructureDatum {
-  label: string;
+/** The scenario values and per-component options a composition part carries. */
+export interface StructureComponentValues {
   AC?: number;
   PY?: number;
   PL?: number;
@@ -22,11 +17,40 @@ export interface StructureDatum {
 }
 
 /**
+ * One component of a composition (a part of a whole): a named item carrying
+ * up to four scenario values. The "current" series is the actual (`AC`) when
+ * present, otherwise the forecast (`FC`).
+ *
+ * The name key is `category` — the SAME key every other datum in the library
+ * uses — so one array can feed a `VarianceColumnChart` and a `StructureChart`
+ * without renaming anything. `label` (the only key before v1.1) is accepted as
+ * an alias forever; when both are present, `category` wins.
+ */
+export type StructureDatum = StructureComponentValues &
+  (
+    | {
+        /** Component name ("COGS", "EMEA"). Preferred — matches every other datum type. */
+        category: string;
+        /** @deprecated Use `category`. Kept as an alias so v1.0 data keeps working. */
+        label?: string;
+      }
+    | {
+        /** @deprecated Use `category` — the key every other datum type uses. */
+        label: string;
+        category?: string;
+      }
+  );
+
+/**
  * A component enriched with its share of the total and variance vs the
  * comparison. Scenario values are echoed back SANITIZED: a non-finite input is
  * missing data, so it reads as `undefined` here and never reaches the geometry.
  */
-export interface StructureSegment extends StructureDatum {
+export interface StructureSegment extends StructureComponentValues {
+  /** Resolved display name — `category`, falling back to the legacy `label`. */
+  label: string;
+  /** Echo of the input `category`, when the datum carried one. */
+  category?: string;
   /** The drawn value: `AC` when present, else `FC`, else 0. */
   current: number;
   /** The comparison-scenario value, if present. */
@@ -89,6 +113,9 @@ export function computeStructure(
     const FC = isFiniteNumber(d.FC) ? d.FC : undefined;
     return {
       d,
+      // `category` is the preferred key; `label` is the pre-1.1 alias. The
+      // segment always exposes the resolved name as `label`.
+      name: d.category ?? d.label ?? "",
       scenarios: { AC, PY, PL, FC },
       current: AC ?? FC ?? 0,
       base: { AC, PY, PL, FC }[comparison],
@@ -107,6 +134,7 @@ export function computeStructure(
     return {
       ...p.d,
       ...p.scenarios,
+      label: p.name,
       current: p.current,
       base: p.base,
       share: total !== 0 ? p.current / total : 0,

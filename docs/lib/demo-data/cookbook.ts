@@ -37,15 +37,15 @@ export const L = (category: string, o: { AC?: number; PY?: number; PL?: number; 
   ...o,
 });
 
-/** Label datum for small multiples and statement-like lists. */
+/** Component (part-of-whole) datum for StructureChart rows. */
 export const S = (
-  label: string,
+  category: string,
   AC: number,
   PY?: number,
   PL?: number,
   higherIsBetter?: boolean,
 ) => ({
-  label,
+  category,
   AC,
   ...(PY !== undefined ? { PY } : {}),
   ...(PL !== undefined ? { PL } : {}),

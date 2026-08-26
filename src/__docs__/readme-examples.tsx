@@ -180,7 +180,7 @@ export function ThemedStatement() {
 /** One theme for a whole subtree; the nearest `tokens` prop still wins. */
 export function ThemedSubtree() {
   return (
-    <IbcsThemeProvider tokens={tokenPresets["CVD-safe"]}>
+    <IbcsThemeProvider tokens={tokenPresets.cvd}>
       <KpiCard label="Revenue" values={{ AC: 30.1e6, PY: 25.6e6 }} />
       <StatementTable lines={statement} />
       {/* nearest wins — this one chart departs from the theme */}

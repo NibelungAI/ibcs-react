@@ -121,6 +121,9 @@ the headline instead of repeating it on every delta.
 
 Set `animate={false}` to render the headline outright — no frame loop, no
 re-renders — which is what you want in tests, print and SSR-heavy pages.
+Users with `prefers-reduced-motion` set never see the count-up either way:
+the default consults the OS preference and renders the final value
+immediately, and SSR always emits the finished figure.
 
 ## Props
 

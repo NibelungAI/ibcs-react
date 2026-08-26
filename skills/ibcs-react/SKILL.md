@@ -58,8 +58,10 @@ interface ScenarioDatum {
 ```
 
 `ScenarioDatum` is THE category-row shape (`CategoryDatum`, `ColumnDatum`,
-`LineDatum`, `ComboDatum` alias it; `TrendDatum` adds `summary?`). A missing
-scenario is _not drawn_, never zero. Statements are a tree of `StatementLine`:
+`LineDatum`, `ComboDatum` alias it; `TrendDatum` adds `summary?`;
+`StructureDatum` adds `higherIsBetter?` — same `category` key, so one array
+feeds `VarianceColumnChart` and `StructureChart` alike). A missing scenario is
+_not drawn_, never zero. Statements are a tree of `StatementLine`:
 
 ```ts
 interface StatementLine {
@@ -140,7 +142,7 @@ import { StatementTable } from "ibcs-react";
 ```tsx
 import { IbcsThemeProvider, tokenPresets, darkTokens, KpiCard } from "ibcs-react";
 
-<IbcsThemeProvider tokens={dark ? darkTokens : tokenPresets["CVD-safe"]}>
+<IbcsThemeProvider tokens={dark ? darkTokens : tokenPresets.cvd}>
   <KpiCard
     label="Operating cost"
     values={{ AC: 9.7e6, PY: 8.4e6 }}
@@ -163,6 +165,9 @@ const findings = checkIbcs(reportConfig); // ChartConfig | KpiConfig | ReportCon
 ```
 
 Rule ids live in `IBCS_RULES` — run the check in CI over stored configs.
+A chart/report with NO title is flagged (SAY requires Who/What/When); declare
+`measureKind: "cost" | "revenue"` on a config when the title's wording
+shouldn't drive the cost-favorability heuristic.
 
 ## Rules of thumb
 

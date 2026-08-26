@@ -128,10 +128,10 @@ export function RegionalBreakdown() {
             height={300}
             format={{ compact: true, decimals: 1 }}
             data={[
-              { label: "North America", AC: 12_500_000, PY: 11_100_000 },
-              { label: "EMEA", AC: 8_700_000, PY: 8_000_000 },
-              { label: "Asia Pacific", AC: 6_100_000, PY: 4_200_000 },
-              { label: "Latin America", AC: 2_800_000, PY: 2_300_000 },
+              { category: "North America", AC: 12_500_000, PY: 11_100_000 },
+              { category: "EMEA", AC: 8_700_000, PY: 8_000_000 },
+              { category: "Asia Pacific", AC: 6_100_000, PY: 4_200_000 },
+              { category: "Latin America", AC: 2_800_000, PY: 2_300_000 },
             ]}
           />
         </Panel>

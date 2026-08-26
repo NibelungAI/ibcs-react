@@ -150,10 +150,12 @@ export function statementToWaterfall(
 /**
  * Project a statement onto a composition (part-of-a-whole) series.
  *
- * One datum per TOP-LEVEL line, carrying the label, every scenario the line has
- * data for (resolved through {@link resolveValue}, so a group reports the sum of
- * its children) and the line's `higherIsBetter` — {@link StructureDatum}'s
- * polarity field, so cost parts keep reading unfavorable when they grow.
+ * One datum per TOP-LEVEL line, carrying the line's name (as `category`, plus
+ * the legacy `label` alias, so the same array can also feed the category
+ * charts), every scenario the line has data for (resolved through
+ * {@link resolveValue}, so a group reports the sum of its children) and the
+ * line's `higherIsBetter` — {@link StructureDatum}'s polarity field, so cost
+ * parts keep reading unfavorable when they grow.
  *
  * `"result"` lines are EXCLUDED by default (`skipResults: true`): they are
  * subtotals over the other lines, so charting them as components double-counts
@@ -176,7 +178,7 @@ export function statementToStructure(
 
   for (const line of lines) {
     if (skipResults && (line.flow ?? "add") === "result") continue;
-    const datum: StructureDatum = { label: line.label };
+    const datum: StructureDatum = { category: line.label, label: line.label };
     for (const key of SCENARIO_KEYS) {
       const v = resolveValue(line, key);
       if (isFiniteNumber(v)) datum[key] = v;

@@ -12,8 +12,11 @@ export interface KpiCardProps extends KpiConfig {
   tokens?: IbcsTokensOverride;
   /**
    * Count up the headline number (from `0` on mount, then tweening on every
-   * change). Default true. `false` renders the value outright — no frame loop,
-   * no re-renders — which is what you want in tests, print and SSR-heavy pages.
+   * change). Default true — and `prefers-reduced-motion` is respected
+   * automatically: for those users the final value renders immediately, with
+   * no frame loop, regardless of this prop. SSR always renders the finished
+   * value. `false` switches the count-up off for everyone — what you want in
+   * tests, print and screenshot pipelines.
    */
   animate?: boolean;
   /**

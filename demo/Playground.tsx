@@ -7,7 +7,6 @@ import {
   useFilters,
   useLiveData,
   type IbcsTokens,
-  type StructureDatum,
   type ColumnDatum,
 } from "ibcs-react";
 import { sampleRevenueStructure, sampleQuarterlyRevenue } from "../src/demo/sampleData";
@@ -32,12 +31,12 @@ interface PlaygroundFilters {
 
 /** Source datasets bundled together so a live tick swaps them as one. */
 interface Source {
-  regions: StructureDatum[];
+  regions: Region[];
   quarters: ColumnDatum[];
 }
 
 /** Enrich the sample datasets with an FC scenario so AC-vs-FC works too. */
-const baseRegions: StructureDatum[] = sampleRevenueStructure.map((r) => ({
+const baseRegions = sampleRevenueStructure.map((r) => ({
   ...r,
   FC: Math.round((r.AC ?? 0) * 1.04),
 }));
@@ -46,7 +45,10 @@ const baseQuarters: ColumnDatum[] = sampleQuarterlyRevenue.map((q) => ({
   FC: Math.round(q.AC * 1.03),
 }));
 
-const ALL_REGIONS = baseRegions.map((r) => r.label);
+/** A region datum as authored here — `category` known present, plus an FC. */
+type Region = (typeof baseRegions)[number];
+
+const ALL_REGIONS = baseRegions.map((r) => r.category);
 const ALL_QUARTERS = baseQuarters.map((q) => q.category);
 
 /** Jitter every scenario value ±pct, preserving shape — the "live" feed. */
@@ -86,7 +88,7 @@ export function Playground({ tokens }: { tokens: IbcsTokens }) {
 
   // The two filtered views every section reads from — recomputed on any change.
   const regionData = useMemo(
-    () => source.regions.filter((r) => regions.includes(r.label)),
+    () => source.regions.filter((r) => regions.includes(r.category)),
     [source.regions, regions],
   );
   const quarterData = useMemo(
@@ -110,8 +112,8 @@ export function Playground({ tokens }: { tokens: IbcsTokens }) {
   const tableRows = useMemo(
     () =>
       regionData.map((r) => ({
-        id: r.label,
-        label: r.label,
+        id: r.category,
+        label: r.category,
         values: { rev: { AC: r.AC, PY: r.PY, PL: r.PL, FC: r.FC } },
       })),
     [regionData],
@@ -255,7 +257,7 @@ export function Playground({ tokens }: { tokens: IbcsTokens }) {
         />
         {topRegion ? (
           <KpiCard
-            label={`Top region · ${topRegion.label}`}
+            label={`Top region · ${topRegion.category}`}
             values={{ AC: topRegion.AC, PY: topRegion.PY, PL: topRegion.PL, FC: topRegion.FC }}
             comparisons={[comparison]}
             format={{ compact: true, decimals: 1 }}

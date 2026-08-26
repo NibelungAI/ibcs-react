@@ -395,7 +395,7 @@ threading a `tokens` prop into every component:
 ```tsx
 import { IbcsThemeProvider, tokenPresets } from "ibcs-react";
 
-<IbcsThemeProvider tokens={tokenPresets["CVD-safe"]}>
+<IbcsThemeProvider tokens={tokenPresets.cvd}>
   <KpiCard label="Revenue" values={{ AC: 30.1e6, PY: 25.6e6 }} />
   <StatementTable lines={statement} />
   {/* nearest wins — this one chart departs from the theme */}
@@ -410,19 +410,21 @@ the same operation. Building your own visual on `ibcs-react/core`?
 `useIbcsTokens(override?)` resolves exactly what the built-ins resolve, so it
 joins the same theme.
 
-The eight ship presets are collected in `tokenPresets` (handy for a theme
-switcher) and also exported one by one:
+The eight ship presets are collected in `tokenPresets`, keyed by stable ids
+(`TokenPresetId`) with display names in `tokenPresetLabels` — a typed theme
+switcher is one map over `Object.keys(tokenPresets)` — and also exported one by
+one:
 
-| `tokenPresets` key | Export           |
-| ------------------ | ---------------- |
-| `Default`          | `defaultTokens`  |
-| `Ocean`            | `oceanTokens`    |
-| `Azure`            | `azureTokens`    |
-| `Green / Red`      | `greenRedTokens` |
-| `Vivid`            | `vividTokens`    |
-| `CVD-safe`         | `cvdTokens`      |
-| `Mono / print`     | `monoTokens`     |
-| `Dark`             | `darkTokens`     |
+| `tokenPresets` key | Label        | Export           |
+| ------------------ | ------------ | ---------------- |
+| `default`          | Default      | `defaultTokens`  |
+| `ocean`            | Ocean        | `oceanTokens`    |
+| `azure`            | Azure        | `azureTokens`    |
+| `greenRed`         | Green / Red  | `greenRedTokens` |
+| `vivid`            | Vivid        | `vividTokens`    |
+| `cvd`              | CVD-safe     | `cvdTokens`      |
+| `mono`             | Mono / print | `monoTokens`     |
+| `dark`             | Dark         | `darkTokens`     |
 
 `mergeTokens(override, base?)` resolves a partial override into a full token set
 (`base` defaults to `defaultTokens`, so presets compose), and `IbcsTokensOverride`

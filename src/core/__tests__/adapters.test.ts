@@ -196,8 +196,23 @@ describe("statementToStructure", () => {
 
   it("resolves every present scenario and maps higherIsBetter onto the datum", () => {
     const [rev, cogs] = statementToStructure(statement);
-    expect(rev).toEqual({ label: "Revenue", AC: 1200, PY: 1050 });
-    expect(cogs).toEqual({ label: "Cost of goods sold", AC: 700, PY: 650, higherIsBetter: false });
+    expect(rev).toEqual({ category: "Revenue", label: "Revenue", AC: 1200, PY: 1050 });
+    expect(cogs).toEqual({
+      category: "Cost of goods sold",
+      label: "Cost of goods sold",
+      AC: 700,
+      PY: 650,
+      higherIsBetter: false,
+    });
+  });
+
+  it("emits `category` alongside the legacy `label`, so one array feeds structure AND category charts", () => {
+    // Consumer report D1: every other datum keys on `category`; the adapter
+    // now carries both so its output needs no `.map()` to reach either chart.
+    for (const part of statementToStructure(statement)) {
+      expect(part.category).toBe(part.label);
+      expect(typeof part.category).toBe("string");
+    }
   });
 
   it("omits a scenario with no finite value instead of writing 0", () => {

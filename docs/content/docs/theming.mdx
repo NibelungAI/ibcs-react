@@ -32,7 +32,7 @@ component:
 ```tsx
 import { IbcsThemeProvider, KpiCard, StatementTable, tokenPresets } from "ibcs-react";
 
-<IbcsThemeProvider tokens={tokenPresets["CVD-safe"]}>
+<IbcsThemeProvider tokens={tokenPresets.cvd}>
   <KpiCard label="Revenue" values={{ AC: 30.1e6, PY: 25.6e6 }} />
   <StatementTable lines={statement} />
 </IbcsThemeProvider>;
@@ -50,7 +50,7 @@ for that one leaf.
 </Frame>
 
 ```tsx
-<IbcsThemeProvider tokens={tokenPresets.Ocean}>
+<IbcsThemeProvider tokens={tokenPresets.ocean}>
   <KpiCard label="Revenue" values={{ AC: 30.1e6, PY: 25.6e6 }} />
 
   {/* Provider theme + this card's own override — the prop wins. */}
@@ -129,10 +129,20 @@ The library ships eight full token sets plus a named registry:
   hatched/framed fills carrying the rest.
 - `darkTokens` — a dark-surface ink set (including `color.surface` and
   `color.onFill`, so cards, tooltips and in-bar labels come along).
-- `tokenPresets` — a `Record<string, IbcsTokens>` holding all eight under the
-  names `"Default"`, `"Ocean"`, `"Azure"`, `"Green / Red"`, `"Vivid"`,
-  `"CVD-safe"`, `"Mono / print"` and `"Dark"` — ready to drive a theme
-  switcher.
+- `tokenPresets` — all eight under stable, autocompleting ids (`default`,
+  `ocean`, `azure`, `greenRed`, `vivid`, `cvd`, `mono`, `dark` — the
+  `TokenPresetId` type), with matching display names in `tokenPresetLabels` —
+  ready to drive a theme switcher:
+
+  ```tsx
+  {
+    (Object.keys(tokenPresets) as TokenPresetId[]).map((id) => (
+      <option key={id} value={id}>
+        {tokenPresetLabels[id]}
+      </option>
+    ));
+  }
+  ```
 
 Same data, same props — only `tokens` changes. Each card is painted with its
 preset's own `color.surface`:
@@ -147,8 +157,8 @@ import { VarianceColumnChart, greenRedTokens, tokenPresets } from "ibcs-react";
 // Pass a whole preset…
 <VarianceColumnChart data={data} tokens={greenRedTokens} />
 
-// …or pick one by name from the registry (handy for a theme switcher):
-<VarianceColumnChart data={data} tokens={tokenPresets["Vivid"]} />
+// …or pick one by id from the registry (handy for a theme switcher):
+<VarianceColumnChart data={data} tokens={tokenPresets.vivid} />
 ```
 
 ## Dark surfaces

@@ -1,6 +1,12 @@
 "use client";
 
-import { VarianceColumnChart, tokenPresets } from "ibcs-react";
+import {
+  VarianceColumnChart,
+  tokenPresets,
+  tokenPresetLabels,
+  type IbcsTokens,
+  type TokenPresetId,
+} from "ibcs-react";
 
 const DATA = [
   { category: "Q1", AC: 6.8, PY: 6.1 },
@@ -24,9 +30,9 @@ export function ThemePresetGallery() {
         width: "100%",
       }}
     >
-      {Object.entries(tokenPresets).map(([name, theme]) => (
+      {(Object.entries(tokenPresets) as Array<[TokenPresetId, IbcsTokens]>).map(([id, theme]) => (
         <div
-          key={name}
+          key={id}
           style={{
             background: theme.color.surface,
             border: `1px solid ${theme.color.rowBorder}`,
@@ -43,7 +49,7 @@ export function ThemePresetGallery() {
               marginBottom: 6,
             }}
           >
-            {name}
+            {tokenPresetLabels[id]}
           </div>
           <VarianceColumnChart
             data={DATA}

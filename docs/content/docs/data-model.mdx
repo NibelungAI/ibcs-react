@@ -198,9 +198,10 @@ interface TrendDatum extends ScenarioDatum {
   summary?: boolean; // set off as a total, e.g. a full-year column
 }
 
-// StructureChart components — note the key is `label`, not `category`.
+// StructureChart components — same `category` key as every other datum
+// (`label` is accepted as a legacy alias from v1.0).
 interface StructureDatum {
-  label: string; // "North America", "Europe", …
+  category: string; // "North America", "Europe", …
   AC?: number;
   PY?: number;
   PL?: number;

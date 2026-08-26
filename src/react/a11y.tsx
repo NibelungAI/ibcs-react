@@ -6,6 +6,12 @@ import type { CSSProperties, KeyboardEvent, SVGProps } from "react";
  * clipped out of visual layout. This is deliberately NOT `display: none`, which
  * would hide the node from screen readers too. SSR-safe (plain inline style,
  * no measuring or browser APIs).
+ *
+ * Apply it to a BLOCK-level element (`<div>`, `<span>`) — never directly to a
+ * `<table>`. CSS table layout treats `height`/`width` as a MINIMUM, so a table
+ * ignores the 1×1 clamp and keeps its full layout box: invisible (the clip
+ * still suppresses painting) but inflating every scroll container above it by
+ * hundreds of phantom pixels. Wrap the table instead — see {@link ChartDataTable}.
  */
 export const srOnly: CSSProperties = {
   position: "absolute",
@@ -74,31 +80,39 @@ export interface ChartDataTableProps {
  * `aria-hidden`; the table supplements that label with the real values,
  * row/column headers and a caption. Zero-dependency and SSR-safe — it renders
  * identically on the server.
+ *
+ * The hiding style sits on a WRAPPER `<div>`, not on the table: a `<div>`
+ * honours the 1×1 clamp, while a CSS table box treats it as a minimum and
+ * keeps a full-size (clipped, invisible) layout box — which used to add its
+ * entire height to the scrollable overflow of any ancestor with `overflow`
+ * set, growing phantom scrollbars around every chart.
  */
 export function ChartDataTable({ caption, columns, rows }: ChartDataTableProps) {
   return (
-    <table style={srOnly}>
-      <caption>{caption}</caption>
-      <thead>
-        <tr>
-          <th scope="col" />
-          {columns.map((c, i) => (
-            <th key={i} scope="col">
-              {c}
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {rows.map((r, ri) => (
-          <tr key={ri}>
-            <th scope="row">{r.label}</th>
-            {r.cells.map((cell, ci) => (
-              <td key={ci}>{cell}</td>
+    <div style={srOnly}>
+      <table>
+        <caption>{caption}</caption>
+        <thead>
+          <tr>
+            <th scope="col" />
+            {columns.map((c, i) => (
+              <th key={i} scope="col">
+                {c}
+              </th>
             ))}
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {rows.map((r, ri) => (
+            <tr key={ri}>
+              <th scope="row">{r.label}</th>
+              {r.cells.map((cell, ci) => (
+                <td key={ci}>{cell}</td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }

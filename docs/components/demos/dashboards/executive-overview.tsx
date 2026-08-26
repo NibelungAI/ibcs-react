@@ -67,10 +67,10 @@ export function ExecutiveOverview() {
             height={290}
             format={{ compact: true, decimals: 1 }}
             data={[
-              { label: "Europe", AC: 13_200_000, PY: 12_000_000 },
-              { label: "Americas", AC: 9_400_000, PY: 8_300_000 },
-              { label: "Asia Pacific", AC: 5_300_000, PY: 4_000_000 },
-              { label: "Rest of world", AC: 2_200_000, PY: 1_800_000 },
+              { category: "Europe", AC: 13_200_000, PY: 12_000_000 },
+              { category: "Americas", AC: 9_400_000, PY: 8_300_000 },
+              { category: "Asia Pacific", AC: 5_300_000, PY: 4_000_000 },
+              { category: "Rest of world", AC: 2_200_000, PY: 1_800_000 },
             ]}
           />
         </Panel>

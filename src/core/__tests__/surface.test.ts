@@ -106,6 +106,7 @@ describe("public export surface", () => {
         "statementToStructure",
         "statementToWaterfall",
         "toCSV",
+        "tokenPresetLabels",
         "tokenPresets",
         "validateChartConfig",
         "validateKpiConfig",

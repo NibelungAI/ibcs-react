@@ -4,20 +4,29 @@ import { defaultTrendConfig, defaultWaterfallConfig, type TreeChartConfig } from
 
 const rulesOf = (f: IbcsFinding[]) => f.map((x) => x.rule);
 
-/** A minimal, VALID tree chart config: a calculation tree carries `root`, not `data`. */
-const treeConfig: TreeChartConfig = {
-  type: "tree",
-  root: {
-    id: "roa",
-    label: "Return on assets",
-    value: 12.5,
-    py: 11.8,
-    op: "/",
-    children: [
-      { id: "ret", label: "Return", value: 250, py: 230 },
-      { id: "assets", label: "Assets", value: 2000, py: 1950 },
-    ],
-  },
+/**
+ * A minimal, fully CONFORMANT tree chart: a calculation tree carries `root`,
+ * not `data`. The structured title is added past the type — `ChartConfigBase`
+ * types `title` as a plain string today (the components draw it inside the
+ * svg), while the linter's ideal is the Who/What/When object that report
+ * blocks accept. Widening the config type is a tracked follow-up.
+ */
+const treeConfig = {
+  ...({
+    type: "tree",
+    root: {
+      id: "roa",
+      label: "Return on assets",
+      value: 12.5,
+      py: 11.8,
+      op: "/",
+      children: [
+        { id: "ret", label: "Return", value: 250, py: 230 },
+        { id: "assets", label: "Assets", value: 2000, py: 1950 },
+      ],
+    },
+  } satisfies TreeChartConfig),
+  title: { who: "ACME", what: "Return on assets (%)", when: "2026" },
 };
 
 describe("checkIbcs — chart configs", () => {
@@ -71,11 +80,6 @@ describe("checkIbcs — chart configs", () => {
     expect(r).toBeDefined();
     expect(r!.severity).toBe("warning");
     expect(r!.message).toContain("Revenue");
-  });
-
-  it("does not flag an empty-string title", () => {
-    const findings = checkIbcs({ type: "column", data: [{ x: 1 }], title: "   " });
-    expect(rulesOf(findings)).not.toContain("structured-title");
   });
 
   it("flags a chart with no data (error)", () => {
@@ -136,6 +140,27 @@ describe("checkIbcs — chart configs", () => {
     );
   });
 
+  it("flags a chart with NO title at all — omitting the title must not read cleaner than a bare one", () => {
+    // Regression (consumer report B4): `{type, data}` with no title returned []
+    // while the same chart WITH a title warned — the linter rewarded deleting it.
+    const findings = checkIbcs({
+      type: "varianceColumn",
+      data: [{ category: "Q1", AC: 100, PY: 90 }],
+    });
+    const r = findings.find((f) => f.rule === "structured-title");
+    expect(r).toBeDefined();
+    expect(r!.severity).toBe("warning");
+    expect(r!.path).toBe("title");
+    expect(r!.message).toContain("no title");
+  });
+
+  it("treats a whitespace-only title as missing", () => {
+    const findings = checkIbcs({ type: "column", data: [{ x: 1 }], title: "   " });
+    const r = findings.find((f) => f.rule === "structured-title");
+    expect(r).toBeDefined();
+    expect(r!.message).toContain("no title");
+  });
+
   it("flags a cost-titled chart that lacks higherIsBetter:false", () => {
     const findings = checkIbcs({ type: "column", data: [{ x: 1 }], title: "Operating Expenses" });
     const r = findings.find((f) => f.rule === "cost-favorability");
@@ -151,6 +176,80 @@ describe("checkIbcs — chart configs", () => {
       higherIsBetter: false,
     });
     expect(rulesOf(findings)).not.toContain("cost-favorability");
+  });
+
+  it("detects cost measures inside STRUCTURED titles — the recommended form must not bypass the rule", () => {
+    const findings = checkIbcs({
+      type: "column",
+      data: [{ x: 1 }],
+      title: { who: "ACME", what: "Operating expenses (€k)", when: "2026" },
+    });
+    expect(rulesOf(findings)).toContain("cost-favorability");
+  });
+
+  it('measureKind:"cost" forces the favorability check with no title at all', () => {
+    const findings = checkIbcs({ type: "column", data: [{ x: 1 }], measureKind: "cost" });
+    const r = findings.find((f) => f.rule === "cost-favorability");
+    expect(r).toBeDefined();
+    expect(r!.message).toContain('measureKind:"cost"');
+    // …and is satisfied the same way the heuristic is.
+    expect(
+      rulesOf(
+        checkIbcs({ type: "column", data: [{ x: 1 }], measureKind: "cost", higherIsBetter: false }),
+      ),
+    ).not.toContain("cost-favorability");
+  });
+
+  it('measureKind:"revenue" silences the heuristic for titles that merely SOUND like costs', () => {
+    const findings = checkIbcs({
+      type: "column",
+      data: [{ x: 1 }],
+      title: { what: "Cost recovery revenue (€k)" },
+      measureKind: "revenue",
+    });
+    expect(rulesOf(findings)).not.toContain("cost-favorability");
+  });
+});
+
+describe("checkIbcs — chart type messages", () => {
+  const messageOf = (type: unknown): string =>
+    checkIbcs({ type, data: [{ x: 1 }] }).find((f) => f.rule === "linear-chart-type")!.message;
+
+  it("suggests the canonical name for a near-miss and lists only REAL type values", () => {
+    // Regression (consumer report B5): the old message suggested "column" and
+    // "bar", which the config vocabulary does not accept — following the hint
+    // failed again. It must name valid values and offer a did-you-mean.
+    const msg = messageOf("variance-column");
+    expect(msg).toContain("unknown chart type");
+    expect(msg).toContain('did you mean "varianceColumn"?');
+    for (const t of ["varianceColumn", "trend", "structure", "waterfall", "tree"]) {
+      expect(msg).toContain(`"${t}"`);
+    }
+  });
+
+  it("corrects small typos within edit distance", () => {
+    expect(messageOf("watrfall")).toContain('did you mean "waterfall"?');
+    expect(messageOf("Trend")).toContain('did you mean "trend"?');
+  });
+
+  it("keeps the IBCS explanation for KNOWN non-linear types, distinct from unknown ones", () => {
+    expect(messageOf("pie")).toContain("non-linear");
+    expect(messageOf("pie")).not.toContain("unknown");
+    expect(messageOf("banana")).toContain("unknown chart type");
+    expect(messageOf("banana")).not.toContain("did you mean");
+  });
+
+  it("explains a missing type (reachable through a report's chart block)", () => {
+    // A bare `checkIbcs({data})` can't dispatch to the chart checker at all —
+    // but a report block DECLARES chartness, so a config with no `type` is
+    // checked and told what the valid values are.
+    const findings = checkIbcs({
+      title: { who: "ACME", what: "Revenue (€k)", when: "2026" },
+      blocks: [{ type: "chart", title: { what: "Revenue (€k)" }, config: { data: [{ x: 1 }] } }],
+    });
+    const r = findings.find((f) => f.rule === "linear-chart-type")!;
+    expect(r.message).toContain('no "type"');
+    expect(r.message).toContain('"varianceColumn"');
   });
 });
 
@@ -195,6 +294,41 @@ describe("checkIbcs — report configs", () => {
   it("flags a report with no blocks", () => {
     const findings = checkIbcs({ blocks: [] });
     expect(rulesOf(findings)).toContain("data-present");
+  });
+
+  it("flags a report with no title", () => {
+    const findings = checkIbcs({ blocks: [{ type: "text", body: "hi" }] });
+    const r = findings.find((f) => f.rule === "structured-title");
+    expect(r).toBeDefined();
+    expect(r!.path).toBe("title");
+  });
+
+  it("lets a BLOCK title satisfy an untitled chart config — and still carry the cost signal", () => {
+    const report = {
+      title: { who: "ACME", what: "Q1", when: "2026" },
+      blocks: [
+        {
+          type: "chart",
+          title: { who: "ACME", what: "Operating expenses (€k)", when: "2026" },
+          config: { type: "varianceColumn", data: [{ category: "Q1", AC: 1, PY: 1 }] },
+        },
+      ],
+    };
+    const findings = checkIbcs(report);
+    // The chart is titled by its block: no missing-title finding…
+    expect(rulesOf(findings)).not.toContain("structured-title");
+    // …but the block title's cost wording still reaches the favorability rule.
+    expect(rulesOf(findings)).toContain("cost-favorability");
+  });
+
+  it("flags a chart block when NEITHER the block nor the config carries a title", () => {
+    const findings = checkIbcs({
+      title: { who: "ACME", what: "Q1", when: "2026" },
+      blocks: [{ type: "chart", config: { type: "varianceColumn", data: [{ x: 1 }] } }],
+    });
+    const r = findings.find((f) => f.rule === "structured-title");
+    expect(r).toBeDefined();
+    expect(r!.path).toBe("blocks[0].config.title");
   });
 
   it("recurses into chart blocks and advises a shared scale for multiple charts", () => {

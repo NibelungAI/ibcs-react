@@ -35,19 +35,23 @@ greyscale.
 
 ## Presets
 
-`tokenPresets` is a `Record<string, IbcsTokens>` with all eight, ready for a
-theme switcher; each is also exported by name.
+`tokenPresets` holds all eight under stable ids (the `TokenPresetId` union —
+full autocomplete, typos fail to compile); `tokenPresetLabels` maps each id to
+its display name for pickers. Each preset is also exported by name.
 
-| Key            | Export           | Notes                                                    |
-| -------------- | ---------------- | -------------------------------------------------------- |
-| `Default`      | `defaultTokens`  | neutral warm greys, muted green/red                      |
-| `Ocean`        | `oceanTokens`    | navy actuals, IBCS semantic green/red                    |
-| `Azure`        | `azureTokens`    | monochromatic bright blue                                |
-| `Green / Red`  | `greenRedTokens` | strict business look, vivid variance                     |
-| `Vivid`        | `vividTokens`    | teal/blue actuals                                        |
-| `CVD-safe`     | `cvdTokens`      | colour-vision-deficiency safe (teal/orange impact)       |
-| `Mono / print` | `monoTokens`     | greyscale for B/W printing                               |
-| `Dark`         | `darkTokens`     | dark `color.surface` + `onFill`, cards/tooltips included |
+| Id (`tokenPresets` key) | Label        | Export           | Notes                                                    |
+| ----------------------- | ------------ | ---------------- | -------------------------------------------------------- |
+| `default`               | Default      | `defaultTokens`  | neutral warm greys, muted green/red                      |
+| `ocean`                 | Ocean        | `oceanTokens`    | navy actuals, IBCS semantic green/red                    |
+| `azure`                 | Azure        | `azureTokens`    | monochromatic bright blue                                |
+| `greenRed`              | Green / Red  | `greenRedTokens` | strict business look, vivid variance                     |
+| `vivid`                 | Vivid        | `vividTokens`    | teal/blue actuals                                        |
+| `cvd`                   | CVD-safe     | `cvdTokens`      | colour-vision-deficiency safe (teal/orange impact)       |
+| `mono`                  | Mono / print | `monoTokens`     | greyscale for B/W printing                               |
+| `dark`                  | Dark         | `darkTokens`     | dark `color.surface` + `onFill`, cards/tooltips included |
+
+(v1.0 keyed the record by the display strings; those keys still resolve at
+runtime but are absent from the type — use the ids.)
 
 ## Provider and resolution order
 

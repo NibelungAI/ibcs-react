@@ -26,6 +26,14 @@ export interface KpiConfig {
   /** Whether a higher value is good (false for cost/expense KPIs). Default true. */
   higherIsBetter?: boolean;
   /**
+   * What the measure IS, declared explicitly for the conformance linter:
+   * `"cost"` makes `checkIbcs` insist on `higherIsBetter:false` even when the
+   * label doesn't sound like a cost; `"revenue"` silences the heuristic for
+   * labels that merely sound like one ("Revenue after tax"). Rendering is
+   * unaffected — favorability still follows `higherIsBetter`.
+   */
+  measureKind?: "cost" | "revenue";
+  /**
    * Number formatting — and the KPI's unit: `currency` for a leading symbol
    * ("€30.1M"), `suffix` for a trailing one ("18.4%").
    */

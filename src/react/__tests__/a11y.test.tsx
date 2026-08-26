@@ -113,6 +113,52 @@ describe("chart accessibility: svg charts expose a data table", () => {
   });
 });
 
+/**
+ * REGRESSION (consumer report B1): the visually-hidden recipe must sit on a
+ * wrapper `<div>`, never on the `<table>` itself. CSS table layout treats
+ * `width`/`height` as a MINIMUM, so a table styled with the 1×1 clip recipe
+ * keeps its full-size — invisible but real — layout box, and every ancestor
+ * with `overflow` set grows a phantom scrollbar for it (~344px per chart in
+ * the dashboard that reported it). jsdom performs no layout, so scrollHeight
+ * cannot be asserted here; what this locks in is the structural contract that
+ * makes the box collapse: clamp styles on a `<div>`, table left unstyled.
+ */
+describe("sr-only chart tables collapse: the hiding style wraps the table, never styles it", () => {
+  /** True when an element's INLINE style carries the sr-only size clamp. */
+  const carriesClamp = (el: HTMLElement) =>
+    el.style.position === "absolute" && el.style.overflow === "hidden";
+
+  it("no component styles a <table> with the sr-only clamp directly", () => {
+    for (const { name, element } of cases) {
+      const { container } = render(element);
+      for (const t of container.querySelectorAll("table")) {
+        expect(
+          carriesClamp(t),
+          `${name} puts the visually-hidden clamp on a <table> — CSS table boxes ignore the 1×1 clamp and inflate ancestor scrollHeight; wrap it in a <div style={srOnly}> instead`,
+        ).toBe(false);
+      }
+      cleanup();
+    }
+  });
+
+  it("svg charts wrap their hidden data table in a div carrying the clamp", () => {
+    // TrendChart stands in for every chart that renders a ChartDataTable — the
+    // shared component is what's under test, the fixture just mounts it.
+    const fixture = cases.find((c) => c.name === "TrendChart");
+    const { container } = render(fixture!.element);
+    const table = container.querySelector("table");
+    expect(table).not.toBeNull();
+    const wrapper = table!.parentElement as HTMLElement;
+    expect(wrapper.tagName).toBe("DIV");
+    expect(carriesClamp(wrapper)).toBe(true);
+    expect(wrapper.style.height).toBe("1px");
+    // The table stays in the accessibility tree — hidden, not removed.
+    expect(wrapper.style.display).not.toBe("none");
+    expect(wrapper.getAttribute("aria-hidden")).toBeNull();
+    expect(table!.querySelector("caption")).not.toBeNull();
+  });
+});
+
 /** The cells of the row whose row-header is `label`, within `container`. */
 function rowCells(container: HTMLElement, label: string): string[] {
   const row = [...container.querySelectorAll("table tbody tr")].find(

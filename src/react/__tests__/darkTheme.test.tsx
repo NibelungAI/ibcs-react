@@ -68,7 +68,7 @@ function whiteBackgrounds(html: string): string[] {
   );
 }
 
-const darkTokens = tokenPresets.Dark!;
+const darkTokens = tokenPresets.dark;
 const darkHtml = renderToString(
   <IbcsThemeProvider tokens={darkTokens}>{scene()}</IbcsThemeProvider>,
 );

@@ -24,7 +24,7 @@ const caption: CSSProperties = {
  */
 export function ThemeProviderDemo() {
   return (
-    <IbcsThemeProvider tokens={tokenPresets.Ocean}>
+    <IbcsThemeProvider tokens={tokenPresets.ocean}>
       <div style={{ display: "flex", gap: 24, flexWrap: "wrap", alignItems: "flex-start" }}>
         <div style={{ width: 210 }}>
           <div style={caption}>From the provider</div>

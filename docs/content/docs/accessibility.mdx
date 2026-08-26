@@ -12,7 +12,10 @@ what you should still do on your side.
 Every chart renders a visually-hidden `<table>` next to its `<svg>` with the
 same numbers the chart draws — row and column headers, a `caption`, and values
 formatted exactly as the chart labels them. Screen-reader users read actual
-values instead of a picture description.
+values instead of a picture description. (The hiding style sits on a wrapper
+`<div>`, not on the table — CSS table boxes treat the 1×1 clamp as a minimum,
+so styling the table directly would leave a full-height invisible box that
+inflates ancestor scrollbars.)
 
 The `<svg>` itself carries an accessible name (`role="img"` plus a descriptive
 `aria-label`) when the chart is non-interactive. It is never `aria-hidden` —

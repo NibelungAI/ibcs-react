@@ -18,11 +18,11 @@ total row.
 <Frame center>
   <StructureChart
     data={[
-      { label: "North America", AC: 12.4e6, PY: 11.1e6, PL: 12.0e6 },
-      { label: "Europe", AC: 8.9e6, PY: 8.0e6, PL: 8.6e6 },
-      { label: "Asia Pacific", AC: 5.6e6, PY: 4.2e6, PL: 5.2e6 },
-      { label: "Latin America", AC: 2.1e6, PY: 1.5e6, PL: 2.0e6 },
-      { label: "Middle East & Africa", AC: 1.1e6, PY: 0.8e6, PL: 0.7e6 },
+      { category: "North America", AC: 12.4e6, PY: 11.1e6, PL: 12.0e6 },
+      { category: "Europe", AC: 8.9e6, PY: 8.0e6, PL: 8.6e6 },
+      { category: "Asia Pacific", AC: 5.6e6, PY: 4.2e6, PL: 5.2e6 },
+      { category: "Latin America", AC: 2.1e6, PY: 1.5e6, PL: 2.0e6 },
+      { category: "Middle East & Africa", AC: 1.1e6, PY: 0.8e6, PL: 0.7e6 },
     ]}
     comparison="PY"
     width={520}
@@ -34,8 +34,12 @@ total row.
 ```tsx
 import { StructureChart } from "ibcs-react";
 
-<StructureChart data={[{ label: "EMEA", AC: 12e6, PY: 10e6 } /* … */]} comparison="PY" />;
+<StructureChart data={[{ category: "EMEA", AC: 12e6, PY: 10e6 } /* … */]} comparison="PY" />;
 ```
+
+The name key is `category` — the same key every other chart's data uses — so
+one array can feed a `VarianceColumnChart` and a `StructureChart` unchanged.
+(`label`, the only key before v1.1, still works as an alias.)
 
 ## More examples
 
@@ -47,11 +51,11 @@ ahead of a small plan, stands out.
 <Frame center>
   <StructureChart
     data={[
-      { label: "North America", AC: 12.4e6, PY: 11.1e6, PL: 12.0e6 },
-      { label: "Europe", AC: 8.9e6, PY: 8.0e6, PL: 8.6e6 },
-      { label: "Asia Pacific", AC: 5.6e6, PY: 4.2e6, PL: 5.2e6 },
-      { label: "Latin America", AC: 2.1e6, PY: 1.5e6, PL: 2.0e6 },
-      { label: "Middle East & Africa", AC: 1.1e6, PY: 0.8e6, PL: 0.7e6 },
+      { category: "North America", AC: 12.4e6, PY: 11.1e6, PL: 12.0e6 },
+      { category: "Europe", AC: 8.9e6, PY: 8.0e6, PL: 8.6e6 },
+      { category: "Asia Pacific", AC: 5.6e6, PY: 4.2e6, PL: 5.2e6 },
+      { category: "Latin America", AC: 2.1e6, PY: 1.5e6, PL: 2.0e6 },
+      { category: "Middle East & Africa", AC: 1.1e6, PY: 0.8e6, PL: 0.7e6 },
     ]}
     comparison="PL"
     width={520}

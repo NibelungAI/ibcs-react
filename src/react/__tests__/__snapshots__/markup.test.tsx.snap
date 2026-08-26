@@ -25,7 +25,8 @@ exports[`component markup snapshots > AreaChart renders stable markup 1`] = `
 <text x="230.11764705882354" y="254" font-size="10.5" fill="#6b6a64" text-anchor="middle">Q3</text>
 <text x="328.35294117647055" y="254" font-size="10.5" fill="#6b6a64" text-anchor="middle">Q4</text>
 </svg>
-<table style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<table>
 <caption>Area chart of AC — data table</caption>
 <thead>
 <tr>
@@ -57,7 +58,8 @@ exports[`component markup snapshots > AreaChart renders stable markup 1`] = `
 <td>140</td>
 </tr>
 </tbody>
-</table>"
+</table>
+</div>"
 `;
 
 exports[`component markup snapshots > BarVarianceWaterfallChart renders stable markup 1`] = `
@@ -168,7 +170,8 @@ exports[`component markup snapshots > BarVarianceWaterfallChart renders stable m
 </rect>
 <text x="275.0227962756052" y="203.6272" font-size="10.08" font-weight="700" fill="#3f8f4f">+21</text>
 </svg>
-<table style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<table>
 <caption>AC versus PL bridge — data table</caption>
 <thead>
 <tr>
@@ -217,7 +220,8 @@ exports[`component markup snapshots > BarVarianceWaterfallChart renders stable m
 <td>+4.1%</td>
 </tr>
 </tbody>
-</table>"
+</table>
+</div>"
 `;
 
 exports[`component markup snapshots > BubbleChart renders stable markup 1`] = `
@@ -302,7 +306,8 @@ exports[`component markup snapshots > BubbleChart renders stable markup 1`] = `
 </g>
 </g>
 </svg>
-<table style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<table>
 <caption>Bubble chart data table</caption>
 <thead>
 <tr>
@@ -337,7 +342,8 @@ exports[`component markup snapshots > BubbleChart renders stable markup 1`] = `
 <td>B</td>
 </tr>
 </tbody>
-</table>"
+</table>
+</div>"
 `;
 
 exports[`component markup snapshots > ChartBox renders stable markup 1`] = `
@@ -349,7 +355,8 @@ exports[`component markup snapshots > ChartBox renders stable markup 1`] = `
 `;
 
 exports[`component markup snapshots > ChartDataTable renders stable markup 1`] = `
-"<table style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+"<div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<table>
 <caption>Revenue by quarter</caption>
 <thead>
 <tr>
@@ -381,7 +388,8 @@ exports[`component markup snapshots > ChartDataTable renders stable markup 1`] =
 <td>140</td>
 </tr>
 </tbody>
-</table>"
+</table>
+</div>"
 `;
 
 exports[`component markup snapshots > ChartFrame renders stable markup 1`] = `
@@ -579,7 +587,8 @@ exports[`component markup snapshots > ColumnVarianceWaterfallChart renders stabl
 <text x="246.5" y="250" font-size="11" fill="#6b6a64" text-anchor="middle">Q3</text>
 <text x="339.5" y="250" font-size="11" fill="#6b6a64" text-anchor="middle">Q4</text>
 </svg>
-<table style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<table>
 <caption>AC versus PL with variance bridge — data table</caption>
 <thead>
 <tr>
@@ -628,7 +637,8 @@ exports[`component markup snapshots > ColumnVarianceWaterfallChart renders stabl
 <td>+4.1%</td>
 </tr>
 </tbody>
-</table>"
+</table>
+</div>"
 `;
 
 exports[`component markup snapshots > ComboChart renders stable markup 1`] = `
@@ -725,7 +735,8 @@ exports[`component markup snapshots > ComboChart renders stable markup 1`] = `
 <text x="317.30010604453867" y="56" font-size="9" fill="#7a7973" text-anchor="middle">145</text>
 </g>
 </svg>
-<table style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<table>
 <caption>Combination chart data table</caption>
 <thead>
 <tr>
@@ -762,7 +773,8 @@ exports[`component markup snapshots > ComboChart renders stable markup 1`] = `
 <td>145</td>
 </tr>
 </tbody>
-</table>"
+</table>
+</div>"
 `;
 
 exports[`component markup snapshots > ComparisonTable renders stable markup 1`] = `
@@ -891,7 +903,8 @@ exports[`component markup snapshots > ConfiguredChart renders stable markup 1`] 
 <text x="349.5227995758218" y="174.5" font-size="10.5" fill="#3f8f4f" text-anchor="middle">+10</text>
 </g>
 </svg>
-<table style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<table>
 <caption>Revenue vs PY — data table</caption>
 <thead>
 <tr>
@@ -934,6 +947,7 @@ exports[`component markup snapshots > ConfiguredChart renders stable markup 1`] 
 </tr>
 </tbody>
 </table>
+</div>
 </div>"
 `;
 
@@ -1140,7 +1154,8 @@ exports[`component markup snapshots > GroupedVarianceChart renders stable markup
 <text x="346.9968387776607" y="254" font-size="11" fill="#6b6a64" text-anchor="middle">Q4</text>
 </g>
 </svg>
-<table style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<table>
 <caption>Grouped AC versus PL — data table</caption>
 <thead>
 <tr>
@@ -1182,7 +1197,8 @@ exports[`component markup snapshots > GroupedVarianceChart renders stable markup
 <td>+7.1%</td>
 </tr>
 </tbody>
-</table>"
+</table>
+</div>"
 `;
 
 exports[`component markup snapshots > HorizontalWaterfallChart renders stable markup 1`] = `
@@ -1228,7 +1244,8 @@ exports[`component markup snapshots > HorizontalWaterfallChart renders stable ma
 <text x="53.8" y="225.85" font-size="10.5" font-weight="400" fill="#6b6a64" text-anchor="end">Cost</text>
 <text x="53.8" y="308.35" font-size="10.5" font-weight="600" fill="#2b2b29" text-anchor="end">End</text>
 </svg>
-<table style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<table>
 <caption>Horizontal bridge of actual contributions — data table</caption>
 <thead>
 <tr>
@@ -1260,7 +1277,8 @@ exports[`component markup snapshots > HorizontalWaterfallChart renders stable ma
 <td>45</td>
 </tr>
 </tbody>
-</table>"
+</table>
+</div>"
 `;
 
 exports[`component markup snapshots > IntegratedVarianceChart renders stable markup 1`] = `
@@ -1374,7 +1392,8 @@ exports[`component markup snapshots > IntegratedVarianceChart renders stable mar
 <text x="249.31071049840932" y="254" font-size="11" fill="#6b6a64" text-anchor="middle">Q3</text>
 <text x="347.932131495228" y="254" font-size="11" fill="#6b6a64" text-anchor="middle">Q4</text>
 </svg>
-<table style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<table>
 <caption>Integrated variance of AC versus PY — data table</caption>
 <thead>
 <tr>
@@ -1416,7 +1435,8 @@ exports[`component markup snapshots > IntegratedVarianceChart renders stable mar
 <td>+7.1%</td>
 </tr>
 </tbody>
-</table>"
+</table>
+</div>"
 `;
 
 exports[`component markup snapshots > KpiCard renders stable markup 1`] = `
@@ -1496,7 +1516,8 @@ exports[`component markup snapshots > LineChart renders stable markup 1`] = `
 <text x="230.11764705882354" y="254" font-size="10.5" fill="#6b6a64" text-anchor="middle">Q3</text>
 <text x="328.35294117647055" y="254" font-size="10.5" fill="#6b6a64" text-anchor="middle">Q4</text>
 </svg>
-<table style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<table>
 <caption>Line chart of 4 series — data table</caption>
 <thead>
 <tr>
@@ -1538,7 +1559,8 @@ exports[`component markup snapshots > LineChart renders stable markup 1`] = `
 <td>148</td>
 </tr>
 </tbody>
-</table>"
+</table>
+</div>"
 `;
 
 exports[`component markup snapshots > MatrixTable renders stable markup 1`] = `
@@ -1654,7 +1676,8 @@ exports[`component markup snapshots > MiniVarianceMultiples renders stable marku
 </svg>
 </div>
 </div>
-<table style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<table>
 <caption>Variance versus PY — data table</caption>
 <thead>
 <tr>
@@ -1704,6 +1727,7 @@ exports[`component markup snapshots > MiniVarianceMultiples renders stable marku
 </tr>
 </tbody>
 </table>
+</div>
 </div>"
 `;
 
@@ -1718,7 +1742,8 @@ exports[`component markup snapshots > PieChart renders stable markup 1`] = `
 <circle cx="80" cy="80" r="72" fill="none" stroke="#c9c8c2" stroke-width="1">
 </circle>
 </svg>
-<table style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<table>
 <caption>Part-to-whole data table</caption>
 <thead>
 <tr>
@@ -1750,7 +1775,8 @@ exports[`component markup snapshots > PieChart renders stable markup 1`] = `
 <td>100.0%</td>
 </tr>
 </tbody>
-</table>"
+</table>
+</div>"
 `;
 
 exports[`component markup snapshots > RankingVarianceChart renders stable markup 1`] = `
@@ -1863,7 +1889,8 @@ exports[`component markup snapshots > RankingVarianceChart renders stable markup
 <text x="386" y="154.74" text-anchor="end" font-size="11" font-style="italic" font-weight="700" fill="#3f8f4f">+4.1%</text>
 </g>
 </svg>
-<table style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<table>
 <caption>Ranked variance versus PL — data table</caption>
 <thead>
 <tr>
@@ -1912,7 +1939,8 @@ exports[`component markup snapshots > RankingVarianceChart renders stable markup
 <td>+4.1%</td>
 </tr>
 </tbody>
-</table>"
+</table>
+</div>"
 `;
 
 exports[`component markup snapshots > RatioTreeChart renders stable markup 1`] = `
@@ -1991,7 +2019,8 @@ exports[`component markup snapshots > RatioTreeChart renders stable markup 1`] =
 </rect>
 </g>
 </svg>
-<table style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<table>
 <caption>Ratio tree data table</caption>
 <thead>
 <tr>
@@ -2022,7 +2051,8 @@ exports[`component markup snapshots > RatioTreeChart renders stable markup 1`] =
 <td>n/a</td>
 </tr>
 </tbody>
-</table>"
+</table>
+</div>"
 `;
 
 exports[`component markup snapshots > Report renders stable markup 1`] = `
@@ -2136,7 +2166,8 @@ exports[`component markup snapshots > ScatterChart renders stable markup 1`] = `
 </g>
 </g>
 </svg>
-<table style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<table>
 <caption>Scatter plot data table</caption>
 <thead>
 <tr>
@@ -2167,7 +2198,8 @@ exports[`component markup snapshots > ScatterChart renders stable markup 1`] = `
 <td>B</td>
 </tr>
 </tbody>
-</table>"
+</table>
+</div>"
 `;
 
 exports[`component markup snapshots > ScrollChart renders stable markup 1`] = `
@@ -2246,7 +2278,8 @@ exports[`component markup snapshots > SmallMultiples renders stable markup 1`] =
 <div data-testid="panel">Q4</div>
 </div>
 </div>
-<table style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<table>
 <caption>Small multiples data table</caption>
 <thead>
 <tr>
@@ -2279,6 +2312,7 @@ exports[`component markup snapshots > SmallMultiples renders stable markup 1`] =
 </tr>
 </tbody>
 </table>
+</div>
 </div>"
 `;
 
@@ -2338,7 +2372,8 @@ exports[`component markup snapshots > StackedChart renders stable markup 1`] = `
 <text x="298" y="84.25862068965517" font-size="11" fill="#ccccca" font-weight="500">West</text>
 <text x="298" y="185.25862068965517" font-size="11" fill="#54534e" font-weight="500">East</text>
 </svg>
-<table style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<table>
 <caption>Stacked columns — data table</caption>
 <thead>
 <tr>
@@ -2375,7 +2410,8 @@ exports[`component markup snapshots > StackedChart renders stable markup 1`] = `
 <td>290</td>
 </tr>
 </tbody>
-</table>"
+</table>
+</div>"
 `;
 
 exports[`component markup snapshots > StatementTable renders stable markup 1`] = `
@@ -2604,7 +2640,8 @@ exports[`component markup snapshots > StructureChart renders stable markup 1`] =
 <text x="350" y="243" font-size="11" font-weight="600" text-anchor="end" fill="#3f8f4f">+45</text>
 <text x="388" y="243" font-size="11" font-weight="600" fill="#6b6a64" text-anchor="end">100%</text>
 </svg>
-<table style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<table>
 <caption>Composition versus PY — data table</caption>
 <thead>
 <tr>
@@ -2653,7 +2690,8 @@ exports[`component markup snapshots > StructureChart renders stable markup 1`] =
 <td>100%</td>
 </tr>
 </tbody>
-</table>"
+</table>
+</div>"
 `;
 
 exports[`component markup snapshots > TreeChart renders stable markup 1`] = `
@@ -2689,7 +2727,8 @@ exports[`component markup snapshots > TreeChart renders stable markup 1`] = `
 <text x="294" y="206.9" font-size="9.5" fill="#3f8f4f" text-anchor="middle">+0 vs PY</text>
 </g>
 </svg>
-<table style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<table>
 <caption>Calculation tree data table</caption>
 <thead>
 <tr>
@@ -2720,7 +2759,8 @@ exports[`component markup snapshots > TreeChart renders stable markup 1`] = `
 <td>+0</td>
 </tr>
 </tbody>
-</table>"
+</table>
+</div>"
 `;
 
 exports[`component markup snapshots > TrendChart renders stable markup 1`] = `
@@ -2811,7 +2851,8 @@ exports[`component markup snapshots > TrendChart renders stable markup 1`] = `
 <text x="350.81081081081084" y="174" font-size="9" fill="#3f8f4f" text-anchor="middle">+10</text>
 </g>
 </svg>
-<table style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<table>
 <caption>Trend versus PY — data table</caption>
 <thead>
 <tr>
@@ -2858,7 +2899,8 @@ exports[`component markup snapshots > TrendChart renders stable markup 1`] = `
 <td>+7.1%</td>
 </tr>
 </tbody>
-</table>"
+</table>
+</div>"
 `;
 
 exports[`component markup snapshots > VarianceAreaChart renders stable markup 1`] = `
@@ -2914,7 +2956,8 @@ exports[`component markup snapshots > VarianceAreaChart renders stable markup 1`
 <rect x="278.4117647058824" y="12" width="99.41176470588236" height="228" fill="transparent">
 </rect>
 </svg>
-<table style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<table>
 <caption>Actual versus Ø — data table</caption>
 <thead>
 <tr>
@@ -2957,7 +3000,8 @@ exports[`component markup snapshots > VarianceAreaChart renders stable markup 1`
 <td>+45 (+9.2%)</td>
 </tr>
 </tbody>
-</table>"
+</table>
+</div>"
 `;
 
 exports[`component markup snapshots > VarianceBar renders stable markup 1`] = `
@@ -3050,7 +3094,8 @@ exports[`component markup snapshots > VarianceColumnChart renders stable markup 
 <text x="349.5227995758218" y="170.75" font-size="10.5" fill="#3f8f4f" text-anchor="middle">+10</text>
 </g>
 </svg>
-<table style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<table>
 <caption>AC versus PY — data table</caption>
 <thead>
 <tr>
@@ -3092,7 +3137,8 @@ exports[`component markup snapshots > VarianceColumnChart renders stable markup 
 <td>+7.1%</td>
 </tr>
 </tbody>
-</table>"
+</table>
+</div>"
 `;
 
 exports[`component markup snapshots > WaterfallChart renders stable markup 1`] = `
@@ -3138,7 +3184,8 @@ exports[`component markup snapshots > WaterfallChart renders stable markup 1`] =
 <text x="249.78586723768734" y="254" font-size="10.5" font-weight="400" fill="#6b6a64" text-anchor="middle">Cost</text>
 <text x="349.357601713062" y="254" font-size="10.5" font-weight="600" fill="#2b2b29" text-anchor="middle">End</text>
 </svg>
-<table style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<table>
 <caption>Bridge of actual contributions — data table</caption>
 <thead>
 <tr>
@@ -3170,7 +3217,8 @@ exports[`component markup snapshots > WaterfallChart renders stable markup 1`] =
 <td>45</td>
 </tr>
 </tbody>
-</table>"
+</table>
+</div>"
 `;
 
 exports[`component markup snapshots > WaterfallStatementChart renders stable markup 1`] = `
@@ -3288,7 +3336,8 @@ exports[`component markup snapshots > WaterfallStatementChart renders stable mar
 <rect x="14" y="94" width="372" height="28" fill="transparent">
 </rect>
 </svg>
-<table style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<table>
 <caption>P&amp;L calculation scheme, AC versus PY — data table</caption>
 <thead>
 <tr>
@@ -3323,5 +3372,6 @@ exports[`component markup snapshots > WaterfallStatementChart renders stable mar
 <td>+11.1</td>
 </tr>
 </tbody>
-</table>"
+</table>
+</div>"
 `;

@@ -57,6 +57,14 @@ interface ChartConfigBase {
   height?: number;
   /** Number formatting for value labels. */
   format?: FormatOptions;
+  /**
+   * What the measure IS, declared explicitly for the conformance linter:
+   * `"cost"` makes `checkIbcs` insist on `higherIsBetter:false` even when the
+   * title doesn't sound like a cost; `"revenue"` silences the heuristic for
+   * titles that merely sound like one ("Revenue after tax"). Rendering is
+   * unaffected — favorability still follows `higherIsBetter`.
+   */
+  measureKind?: "cost" | "revenue";
 }
 
 /** Config for {@link VarianceColumnChart}: AC vs a comparison, variance beneath. */

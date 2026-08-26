@@ -186,6 +186,29 @@ describe("KpiCard", () => {
     expect(screen.getByText("100")).toBeTruthy();
   });
 
+  it("skips the count-up under prefers-reduced-motion — even with animate on (the default)", () => {
+    // Consumer report D5.1 assumed the default count-up ignores the OS motion
+    // preference. It never did — `useAnimatedValue` collapses to the target
+    // when the media query matches — but nothing pinned that down. This does:
+    // reduced motion + `animate` → final figure immediately, zero frames.
+    vi.stubGlobal(
+      "matchMedia",
+      vi.fn(() => ({
+        matches: true,
+        media: "(prefers-reduced-motion: reduce)",
+        addEventListener: () => {},
+        removeEventListener: () => {},
+      })),
+    );
+    const raf = vi.fn();
+    vi.stubGlobal("requestAnimationFrame", raf);
+
+    render(<KpiCard label="Revenue" values={{ AC: 30_100_000, PY: 28_000_000 }} animate />);
+
+    expect(raf).not.toHaveBeenCalled();
+    expect(screen.getByText("30.1M")).toBeTruthy();
+  });
+
   it("states the format's unit once, on either side of the headline", () => {
     render(
       <>

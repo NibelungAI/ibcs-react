@@ -58,8 +58,11 @@ empty `data` array. Edit the JSON and watch the findings update live — the sam
 
 Out of the box this example produces **two errors** (non-linear chart type, no
 data) and **one warning** (bare-string title). Switch `"pie"` to a linear type
-such as `"varianceColumn"`, give it a data row and replace the title — the list
-empties and the report says so.
+such as `"varianceColumn"`, give it a data row and replace the title with a
+structured `{ who, what, when }` object — the list empties and the report says
+so. Deleting the title is not a way out: a chart or report with **no** title
+is flagged at the same severity (ISO 24896 SAY requires one), and an unknown
+`type` string gets a did-you-mean plus the list of valid values.
 
 ## The rule catalog
 
@@ -75,6 +78,21 @@ encodes:
 import { IBCS_RULES } from "ibcs-react";
 
 IBCS_RULES.map((rule) => `${rule.id} (${rule.severity}) — ${rule.title}`);
+```
+
+## Declare what the measure is
+
+The `cost-favorability` rule normally detects cost measures from the title or
+KPI label ("Operating expenses", "Tax", …) — structured titles included. When
+the wording doesn't give it away, declare it: `measureKind: "cost"` on a chart
+or KPI config makes the linter insist on `higherIsBetter: false` no matter
+what the title says, and `measureKind: "revenue"` silences the heuristic for
+measures that merely sound like costs ("Cost recovery revenue"). The
+declaration is linter-only — rendering still follows `higherIsBetter`.
+
+```ts
+checkIbcs({ type: "varianceColumn", measureKind: "cost", data, title });
+// → cost-favorability warning until the config sets higherIsBetter: false
 ```
 
 ## What a finding looks like

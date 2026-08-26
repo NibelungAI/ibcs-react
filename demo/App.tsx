@@ -5,10 +5,11 @@ import {
   TrendChart,
   StructureChart,
   tokenPresets,
-  defaultTokens,
+  tokenPresetLabels,
   statementToCSV,
   downloadCSV,
   type IbcsTokens,
+  type TokenPresetId,
 } from "ibcs-react";
 import {
   sampleStatement,
@@ -70,7 +71,7 @@ const STATEMENT_SETS = [
  * one model; the controls just re-render them.
  */
 export function App() {
-  const [tokens, setTokens] = useState<IbcsTokens>(tokenPresets.Default ?? defaultTokens);
+  const [tokens, setTokens] = useState<IbcsTokens>(tokenPresets.default);
   const [comparison, setComparison] = useState<Comparison>("PY");
   const data = baseChartData();
   // Kept for the sections' remount key; the demo no longer exposes a replay control.
@@ -214,11 +215,8 @@ function ControlBar({
       <Control label="Theme">
         <Segmented
           value={pickPreset(tokens)}
-          onChange={(name) => {
-            const preset = tokenPresets[name];
-            if (preset) onTokens(preset);
-          }}
-          options={Object.keys(tokenPresets).map((name) => ({ value: name, label: name }))}
+          onChange={(id) => onTokens(tokenPresets[id])}
+          options={PRESET_IDS.map((id) => ({ value: id, label: tokenPresetLabels[id] }))}
         />
       </Control>
 
@@ -256,13 +254,16 @@ function ControlBar({
   );
 }
 
-/** Best-effort match of the active tokens back to a named preset (for the toggle). */
-function pickPreset(tokens: IbcsTokens): string {
-  for (const [name, preset] of Object.entries(tokenPresets)) {
+const PRESET_IDS = Object.keys(tokenPresets) as TokenPresetId[];
+
+/** Best-effort match of the active tokens back to a preset id (for the toggle). */
+function pickPreset(tokens: IbcsTokens): TokenPresetId {
+  for (const id of PRESET_IDS) {
+    const preset = tokenPresets[id];
     if (preset.color.neutral === tokens.color.neutral && preset.color.good === tokens.color.good)
-      return name;
+      return id;
   }
-  return Object.keys(tokenPresets)[0] ?? "Default";
+  return "default";
 }
 
 function Control({ label, children }: { label: string; children: React.ReactNode }) {

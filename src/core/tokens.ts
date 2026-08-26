@@ -255,17 +255,69 @@ export const darkTokens: IbcsTokens = {
   font: { family: UI_FONT_FAMILY },
 };
 
-/** Named presets, handy for a theme switcher. */
-export const tokenPresets: Record<string, IbcsTokens> = {
-  Default: defaultTokens,
-  Ocean: oceanTokens,
-  Azure: azureTokens,
-  "Green / Red": greenRedTokens,
-  Vivid: vividTokens,
-  "CVD-safe": cvdTokens,
-  "Mono / print": monoTokens,
-  Dark: darkTokens,
+/**
+ * Named presets, handy for a theme switcher. Keyed by STABLE code identifiers
+ * — the same vocabulary as the named exports (`greenRed` ↔ `greenRedTokens`)
+ * — so lookups autocomplete, typos fail to compile, and UI copy can change
+ * without breaking anyone's saved theme id. Human display strings live in
+ * {@link tokenPresetLabels}.
+ *
+ * ```tsx
+ * <IbcsThemeProvider tokens={tokenPresets.dark}>
+ *
+ * // a theme <select>:
+ * {(Object.keys(tokenPresets) as TokenPresetId[]).map((id) => (
+ *   <option key={id} value={id}>{tokenPresetLabels[id]}</option>
+ * ))}
+ * ```
+ */
+export const tokenPresets = {
+  default: defaultTokens,
+  ocean: oceanTokens,
+  azure: azureTokens,
+  greenRed: greenRedTokens,
+  vivid: vividTokens,
+  cvd: cvdTokens,
+  mono: monoTokens,
+  dark: darkTokens,
+} satisfies Record<string, IbcsTokens>;
+
+/** A valid {@link tokenPresets} key — `keyof typeof tokenPresets`. */
+export type TokenPresetId = keyof typeof tokenPresets;
+
+/** Display names for {@link tokenPresets}, for pickers and legends. */
+export const tokenPresetLabels: Record<TokenPresetId, string> = {
+  default: "Default",
+  ocean: "Ocean",
+  azure: "Azure",
+  greenRed: "Green / Red",
+  vivid: "Vivid",
+  cvd: "CVD-safe",
+  mono: "Mono / print",
+  dark: "Dark",
 };
+
+// v1.0.0 keyed `tokenPresets` by the display strings themselves ("Green /
+// Red", "Mono / print", …). Those lookups keep working at runtime — as
+// NON-ENUMERABLE aliases, so `Object.keys`/`entries` (the theme-switcher
+// iteration path) see each preset exactly once — but they are deliberately
+// absent from the type: new code gets the stable ids and a compile error, old
+// JS keeps running.
+for (const [id, legacy] of [
+  ["default", "Default"],
+  ["ocean", "Ocean"],
+  ["azure", "Azure"],
+  ["greenRed", "Green / Red"],
+  ["vivid", "Vivid"],
+  ["cvd", "CVD-safe"],
+  ["mono", "Mono / print"],
+  ["dark", "Dark"],
+] as const) {
+  Object.defineProperty(tokenPresets, legacy, {
+    value: tokenPresets[id],
+    enumerable: false,
+  });
+}
 
 /**
  * Merge a partial override onto a base theme (group-by-group deep merge).

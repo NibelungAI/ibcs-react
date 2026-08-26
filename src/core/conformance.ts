@@ -12,6 +12,7 @@
  */
 
 import type { ChartConfig } from "./config";
+import { CHART_TYPES } from "./config";
 import type { ReportConfig } from "./report";
 import type { KpiConfig } from "./kpi";
 
@@ -42,13 +43,13 @@ export const IBCS_RULES: readonly IbcsRule[] = [
     id: "linear-chart-type",
     title: "Linear chart types only",
     severity: "error",
-    doc: "IBCS permits only linear charts (column, bar, line, area, scatter, bubble, waterfall). Pie, gauge, radar and similar are forbidden because area/angle encodings distort comparison.",
+    doc: "IBCS permits only linear charts (column, bar, line, area, scatter, bubble, waterfall families). Pie, gauge, radar and similar are forbidden because area/angle encodings distort comparison. Unknown type strings are flagged under this rule too, with the valid values listed.",
   },
   {
     id: "structured-title",
     title: "Structured Who / What / When title",
     severity: "warning",
-    doc: "ISO 24896 SAY: a title states Who (entity), What (measure + unit) and When (period) on separate lines, kept apart from the interpretive key message. A bare string title loses that structure.",
+    doc: "ISO 24896 SAY: a title states Who (entity), What (measure + unit) and When (period) on separate lines, kept apart from the interpretive key message. A bare string title loses that structure — and a chart or report with NO title at all says nothing. Both are flagged.",
   },
   {
     id: "show-variance",
@@ -72,7 +73,7 @@ export const IBCS_RULES: readonly IbcsRule[] = [
     id: "cost-favorability",
     title: "Correct favorability for cost measures",
     severity: "warning",
-    doc: "For cost / expense / tax measures a higher value is unfavorable. Set higherIsBetter:false so impact (favorability) coloring shows overruns in red, not green.",
+    doc: 'For cost / expense / tax measures a higher value is unfavorable. Set higherIsBetter:false so impact (favorability) coloring shows overruns in red, not green. Detected from an explicit measureKind:"cost" declaration, or heuristically from the title / KPI label.',
   },
   {
     id: "shared-scale",
@@ -107,7 +108,74 @@ const LINEAR_CHART_TYPES = new Set<string>([
   "tree",
 ]);
 
+/**
+ * Chart types IBCS explicitly forbids: area/angle encodings that distort
+ * comparison. Anything not in this set and not in {@link LINEAR_CHART_TYPES}
+ * is an UNKNOWN type — a different failure with a different message.
+ */
+const NON_LINEAR_CHART_TYPES = new Set<string>([
+  "pie",
+  "donut",
+  "doughnut",
+  "gauge",
+  "radar",
+  "spider",
+  "polar",
+  "radial",
+  "funnel",
+  "sunburst",
+  "treemap",
+]);
+
+/** The values a user should actually type — this library's config vocabulary. */
+const VALID_TYPE_LIST = CHART_TYPES.map((t) => `"${t}"`).join(", ");
+
 const COST_LABEL = /cost|expense|tax|opex/i;
+
+/* --------------------------------------------------------- did-you-mean */
+
+const normalizeType = (s: string): string => s.toLowerCase().replace(/[^a-z0-9]/g, "");
+
+/** Small, bounded Levenshtein — inputs are short type names, never user data. */
+function editDistance(a: string, b: string): number {
+  const m = a.length;
+  const n = b.length;
+  if (Math.abs(m - n) > 2) return 3; // beyond our suggestion threshold; skip the work
+  let prev = Array.from({ length: n + 1 }, (_, j) => j);
+  for (let i = 1; i <= m; i++) {
+    const row = [i];
+    for (let j = 1; j <= n; j++) {
+      row[j] = Math.min(
+        prev[j]! + 1,
+        row[j - 1]! + 1,
+        prev[j - 1]! + (a[i - 1] === b[j - 1] ? 0 : 1),
+      );
+    }
+    prev = row;
+  }
+  return prev[n]!;
+}
+
+/**
+ * Suggest the intended chart type for an unknown string: an exact match after
+ * normalization ("variance-column" → "varianceColumn") or a near-miss within
+ * edit distance 2 ("watrfall" → "waterfall"). Returns undefined when nothing
+ * is plausibly close.
+ */
+function suggestChartType(input: string): string | undefined {
+  const norm = normalizeType(input);
+  if (!norm) return undefined;
+  let best: string | undefined;
+  let bestDist = 3;
+  for (const candidate of LINEAR_CHART_TYPES) {
+    const d = editDistance(norm, normalizeType(candidate));
+    if (d < bestDist) {
+      bestDist = d;
+      best = candidate;
+    }
+  }
+  return best;
+}
 
 /* ------------------------------------------------------------------ guards */
 
@@ -117,12 +185,51 @@ function isObject(v: unknown): v is Record<string, unknown> {
 
 /* ------------------------------------------------------------- title check */
 
+/** True when a title is present in any form — a non-blank string or an object. */
+function hasTitle(title: unknown): boolean {
+  if (typeof title === "string") return title.trim() !== "";
+  return isObject(title);
+}
+
 /**
- * Flag a title that is a bare string instead of a structured Who/What/When.
- * Pushes nothing when the title is absent or already structured.
+ * The searchable text of a title: the string itself, or the joined
+ * who/what/when lines of a structured title. Used by the cost heuristic, so
+ * the RECOMMENDED title form does not silently bypass cost detection.
  */
-function checkTitle(title: unknown, path: string, out: IbcsFinding[]): void {
-  if (typeof title === "string" && title.trim() !== "") {
+function titleText(title: unknown): string {
+  if (typeof title === "string") return title;
+  if (isObject(title)) {
+    return [title.who, title.what, title.when]
+      .filter((part): part is string => typeof part === "string")
+      .join(" ");
+  }
+  return "";
+}
+
+/**
+ * Flag a title that is a bare string instead of a structured Who/What/When —
+ * and, where a title is REQUIRED (charts, reports), flag a missing one at the
+ * same severity. Without the `required` arm, deleting the title would silence
+ * the rule it violates.
+ */
+function checkTitle(
+  title: unknown,
+  path: string,
+  out: IbcsFinding[],
+  opts: { required?: boolean; subject?: string } = {},
+): void {
+  if (!hasTitle(title)) {
+    if (opts.required) {
+      out.push({
+        rule: "structured-title",
+        severity: "warning",
+        message: `${opts.subject ?? "config"} has no title — ISO 24896 SAY requires a Who/What/When structured title.`,
+        path,
+      });
+    }
+    return;
+  }
+  if (typeof title === "string") {
     out.push({
       rule: "structured-title",
       severity: "warning",
@@ -132,20 +239,79 @@ function checkTitle(title: unknown, path: string, out: IbcsFinding[]): void {
   }
 }
 
+/* ------------------------------------------------------ cost favorability */
+
+/**
+ * Push a cost-favorability warning when a cost-like measure does not read a
+ * rise as unfavorable. Detection order:
+ *
+ *  1. explicit `measureKind` ("cost" → always check; "revenue" → never) — the
+ *     declaration survives any title edit and beats the heuristic;
+ *  2. text heuristic over the effective title / label (structured titles
+ *     included via {@link titleText}).
+ */
+function checkCostFavorability(
+  c: Record<string, unknown>,
+  text: string,
+  pathOf: (k: string) => string,
+  out: IbcsFinding[],
+): void {
+  if (c.higherIsBetter === false) return;
+  const kind = c.measureKind;
+  if (kind === "revenue") return;
+  const declaredCost = kind === "cost";
+  if (!declaredCost && !COST_LABEL.test(text)) return;
+  const why = declaredCost
+    ? `measure is declared measureKind:"cost"`
+    : `"${text.trim()}" looks like a cost measure`;
+  out.push({
+    rule: "cost-favorability",
+    severity: "warning",
+    message: `${why} — set higherIsBetter:false so impact coloring is correct.`,
+    path: pathOf("higherIsBetter"),
+  });
+}
+
 /* ------------------------------------------------------------- chart check */
 
-function checkChart(c: Record<string, unknown>, base = ""): IbcsFinding[] {
+function checkChart(
+  c: Record<string, unknown>,
+  base = "",
+  /** A title carried by the surrounding report block, if any — it titles this chart too. */
+  externalTitle?: unknown,
+): IbcsFinding[] {
   const out: IbcsFinding[] = [];
   const p = (k: string) => (base ? `${base}.${k}` : k);
   const type = c.type;
 
-  if (typeof type !== "string" || !LINEAR_CHART_TYPES.has(type)) {
+  // Three distinct failures share this rule: no type at all, a type IBCS
+  // forbids, and a type this library simply does not know. Each gets its own
+  // message — and the valid values listed are the API vocabulary (CHART_TYPES),
+  // not IBCS prose, so following the hint actually works.
+  if (typeof type !== "string") {
     out.push({
       rule: "linear-chart-type",
       severity: "error",
-      message: `non-linear chart type ${JSON.stringify(type)} — IBCS allows only linear charts (column, bar, line, area, scatter, bubble, waterfall).`,
+      message: `chart config has no "type" — expected one of ${VALID_TYPE_LIST}.`,
       path: p("type"),
     });
+  } else if (!LINEAR_CHART_TYPES.has(type)) {
+    if (NON_LINEAR_CHART_TYPES.has(type.toLowerCase())) {
+      out.push({
+        rule: "linear-chart-type",
+        severity: "error",
+        message: `chart type "${type}" is non-linear — IBCS forbids area/angle encodings because they distort comparison. Use one of ${VALID_TYPE_LIST}.`,
+        path: p("type"),
+      });
+    } else {
+      const suggestion = suggestChartType(type);
+      out.push({
+        rule: "linear-chart-type",
+        severity: "error",
+        message: `unknown chart type "${type}"${suggestion ? ` — did you mean "${suggestion}"?` : ""} Valid types: ${VALID_TYPE_LIST}.`,
+        path: p("type"),
+      });
+    }
   }
 
   // Data presence is SHAPE-AWARE: most configs carry a `data` array, but a tree
@@ -164,7 +330,13 @@ function checkChart(c: Record<string, unknown>, base = ""): IbcsFinding[] {
     });
   }
 
-  checkTitle(c.title, p("title"), out);
+  // The chart must be titled — by its own config, or by the report block that
+  // hosts it. Only when BOTH are absent is the missing-title finding emitted;
+  // a present-but-bare title is flagged wherever it sits.
+  checkTitle(c.title, p("title"), out, {
+    required: !hasTitle(externalTitle),
+    subject: "chart",
+  });
 
   // Variance is only flagged when explicitly switched off; relying on the
   // default comparison (PY) is conformant, so a clean chart returns [].
@@ -180,15 +352,11 @@ function checkChart(c: Record<string, unknown>, base = ""): IbcsFinding[] {
     });
   }
 
-  // Cost-like measure must read overruns as unfavorable.
-  if (typeof c.title === "string" && COST_LABEL.test(c.title) && c.higherIsBetter !== false) {
-    out.push({
-      rule: "cost-favorability",
-      severity: "warning",
-      message: `"${c.title}" looks like a cost measure — set higherIsBetter:false so impact coloring is correct.`,
-      path: p("higherIsBetter"),
-    });
-  }
+  // Cost-like measure must read overruns as unfavorable. The effective title
+  // is the config's own, falling back to the hosting block's — so moving the
+  // title up a level does not blind the check.
+  const effectiveTitle = hasTitle(c.title) ? c.title : externalTitle;
+  checkCostFavorability(c, titleText(effectiveTitle), p, out);
 
   return out;
 }
@@ -218,14 +386,7 @@ function checkKpi(c: Record<string, unknown>, base = ""): IbcsFinding[] {
     });
   }
 
-  if (typeof c.label === "string" && COST_LABEL.test(c.label) && c.higherIsBetter !== false) {
-    out.push({
-      rule: "cost-favorability",
-      severity: "warning",
-      message: `"${c.label}" looks like a cost measure — set higherIsBetter:false so impact coloring is correct.`,
-      path: p("higherIsBetter"),
-    });
-  }
+  checkCostFavorability(c, typeof c.label === "string" ? c.label : "", p, out);
 
   return out;
 }
@@ -237,7 +398,7 @@ const BLOCK_TYPES = new Set<string>(["kpi", "chart", "statement", "table", "text
 function checkReport(r: Record<string, unknown>): IbcsFinding[] {
   const out: IbcsFinding[] = [];
 
-  checkTitle(r.title, "title", out);
+  checkTitle(r.title, "title", out, { required: true, subject: "report" });
 
   const blocks = r.blocks;
   if (!Array.isArray(blocks) || blocks.length === 0) {
@@ -279,7 +440,7 @@ function checkReport(r: Record<string, unknown>): IbcsFinding[] {
     // Recurse into the configs the linter understands.
     if (b.type === "chart") {
       chartBlocks++;
-      if (isObject(b.config)) out.push(...checkChart(b.config, `${bp}.config`));
+      if (isObject(b.config)) out.push(...checkChart(b.config, `${bp}.config`, b.title));
     } else if (b.type === "kpi") {
       if (isObject(b.config)) out.push(...checkKpi(b.config, `${bp}.config`));
     } else if (b.type === "statement") {

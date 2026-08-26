@@ -1,5 +1,12 @@
 import { describe, it, expect } from "vitest";
-import { mergeTokens, defaultTokens, tokenPresets, type IbcsTokens } from "../tokens";
+import {
+  mergeTokens,
+  defaultTokens,
+  tokenPresets,
+  tokenPresetLabels,
+  type TokenPresetId,
+  type IbcsTokens,
+} from "../tokens";
 
 describe("mergeTokens", () => {
   it("returns the defaults unchanged when no override is given", () => {
@@ -22,11 +29,11 @@ describe("mergeTokens", () => {
   });
 
   it("keeps the base font when only colors are overridden", () => {
-    const merged = mergeTokens({ color: { surface: "#101010" } }, tokenPresets.Dark);
+    const merged = mergeTokens({ color: { surface: "#101010" } }, tokenPresets.dark);
     expect(merged.color.surface).toBe("#101010");
-    expect(merged.color.surfaceMuted).toBe(tokenPresets.Dark!.color.surfaceMuted);
-    expect(merged.font).toEqual(tokenPresets.Dark!.font);
-    expect(merged.font).not.toBe(tokenPresets.Dark!.font);
+    expect(merged.color.surfaceMuted).toBe(tokenPresets.dark.color.surfaceMuted);
+    expect(merged.font).toEqual(tokenPresets.dark.font);
+    expect(merged.font).not.toBe(tokenPresets.dark.font);
   });
 
   it("merges a partial scenario override per scenario", () => {
@@ -65,23 +72,36 @@ function luminance(hex: string): number {
 }
 
 describe("tokenPresets", () => {
-  it("contains the expected named themes", () => {
-    for (const name of [
-      "Default",
-      "Ocean",
-      "Azure",
-      "Green / Red",
-      "Vivid",
-      "CVD-safe",
-      "Mono / print",
-      "Dark",
-    ]) {
-      expect(tokenPresets[name]).toBeDefined();
+  it("is keyed by the stable ids, one per preset", () => {
+    expect(Object.keys(tokenPresets).sort()).toEqual(
+      ["default", "ocean", "azure", "greenRed", "vivid", "cvd", "mono", "dark"].sort(),
+    );
+  });
+
+  it("exposes default as the default token set", () => {
+    expect(tokenPresets.default).toBe(defaultTokens);
+  });
+
+  it("has a display label for every preset id, and no orphan labels", () => {
+    expect(Object.keys(tokenPresetLabels).sort()).toEqual(Object.keys(tokenPresets).sort());
+    for (const label of Object.values(tokenPresetLabels)) {
+      expect(label).not.toBe("");
     }
   });
 
-  it("exposes Default as the default token set", () => {
-    expect(tokenPresets.Default).toBe(defaultTokens);
+  it("still resolves the v1.0 display-string keys at runtime — without duplicating iteration", () => {
+    // Old lookups keep working (JS callers)…
+    const legacy = tokenPresets as unknown as Record<string, IbcsTokens>;
+    expect(legacy["Default"]).toBe(tokenPresets.default);
+    expect(legacy["Green / Red"]).toBe(tokenPresets.greenRed);
+    expect(legacy["CVD-safe"]).toBe(tokenPresets.cvd);
+    expect(legacy["Mono / print"]).toBe(tokenPresets.mono);
+    expect(legacy["Dark"]).toBe(tokenPresets.dark);
+    // …but a theme-switcher iterating the presets sees each one exactly once.
+    expect(Object.keys(tokenPresets)).toHaveLength(8);
+    expect(Object.entries(tokenPresets)).toHaveLength(8);
+    expect(Object.keys(tokenPresets)).not.toContain("Dark");
+    expect(JSON.stringify(tokenPresets)).not.toContain("Green / Red");
   });
 
   it("gives every preset the full token shape: colors, scenarios and a font", () => {
@@ -89,7 +109,9 @@ describe("tokenPresets", () => {
     // every preset instead of silently shipping `undefined` in one of them.
     const colorKeys = Object.keys(defaultTokens.color) as Array<keyof IbcsTokens["color"]>;
     const fontKeys = Object.keys(defaultTokens.font) as Array<keyof IbcsTokens["font"]>;
-    for (const [name, tokens] of Object.entries(tokenPresets)) {
+    for (const [name, tokens] of Object.entries(tokenPresets) as Array<
+      [TokenPresetId, IbcsTokens]
+    >) {
       for (const k of colorKeys) {
         expect(typeof tokens.color[k], `${name}.color.${k}`).toBe("string");
         expect(tokens.color[k], `${name}.color.${k}`).not.toBe("");
@@ -109,22 +131,23 @@ describe("tokenPresets", () => {
   });
 
   it("keeps every light preset on a white surface and every ink readable on it", () => {
-    for (const name of [
-      "Default",
-      "Ocean",
-      "Azure",
-      "Green / Red",
-      "Vivid",
-      "CVD-safe",
-      "Mono / print",
-    ]) {
-      expect(tokenPresets[name]!.color.surface, `${name}.color.surface`).toBe("#fff");
-      expect(tokenPresets[name]!.color.onFill, `${name}.color.onFill`).toBe("#fff");
+    const lightIds: TokenPresetId[] = [
+      "default",
+      "ocean",
+      "azure",
+      "greenRed",
+      "vivid",
+      "cvd",
+      "mono",
+    ];
+    for (const name of lightIds) {
+      expect(tokenPresets[name].color.surface, `${name}.color.surface`).toBe("#fff");
+      expect(tokenPresets[name].color.onFill, `${name}.color.onFill`).toBe("#fff");
     }
   });
 
-  it("inverts the Dark preset: dark surfaces, and in-bar ink dark enough for its light bars", () => {
-    const dark = tokenPresets.Dark!;
+  it("inverts the dark preset: dark surfaces, and in-bar ink dark enough for its light bars", () => {
+    const dark = tokenPresets.dark;
     // Its chrome is not white — that was the whole bug.
     expect(dark.color.surface).not.toBe("#fff");
     expect(dark.color.surfaceMuted).not.toBe("#fff");
@@ -139,8 +162,9 @@ describe("tokenPresets", () => {
 
   it("models the IBCS scenario variants: AC solid, PL frame, FC hatch", () => {
     // Default and Ocean both follow the IBCS scenario-fill grammar.
-    for (const name of ["Default", "Ocean", "Azure", "Mono / print"]) {
-      const t = tokenPresets[name]!;
+    const grammarIds: TokenPresetId[] = ["default", "ocean", "azure", "mono"];
+    for (const name of grammarIds) {
+      const t = tokenPresets[name];
       expect(t.scenario.AC.variant).toBe("solid");
       expect(t.scenario.PY.variant).toBe("solid");
       expect(t.scenario.PL.variant).toBe("frame");
@@ -149,8 +173,8 @@ describe("tokenPresets", () => {
   });
 
   it("keeps CVD-safe scenario fills greyscale-identical to default (only impact hues change)", () => {
-    expect(tokenPresets["CVD-safe"]!.scenario).toEqual(defaultTokens.scenario);
-    expect(tokenPresets["CVD-safe"]!.color.good).not.toBe(defaultTokens.color.good);
-    expect(tokenPresets["CVD-safe"]!.color.bad).not.toBe(defaultTokens.color.bad);
+    expect(tokenPresets.cvd.scenario).toEqual(defaultTokens.scenario);
+    expect(tokenPresets.cvd.color.good).not.toBe(defaultTokens.color.good);
+    expect(tokenPresets.cvd.color.bad).not.toBe(defaultTokens.color.bad);
   });
 });

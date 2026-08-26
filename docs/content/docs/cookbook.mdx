@@ -146,7 +146,7 @@ const fN = { compact: false } as const; // plain counts / scores
 const fN1 = { compact: false, decimals: 1 } as const;
 const fPct1 = { compact: false, decimals: 1 } as const;
 
-// datum builders — category/label plus optional AC / PY / PL / FC
+// datum builders — a `category` plus optional AC / PY / PL / FC
 const C = (category, AC, PY, PL) => ({
   category,
   AC,
@@ -154,8 +154,8 @@ const C = (category, AC, PY, PL) => ({
   ...(PL !== undefined ? { PL } : {}),
 });
 const L = (category, o) => ({ category, ...o });
-const S = (label, AC, PY, PL, higherIsBetter) => ({
-  label,
+const S = (category, AC, PY, PL, higherIsBetter) => ({
+  category,
   AC,
   ...(PY !== undefined ? { PY } : {}),
   ...(PL !== undefined ? { PL } : {}),
