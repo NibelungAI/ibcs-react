@@ -1,0 +1,3009 @@
+---
+title: Report cookbook
+description: 97 ready-made business reports and dashboards across seven domains — each a live mini-report built from one to four ibcs-react components, with copy-pasteable source.
+---
+
+import {
+  IncomeStatementWaterfall,
+  BalanceSheet,
+  CashFlowBridge,
+  PAndLBridgePYACOperatingIncome,
+  BudgetVsActualQuarterlyRevenue,
+  RevenueVarianceAnalysis,
+  GrossMarginWalk,
+  OperatingExpenseBreakdown,
+  WorkingCapitalMetrics,
+  ARAgingBySegment,
+  RevenueByRegion,
+  EBITDATrend,
+  MultiYearPAndLStatement,
+  CostCentreVariance,
+  CapexVsDepreciation,
+  FreeCashFlow,
+  ReturnOnAssetsDriverTree,
+  InterestCoverageAndLeverage,
+} from "@/components/demos/cookbook/finance";
+import {
+  RevenueByProductLine,
+  RevenueByChannel,
+  SalesRepLeaderboard,
+  SalesPipelineFunnel,
+  WinRateByRegion,
+  QuotaAttainmentByTeam,
+  BookingsVsTarget,
+  DiscountVsDealSize,
+  NewVsExistingBusiness,
+  AverageDealSizeTrend,
+  TopAccountsByRevenue,
+  RegionalBookingsSmallMultiples,
+  DiscountAnalysisByTier,
+  LostDealReasons,
+} from "@/components/demos/cookbook/sales";
+import {
+  MarketingFunnel,
+  MQLSQLConversion,
+  CACByChannel,
+  LTVCACAndPayback,
+  ChannelROI,
+  WebTrafficTrend,
+  CampaignPerformance,
+  EmailEngagement,
+  SpendAndCostPerLead,
+  ChannelMixOfMQLs,
+  BrandVsPerformanceSpend,
+  SEOVsPaidSessions,
+  LandingPageConversion,
+} from "@/components/demos/cookbook/marketing";
+import {
+  MRRTrend,
+  ARRBridge,
+  NetRevenueRetention,
+  MonthlyChurnRate,
+  CohortRetention,
+  DAUAndStickiness,
+  NPSTrend,
+  FeatureAdoption,
+  ActiveUsersByPlan,
+  ExpansionVsContraction,
+  TrialConversionFunnel,
+  SupportVolumeAndCSAT,
+  TimeToValueVsAccountSize,
+  ARPUBySegment,
+} from "@/components/demos/cookbook/saas";
+import {
+  InventoryByWarehouse,
+  OTIFPerformance,
+  CapacityUtilization,
+  DemandVsProduction,
+  SupplierRiskMap,
+  InventoryAndServiceKPIs,
+  OnTimeDeliveryTrend,
+  DefectRatePPM,
+  OrderBacklog,
+  LeadTimeBySupplier,
+  ProductionYieldSmallMultiples,
+  FreightCostBridge,
+  ScrapAndReworkCost,
+} from "@/components/demos/cookbook/ops";
+import {
+  HeadcountByDepartment,
+  AttritionTrend,
+  HiringFunnel,
+  CompensationByLevel,
+  GenderDiversityByOrg,
+  HeadcountPlanVsActual,
+  TenureDistribution,
+  TalentKPIs,
+  SpanOfControl,
+  OfferAcceptanceRate,
+  TrainingHoursPerFTE,
+  WorkforceCostAndFTE,
+  AbsenteeismRate,
+} from "@/components/demos/cookbook/hr";
+import {
+  CompanyScorecard,
+  RevenueVsPlan,
+  ProfitWaterfall,
+  RegionalPerformance,
+  StrategicInitiatives,
+  MarketShare,
+  CustomerSatisfaction,
+  CashPosition,
+  TopAndBottomMovers,
+  BalancedScorecard,
+  ESGMetrics,
+  FlankingComparisonTable,
+} from "@/components/demos/cookbook/exec";
+
+97 ready-made business reports and dashboards across seven domains, each a
+live mini-report built from one to four `ibcs-react` components. Figures are
+fictitious and deliberately varied (long and short labels; big, small and
+negative numbers; sparse and dense series), so the collection doubles as a
+visual stress test.
+
+Every recipe carries a _who / what / when_ line, the live report and its
+source. One scenario-keyed model (AC / PY / PL / FC) feeds tables, charts and
+KPI cards alike — switching report type is mostly choosing the component, not
+reshaping the numbers. For the notation rules behind the marks, see
+[IBCS in practice](/docs/ibcs); for the data shapes, see the
+[data model](/docs/data-model).
+
+## Shared shorthands
+
+To keep each snippet to a line or two, the samples below reuse a handful of
+local shorthands — datum builders, format presets and a width budget — defined
+once here:
+
+```tsx
+import { KpiCard, Sparkline } from "ibcs-react";
+
+const CARD_W = 560; // width budget every chart is sized to
+
+// format presets
+const fM = { compact: true, decimals: 1 } as const; // currency in millions
+const fK = { compact: true } as const; // compact, integer-ish
+const fN = { compact: false } as const; // plain counts / scores
+const fN1 = { compact: false, decimals: 1 } as const;
+const fPct1 = { compact: false, decimals: 1 } as const;
+
+// datum builders — category/label plus optional AC / PY / PL / FC
+const C = (category, AC, PY, PL) => ({
+  category,
+  AC,
+  ...(PY !== undefined ? { PY } : {}),
+  ...(PL !== undefined ? { PL } : {}),
+});
+const L = (category, o) => ({ category, ...o });
+const S = (label, AC, PY, PL, higherIsBetter) => ({
+  label,
+  AC,
+  ...(PY !== undefined ? { PY } : {}),
+  ...(PL !== undefined ? { PL } : {}),
+  ...(higherIsBetter === false ? { higherIsBetter: false } : {}),
+});
+const W = (category, value, flow, higherIsBetter) => ({
+  category,
+  value,
+  ...(flow ? { flow } : {}),
+  ...(higherIsBetter === false ? { higherIsBetter: false } : {}),
+});
+
+// a DataTable value + ΔPY(bar) + ΔPY%(pin) column trio for one measure
+const varCols = (measure, label, higherIsBetter) => [
+  { key: measure, label, kind: "value", scenario: "AC" },
+  {
+    key: measure + "_d",
+    label: "ΔPY",
+    kind: "variance",
+    measure,
+    base: "PY",
+    mode: "abs",
+    mark: "bar",
+    ...(higherIsBetter === false ? { higherIsBetter: false } : {}),
+  },
+  {
+    key: measure + "_p",
+    label: "ΔPY%",
+    kind: "variance",
+    measure,
+    base: "PY",
+    mode: "pct",
+    mark: "pin",
+    ...(higherIsBetter === false ? { higherIsBetter: false } : {}),
+  },
+];
+
+// KpiStrip / SparkTile are thin local layout wrappers around KpiCard / Sparkline.
+```
+
+Nothing in the library requires them: every builder just returns a plain
+object, so you can inline your own data or map it straight out of an API
+response.
+
+## Finance & accounting
+
+Statements, bridges, variance and working-capital views — the backbone of the
+monthly close. 18 recipes.
+
+Components used here: [AreaChart](/docs/components/area-chart),
+[ComboChart](/docs/components/combo-chart),
+[DataTable](/docs/components/data-table),
+[KpiCard](/docs/components/kpi-card),
+[LineChart](/docs/components/line-chart),
+[StackedChart](/docs/components/stacked-chart),
+[StatementTable](/docs/components/statement-table),
+[StructureChart](/docs/components/structure-chart),
+[TreeChart](/docs/components/tree-chart),
+[TrendChart](/docs/components/trend-chart),
+[VarianceColumnChart](/docs/components/variance-column),
+[WaterfallChart](/docs/components/waterfall-chart).
+
+### Income statement (waterfall)
+
+Northwind Materials · € m · FY26 vs PY/PL
+
+<Frame>
+  <IncomeStatementWaterfall />
+</Frame>
+
+```tsx
+import { StatementTable } from "ibcs-react";
+
+<StatementTable lines={sampleStatementFlat.slice(0, 11)} waterfallWidth={150} format={fM} />;
+```
+
+### Balance sheet
+
+Northwind Materials · € m · point-in-time
+
+<Frame>
+  <BalanceSheet />
+</Frame>
+
+```tsx
+import { StatementTable } from "ibcs-react";
+
+<StatementTable lines={sampleBalanceSheet} mode="stock" waterfallWidth={140} format={fM} />;
+```
+
+### Cash flow bridge
+
+Helios Foods · € m · opening → closing cash
+
+<Frame center>
+  <CashFlowBridge />
+</Frame>
+
+```tsx
+import { WaterfallChart } from "ibcs-react";
+
+<WaterfallChart
+  data={[
+    W("Opening cash", 4.2, "result"),
+    W("Operating", 8.6, "add"),
+    W("Investing", 5.1, "subtract", false),
+    W("Financing", 2.3, "subtract", false),
+    W("FX effect", 0.2, "subtract", false),
+    W("Closing cash", 5.2, "result"),
+  ]}
+  scenario="AC"
+  width={CARD_W}
+  height={220}
+  format={fM}
+/>;
+```
+
+### P&L bridge — PY → AC operating income
+
+Helios Foods · € m · effect decomposition
+
+<Frame center>
+  <PAndLBridgePYACOperatingIncome />
+</Frame>
+
+```tsx
+import { WaterfallChart } from "ibcs-react";
+
+<WaterfallChart
+  data={[
+    W("PY op. income", 7.7, "result"),
+    W("Volume", 1.9, "add"),
+    W("Price", 1.4, "add"),
+    W("Mix", 0.4, "subtract", false),
+    W("Input cost", 0.9, "subtract", false),
+    W("Opex", 0.1, "subtract", false),
+    W("AC op. income", 10.4, "result"),
+  ]}
+  scenario="AC"
+  width={CARD_W}
+  height={220}
+  format={fM}
+/>;
+```
+
+### Budget vs actual — quarterly revenue
+
+Aurora Retail · € m · AC vs PL
+
+<Frame center>
+  <BudgetVsActualQuarterlyRevenue />
+</Frame>
+
+```tsx
+import { VarianceColumnChart } from "ibcs-react";
+
+<VarianceColumnChart
+  data={[
+    C("Q1", 6.8, undefined, 6.5),
+    C("Q2", 7.3, undefined, 7.0),
+    C("Q3", 7.6, undefined, 7.4),
+    C("Q4", 8.4, undefined, 7.6),
+  ]}
+  comparison="PL"
+  width={CARD_W}
+  height={210}
+  format={fM}
+/>;
+```
+
+### Revenue variance analysis
+
+Aurora Retail · € m · 13 periods, AC vs PY
+
+<Frame center>
+  <RevenueVarianceAnalysis />
+</Frame>
+
+```tsx
+import { TrendChart } from "ibcs-react";
+
+<TrendChart data={sampleMonthlyTrend} comparison="PY" width={CARD_W} height={236} format={fK} />;
+```
+
+### Gross-margin walk
+
+Cobalt Devices · € m · PY → AC
+
+<Frame center>
+  <GrossMarginWalk />
+</Frame>
+
+```tsx
+import { WaterfallChart } from "ibcs-react";
+
+<WaterfallChart
+  data={[
+    W("PY gross margin", 17.2, "result"),
+    W("Volume", 2.1, "add"),
+    W("Price/mix", 1.7, "add"),
+    W("Material cost", 0.4, "subtract", false),
+    W("Labour", 0.2, "subtract", false),
+    W("AC gross margin", 20.4, "result"),
+  ]}
+  scenario="AC"
+  width={CARD_W}
+  height={220}
+  format={fM}
+/>;
+```
+
+### Operating-expense breakdown
+
+Cobalt Devices · € m · AC vs PY share
+
+<Frame center>
+  <OperatingExpenseBreakdown />
+</Frame>
+
+```tsx
+import { StructureChart } from "ibcs-react";
+
+<StructureChart
+  data={[
+    S("Sales & marketing", 4.8, 4.3, undefined, false),
+    S("Research & development", 3.9, 3.5, undefined, false),
+    S("General & admin", 1.3, 1.4, undefined, false),
+    S("Customer support", 0.9, 0.8, undefined, false),
+    S("Facilities", 0.6, 0.7, undefined, false),
+  ]}
+  comparison="PY"
+  higherIsBetter={false}
+  width={CARD_W}
+  height={220}
+  labelWidth={120}
+  format={fM}
+/>;
+```
+
+### Working-capital metrics
+
+Northwind Materials · days · AC vs PY
+
+<Frame>
+  <WorkingCapitalMetrics />
+</Frame>
+
+```tsx
+import { KpiCard } from "ibcs-react"; // KpiStrip is a small local wrapper around KpiCard
+
+<KpiStrip
+  items={[
+    {
+      label: "DSO",
+      values: { AC: 47, PY: 52 },
+      comparisons: ["PY"],
+      higherIsBetter: false,
+      format: fN,
+    },
+    {
+      label: "DIO",
+      values: { AC: 61, PY: 58 },
+      comparisons: ["PY"],
+      higherIsBetter: false,
+      format: fN,
+    },
+    { label: "DPO", values: { AC: 39, PY: 35 }, comparisons: ["PY"], format: fN },
+    {
+      label: "Cash cycle",
+      values: { AC: 69, PY: 75 },
+      comparisons: ["PY"],
+      higherIsBetter: false,
+      format: fN,
+    },
+  ]}
+/>;
+```
+
+### AR aging by segment
+
+Aurora Retail · € k · open receivables
+
+<Frame center>
+  <ARAgingBySegment />
+</Frame>
+
+```tsx
+import { StackedChart } from "ibcs-react";
+
+<StackedChart
+  data={[
+    { category: "Enterprise", values: { cur: 820, d30: 210, d60: 90, d90: 140 } },
+    { category: "Mid-market", values: { cur: 540, d30: 160, d60: 70, d90: 40 } },
+    { category: "SMB", values: { cur: 310, d30: 120, d60: 55, d90: 95 } },
+  ]}
+  series={[
+    { key: "cur", label: "Current" },
+    { key: "d30", label: "1–30" },
+    { key: "d60", label: "31–60" },
+    { key: "d90", label: "61+" },
+  ]}
+  orientation="bar"
+  width={CARD_W}
+  height={210}
+  format={fK}
+/>;
+```
+
+### Revenue by region
+
+Northwind Materials · € m · AC vs PY
+
+<Frame center>
+  <RevenueByRegion />
+</Frame>
+
+```tsx
+import { StructureChart } from "ibcs-react";
+
+<StructureChart
+  data={sampleRevenueStructure}
+  comparison="PY"
+  width={CARD_W}
+  height={230}
+  labelWidth={130}
+  format={fM}
+/>;
+```
+
+### EBITDA trend
+
+Helios Foods · € m · monthly, AC vs PL line
+
+<Frame center>
+  <EBITDATrend />
+</Frame>
+
+```tsx
+import { LineChart } from "ibcs-react";
+
+<LineChart
+  data={[
+    L("Jan", { AC: 2.1, PL: 2.0 }),
+    L("Feb", { AC: 2.3, PL: 2.1 }),
+    L("Mar", { AC: 2.2, PL: 2.2 }),
+    L("Apr", { AC: 2.6, PL: 2.4 }),
+    L("May", { AC: 2.5, PL: 2.5 }),
+    L("Jun", { AC: 2.9, PL: 2.6 }),
+    L("Jul", { AC: 3.1, PL: 2.8 }),
+    L("Aug", { AC: 3.0, PL: 2.9 }),
+  ]}
+  comparison="PL"
+  variance="abs"
+  width={CARD_W}
+  height={236}
+  format={fK}
+/>;
+```
+
+### Multi-year P&L statement
+
+Vector Software · € m · 2012–2015 (wide → scroll)
+
+<Frame>
+  <MultiYearPAndLStatement />
+</Frame>
+
+```tsx
+import { DataTable } from "ibcs-react";
+
+<div style={{ minWidth: 560 }}>
+  <DataTable columns={tableT03Columns} rows={sampleTableT03.slice(0, 8)} format={fN} />
+</div>;
+```
+
+### Cost-centre variance
+
+Cobalt Devices · € k · AC vs PY
+
+<Frame>
+  <CostCentreVariance />
+</Frame>
+
+```tsx
+import { DataTable } from "ibcs-react";
+
+<DataTable
+  columns={varCols("spend", "Spend", false)}
+  rows={[
+    { id: "eng", label: "Engineering", values: { spend: { AC: 1840, PY: 1620 } } },
+    { id: "ops", label: "Operations", values: { spend: { AC: 960, PY: 1010 } } },
+    { id: "sales", label: "Sales", values: { spend: { AC: 1370, PY: 1180 } } },
+    { id: "ga", label: "G&A", values: { spend: { AC: 540, PY: 560 } } },
+    { id: "it", label: "IT & security", values: { spend: { AC: 430, PY: 300 } } },
+  ]}
+  format={fN}
+  showTotals
+  defaultSort={{ key: "spend", dir: "desc" }}
+/>;
+```
+
+### Capex vs depreciation
+
+Northwind Materials · € m · invest vs D&A %
+
+<Frame center>
+  <CapexVsDepreciation />
+</Frame>
+
+```tsx
+import { ComboChart } from "ibcs-react";
+
+<ComboChart
+  data={[C("FY22", 4.1), C("FY23", 5.3), C("FY24", 4.8), C("FY25", 6.2), C("FY26", 5.5)]}
+  secondary={[
+    { category: "FY22", value: 71 },
+    { category: "FY23", value: 64 },
+    { category: "FY24", value: 78 },
+    { category: "FY25", value: 59 },
+    { category: "FY26", value: 73 },
+  ]}
+  primaryLabel="Capex (€ m)"
+  secondaryLabel="D&A cover %"
+  secondaryFormat={fPct1}
+  width={CARD_W}
+  height={220}
+  format={fK}
+/>;
+```
+
+### Free cash flow
+
+Helios Foods · € m · monthly with PY baseline
+
+<Frame center>
+  <FreeCashFlow />
+</Frame>
+
+```tsx
+import { AreaChart } from "ibcs-react";
+
+<AreaChart
+  data={[
+    L("Jan", { AC: 0.8, PY: 0.6 }),
+    L("Feb", { AC: 1.1, PY: 0.9 }),
+    L("Mar", { AC: -0.4, PY: 0.2 }),
+    L("Apr", { AC: 0.9, PY: 0.7 }),
+    L("May", { AC: 1.4, PY: 1.0 }),
+    L("Jun", { AC: 1.7, PY: 1.3 }),
+  ]}
+  scenario="AC"
+  baseline="PY"
+  width={CARD_W}
+  height={210}
+  format={fK}
+/>;
+```
+
+### Return-on-assets driver tree
+
+Northwind Materials · ratio decomposition
+
+<Frame center>
+  <ReturnOnAssetsDriverTree />
+</Frame>
+
+```tsx
+import { TreeChart } from "ibcs-react";
+
+<TreeChart
+  root={{
+    id: "roa",
+    label: "Return on assets",
+    value: 0.124,
+    py: 0.118,
+    op: "/",
+    format: { decimals: 3 },
+    children: [
+      { id: "ni", label: "Net income", value: 31e6, py: 28.4e6 },
+      { id: "ta", label: "Total assets", value: 250e6, py: 240.7e6 },
+    ],
+  }}
+  width={CARD_W}
+  height={210}
+  format={fK}
+/>;
+```
+
+### Interest-coverage & leverage
+
+Northwind Materials · ratios · AC vs PY
+
+<Frame>
+  <InterestCoverageAndLeverage />
+</Frame>
+
+```tsx
+import { KpiCard } from "ibcs-react"; // KpiStrip is a small local wrapper around KpiCard
+
+<KpiStrip
+  items={[
+    {
+      label: "Interest cover",
+      values: { AC: 6.4, PY: 5.1 },
+      comparisons: ["PY"],
+      format: { ...fN1, currency: "×" },
+    },
+    {
+      label: "Net debt / EBITDA",
+      values: { AC: 1.8, PY: 2.3 },
+      comparisons: ["PY"],
+      higherIsBetter: false,
+      format: { ...fN1, currency: "×" },
+    },
+    {
+      label: "Current ratio",
+      values: { AC: 1.9, PY: 1.6 },
+      comparisons: ["PY"],
+      format: { ...fN1, currency: "×" },
+    },
+  ]}
+/>;
+```
+
+## Sales
+
+Pipeline, attainment, channel and account performance, all on a zero baseline
+with impact colour. 14 recipes.
+
+Components used here: [DataTable](/docs/components/data-table),
+[LineChart](/docs/components/line-chart),
+[MiniVarianceMultiples](/docs/components/small-multiples),
+[ScatterChart](/docs/components/scatter-chart),
+[StackedChart](/docs/components/stacked-chart),
+[StructureChart](/docs/components/structure-chart),
+[TrendChart](/docs/components/trend-chart),
+[VarianceColumnChart](/docs/components/variance-column).
+
+### Revenue by product line
+
+Aurora Retail · € m · AC vs PY
+
+<Frame center>
+  <RevenueByProductLine />
+</Frame>
+
+```tsx
+import { StructureChart } from "ibcs-react";
+
+<StructureChart
+  data={[
+    S("Apparel", 11.2, 9.8),
+    S("Footwear", 7.4, 7.9),
+    S("Accessories", 5.1, 4.2),
+    S("Home & living", 3.8, 2.6),
+    S("Outdoor gear", 2.6, 3.1),
+  ]}
+  comparison="PY"
+  width={CARD_W}
+  height={220}
+  labelWidth={120}
+  format={fM}
+/>;
+```
+
+### Revenue by channel
+
+Aurora Retail · € m · channel mix over quarters
+
+<Frame center>
+  <RevenueByChannel />
+</Frame>
+
+```tsx
+import { StackedChart } from "ibcs-react";
+
+<StackedChart
+  data={[
+    { category: "Q1", values: { online: 4.1, retail: 2.4, wholesale: 1.3 } },
+    { category: "Q2", values: { online: 4.6, retail: 2.2, wholesale: 1.5 } },
+    { category: "Q3", values: { online: 5.0, retail: 2.1, wholesale: 1.6 } },
+    { category: "Q4", values: { online: 5.8, retail: 2.0, wholesale: 1.4 } },
+  ]}
+  series={[
+    { key: "online", label: "Online" },
+    { key: "retail", label: "Retail" },
+    { key: "wholesale", label: "Wholesale" },
+  ]}
+  orientation="column"
+  width={CARD_W}
+  height={210}
+  format={fK}
+  highlight="online"
+/>;
+```
+
+### Sales-rep leaderboard
+
+Vector Software · € k · bookings AC vs PY
+
+<Frame>
+  <SalesRepLeaderboard />
+</Frame>
+
+```tsx
+import { DataTable } from "ibcs-react";
+
+<DataTable
+  columns={varCols("book", "Bookings")}
+  rows={[
+    { id: "r1", label: "Dana Whitfield", values: { book: { AC: 1240, PY: 980 } } },
+    { id: "r2", label: "Marco Pereira", values: { book: { AC: 1110, PY: 1190 } } },
+    { id: "r3", label: "Aisha Karim", values: { book: { AC: 980, PY: 720 } } },
+    { id: "r4", label: "Tom Becker", values: { book: { AC: 870, PY: 910 } } },
+    { id: "r5", label: "Lena Ostrowski", values: { book: { AC: 760, PY: 540 } } },
+  ]}
+  format={fN}
+  showTotals
+  defaultSort={{ key: "book", dir: "desc" }}
+/>;
+```
+
+### Sales pipeline funnel
+
+Vector Software · count · stage drop-off
+
+<Frame center>
+  <SalesPipelineFunnel />
+</Frame>
+
+```tsx
+import { StructureChart } from "ibcs-react";
+
+<StructureChart
+  data={[
+    S("Leads", 4200),
+    S("Qualified", 1850),
+    S("Proposal", 940),
+    S("Negotiation", 410),
+    S("Closed won", 188),
+  ]}
+  comparison="PY"
+  showComparison={false}
+  variance="none"
+  width={CARD_W}
+  height={210}
+  labelWidth={104}
+  format={fN}
+/>;
+```
+
+### Win rate by region
+
+Vector Software · % · AC vs PY
+
+<Frame>
+  <WinRateByRegion />
+</Frame>
+
+```tsx
+import { DataTable } from "ibcs-react";
+
+<DataTable
+  columns={[
+    { key: "win", label: "Win %", kind: "value", scenario: "AC" },
+    {
+      key: "win_d",
+      label: "ΔPY",
+      kind: "variance",
+      measure: "win",
+      base: "PY",
+      mode: "abs",
+      mark: "bar",
+    },
+  ]}
+  rows={[
+    { id: "na", label: "North America", values: { win: { AC: 28, PY: 24 } } },
+    { id: "eu", label: "Europe", values: { win: { AC: 31, PY: 33 } } },
+    { id: "apac", label: "Asia Pacific", values: { win: { AC: 22, PY: 18 } } },
+    { id: "latam", label: "Latin America", values: { win: { AC: 19, PY: 21 } } },
+  ]}
+  format={fN}
+/>;
+```
+
+### Quota attainment by team
+
+Vector Software · % · AC vs target (PL=100)
+
+<Frame center>
+  <QuotaAttainmentByTeam />
+</Frame>
+
+```tsx
+import { VarianceColumnChart } from "ibcs-react";
+
+<VarianceColumnChart
+  data={[
+    C("Enterprise", 112, undefined, 100),
+    C("Mid-market", 94, undefined, 100),
+    C("SMB", 103, undefined, 100),
+    C("Channel", 88, undefined, 100),
+    C("Public", 121, undefined, 100),
+  ]}
+  comparison="PL"
+  width={CARD_W}
+  height={210}
+  format={fN}
+/>;
+```
+
+### Bookings vs target
+
+Vector Software · € m · monthly AC vs PL
+
+<Frame center>
+  <BookingsVsTarget />
+</Frame>
+
+```tsx
+import { TrendChart } from "ibcs-react";
+
+<TrendChart
+  data={[
+    L("Jan", { AC: 1.2, PL: 1.3 }),
+    L("Feb", { AC: 1.5, PL: 1.4 }),
+    L("Mar", { AC: 1.8, PL: 1.6 }),
+    L("Apr", { AC: 1.6, PL: 1.7 }),
+    L("May", { AC: 2.0, PL: 1.8 }),
+    L("Jun", { AC: 2.3, PL: 2.0 }),
+    L("Jul", { FC: 2.2, PL: 2.1 }),
+    L("Aug", { FC: 2.5, PL: 2.3 }),
+  ]}
+  comparison="PL"
+  width={CARD_W}
+  height={236}
+  format={fK}
+/>;
+```
+
+### Discount vs deal size
+
+Vector Software · won deals this quarter
+
+<Frame center>
+  <DiscountVsDealSize />
+</Frame>
+
+```tsx
+import { ScatterChart } from "ibcs-react";
+
+<ScatterChart
+  data={[
+    { x: 12, y: 8, group: "Enterprise" },
+    { x: 45, y: 22, group: "Enterprise" },
+    { x: 30, y: 15, group: "Mid" },
+    { x: 8, y: 4, group: "SMB" },
+    { x: 60, y: 31, group: "Enterprise" },
+    { x: 22, y: 9, group: "Mid" },
+    { x: 5, y: 2, group: "SMB" },
+    { x: 38, y: 18, group: "Mid" },
+    { x: 15, y: 6, group: "SMB" },
+    { x: 52, y: 27, group: "Enterprise" },
+  ]}
+  xLabel="Deal size (€ k)"
+  yLabel="Discount %"
+  width={CARD_W}
+  height={220}
+  format={fN}
+/>;
+```
+
+### New vs existing business
+
+Aurora Retail · € m · quarterly split
+
+<Frame center>
+  <NewVsExistingBusiness />
+</Frame>
+
+```tsx
+import { StackedChart } from "ibcs-react";
+
+<StackedChart
+  data={[
+    { category: "Q1", values: { neww: 3.1, expand: 1.8, renew: 3.9 } },
+    { category: "Q2", values: { neww: 3.4, expand: 2.0, renew: 3.9 } },
+    { category: "Q3", values: { neww: 2.9, expand: 2.4, renew: 4.3 } },
+    { category: "Q4", values: { neww: 3.8, expand: 2.6, renew: 4.0 } },
+  ]}
+  series={[
+    { key: "neww", label: "New" },
+    { key: "expand", label: "Expansion" },
+    { key: "renew", label: "Renewal" },
+  ]}
+  orientation="column"
+  width={CARD_W}
+  height={210}
+  format={fK}
+/>;
+```
+
+### Average deal size trend
+
+Vector Software · € k · 12 months (dense)
+
+<Frame center>
+  <AverageDealSizeTrend />
+</Frame>
+
+```tsx
+import { LineChart } from "ibcs-react";
+
+<LineChart
+  data={["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"].map(
+    (m, i) => L(m, { AC: 18 + Math.round(6 * Math.sin(i / 1.8)) + i, PY: 16 + i }),
+  )}
+  comparison="PY"
+  width={CARD_W}
+  height={210}
+  format={fN}
+/>;
+```
+
+### Top accounts by revenue
+
+Aurora Retail · € k · AC vs PY (sortable)
+
+<Frame>
+  <TopAccountsByRevenue />
+</Frame>
+
+```tsx
+import { DataTable } from "ibcs-react";
+
+<DataTable
+  columns={varCols("rev", "Revenue")}
+  rows={[
+    { id: "a1", label: "Brightline Logistics Group", values: { rev: { AC: 2140, PY: 1880 } } },
+    { id: "a2", label: "Meridian Health Systems", values: { rev: { AC: 1760, PY: 1920 } } },
+    { id: "a3", label: "Quantum Robotics", values: { rev: { AC: 1410, PY: 990 } } },
+    { id: "a4", label: "Solstice Energy", values: { rev: { AC: 1180, PY: 1240 } } },
+    { id: "a5", label: "Tideway Foods", values: { rev: { AC: 940, PY: 760 } } },
+  ]}
+  format={fN}
+  showTotals
+  defaultSort={{ key: "rev", dir: "desc" }}
+/>;
+```
+
+### Regional bookings — small multiples
+
+Vector Software · € m · AC vs PY
+
+<Frame>
+  <RegionalBookingsSmallMultiples />
+</Frame>
+
+```tsx
+import { MiniVarianceMultiples } from "ibcs-react";
+
+<div style={{ width: CARD_W }}>
+  <MiniVarianceMultiples
+    groups={[
+      {
+        label: "North America",
+        data: [C("Q1", 4.2, 4.4), C("Q2", 4.0, 4.3), C("Q3", 4.5, 4.2), C("Q4", 5.1, 4.6)],
+      },
+      {
+        label: "Europe",
+        data: [C("Q1", 3.1, 2.8), C("Q2", 3.4, 3.0), C("Q3", 3.6, 3.2), C("Q4", 3.9, 3.5)],
+      },
+      {
+        label: "Asia Pacific",
+        data: [C("Q1", 1.8, 1.4), C("Q2", 2.0, 1.6), C("Q3", 2.2, 1.7), C("Q4", 2.6, 1.9)],
+      },
+      {
+        label: "Latin America",
+        data: [C("Q1", 0.9, 1.1), C("Q2", 1.0, 1.0), C("Q3", 1.1, 1.2), C("Q4", 0.8, 0.9)],
+      },
+    ]}
+    comparison="PY"
+    columns={2}
+    format={fK}
+  />
+</div>;
+```
+
+### Discount analysis by tier
+
+Aurora Retail · % · AC vs PY (cost-like)
+
+<Frame center>
+  <DiscountAnalysisByTier />
+</Frame>
+
+```tsx
+import { VarianceColumnChart } from "ibcs-react";
+
+<VarianceColumnChart
+  data={[
+    C("List", 0, 0),
+    C("Tier 1", 8, 6),
+    C("Tier 2", 14, 11),
+    C("Tier 3", 22, 25),
+    C("Clearance", 41, 38),
+  ]}
+  comparison="PY"
+  higherIsBetter={false}
+  width={CARD_W}
+  height={210}
+  format={fN}
+/>;
+```
+
+### Lost-deal reasons
+
+Vector Software · count · this quarter
+
+<Frame center>
+  <LostDealReasons />
+</Frame>
+
+```tsx
+import { StructureChart } from "ibcs-react";
+
+<StructureChart
+  data={[
+    S("Price", 64, 58, undefined, false),
+    S("Missing feature", 41, 49, undefined, false),
+    S("Lost to incumbent", 33, 30, undefined, false),
+    S("No decision", 28, 22, undefined, false),
+    S("Timing", 17, 19, undefined, false),
+  ]}
+  comparison="PY"
+  higherIsBetter={false}
+  width={CARD_W}
+  height={210}
+  labelWidth={120}
+  format={fN}
+/>;
+```
+
+## Marketing
+
+Funnels, CAC/LTV economics, channel ROI and campaign performance. 13 recipes.
+
+Components used here: [AreaChart](/docs/components/area-chart),
+[ComboChart](/docs/components/combo-chart),
+[DataTable](/docs/components/data-table),
+[KpiCard](/docs/components/kpi-card),
+[LineChart](/docs/components/line-chart),
+[StackedChart](/docs/components/stacked-chart),
+[StructureChart](/docs/components/structure-chart),
+[VarianceColumnChart](/docs/components/variance-column).
+
+### Marketing funnel
+
+Lumen Media · count · impressions → won
+
+<Frame center>
+  <MarketingFunnel />
+</Frame>
+
+```tsx
+import { StructureChart } from "ibcs-react";
+
+<StructureChart
+  data={[
+    S("Impressions", 1_240_000),
+    S("Clicks", 96_400),
+    S("Leads", 18_200),
+    S("MQLs", 7_400),
+    S("SQLs", 2_900),
+    S("Won", 410),
+  ]}
+  comparison="PY"
+  showComparison={false}
+  variance="none"
+  width={CARD_W}
+  height={220}
+  labelWidth={104}
+  format={fK}
+/>;
+```
+
+### MQL → SQL conversion
+
+Lumen Media · % · monthly AC vs PY
+
+<Frame center>
+  <MQLSQLConversion />
+</Frame>
+
+```tsx
+import { VarianceColumnChart } from "ibcs-react";
+
+<VarianceColumnChart
+  data={[
+    C("Jan", 38, 34),
+    C("Feb", 41, 36),
+    C("Mar", 39, 40),
+    C("Apr", 44, 38),
+    C("May", 47, 41),
+    C("Jun", 43, 42),
+  ]}
+  comparison="PY"
+  width={CARD_W}
+  height={210}
+  format={fN}
+/>;
+```
+
+### CAC by channel
+
+Lumen Media · € · cost per acquisition (lower better)
+
+<Frame center>
+  <CACByChannel />
+</Frame>
+
+```tsx
+import { StructureChart } from "ibcs-react";
+
+<StructureChart
+  data={[
+    S("Paid search", 142, 128, undefined, false),
+    S("Paid social", 98, 110, undefined, false),
+    S("Events", 410, 380, undefined, false),
+    S("Content / SEO", 54, 71, undefined, false),
+    S("Referral", 31, 28, undefined, false),
+  ]}
+  comparison="PY"
+  higherIsBetter={false}
+  width={CARD_W}
+  height={220}
+  labelWidth={120}
+  format={fN}
+/>;
+```
+
+### LTV : CAC & payback
+
+Lumen Media · ratio / months · AC vs PY
+
+<Frame>
+  <LTVCACAndPayback />
+</Frame>
+
+```tsx
+import { KpiCard } from "ibcs-react"; // KpiStrip is a small local wrapper around KpiCard
+
+<KpiStrip
+  items={[
+    {
+      label: "LTV : CAC",
+      values: { AC: 4.2, PY: 3.6 },
+      comparisons: ["PY"],
+      format: { ...fN1, currency: "×" },
+    },
+    {
+      label: "CAC payback",
+      values: { AC: 11, PY: 14 },
+      comparisons: ["PY"],
+      higherIsBetter: false,
+      format: { ...fN, suffix: " mo" },
+    },
+    {
+      label: "Blended CAC",
+      values: { AC: 96, PY: 104 },
+      comparisons: ["PY"],
+      higherIsBetter: false,
+      format: { ...fN, currency: "€" },
+    },
+  ]}
+/>;
+```
+
+### Channel ROI
+
+Lumen Media · € k · spend vs return (sortable)
+
+<Frame>
+  <ChannelROI />
+</Frame>
+
+```tsx
+import { DataTable } from "ibcs-react";
+
+<DataTable
+  columns={[
+    { key: "spend", label: "Spend", kind: "value", scenario: "AC" },
+    { key: "ret", label: "Return", kind: "value", scenario: "AC" },
+    { key: "roi", label: "ROI×", kind: "value", scenario: "AC", format: fN1 },
+  ]}
+  rows={[
+    {
+      id: "ps",
+      label: "Paid search",
+      values: { spend: { AC: 210 }, ret: { AC: 820 }, roi: { AC: 3.9 } },
+    },
+    {
+      id: "so",
+      label: "Paid social",
+      values: { spend: { AC: 180 }, ret: { AC: 540 }, roi: { AC: 3.0 } },
+    },
+    {
+      id: "ev",
+      label: "Events",
+      values: { spend: { AC: 320 }, ret: { AC: 410 }, roi: { AC: 1.3 } },
+    },
+    {
+      id: "co",
+      label: "Content",
+      values: { spend: { AC: 90 }, ret: { AC: 560 }, roi: { AC: 6.2 } },
+    },
+  ]}
+  format={fN}
+  defaultSort={{ key: "roi", dir: "desc" }}
+/>;
+```
+
+### Web traffic trend
+
+Lumen Media · k sessions · AC vs PY
+
+<Frame center>
+  <WebTrafficTrend />
+</Frame>
+
+```tsx
+import { AreaChart } from "ibcs-react";
+
+<AreaChart
+  data={["W1", "W2", "W3", "W4", "W5", "W6", "W7", "W8"].map((w, i) =>
+    L(w, { AC: 120 + i * 9 + (i % 2 ? 8 : 0), PY: 110 + i * 6 }),
+  )}
+  scenario="AC"
+  baseline="PY"
+  width={CARD_W}
+  height={210}
+  format={fN}
+/>;
+```
+
+### Campaign performance
+
+Lumen Media · multi-metric · current month
+
+<Frame>
+  <CampaignPerformance />
+</Frame>
+
+```tsx
+import { DataTable } from "ibcs-react";
+
+<DataTable
+  columns={[
+    { key: "imp", label: "Impr.", kind: "value", scenario: "AC" },
+    { key: "ctr", label: "CTR%", kind: "value", scenario: "AC", format: fN1 },
+    { key: "cpl", label: "CPL €", kind: "value", scenario: "AC" },
+    { key: "spk", label: "Trend", kind: "sparkline", measure: "spk", sparkType: "bar" },
+  ]}
+  rows={[
+    {
+      id: "c1",
+      label: "Spring launch",
+      values: { imp: { AC: 480000 }, ctr: { AC: 2.4 }, cpl: { AC: 38 } },
+      spark: { spk: [8, 12, 9, 15, 18, 14, 21] },
+    },
+    {
+      id: "c2",
+      label: "Retargeting",
+      values: { imp: { AC: 210000 }, ctr: { AC: 4.1 }, cpl: { AC: 22 } },
+      spark: { spk: [5, 6, 8, 7, 9, 11, 13] },
+    },
+    {
+      id: "c3",
+      label: "Brand always-on",
+      values: { imp: { AC: 920000 }, ctr: { AC: 0.9 }, cpl: { AC: 61 } },
+      spark: { spk: [20, 18, 19, 17, 16, 18, 15] },
+    },
+  ]}
+  format={fN}
+/>;
+```
+
+### Email engagement
+
+Lumen Media · % · open vs click, 8 weeks
+
+<Frame center>
+  <EmailEngagement />
+</Frame>
+
+```tsx
+import { LineChart } from "ibcs-react";
+
+<LineChart
+  data={["W1", "W2", "W3", "W4", "W5", "W6", "W7", "W8"].map((w, i) =>
+    L(w, { AC: 24 + (i % 3) * 2, PY: 21 + i * 0.4 }),
+  )}
+  comparison="PY"
+  width={CARD_W}
+  height={210}
+  format={fN}
+/>;
+```
+
+### Spend & cost-per-lead
+
+Lumen Media · € k / € · monthly combo
+
+<Frame center>
+  <SpendAndCostPerLead />
+</Frame>
+
+```tsx
+import { ComboChart } from "ibcs-react";
+
+<ComboChart
+  data={[C("Jan", 64), C("Feb", 71), C("Mar", 58), C("Apr", 82), C("May", 90), C("Jun", 76)]}
+  secondary={[
+    { category: "Jan", value: 41 },
+    { category: "Feb", value: 38 },
+    { category: "Mar", value: 47 },
+    { category: "Apr", value: 33 },
+    { category: "May", value: 31 },
+    { category: "Jun", value: 36 },
+  ]}
+  primaryLabel="Spend (€ k)"
+  secondaryLabel="CPL (€)"
+  secondaryFormat={fN}
+  width={CARD_W}
+  height={220}
+  format={fN}
+/>;
+```
+
+### Channel mix of MQLs
+
+Lumen Media · count · quarter-over-quarter
+
+<Frame center>
+  <ChannelMixOfMQLs />
+</Frame>
+
+```tsx
+import { StackedChart } from "ibcs-react";
+
+<StackedChart
+  data={[
+    { category: "Q1", values: { search: 2100, social: 1400, content: 1800, events: 600 } },
+    { category: "Q2", values: { search: 2300, social: 1600, content: 2000, events: 500 } },
+    { category: "Q3", values: { search: 2200, social: 1900, content: 2400, events: 700 } },
+  ]}
+  series={[
+    { key: "search", label: "Search" },
+    { key: "social", label: "Social" },
+    { key: "content", label: "Content" },
+    { key: "events", label: "Events" },
+  ]}
+  orientation="column"
+  width={CARD_W}
+  height={210}
+  format={fK}
+/>;
+```
+
+### Brand vs performance spend
+
+Lumen Media · € k · split by half
+
+<Frame center>
+  <BrandVsPerformanceSpend />
+</Frame>
+
+```tsx
+import { StackedChart } from "ibcs-react";
+
+<StackedChart
+  data={[
+    { category: "H1", values: { brand: 420, perf: 880 } },
+    { category: "H2", values: { brand: 510, perf: 760 } },
+  ]}
+  series={[
+    { key: "brand", label: "Brand" },
+    { key: "perf", label: "Performance" },
+  ]}
+  orientation="bar"
+  width={CARD_W}
+  height={180}
+  format={fK}
+  showTotals
+/>;
+```
+
+### SEO vs paid sessions
+
+Lumen Media · k · two-series line
+
+<Frame center>
+  <SEOVsPaidSessions />
+</Frame>
+
+```tsx
+import { LineChart } from "ibcs-react";
+
+<LineChart
+  data={["Jan", "Feb", "Mar", "Apr", "May", "Jun"].map((m, i) =>
+    L(m, { AC: 60 + i * 8, PY: 50 + i * 4 }),
+  )}
+  series={["AC", "PY"]}
+  width={CARD_W}
+  height={200}
+  format={fN}
+/>;
+```
+
+### Landing-page conversion
+
+Lumen Media · % · AC vs PL target
+
+<Frame center>
+  <LandingPageConversion />
+</Frame>
+
+```tsx
+import { VarianceColumnChart } from "ibcs-react";
+
+<VarianceColumnChart
+  data={[
+    C("Home", 3.2, undefined, 3.0),
+    C("Pricing", 6.8, undefined, 6.0),
+    C("Demo", 11.4, undefined, 10.0),
+    C("Blog", 1.1, undefined, 1.5),
+  ]}
+  comparison="PL"
+  width={CARD_W}
+  height={210}
+  format={fN1}
+/>;
+```
+
+## Product & SaaS
+
+Recurring-revenue, retention, engagement and adoption metrics for a
+subscription business. 14 recipes.
+
+Components used here: [BubbleChart](/docs/components/bubble-chart),
+[ComboChart](/docs/components/combo-chart),
+[KpiCard](/docs/components/kpi-card),
+[LineChart](/docs/components/line-chart),
+[MatrixTable](/docs/components/matrix-table),
+[StackedChart](/docs/components/stacked-chart),
+[StructureChart](/docs/components/structure-chart),
+[TrendChart](/docs/components/trend-chart),
+[VarianceColumnChart](/docs/components/variance-column),
+[WaterfallChart](/docs/components/waterfall-chart).
+
+### MRR trend
+
+Vector Software · € k · 13 periods, AC + forecast
+
+<Frame center>
+  <MRRTrend />
+</Frame>
+
+```tsx
+import { TrendChart } from "ibcs-react";
+
+<TrendChart
+  data={sampleMonthlyTrend.map((d, i) => ({
+    category: `M${i + 1}`,
+    ...(d.AC ? { AC: d.AC / 1000 } : {}),
+    ...(d.FC ? { FC: d.FC / 1000 } : {}),
+    PL: (d.PL ?? 0) / 1000,
+  }))}
+  comparison="PL"
+  width={CARD_W}
+  height={236}
+  format={fK}
+/>;
+```
+
+### ARR bridge
+
+Vector Software · € k · beginning → ending ARR
+
+<Frame center>
+  <ARRBridge />
+</Frame>
+
+```tsx
+import { WaterfallChart } from "ibcs-react";
+
+<WaterfallChart
+  data={[
+    W("Beginning ARR", 8200, "result"),
+    W("New", 1640, "add"),
+    W("Expansion", 920, "add"),
+    W("Contraction", 310, "subtract", false),
+    W("Churn", 540, "subtract", false),
+    W("Ending ARR", 9910, "result"),
+  ]}
+  scenario="AC"
+  width={CARD_W}
+  height={220}
+  format={fK}
+/>;
+```
+
+### Net revenue retention
+
+Vector Software · % · AC vs PY
+
+<Frame>
+  <NetRevenueRetention />
+</Frame>
+
+```tsx
+import { KpiCard } from "ibcs-react"; // KpiStrip is a small local wrapper around KpiCard
+
+<KpiStrip
+  items={[
+    {
+      label: "NRR",
+      values: { AC: 114, PY: 108 },
+      comparisons: ["PY"],
+      format: { ...fN, suffix: "%" },
+    },
+    {
+      label: "Gross retention",
+      values: { AC: 92, PY: 90 },
+      comparisons: ["PY"],
+      format: { ...fN, suffix: "%" },
+    },
+    {
+      label: "Logo retention",
+      values: { AC: 88, PY: 91 },
+      comparisons: ["PY"],
+      format: { ...fN, suffix: "%" },
+    },
+  ]}
+/>;
+```
+
+### Monthly churn rate
+
+Vector Software · % · lower is better
+
+<Frame center>
+  <MonthlyChurnRate />
+</Frame>
+
+```tsx
+import { LineChart } from "ibcs-react";
+
+<LineChart
+  data={["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug"].map((m, i) =>
+    L(m, { AC: 3.4 - i * 0.1 + (i % 2 ? 0.3 : 0), PY: 3.8 - i * 0.05 }),
+  )}
+  comparison="PY"
+  higherIsBetter={false}
+  variance="abs"
+  width={CARD_W}
+  height={236}
+  format={fN1}
+/>;
+```
+
+### Cohort retention
+
+Vector Software · % retained by month (matrix)
+
+<Frame>
+  <CohortRetention />
+</Frame>
+
+```tsx
+import { MatrixTable } from "ibcs-react";
+
+<MatrixTable
+  rows={cohortRows}
+  columns={cohortCols}
+  values={cohortValues}
+  scenarios={["AC"]}
+  showVariance={false}
+  labelWidth={92}
+  format={fN}
+/>;
+```
+
+### DAU & stickiness
+
+Vector Software · k users / DAU-MAU %
+
+<Frame center>
+  <DAUAndStickiness />
+</Frame>
+
+```tsx
+import { ComboChart } from "ibcs-react";
+
+<ComboChart
+  data={[
+    C("Mon", 42),
+    C("Tue", 48),
+    C("Wed", 51),
+    C("Thu", 49),
+    C("Fri", 46),
+    C("Sat", 28),
+    C("Sun", 24),
+  ]}
+  secondary={[
+    { category: "Mon", value: 31 },
+    { category: "Tue", value: 35 },
+    { category: "Wed", value: 37 },
+    { category: "Thu", value: 36 },
+    { category: "Fri", value: 33 },
+    { category: "Sat", value: 20 },
+    { category: "Sun", value: 18 },
+  ]}
+  primaryLabel="DAU (k)"
+  secondaryLabel="Stickiness %"
+  secondaryFormat={fN}
+  width={CARD_W}
+  height={220}
+  format={fN}
+/>;
+```
+
+### NPS trend
+
+Vector Software · score · quarterly (with PY)
+
+<Frame center>
+  <NPSTrend />
+</Frame>
+
+```tsx
+import { VarianceColumnChart } from "ibcs-react";
+
+<VarianceColumnChart
+  data={[C("Q1", 38, 31), C("Q2", 42, 35), C("Q3", 45, 44), C("Q4", 51, 46)]}
+  comparison="PY"
+  width={CARD_W}
+  height={210}
+  format={fN}
+/>;
+```
+
+### Feature adoption
+
+Vector Software · % of accounts using feature
+
+<Frame center>
+  <FeatureAdoption />
+</Frame>
+
+```tsx
+import { StructureChart } from "ibcs-react";
+
+<StructureChart
+  data={[
+    S("Dashboards", 86, 80),
+    S("Automations", 61, 48),
+    S("API access", 44, 39),
+    S("Mobile app", 38, 41),
+    S("Single sign-on", 29, 18),
+  ]}
+  comparison="PY"
+  width={CARD_W}
+  height={220}
+  labelWidth={120}
+  format={fN}
+/>;
+```
+
+### Active users by plan
+
+Vector Software · k · plan mix over time
+
+<Frame center>
+  <ActiveUsersByPlan />
+</Frame>
+
+```tsx
+import { StackedChart } from "ibcs-react";
+
+<StackedChart
+  data={[
+    { category: "Q1", values: { free: 84, pro: 31, ent: 9 } },
+    { category: "Q2", values: { free: 91, pro: 36, ent: 11 } },
+    { category: "Q3", values: { free: 96, pro: 42, ent: 14 } },
+    { category: "Q4", values: { free: 102, pro: 49, ent: 17 } },
+  ]}
+  series={[
+    { key: "free", label: "Free" },
+    { key: "pro", label: "Pro" },
+    { key: "ent", label: "Enterprise" },
+  ]}
+  orientation="column"
+  width={CARD_W}
+  height={210}
+  format={fN}
+  highlight="ent"
+/>;
+```
+
+### Expansion vs contraction
+
+Vector Software · € k · net by month
+
+<Frame center>
+  <ExpansionVsContraction />
+</Frame>
+
+```tsx
+import { VarianceColumnChart } from "ibcs-react";
+
+<VarianceColumnChart
+  data={[
+    C("Jan", 120, 90),
+    C("Feb", 140, 110),
+    C("Mar", -40, 60),
+    C("Apr", 180, 130),
+    C("May", 210, 160),
+    C("Jun", 95, 140),
+  ]}
+  comparison="PY"
+  width={CARD_W}
+  height={210}
+  format={fK}
+/>;
+```
+
+### Trial conversion funnel
+
+Vector Software · count · signup → paid
+
+<Frame center>
+  <TrialConversionFunnel />
+</Frame>
+
+```tsx
+import { StructureChart } from "ibcs-react";
+
+<StructureChart
+  data={[
+    S("Signups", 3200),
+    S("Activated", 1980),
+    S("Used core feature", 1240),
+    S("Invited team", 680),
+    S("Converted to paid", 410),
+  ]}
+  comparison="PY"
+  showComparison={false}
+  variance="none"
+  width={CARD_W}
+  height={210}
+  labelWidth={120}
+  format={fK}
+/>;
+```
+
+### Support volume & CSAT
+
+Vector Software · tickets / CSAT %
+
+<Frame center>
+  <SupportVolumeAndCSAT />
+</Frame>
+
+```tsx
+import { ComboChart } from "ibcs-react";
+
+<ComboChart
+  data={[C("W1", 320), C("W2", 290), C("W3", 410), C("W4", 380), C("W5", 350), C("W6", 300)]}
+  secondary={[
+    { category: "W1", value: 91 },
+    { category: "W2", value: 93 },
+    { category: "W3", value: 87 },
+    { category: "W4", value: 89 },
+    { category: "W5", value: 92 },
+    { category: "W6", value: 94 },
+  ]}
+  primaryLabel="Tickets"
+  secondaryLabel="CSAT %"
+  secondaryFormat={fN}
+  width={CARD_W}
+  height={220}
+  format={fN}
+/>;
+```
+
+### Time-to-value vs account size
+
+Vector Software · onboarded accounts
+
+<Frame center>
+  <TimeToValueVsAccountSize />
+</Frame>
+
+```tsx
+import { BubbleChart } from "ibcs-react";
+
+<BubbleChart
+  data={[
+    { x: 12, y: 88, size: 420, group: "Enterprise", label: "Brightline" },
+    { x: 5, y: 76, size: 120, group: "Mid", label: "Tideway" },
+    { x: 21, y: 91, size: 640, group: "Enterprise", label: "Meridian" },
+    { x: 3, y: 64, size: 60, group: "SMB" },
+    { x: 9, y: 80, size: 210, group: "Mid" },
+    { x: 2, y: 58, size: 45, group: "SMB" },
+  ]}
+  xLabel="Days to value"
+  yLabel="Health score"
+  sizeLabel="ARR"
+  width={CARD_W}
+  height={220}
+  format={fN}
+/>;
+```
+
+### ARPU by segment
+
+Vector Software · € / month · AC vs PY
+
+<Frame center>
+  <ARPUBySegment />
+</Frame>
+
+```tsx
+import { StructureChart } from "ibcs-react";
+
+<StructureChart
+  data={[
+    S("Enterprise", 1240, 1120),
+    S("Mid-market", 410, 380),
+    S("SMB", 96, 88),
+    S("Self-serve", 29, 31),
+  ]}
+  comparison="PY"
+  width={CARD_W}
+  height={200}
+  labelWidth={120}
+  format={fN}
+/>;
+```
+
+## Operations & supply chain
+
+Inventory, service levels, capacity, supplier risk and quality. 13 recipes.
+
+Components used here: [AreaChart](/docs/components/area-chart),
+[BubbleChart](/docs/components/bubble-chart),
+[DataTable](/docs/components/data-table),
+[KpiCard](/docs/components/kpi-card),
+[LineChart](/docs/components/line-chart),
+[MiniVarianceMultiples](/docs/components/small-multiples),
+[StructureChart](/docs/components/structure-chart),
+[TrendChart](/docs/components/trend-chart),
+[VarianceColumnChart](/docs/components/variance-column),
+[WaterfallChart](/docs/components/waterfall-chart).
+
+### Inventory by warehouse
+
+Northwind Materials · € m · AC vs PY
+
+<Frame center>
+  <InventoryByWarehouse />
+</Frame>
+
+```tsx
+import { StructureChart } from "ibcs-react";
+
+<StructureChart
+  data={[
+    S("Rotterdam DC", 4.2, 3.8, undefined, false),
+    S("Hamburg DC", 3.1, 3.4, undefined, false),
+    S("Lyon DC", 2.6, 2.2, undefined, false),
+    S("Madrid DC", 1.9, 1.7, undefined, false),
+    S("Gdańsk DC", 1.1, 0.9, undefined, false),
+  ]}
+  comparison="PY"
+  higherIsBetter={false}
+  width={CARD_W}
+  height={220}
+  labelWidth={120}
+  format={fM}
+/>;
+```
+
+### OTIF performance
+
+Northwind Materials · % · AC vs target (PL=95)
+
+<Frame center>
+  <OTIFPerformance />
+</Frame>
+
+```tsx
+import { VarianceColumnChart } from "ibcs-react";
+
+<VarianceColumnChart
+  data={[
+    C("Jan", 92, undefined, 95),
+    C("Feb", 94, undefined, 95),
+    C("Mar", 91, undefined, 95),
+    C("Apr", 96, undefined, 95),
+    C("May", 97, undefined, 95),
+    C("Jun", 95, undefined, 95),
+  ]}
+  comparison="PL"
+  width={CARD_W}
+  height={210}
+  format={fN}
+/>;
+```
+
+### Capacity utilization
+
+Cobalt Devices · % · 13 periods, AC vs PL
+
+<Frame center>
+  <CapacityUtilization />
+</Frame>
+
+```tsx
+import { TrendChart } from "ibcs-react";
+
+<TrendChart
+  data={["P1", "P2", "P3", "P4", "P5", "P6", "P7", "P8", "P9", "P10"].map((p, i) =>
+    L(p, { AC: 74 + (i % 3) * 4 + i, PL: 80 }),
+  )}
+  comparison="PL"
+  width={CARD_W}
+  height={236}
+  format={fN}
+/>;
+```
+
+### Demand vs production
+
+Cobalt Devices · k units · plan vs actual
+
+<Frame center>
+  <DemandVsProduction />
+</Frame>
+
+```tsx
+import { LineChart } from "ibcs-react";
+
+<LineChart
+  data={["Jan", "Feb", "Mar", "Apr", "May", "Jun"].map((m, i) =>
+    L(m, { AC: 40 + i * 3 + (i % 2 ? 4 : -2), PL: 42 + i * 3 }),
+  )}
+  comparison="PL"
+  higherIsBetter
+  variance="abs"
+  width={CARD_W}
+  height={236}
+  format={fN}
+/>;
+```
+
+### Supplier risk map
+
+Northwind Materials · spend vs risk score
+
+<Frame center>
+  <SupplierRiskMap />
+</Frame>
+
+```tsx
+import { BubbleChart } from "ibcs-react";
+
+<BubbleChart
+  data={[
+    { x: 18, y: 72, size: 340, group: "Critical", label: "Forge Metals" },
+    { x: 64, y: 31, size: 180, group: "Standard", label: "Cedar Pkg" },
+    { x: 41, y: 58, size: 260, group: "Watch", label: "Volt Cells" },
+    { x: 12, y: 22, size: 90, group: "Standard" },
+    { x: 80, y: 48, size: 410, group: "Watch", label: "Apex Resin" },
+    { x: 30, y: 14, size: 70, group: "Standard" },
+  ]}
+  xLabel="Annual spend (€ m)"
+  yLabel="Risk score"
+  sizeLabel="Volume"
+  width={CARD_W}
+  height={220}
+  format={fN}
+/>;
+```
+
+### Inventory & service KPIs
+
+Northwind Materials · AC vs PY
+
+<Frame>
+  <InventoryAndServiceKPIs />
+</Frame>
+
+```tsx
+import { KpiCard } from "ibcs-react"; // KpiStrip is a small local wrapper around KpiCard
+
+<KpiStrip
+  items={[
+    {
+      label: "Inventory turns",
+      values: { AC: 6.8, PY: 5.9 },
+      comparisons: ["PY"],
+      format: { ...fN1, currency: "×" },
+    },
+    {
+      label: "Stockout rate",
+      values: { AC: 2.1, PY: 3.4 },
+      comparisons: ["PY"],
+      higherIsBetter: false,
+      format: { ...fN1, suffix: "%" },
+    },
+    {
+      label: "Fill rate",
+      values: { AC: 97, PY: 95 },
+      comparisons: ["PY"],
+      format: { ...fN, suffix: "%" },
+    },
+  ]}
+/>;
+```
+
+### On-time delivery trend
+
+Northwind Materials · % · weekly, AC vs PY
+
+<Frame center>
+  <OnTimeDeliveryTrend />
+</Frame>
+
+```tsx
+import { AreaChart } from "ibcs-react";
+
+<AreaChart
+  data={["W1", "W2", "W3", "W4", "W5", "W6", "W7", "W8"].map((w, i) =>
+    L(w, { AC: 88 + (i % 3) * 2, PY: 85 + i * 0.5 }),
+  )}
+  scenario="AC"
+  baseline="PY"
+  width={CARD_W}
+  height={210}
+  format={fN}
+/>;
+```
+
+### Defect rate (PPM)
+
+Cobalt Devices · ppm · lower is better
+
+<Frame center>
+  <DefectRatePPM />
+</Frame>
+
+```tsx
+import { LineChart } from "ibcs-react";
+
+<LineChart
+  data={["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug"].map((m, i) =>
+    L(m, { AC: 820 - i * 40 + (i % 2 ? 60 : 0), PY: 900 - i * 20 }),
+  )}
+  comparison="PY"
+  higherIsBetter={false}
+  width={CARD_W}
+  height={210}
+  format={fN}
+/>;
+```
+
+### Order backlog
+
+Cobalt Devices · € m · monthly with PY
+
+<Frame center>
+  <OrderBacklog />
+</Frame>
+
+```tsx
+import { AreaChart } from "ibcs-react";
+
+<AreaChart
+  data={["Jan", "Feb", "Mar", "Apr", "May", "Jun"].map((m, i) =>
+    L(m, { AC: 12 + i * 1.4 - (i > 3 ? 2 : 0), PY: 11 + i }),
+  )}
+  scenario="AC"
+  baseline="PY"
+  width={CARD_W}
+  height={210}
+  format={fK}
+/>;
+```
+
+### Lead time by supplier
+
+Northwind Materials · days · AC vs PY
+
+<Frame>
+  <LeadTimeBySupplier />
+</Frame>
+
+```tsx
+import { DataTable } from "ibcs-react";
+
+<DataTable
+  columns={varCols("lt", "Lead days", false)}
+  rows={[
+    { id: "s1", label: "Forge Metals", values: { lt: { AC: 28, PY: 24 } } },
+    { id: "s2", label: "Cedar Packaging", values: { lt: { AC: 14, PY: 16 } } },
+    { id: "s3", label: "Volt Cells", values: { lt: { AC: 42, PY: 38 } } },
+    { id: "s4", label: "Apex Resin", values: { lt: { AC: 19, PY: 21 } } },
+  ]}
+  format={fN}
+  defaultSort={{ key: "lt", dir: "desc" }}
+/>;
+```
+
+### Production yield — small multiples
+
+Cobalt Devices · % · AC vs PY by line
+
+<Frame>
+  <ProductionYieldSmallMultiples />
+</Frame>
+
+```tsx
+import { MiniVarianceMultiples } from "ibcs-react";
+
+<div style={{ width: CARD_W }}>
+  <MiniVarianceMultiples
+    groups={[
+      { label: "Line A", data: [C("Q1", 94, 92), C("Q2", 95, 93), C("Q3", 96, 94)] },
+      { label: "Line B", data: [C("Q1", 88, 90), C("Q2", 89, 91), C("Q3", 91, 90)] },
+      { label: "Line C", data: [C("Q1", 97, 95), C("Q2", 96, 96), C("Q3", 98, 97)] },
+      { label: "Line D", data: [C("Q1", 82, 86), C("Q2", 85, 87), C("Q3", 88, 88)] },
+    ]}
+    comparison="PY"
+    columns={2}
+    format={fN}
+  />
+</div>;
+```
+
+### Freight cost bridge
+
+Northwind Materials · € k · PY → AC
+
+<Frame center>
+  <FreightCostBridge />
+</Frame>
+
+```tsx
+import { WaterfallChart } from "ibcs-react";
+
+<WaterfallChart
+  data={[
+    W("PY freight", 1240, "result"),
+    W("Volume", 180, "add", false),
+    W("Fuel surcharge", 140, "add", false),
+    W("Mode shift", 90, "subtract"),
+    W("Rate renegotiation", 110, "subtract"),
+    W("AC freight", 1360, "result"),
+  ]}
+  scenario="AC"
+  width={CARD_W}
+  height={220}
+  format={fK}
+/>;
+```
+
+### Scrap & rework cost
+
+Cobalt Devices · € k · PY → AC
+
+<Frame center>
+  <ScrapAndReworkCost />
+</Frame>
+
+```tsx
+import { WaterfallChart } from "ibcs-react";
+
+<WaterfallChart
+  data={[
+    W("PY scrap", 410, "result"),
+    W("New SKUs", 90, "add", false),
+    W("Yield gain", 120, "subtract"),
+    W("Automation", 60, "subtract"),
+    W("AC scrap", 320, "result"),
+  ]}
+  scenario="AC"
+  width={CARD_W}
+  height={210}
+  format={fK}
+/>;
+```
+
+## People & HR
+
+Headcount, attrition, hiring, compensation and diversity. 13 recipes.
+
+Components used here: [BubbleChart](/docs/components/bubble-chart),
+[ComboChart](/docs/components/combo-chart),
+[DataTable](/docs/components/data-table),
+[KpiCard](/docs/components/kpi-card),
+[LineChart](/docs/components/line-chart),
+[StackedChart](/docs/components/stacked-chart),
+[StructureChart](/docs/components/structure-chart),
+[VarianceColumnChart](/docs/components/variance-column).
+
+### Headcount by department
+
+Aurora Retail · FTE · AC vs PY
+
+<Frame center>
+  <HeadcountByDepartment />
+</Frame>
+
+```tsx
+import { StructureChart } from "ibcs-react";
+
+<StructureChart
+  data={[
+    S("Operations", 412, 398),
+    S("Engineering", 168, 140),
+    S("Sales", 134, 122),
+    S("Customer success", 96, 81),
+    S("Marketing", 54, 60),
+    S("G&A", 48, 45),
+  ]}
+  comparison="PY"
+  width={CARD_W}
+  height={230}
+  labelWidth={130}
+  format={fN}
+/>;
+```
+
+### Attrition trend
+
+Aurora Retail · % annualized · lower better
+
+<Frame center>
+  <AttritionTrend />
+</Frame>
+
+```tsx
+import { LineChart } from "ibcs-react";
+
+<LineChart
+  data={["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug"].map((m, i) =>
+    L(m, { AC: 14 - i * 0.3 + (i % 2 ? 1 : 0), PY: 16 - i * 0.2 }),
+  )}
+  comparison="PY"
+  higherIsBetter={false}
+  variance="abs"
+  width={CARD_W}
+  height={236}
+  format={fN1}
+/>;
+```
+
+### Hiring funnel
+
+Aurora Retail · count · application → hire
+
+<Frame center>
+  <HiringFunnel />
+</Frame>
+
+```tsx
+import { StructureChart } from "ibcs-react";
+
+<StructureChart
+  data={[
+    S("Applications", 2840),
+    S("Phone screen", 640),
+    S("Onsite", 220),
+    S("Offer", 96),
+    S("Hired", 71),
+  ]}
+  comparison="PY"
+  showComparison={false}
+  variance="none"
+  width={CARD_W}
+  height={210}
+  labelWidth={104}
+  format={fK}
+/>;
+```
+
+### Compensation by level
+
+Aurora Retail · € k · base salary spread
+
+<Frame center>
+  <CompensationByLevel />
+</Frame>
+
+```tsx
+import { BubbleChart } from "ibcs-react";
+
+<BubbleChart
+  data={[
+    { x: 1, y: 42, size: 180, group: "IC", label: "L1" },
+    { x: 2, y: 58, size: 240, group: "IC", label: "L2" },
+    { x: 3, y: 78, size: 160, group: "IC", label: "L3" },
+    { x: 4, y: 102, size: 90, group: "Manager", label: "M1" },
+    { x: 5, y: 138, size: 50, group: "Manager", label: "M2" },
+    { x: 6, y: 190, size: 22, group: "Director", label: "D1" },
+  ]}
+  xLabel="Level"
+  yLabel="Median base (€ k)"
+  sizeLabel="Headcount"
+  width={CARD_W}
+  height={220}
+  format={fN}
+/>;
+```
+
+### Gender diversity by org
+
+Aurora Retail · % · current
+
+<Frame center>
+  <GenderDiversityByOrg />
+</Frame>
+
+```tsx
+import { StackedChart } from "ibcs-react";
+
+<StackedChart
+  data={[
+    { category: "Engineering", values: { w: 32, m: 64, o: 4 } },
+    { category: "Sales", values: { w: 48, m: 49, o: 3 } },
+    { category: "Operations", values: { w: 41, m: 56, o: 3 } },
+    { category: "Leadership", values: { w: 38, m: 60, o: 2 } },
+  ]}
+  series={[
+    { key: "w", label: "Women" },
+    { key: "m", label: "Men" },
+    { key: "o", label: "Other / N/A" },
+  ]}
+  orientation="bar"
+  width={CARD_W}
+  height={210}
+  format={fN}
+/>;
+```
+
+### Headcount plan vs actual
+
+Aurora Retail · FTE · AC vs PL by quarter
+
+<Frame center>
+  <HeadcountPlanVsActual />
+</Frame>
+
+```tsx
+import { VarianceColumnChart } from "ibcs-react";
+
+<VarianceColumnChart
+  data={[
+    C("Q1", 920, undefined, 940),
+    C("Q2", 968, undefined, 980),
+    C("Q3", 1010, undefined, 1005),
+    C("Q4", 1048, undefined, 1060),
+  ]}
+  comparison="PL"
+  width={CARD_W}
+  height={210}
+  format={fK}
+/>;
+```
+
+### Tenure distribution
+
+Aurora Retail · FTE · by band
+
+<Frame center>
+  <TenureDistribution />
+</Frame>
+
+```tsx
+import { StackedChart } from "ibcs-react";
+
+<StackedChart
+  data={[{ category: "All staff", values: { y0: 240, y1: 380, y3: 290, y5: 180 } }]}
+  series={[
+    { key: "y0", label: "<1 yr" },
+    { key: "y1", label: "1–3 yr" },
+    { key: "y3", label: "3–5 yr" },
+    { key: "y5", label: "5+ yr" },
+  ]}
+  orientation="bar"
+  width={CARD_W}
+  height={150}
+  format={fK}
+  showTotals
+/>;
+```
+
+### Talent KPIs
+
+Aurora Retail · AC vs PY
+
+<Frame>
+  <TalentKPIs />
+</Frame>
+
+```tsx
+import { KpiCard } from "ibcs-react"; // KpiStrip is a small local wrapper around KpiCard
+
+<KpiStrip
+  items={[
+    {
+      label: "Time to hire",
+      values: { AC: 32, PY: 41 },
+      comparisons: ["PY"],
+      higherIsBetter: false,
+      format: { ...fN, suffix: " d" },
+    },
+    {
+      label: "Offer accept",
+      values: { AC: 84, PY: 79 },
+      comparisons: ["PY"],
+      format: { ...fN, suffix: "%" },
+    },
+    { label: "eNPS", values: { AC: 28, PY: 19 }, comparisons: ["PY"], format: fN },
+  ]}
+/>;
+```
+
+### Span of control
+
+Aurora Retail · reports per manager · by org
+
+<Frame>
+  <SpanOfControl />
+</Frame>
+
+```tsx
+import { DataTable } from "ibcs-react";
+
+<DataTable
+  columns={varCols("span", "Avg span")}
+  rows={[
+    { id: "o1", label: "Operations", values: { span: { AC: 9.2, PY: 8.4 } } },
+    { id: "o2", label: "Engineering", values: { span: { AC: 6.1, PY: 5.8 } } },
+    { id: "o3", label: "Sales", values: { span: { AC: 7.4, PY: 7.9 } } },
+    { id: "o4", label: "Support", values: { span: { AC: 11.0, PY: 10.2 } } },
+  ]}
+  format={fN1}
+  defaultSort={{ key: "span", dir: "desc" }}
+/>;
+```
+
+### Offer acceptance rate
+
+Aurora Retail · % · monthly AC vs PY
+
+<Frame center>
+  <OfferAcceptanceRate />
+</Frame>
+
+```tsx
+import { LineChart } from "ibcs-react";
+
+<LineChart
+  data={["Jan", "Feb", "Mar", "Apr", "May", "Jun"].map((m, i) =>
+    L(m, { AC: 78 + i + (i % 2 ? 3 : 0), PY: 75 + i }),
+  )}
+  comparison="PY"
+  width={CARD_W}
+  height={200}
+  format={fN}
+/>;
+```
+
+### Training hours per FTE
+
+Aurora Retail · hours · AC vs PL target
+
+<Frame center>
+  <TrainingHoursPerFTE />
+</Frame>
+
+```tsx
+import { VarianceColumnChart } from "ibcs-react";
+
+<VarianceColumnChart
+  data={[
+    C("Eng", 28, undefined, 24),
+    C("Sales", 16, undefined, 20),
+    C("Ops", 12, undefined, 14),
+    C("Support", 22, undefined, 18),
+  ]}
+  comparison="PL"
+  width={CARD_W}
+  height={210}
+  format={fN}
+/>;
+```
+
+### Workforce cost & FTE
+
+Aurora Retail · € m / FTE · combo
+
+<Frame center>
+  <WorkforceCostAndFTE />
+</Frame>
+
+```tsx
+import { ComboChart } from "ibcs-react";
+
+<ComboChart
+  data={[C("FY23", 58), C("FY24", 64), C("FY25", 71), C("FY26", 78)]}
+  secondary={[
+    { category: "FY23", value: 840 },
+    { category: "FY24", value: 910 },
+    { category: "FY25", value: 990 },
+    { category: "FY26", value: 1048 },
+  ]}
+  primaryLabel="Cost (€ m)"
+  secondaryLabel="FTE"
+  secondaryFormat={fK}
+  width={CARD_W}
+  height={220}
+  format={fK}
+/>;
+```
+
+### Absenteeism rate
+
+Aurora Retail · % · monthly, lower better
+
+<Frame center>
+  <AbsenteeismRate />
+</Frame>
+
+```tsx
+import { LineChart } from "ibcs-react";
+
+<LineChart
+  data={["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug"].map((m, i) =>
+    L(m, { AC: 3.1 + (i % 3 === 0 ? 0.8 : -0.2), PY: 3.4 }),
+  )}
+  comparison="PY"
+  higherIsBetter={false}
+  width={CARD_W}
+  height={200}
+  format={fN1}
+/>;
+```
+
+## Executive & KPI scorecards
+
+Roll-ups for the board pack: scorecards, profit walks, regional multiples and
+a balanced scorecard. 12 recipes.
+
+Components used here: [AreaChart](/docs/components/area-chart),
+[ComparisonTable](/docs/components/comparison-table),
+[DataTable](/docs/components/data-table),
+[KpiCard](/docs/components/kpi-card),
+[MatrixTable](/docs/components/matrix-table),
+[MiniVarianceMultiples](/docs/components/small-multiples),
+[Sparkline](/docs/components/sparkline),
+[StructureChart](/docs/components/structure-chart),
+[TrendChart](/docs/components/trend-chart),
+[WaterfallChart](/docs/components/waterfall-chart).
+
+### Company scorecard
+
+Northwind Materials · group KPIs · AC vs PY
+
+<Frame>
+  <CompanyScorecard />
+</Frame>
+
+```tsx
+import { KpiCard } from "ibcs-react"; // KpiStrip is a small local wrapper around KpiCard
+
+<KpiStrip
+  items={[
+    { label: "Revenue", values: { AC: 30.1e6, PY: 25.6e6 }, comparisons: ["PY"], format: fM },
+    {
+      label: "Op. margin",
+      values: { AC: 34.6, PY: 30.1 },
+      comparisons: ["PY"],
+      format: { ...fN1, suffix: "%" },
+    },
+    { label: "Net income", values: { AC: 8.9e6, PY: 8.1e6 }, comparisons: ["PY"], format: fM },
+    { label: "FCF", values: { AC: 6.2e6, PY: 4.8e6 }, comparisons: ["PY"], format: fM },
+  ]}
+/>;
+```
+
+### Revenue vs plan
+
+Group · € m · 13 periods, AC + FC vs PL
+
+<Frame center>
+  <RevenueVsPlan />
+</Frame>
+
+```tsx
+import { TrendChart } from "ibcs-react";
+
+<TrendChart
+  data={sampleMonthlyTrend}
+  comparison="PL"
+  variance="pct"
+  width={CARD_W}
+  height={236}
+  format={fK}
+/>;
+```
+
+### Profit waterfall
+
+Group · € m · revenue → net income
+
+<Frame center>
+  <ProfitWaterfall />
+</Frame>
+
+```tsx
+import { WaterfallChart } from "ibcs-react";
+
+<WaterfallChart
+  data={[
+    W("Revenue", 30.1, "add"),
+    W("COGS", 9.7, "subtract", false),
+    W("Opex", 10.0, "subtract", false),
+    W("Tax", 1.8, "subtract", false),
+    W("Net income", 8.6, "result"),
+  ]}
+  scenario="AC"
+  width={CARD_W}
+  height={220}
+  format={fM}
+/>;
+```
+
+### Regional performance
+
+Group · € m · AC vs PY (small multiples)
+
+<Frame>
+  <RegionalPerformance />
+</Frame>
+
+```tsx
+import { MiniVarianceMultiples } from "ibcs-react";
+
+<div style={{ width: CARD_W }}>
+  <MiniVarianceMultiples
+    groups={[
+      {
+        label: "Americas",
+        data: [C("Q1", 8.4, 7.9), C("Q2", 8.8, 8.1), C("Q3", 9.1, 8.6), C("Q4", 9.9, 9.0)],
+      },
+      {
+        label: "EMEA",
+        data: [C("Q1", 6.2, 5.8), C("Q2", 6.5, 6.0), C("Q3", 6.8, 6.4), C("Q4", 7.4, 6.9)],
+      },
+      {
+        label: "APAC",
+        data: [C("Q1", 3.1, 2.4), C("Q2", 3.4, 2.7), C("Q3", 3.7, 3.0), C("Q4", 4.2, 3.3)],
+      },
+      {
+        label: "Other",
+        data: [C("Q1", 1.1, 1.3), C("Q2", 1.0, 1.2), C("Q3", 1.2, 1.1), C("Q4", 0.9, 1.0)],
+      },
+    ]}
+    comparison="PY"
+    columns={2}
+    format={fK}
+  />
+</div>;
+```
+
+### Strategic initiatives
+
+Group · status & impact · current quarter
+
+<Frame>
+  <StrategicInitiatives />
+</Frame>
+
+```tsx
+import { DataTable } from "ibcs-react";
+
+<DataTable
+  columns={[
+    { key: "prog", label: "Progress%", kind: "value", scenario: "AC" },
+    { key: "impact", label: "€ m impact", kind: "value", scenario: "AC", format: fN1 },
+    { key: "spk", label: "Trend", kind: "sparkline", measure: "spk" },
+  ]}
+  rows={[
+    {
+      id: "i1",
+      label: "Margin recovery programme",
+      values: { prog: { AC: 72 }, impact: { AC: 4.2 } },
+      spark: { spk: [10, 20, 35, 50, 62, 72] },
+    },
+    {
+      id: "i2",
+      label: "ERP consolidation",
+      values: { prog: { AC: 41 }, impact: { AC: 1.8 } },
+      spark: { spk: [5, 12, 20, 28, 35, 41] },
+    },
+    {
+      id: "i3",
+      label: "DTC channel launch",
+      values: { prog: { AC: 88 }, impact: { AC: 6.1 } },
+      spark: { spk: [30, 48, 60, 71, 80, 88] },
+    },
+  ]}
+  format={fN}
+/>;
+```
+
+### Market share
+
+Group · % · AC vs PY by category
+
+<Frame center>
+  <MarketShare />
+</Frame>
+
+```tsx
+import { StructureChart } from "ibcs-react";
+
+<StructureChart
+  data={[
+    S("Core materials", 24, 22),
+    S("Specialty", 18, 14),
+    S("Recycled", 11, 7),
+    S("Coatings", 9, 10),
+  ]}
+  comparison="PY"
+  width={CARD_W}
+  height={210}
+  labelWidth={120}
+  format={fN}
+/>;
+```
+
+### Customer satisfaction
+
+Group · CSAT · sparkline tiles
+
+<Frame>
+  <CustomerSatisfaction />
+</Frame>
+
+```tsx
+import { Sparkline } from "ibcs-react"; // SparkTile is a small local wrapper around Sparkline
+
+<div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
+  <SparkTile label="CSAT" value="92%" data={[88, 89, 87, 90, 91, 92]} color="#3b6e8f" />
+  <SparkTile label="NPS" value="51" data={[38, 42, 45, 44, 48, 51]} color="#5e8c22" />
+  <SparkTile
+    label="Complaints"
+    value="1.2k"
+    data={[1.8, 1.7, 1.6, 1.5, 1.3, 1.2]}
+    color="#c0392b"
+  />
+</div>;
+```
+
+### Cash position
+
+Group · € m · 12-month area, AC vs PY
+
+<Frame center>
+  <CashPosition />
+</Frame>
+
+```tsx
+import { AreaChart } from "ibcs-react";
+
+<AreaChart
+  data={["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"].map(
+    (m, i) => L(m, { AC: 4 + Math.round(Math.sin(i / 2) * 2) + i * 0.3, PY: 3.5 + i * 0.2 }),
+  )}
+  scenario="AC"
+  baseline="PY"
+  width={CARD_W}
+  height={210}
+  format={fK}
+/>;
+```
+
+### Top & bottom movers
+
+Group · € k · biggest ΔPY swings
+
+<Frame>
+  <TopAndBottomMovers />
+</Frame>
+
+```tsx
+import { DataTable } from "ibcs-react";
+
+<DataTable
+  columns={varCols("delta", "Revenue")}
+  rows={[
+    { id: "m1", label: "Recycled line", values: { delta: { AC: 4100, PY: 2600 } } },
+    { id: "m2", label: "Specialty coatings", values: { delta: { AC: 3200, PY: 2400 } } },
+    { id: "m3", label: "Legacy adhesives", values: { delta: { AC: 1800, PY: 2900 } } },
+    { id: "m4", label: "Bulk resin", values: { delta: { AC: 5600, PY: 6100 } } },
+  ]}
+  format={fN}
+  defaultSort={{ key: "delta_d", dir: "desc" }}
+/>;
+```
+
+### Balanced scorecard
+
+Group · perspectives × quarters (AC vs PL)
+
+<Frame>
+  <BalancedScorecard />
+</Frame>
+
+```tsx
+import { MatrixTable } from "ibcs-react";
+
+<MatrixTable
+  rows={[
+    {
+      id: "fin",
+      label: "Financial",
+      emphasis: true,
+      children: [
+        { id: "rev", label: "Revenue" },
+        { id: "mgn", label: "Margin %", higherIsBetter: true },
+      ],
+    },
+    {
+      id: "cust",
+      label: "Customer",
+      emphasis: true,
+      children: [
+        { id: "nps", label: "NPS" },
+        { id: "ret", label: "Retention %" },
+      ],
+    },
+    { id: "proc", label: "Process", emphasis: true, children: [{ id: "otif", label: "OTIF %" }] },
+  ]}
+  columns={[
+    { id: "q3", label: "Q3" },
+    { id: "q4", label: "Q4" },
+  ]}
+  values={{
+    rev: { q3: { PL: 7.4, AC: 7.6 }, q4: { PL: 7.6, AC: 8.4 } },
+    mgn: { q3: { PL: 33, AC: 34 }, q4: { PL: 34, AC: 36 } },
+    nps: { q3: { PL: 44, AC: 45 }, q4: { PL: 46, AC: 51 } },
+    ret: { q3: { PL: 90, AC: 92 }, q4: { PL: 91, AC: 92 } },
+    otif: { q3: { PL: 95, AC: 91 }, q4: { PL: 95, AC: 96 } },
+  }}
+  scenarios={["PL", "AC"]}
+  showVariance
+  varianceScenarios={{ actual: "AC", base: "PL" }}
+  labelWidth={120}
+  format={fN}
+/>;
+```
+
+### ESG metrics
+
+Group · sustainability KPIs · AC vs PY
+
+<Frame>
+  <ESGMetrics />
+</Frame>
+
+```tsx
+import { KpiCard } from "ibcs-react"; // KpiStrip is a small local wrapper around KpiCard
+
+<KpiStrip
+  items={[
+    {
+      label: "CO₂ (kt)",
+      values: { AC: 142, PY: 168 },
+      comparisons: ["PY"],
+      higherIsBetter: false,
+      format: fN,
+    },
+    {
+      label: "Renewable %",
+      values: { AC: 61, PY: 48 },
+      comparisons: ["PY"],
+      format: { ...fN, suffix: "%" },
+    },
+    {
+      label: "Recordables",
+      values: { AC: 7, PY: 12 },
+      comparisons: ["PY"],
+      higherIsBetter: false,
+      format: fN,
+    },
+  ]}
+/>;
+```
+
+### Flanking comparison table
+
+Electronic Inc. · kEUR · month vs YTD
+
+<Frame>
+  <FlankingComparisonTable />
+</Frame>
+
+```tsx
+import { ComparisonTable } from "ibcs-react";
+
+<div style={{ minWidth: 560 }}>
+  <ComparisonTable
+    rows={sampleTableRegions}
+    leftColumns={tableT02Left}
+    rightColumns={tableT02Right}
+    leftGroupLabel="Current month"
+    rightGroupLabel="Year to date"
+    showTotals
+    totalsLabel="World"
+    format={fN}
+  />
+</div>;
+```
+
+## About these examples
+
+All companies — Northwind Materials, Aurora Retail, Vector Software, Lumen
+Media, Cobalt Devices, Helios Foods and the like — and every number in them are
+invented for illustration. Charts are sized to a single `CARD_W` budget so the
+recipes stay comparable; wide tables scroll inside their frame rather than
+bleeding across the page.
+
+Want to try variations on your own numbers? The [playground](/playground) edits
+a live statement, and the [report](/report) route shows a full page assembled
+from these building blocks.

@@ -1,0 +1,60 @@
+---
+title: LineChart
+description: Dense multi-series time lines with markers (IBCS C07) — scenarios AC/PY/PL/FC, optional variance panel.
+---
+
+import { LineChart } from "ibcs-react";
+
+Scenario lines in IBCS notation with point markers, plus an optional variance
+panel against a chosen base.
+
+## When to use
+
+Trend over many periods (10+, up to hundreds of points). Lines carry markers so
+they read as connectors, not continuous values. Use columns instead for few
+periods.
+
+## Example
+
+<Frame center>
+  <LineChart
+    data={[
+      { category: "P1", AC: 2.3e6, PY: 2.15e6, PL: 2.25e6 },
+      { category: "P2", AC: 2.42e6, PY: 2.2e6, PL: 2.35e6 },
+      { category: "P3", AC: 2.55e6, PY: 2.38e6, PL: 2.48e6 },
+      { category: "P4", AC: 2.48e6, PY: 2.42e6, PL: 2.5e6 },
+      { category: "P5", AC: 2.62e6, PY: 2.45e6, PL: 2.55e6 },
+      { category: "P6", AC: 2.71e6, PY: 2.5e6, PL: 2.62e6 },
+      { category: "P7", AC: 2.66e6, PY: 2.58e6, PL: 2.68e6 },
+      { category: "P8", AC: 2.8e6, PY: 2.63e6, PL: 2.74e6 },
+      { category: "P9", AC: 2.93e6, PY: 2.7e6, PL: 2.85e6 },
+      { category: "P10", FC: 2.97e6, PY: 2.78e6, PL: 2.9e6 },
+      { category: "P11", FC: 3.05e6, PY: 2.86e6, PL: 3.0e6 },
+      { category: "P12", FC: 3.12e6, PY: 2.95e6, PL: 3.08e6 },
+      { category: "P13", FC: 3.2e6, PY: 3.02e6, PL: 3.15e6 },
+    ]}
+    comparison="PY"
+    variance="abs"
+    width={620}
+    height={300}
+    format={{ compact: true }}
+  />
+</Frame>
+
+```tsx
+import { LineChart } from "ibcs-react";
+
+<LineChart
+  data={months} // { category, AC?, PY?, PL?, FC? }
+  comparison="PY"
+  variance="abs"
+/>; // markers auto-hide above ~40 points for performance
+```
+
+By default every scenario present in the data is drawn; narrow that with
+`series={["AC", "PY"]}`. `showMarkers` forces the markers back on (or off)
+when the automatic density rule picks the wrong side.
+
+## Props
+
+<AutoTypeTable path="../src/react/LineChart.tsx" name="LineChartProps" />

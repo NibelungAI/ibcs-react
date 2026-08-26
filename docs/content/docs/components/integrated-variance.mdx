@@ -1,0 +1,86 @@
+---
+title: IntegratedVarianceChart
+description: Δ% pins, Δ absolute bars and AC columns stacked on one shared time axis.
+---
+
+import { IntegratedVarianceChart } from "ibcs-react";
+
+The signature integrated variance column chart: three tiers over one time axis
+— relative deviation as pins on top, absolute deviation as bars in the middle,
+and the AC columns with the comparison overlaid at the bottom. Forecast periods
+are hatched, and an optional full-year total column is set apart on the right.
+
+## When to use
+
+A monthly actual-vs-plan (or vs previous year) story where you want the values,
+the absolute deviation and the relative deviation read together — with a
+hatched forecast tail and an optional full-year total.
+
+## Example
+
+<Frame center>
+  <IntegratedVarianceChart
+    title="Contribution margin — AC vs PY"
+    comparison="PY"
+    width={760}
+    height={420}
+    format={{ compact: true }}
+    data={[
+      { category: "Jan", AC: 128, PY: 115 },
+      { category: "Feb", AC: 147, PY: 134 },
+      { category: "Mar", AC: 136, PY: 141 },
+      { category: "Apr", AC: 139, PY: 144 },
+      { category: "May", AC: 170, PY: 161 },
+      { category: "Jun", AC: 193, PY: 167 },
+      { category: "Jul", AC: 178, PY: 153 },
+      { category: "Aug", AC: 189, PY: 164 },
+      { category: "Sep", AC: 178, PY: 173 },
+      { category: "Oct", AC: 179, PY: 184, isForecast: true },
+      { category: "Nov", AC: 189, PY: 201, isForecast: true },
+      { category: "Dec", AC: 211, PY: 183, isForecast: true },
+    ]}
+    fyTotal={{
+      label: "2,036",
+      segments: [
+        { label: "AC", value: 1458 },
+        { label: "FC", value: 578 },
+      ],
+    }}
+  />
+</Frame>
+
+```tsx
+import { IntegratedVarianceChart } from "ibcs-react";
+
+<IntegratedVarianceChart
+  title="Contribution margin — AC vs PY"
+  comparison="PY" // or "PL" (plan renders as a hollow frame)
+  data={[
+    { category: "Jan", AC: 128, PY: 115 },
+    { category: "Feb", AC: 147, PY: 134 },
+    // … forecast months carry isForecast: true -> hatched
+    { category: "Dec", AC: 211, PY: 183, isForecast: true },
+  ]}
+  fyTotal={{
+    label: "2,036",
+    segments: [
+      { label: "AC", value: 1458 },
+      { label: "FC", value: 578 },
+    ],
+  }}
+/>;
+```
+
+Either deviation tier can be dropped (`showPctPanel`, `showAbsPanel`) when only
+one of them carries the message. For a cost or expense measure set
+`higherIsBetter={false}` so a rise reads as unfavorable.
+
+Use [GroupedVarianceChart](/docs/components/grouped-variance) instead when the
+comparison should stand beside AC rather than behind it.
+
+## Props
+
+<AutoTypeTable
+  path="../src/react/IntegratedVarianceChart.tsx"
+  name="IntegratedVarianceChartProps"
+/>

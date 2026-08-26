@@ -1,0 +1,262 @@
+---
+title: Examples
+description: Three complete dashboards — an executive overview, a sales review and a finance pack — assembled entirely from ibcs-react components.
+---
+
+import {
+  ExecutiveOverview,
+  SalesDashboard,
+  FinancialsDashboard,
+} from "@/components/demos/galleries/examples";
+
+Three complete dashboards, each assembled **entirely** from library components
+and driven by the shared sample model (AC / PY / PL / FC). They show how the
+building blocks — KPI cards, charts, statements and tables — compose into a
+finished report in the IBCS notation. Each one is contained: it scrolls inside
+its frame, and the grids stack to a single column on narrow screens.
+
+## Executive overview
+
+A one-glance summary built from a single `ReportConfig` handed to `Report`: a
+four-card KPI strip, an operating-income **waterfall**, a revenue-by-region
+**structure** chart and a 13-period **trend**, laid out on the responsive
+12-column report grid.
+
+<Frame style={{ maxHeight: 560, overflow: "auto" }}>
+  <ExecutiveOverview />
+</Frame>
+
+```tsx
+import { Report, type ReportConfig } from "ibcs-react";
+import { sampleMonthlyTrend, sampleRevenueStructure } from "./sample-data";
+
+// Sparkline series from the actual periods of the trend.
+const acTrend = sampleMonthlyTrend.filter((d) => d.AC != null).map((d) => d.AC as number);
+
+const executiveConfig: ReportConfig = {
+  title: {
+    who: "Contoso Group",
+    what: "Performance summary — € thousands",
+    when: "FY 2026 · Actual vs Previous year",
+  },
+  message: "Revenue +17.5% on PY; margin expansion lifts net income to €8.9M.",
+  columns: 12,
+  blocks: [
+    {
+      id: "k-rev",
+      type: "kpi",
+      span: 3,
+      config: {
+        label: "Revenue",
+        values: { AC: 30_100_000, PY: 25_600_000, PL: 28_500_000 },
+        comparisons: ["PY", "PL"],
+        format: { compact: true, decimals: 1 },
+        sparkline: acTrend,
+      },
+    },
+    // …three more KPI blocks: gross margin, operating income, net income
+    {
+      id: "ex-bridge",
+      type: "chart",
+      span: 7,
+      title: { who: "Contoso Group", what: "Operating income bridge", when: "FY 2026" },
+      config: {
+        type: "waterfall",
+        data: [
+          { category: "Revenue", value: 30_100_000, flow: "add" },
+          { category: "COGS", value: 9_700_000, flow: "subtract", higherIsBetter: false },
+          { category: "Gross margin", value: 20_400_000, flow: "result" },
+          { category: "Opex", value: 10_000_000, flow: "subtract", higherIsBetter: false },
+          { category: "Op. income", value: 10_400_000, flow: "result" },
+        ],
+        width: 460,
+        height: 280,
+        format: { compact: true, decimals: 1 },
+      },
+    },
+    {
+      id: "ex-structure",
+      type: "chart",
+      span: 5,
+      config: { type: "structure", data: sampleRevenueStructure, width: 360, height: 280 },
+    },
+    {
+      id: "ex-trend",
+      type: "chart",
+      span: 12,
+      config: { type: "trend", data: sampleMonthlyTrend, width: 820, height: 260 },
+    },
+  ],
+};
+
+<Report config={executiveConfig} />;
+```
+
+Components: [Report](/docs/components/report) ·
+[KpiCard](/docs/components/kpi-card) ·
+[WaterfallChart](/docs/components/waterfall-chart) ·
+[StructureChart](/docs/components/structure-chart) ·
+[TrendChart](/docs/components/trend-chart)
+
+## Sales performance
+
+A revenue team's regional review, hand-laid on a responsive grid: a ranked
+structure chart, per-region quarterly small multiples, and a sortable table
+with embedded variance bars, pins and a trend sparkline.
+
+<Frame style={{ maxHeight: 620, overflow: "auto" }}>
+  <SalesDashboard />
+</Frame>
+
+```tsx
+import { StructureChart, MiniVarianceMultiples, DataTable } from "ibcs-react";
+import { sampleRevenueStructure } from "./sample-data";
+
+const regionMultiples = [
+  {
+    label: "North America",
+    data: [
+      { category: "Q1", AC: 2.9e6, PY: 2.6e6 },
+      { category: "Q2", AC: 3.1e6, PY: 2.7e6 },
+      { category: "Q3", AC: 3.2e6, PY: 2.9e6 },
+      { category: "Q4", AC: 3.2e6, PY: 2.9e6 },
+    ],
+  },
+  // …Europe, Asia Pacific, Rest of world
+];
+
+const salesColumns = [
+  { key: "rev", label: "Revenue AC", kind: "value" as const },
+  {
+    key: "rev_dpy",
+    label: "ΔPY",
+    kind: "variance" as const,
+    measure: "rev",
+    base: "PY" as const,
+    mode: "abs" as const,
+    mark: "bar" as const,
+  },
+  {
+    key: "rev_dpy_pct",
+    label: "ΔPY %",
+    kind: "variance" as const,
+    measure: "rev",
+    base: "PY" as const,
+    mode: "pct" as const,
+    mark: "pin" as const,
+  },
+  {
+    key: "trend",
+    label: "Trend",
+    kind: "sparkline" as const,
+    measure: "rev",
+    sparkType: "line" as const,
+  },
+];
+
+const salesRows = [
+  {
+    id: "na",
+    label: "North America",
+    values: { rev: { AC: 12_400_000, PY: 11_100_000 } },
+    spark: { rev: [2.6e6, 2.7e6, 2.9e6, 3.1e6, 3.2e6, 3.2e6] },
+  },
+  // …one row per region
+];
+
+// Panel chrome omitted for brevity.
+<div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+  <StructureChart data={sampleRevenueStructure} comparison="PY" width={380} height={280} />
+  <MiniVarianceMultiples groups={regionMultiples} comparison="PY" columns={2} />
+  <DataTable
+    columns={salesColumns}
+    rows={salesRows}
+    format={{ compact: true, decimals: 1 }}
+    showTotals
+    totalsLabel="Total"
+    defaultSort={{ key: "rev", dir: "desc" }}
+  />
+</div>;
+```
+
+Components: [StructureChart](/docs/components/structure-chart) ·
+[MiniVarianceMultiples](/docs/components/small-multiples) ·
+[DataTable](/docs/components/data-table)
+
+## Financial statements
+
+The finance pack: a waterfall **income statement** and a stock-mode **balance
+sheet** side by side, each scrolling internally, plus a budget table of revenue
+by quarter, Actual against Plan. All three are the same `StatementTable` and
+`DataTable` primitives over the shared model.
+
+<Frame style={{ maxHeight: 620, overflow: "auto" }}>
+  <FinancialsDashboard />
+</Frame>
+
+```tsx
+import { StatementTable, DataTable } from "ibcs-react";
+import { sampleStatementFlat, sampleBalanceSheet, sampleQuarterlyStatement } from "./sample-data";
+
+const budgetColumns = [
+  { key: "rev", label: "Actual", kind: "value" as const },
+  { key: "rev_pl", label: "Plan", kind: "value" as const, measure: "rev", scenario: "PL" as const },
+  {
+    key: "rev_dpl",
+    label: "ΔPL",
+    kind: "variance" as const,
+    measure: "rev",
+    base: "PL" as const,
+    mode: "abs" as const,
+    mark: "bar" as const,
+  },
+  {
+    key: "rev_dpl_pct",
+    label: "ΔPL %",
+    kind: "variance" as const,
+    measure: "rev",
+    base: "PL" as const,
+    mode: "pct" as const,
+    mark: "pin" as const,
+  },
+];
+
+const budgetRows = sampleQuarterlyStatement
+  .filter((l) => l.flow !== "result")
+  .map((l) => ({
+    id: l.id,
+    label: l.label,
+    values: { rev: { AC: l.values.AC, PL: l.values.PL } },
+  }));
+
+// Panel chrome omitted for brevity.
+<div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+  <StatementTable lines={sampleStatementFlat} waterfallWidth={170} maxHeight={300} />
+  <StatementTable lines={sampleBalanceSheet} mode="stock" waterfallWidth={150} maxHeight={300} />
+  <DataTable
+    columns={budgetColumns}
+    rows={budgetRows}
+    format={{ compact: true, decimals: 1 }}
+    showTotals
+    totalsLabel="Full year"
+  />
+</div>;
+```
+
+Components: [StatementTable](/docs/components/statement-table) ·
+[DataTable](/docs/components/data-table)
+
+## One model, many reports
+
+Nothing here reshapes data per view — the same scenario-keyed figures feed
+cards, charts, statements and tables alike. Swap the `tokens` prop on a
+`Report` and every block re-themes at once.
+
+## Where to next
+
+- [Report](/docs/components/report) — the config-driven layout used above, and
+  the live [report demo](/report).
+- [IBCS templates](/docs/templates) and
+  [Table templates](/docs/table-templates) — the individual layouts these
+  dashboards are built from.
+- [Theming](/docs/theming) — one `tokens` prop re-themes a whole report.

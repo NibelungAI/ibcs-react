@@ -1,0 +1,53 @@
+---
+title: BubbleChart
+description: Two value axes plus a size dimension (IBCS C10) — three independent measures at once.
+---
+
+import { BubbleChart } from "ibcs-react";
+
+A scattergram where the marker area encodes a third measure. Area, not radius,
+is proportional to `size`, so the visual weight matches the number.
+
+## When to use
+
+Portfolio / positioning — market attractiveness vs share with revenue as bubble
+size. Up to ~100 bubbles.
+
+## Example
+
+<Frame center>
+  <BubbleChart
+    data={[
+      { x: 12, y: 4.5, size: 320, group: "EU", label: "DE" },
+      { x: 8, y: 2.1, size: 110, group: "NA", label: "US" },
+      { x: 5, y: 6.2, size: 90, group: "APAC", label: "JP" },
+      { x: 15, y: 3.0, size: 210, group: "EU", label: "UK" },
+      { x: 3, y: 1.5, size: 60, group: "APAC", label: "AU" },
+    ]}
+    xLabel="Growth %"
+    yLabel="Margin %"
+    sizeLabel="Revenue"
+    width={520}
+    height={360}
+    format={{ compact: true }}
+  />
+</Frame>
+
+```tsx
+import { BubbleChart } from "ibcs-react";
+
+<BubbleChart
+  data={[{ x: 12, y: 4.5, size: 320, group: "EU", label: "DE" } /* … */]}
+  xLabel="Growth %"
+  yLabel="Margin %"
+  sizeLabel="Revenue"
+/>;
+```
+
+Name the units in the axis and size labels — a bubble chart without them is
+unreadable. Beyond roughly a hundred bubbles the overlap wins; drop the size
+dimension and use [ScatterChart](/docs/components/scatter-chart) instead.
+
+## Props
+
+<AutoTypeTable path="../src/react/BubbleChart.tsx" name="BubbleChartProps" />

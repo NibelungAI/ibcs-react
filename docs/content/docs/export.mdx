@@ -1,0 +1,88 @@
+---
+title: Export
+description: ExportMenu and the download/serialize helpers — SVG, PNG, CSV, JSON, clipboard and print.
+---
+
+import { ExportMenu, VarianceColumnChart } from "ibcs-react";
+
+Reports get shared. `ExportMenu` wraps any chart and exposes a compact,
+IBCS-clean toolbar for downloading or copying it; the underlying helpers are
+exported too if you want your own UI.
+
+## ExportMenu
+
+<Frame center>
+  <ExportMenu
+    filename="net-sales"
+    data={[
+      { category: "Q1", AC: 92.1, PY: 86.7 },
+      { category: "Q2", AC: 87.4, PY: 89.2 },
+    ]}
+  >
+    <VarianceColumnChart
+      title="Net sales — AC vs PY, mEUR"
+      data={[
+        { category: "Q1", AC: 92.1, PY: 86.7 },
+        { category: "Q2", AC: 87.4, PY: 89.2 },
+      ]}
+      width={560}
+      height={300}
+    />
+  </ExportMenu>
+</Frame>
+
+```tsx
+import { ExportMenu, TrendChart } from "ibcs-react";
+
+<ExportMenu
+  filename="net-sales"
+  data={data}
+  csv={csvText}
+  onError={(err, action) => notify(action)}
+>
+  <TrendChart data={data} width={640} height={300} />
+</ExportMenu>;
+```
+
+- **SVG / PNG** act on the first `<svg>` inside the wrapped children
+  (`pngScale` controls raster sharpness, default 2×).
+- **CSV / JSON** appear only when you pass `csv` / `data`.
+- **Copy SVG / Copy PNG / Print** use the clipboard and a print window; where
+  a browser blocks them, the action reports through `onError`.
+- The popup is fully keyboard-operable: arrows rove, `Home`/`End` jump,
+  `Escape` closes and returns focus.
+- Failures (denied clipboard, blocked downloads, rasterization errors) call
+  `onError(error, action)` — the `action` is an `ExportMenuAction`
+  (`"svg" | "png" | "csv" | "json" | "copy-svg" | "copy-png" | "print"`) so
+  you can tailor the message. Without a handler they log to the console;
+  they never escape as unhandled rejections.
+
+## Props
+
+<AutoTypeTable path="../src/react/ExportMenu.tsx" name="ExportMenuProps" />
+
+## The helpers underneath
+
+All exported for custom UIs:
+
+```tsx
+import {
+  serializeSvg, // svg element → standalone SVG markup string
+  downloadSVG, // svg element → .svg download
+  svgToPngBlob, // svg element → PNG Blob (scale-aware)
+  downloadPNG, // svg element → .png download
+  downloadCSV, // csv text → .csv download
+  downloadTextFile,
+} from "ibcs-react";
+
+import { statementToCSV, toCSV } from "ibcs-react/core";
+```
+
+Every chart forwards its `ref` to the `<svg>`, so no DOM queries are needed:
+
+```tsx
+const ref = useRef<SVGSVGElement>(null);
+<TrendChart ref={ref} data={data} width={640} height={300} />;
+// later:
+if (ref.current) downloadSVG(ref.current, "trend.svg");
+```

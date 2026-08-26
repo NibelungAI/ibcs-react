@@ -1,0 +1,76 @@
+---
+title: RatioTreeChart
+description: IBCS C11 — a DuPont-style calculation tree where each node is a mini time-series chart.
+---
+
+import { RatioTreeChart } from "ibcs-react";
+
+Every node in the calculation tree carries a small time series instead of a
+single figure, with the operators (÷ − + ×) sitting on the branches — so both
+the arithmetic and the movement of each driver are on the page.
+
+## When to use
+
+Decompose a ratio/KPI into its drivers and show each as a small trend, with the
+operators on the branches — how a headline metric is built and how each driver
+moves.
+
+## Example
+
+<Frame center>
+  <RatioTreeChart
+    title="Return on assets — 2021…2025"
+    format={{ decimals: 1 }}
+    width={760}
+    root={{
+      id: "roa",
+      label: "Return on assets %",
+      op: "/",
+      series: [12.4, 13.1, 11.8, 14.0, 15.2],
+      py: [11.9, 12.6, 12.0, 13.1, 14.0],
+      children: [
+        {
+          id: "ret",
+          label: "Return kEUR",
+          series: [5.0, 5.4, 4.8, 6.1, 6.7],
+          py: [4.7, 5.1, 4.9, 5.8, 6.2],
+        },
+        {
+          id: "assets",
+          label: "Assets kEUR",
+          series: [40.3, 41.2, 40.7, 43.6, 44.1],
+          py: [39.5, 40.5, 40.8, 44.3, 44.3],
+        },
+      ],
+    }}
+  />
+</Frame>
+
+```tsx
+import { RatioTreeChart } from "ibcs-react";
+
+<RatioTreeChart
+  title="Return on assets — 2021…2025"
+  root={{
+    id: "roa",
+    label: "Return on assets %",
+    op: "/",
+    series: [12.4, 13.1, 11.8, 14.0, 15.2],
+    children: [
+      { id: "ret", label: "Return kEUR", series: [5.0, 5.4, 4.8, 6.1, 6.7] },
+      { id: "assets", label: "Assets kEUR", series: [40.3, 41.2, 40.7, 43.6, 44.1] },
+    ],
+  }}
+/>;
+```
+
+Put the unit in each node's label — a tree mixing percent and currency nodes is
+otherwise ambiguous. `miniChart="line"` draws the node series as lines instead
+of columns, which reads better for long series.
+
+For the same decomposition with single values rather than series, use
+[TreeChart](/docs/components/tree-chart).
+
+## Props
+
+<AutoTypeTable path="../src/react/RatioTreeChart.tsx" name="RatioTreeChartProps" />

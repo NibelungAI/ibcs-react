@@ -1,0 +1,3327 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`component markup snapshots > AreaChart renders stable markup 1`] = `
+"<svg width="400" height="260" viewBox="0 0 400 260" role="img" aria-label="Area chart of AC over 4 periods" style="display:block;max-width:100%;margin-inline:auto;font-family:ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif">
+<path d="M33.6,238.0 L33.6,60.4 L131.9,38.2 L230.1,48.6 L328.4,16.0 L328.4,238.0 Z" fill="#54534e" fill-opacity="0.18" stroke="none">
+</path>
+<line x1="14" y1="238" x2="348" y2="238" stroke="#c9c8c2" stroke-width="1">
+</line>
+<path d="M33.6,90.0 L131.9,63.4 L230.1,45.6 L328.4,30.8" fill="none" stroke="#7a7973" stroke-width="1.75" stroke-linejoin="round" stroke-linecap="round">
+</path>
+<path d="M33.6,60.4 L131.9,38.2 L230.1,48.6 L328.4,16.0" fill="none" stroke="#54534e" stroke-width="2" stroke-linejoin="round" stroke-linecap="round">
+</path>
+<circle cx="33.64705882352941" cy="60.39999999999998" r="2.2" fill="#54534e">
+</circle>
+<circle cx="131.88235294117646" cy="38.19999999999999" r="2.2" fill="#54534e">
+</circle>
+<circle cx="230.11764705882354" cy="48.559999999999974" r="2.2" fill="#54534e">
+</circle>
+<circle cx="328.35294117647055" cy="16" r="2.2" fill="#54534e">
+</circle>
+<text x="334.35294117647055" y="20" font-size="10" font-weight="600" fill="#54534e" text-anchor="start">AC 150</text>
+<text x="334.35294117647055" y="34.29999999999998" font-size="10" font-weight="400" fill="#7a7973" text-anchor="start">PY 140</text>
+<text x="33.64705882352941" y="254" font-size="10.5" fill="#6b6a64" text-anchor="middle">Q1</text>
+<text x="131.88235294117646" y="254" font-size="10.5" fill="#6b6a64" text-anchor="middle">Q2</text>
+<text x="230.11764705882354" y="254" font-size="10.5" fill="#6b6a64" text-anchor="middle">Q3</text>
+<text x="328.35294117647055" y="254" font-size="10.5" fill="#6b6a64" text-anchor="middle">Q4</text>
+</svg>
+<table style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<caption>Area chart of AC — data table</caption>
+<thead>
+<tr>
+<th scope="col">
+</th>
+<th scope="col">AC</th>
+<th scope="col">PY</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">Q1</th>
+<td>120</td>
+<td>100</td>
+</tr>
+<tr>
+<th scope="row">Q2</th>
+<td>135</td>
+<td>118</td>
+</tr>
+<tr>
+<th scope="row">Q3</th>
+<td>128</td>
+<td>130</td>
+</tr>
+<tr>
+<th scope="row">Q4</th>
+<td>150</td>
+<td>140</td>
+</tr>
+</tbody>
+</table>"
+`;
+
+exports[`component markup snapshots > BarVarianceWaterfallChart renders stable markup 1`] = `
+"<svg width="400" height="220.4" viewBox="0 0 400 220.4" role="img" aria-label="IBCS C06: 4 entities as AC structure bars with a PL→AC variance waterfall and a ΔPL% tier." style="display:block;max-width:100%;margin-inline:auto;font-family:ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif">
+<text x="353.2575999999999" y="30" text-anchor="middle" font-size="10.5" font-style="italic" fill="#6b6a64">ΔPL%</text>
+<line x1="72.16" y1="34" x2="72.16" y2="190" stroke="#c9c8c2" stroke-width="1">
+</line>
+<line x1="353.2575999999999" y1="64" x2="353.2575999999999" y2="190" stroke="#c9c8c2" stroke-width="0.75">
+</line>
+<line x1="263.18767672253256" y1="34" x2="263.18767672253256" y2="210.4" stroke="#6b6a64" stroke-width="1">
+</line>
+<g>
+<text x="66.16" y="50.08" text-anchor="end" font-size="12" font-weight="700" fill="#2b2b29">PL</text>
+<rect x="72.16" y="39" width="191.02767672253256" height="14" fill="#fff" fill-opacity="0" stroke="#54534e" stroke-width="1.25">
+</rect>
+<text x="268.18767672253256" y="49.4272" font-size="10.08" font-weight="700" fill="#2b2b29">512</text>
+</g>
+<line x1="263.18767672253256" y1="58" x2="263.18767672253256" y2="70.48" stroke="#c9c8c2" stroke-width="1">
+</line>
+<line x1="266.9186860335195" y1="81.52" x2="266.9186860335195" y2="94.48" stroke="#c9c8c2" stroke-width="1">
+</line>
+<line x1="270.6496953445065" y1="105.52" x2="270.6496953445065" y2="118.48" stroke="#c9c8c2" stroke-width="1">
+</line>
+<line x1="272.51519999999994" y1="129.52" x2="272.51519999999994" y2="142.48" stroke="#c9c8c2" stroke-width="1">
+</line>
+<line x1="271.0227962756052" y1="153.52" x2="271.0227962756052" y2="194.67999999999998" stroke="#c9c8c2" stroke-width="1">
+</line>
+<g>
+<rect x="12" y="64" width="376" height="24" fill="transparent">
+</rect>
+<text x="66.16" y="80.08" text-anchor="end" font-size="12" fill="#2b2b29">Q1<title>Q1</title>
+</text>
+<rect x="72.16" y="70" width="44.772111731843566" height="12" fill="#54534e">
+</rect>
+<rect x="72.16" y="68.32" width="41.0411024208566" height="15.36" fill="#fff" fill-opacity="0" stroke="#54534e" stroke-width="1">
+</rect>
+<text x="120.93211173184356" y="79.4272" font-size="10.08" fill="#2b2b29">120</text>
+<rect x="263.18767672253256" y="70.48" width="3.7310093109869626" height="11.040000000000001" fill="#3f8f4f">
+</rect>
+<text x="270.9186860335195" y="79.4272" text-anchor="start" font-size="10.08" fill="#2b2b29">+10</text>
+<rect x="353.2575999999999" y="70.72" width="8" height="10.56" fill="#3f8f4f">
+</rect>
+<text x="385.99999999999994" y="79.4272" text-anchor="end" font-size="10.08" font-style="italic" font-weight="400" fill="#3f8f4f">+9.1%</text>
+</g>
+<g>
+<rect x="12" y="88" width="376" height="24" fill="transparent">
+</rect>
+<text x="66.16" y="104.08" text-anchor="end" font-size="12" fill="#2b2b29">Q2<title>Q2</title>
+</text>
+<rect x="72.16" y="94" width="50.368625698324024" height="12" fill="#54534e">
+</rect>
+<rect x="72.16" y="92.32" width="46.63761638733706" height="15.36" fill="#fff" fill-opacity="0" stroke="#54534e" stroke-width="1">
+</rect>
+<text x="126.52862569832402" y="103.4272" font-size="10.08" fill="#2b2b29">135</text>
+<rect x="266.9186860335195" y="94.48" width="3.7310093109869626" height="11.040000000000001" fill="#3f8f4f">
+</rect>
+<text x="274.6496953445065" y="103.4272" text-anchor="start" font-size="10.08" fill="#2b2b29">+10</text>
+<rect x="353.2575999999999" y="94.72" width="7.0400000000000205" height="10.56" fill="#3f8f4f">
+</rect>
+<text x="385.99999999999994" y="103.4272" text-anchor="end" font-size="10.08" font-style="italic" font-weight="400" fill="#3f8f4f">+8.0%</text>
+</g>
+<g>
+<rect x="12" y="112" width="376" height="24" fill="transparent">
+</rect>
+<text x="66.16" y="128.08" text-anchor="end" font-size="12" fill="#2b2b29">Q4<title>Q4</title>
+</text>
+<rect x="72.16" y="118" width="55.96513966480447" height="12" fill="#54534e">
+</rect>
+<rect x="72.16" y="116.32" width="54.09963500931099" height="15.36" fill="#fff" fill-opacity="0" stroke="#54534e" stroke-width="1">
+</rect>
+<text x="132.12513966480446" y="127.4272" font-size="10.08" fill="#2b2b29">150</text>
+<rect x="270.6496953445065" y="118.48" width="1.865504655493453" height="11.040000000000001" fill="#3f8f4f">
+</rect>
+<text x="276.51519999999994" y="127.4272" text-anchor="start" font-size="10.08" fill="#2b2b29">+5</text>
+<rect x="353.2575999999999" y="118.72" width="3.0344827586206975" height="10.56" fill="#3f8f4f">
+</rect>
+<text x="385.99999999999994" y="127.4272" text-anchor="end" font-size="10.08" font-style="italic" font-weight="400" fill="#3f8f4f">+3.4%</text>
+</g>
+<g>
+<rect x="12" y="136" width="376" height="24" fill="transparent">
+</rect>
+<text x="66.16" y="152.08" text-anchor="end" font-size="12" fill="#2b2b29">Q3<title>Q3</title>
+</text>
+<rect x="72.16" y="142" width="47.75691918063313" height="12" fill="#54534e">
+</rect>
+<rect x="72.16" y="140.32" width="49.249322905027924" height="15.36" fill="#fff" fill-opacity="0" stroke="#54534e" stroke-width="1">
+</rect>
+<text x="123.91691918063313" y="151.4272" font-size="10.08" fill="#2b2b29">128</text>
+<rect x="271.0227962756052" y="142.48" width="1.4924037243947623" height="11.040000000000001" fill="#cf3a3a">
+</rect>
+<text x="267.0227962756052" y="151.4272" text-anchor="end" font-size="10.08" fill="#2b2b29">-4</text>
+<rect x="350.5909333333332" y="142.72" width="2.6666666666666856" height="10.56" fill="#cf3a3a">
+</rect>
+<text x="320.51519999999994" y="151.4272" text-anchor="start" font-size="10.08" font-style="italic" font-weight="400" fill="#cf3a3a">-3.0%</text>
+</g>
+<line x1="12" y1="163" x2="388" y2="163" stroke="#e6e5e0" stroke-width="1">
+</line>
+<g>
+<text x="66.16" y="182.08" text-anchor="end" font-size="12" font-weight="700" fill="#2b2b29">AC</text>
+<rect x="72.16" y="171" width="198.86279627560518" height="14" fill="#54534e">
+</rect>
+<text x="276.0227962756052" y="181.4272" font-size="10.08" font-weight="700" fill="#2b2b29">533</text>
+</g>
+<rect x="353.2575999999999" y="171.72" width="3.609375" height="12.56" fill="#3f8f4f">
+</rect>
+<text x="385.99999999999994" y="181.4272" text-anchor="end" font-size="10.08" font-style="italic" font-weight="700" fill="#3f8f4f">+4.1%</text>
+<rect x="263.18767672253256" y="194.67999999999998" width="7.835119553072616" height="11.040000000000001" fill="#3f8f4f">
+</rect>
+<text x="275.0227962756052" y="203.6272" font-size="10.08" font-weight="700" fill="#3f8f4f">+21</text>
+</svg>
+<table style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<caption>AC versus PL bridge — data table</caption>
+<thead>
+<tr>
+<th scope="col">
+</th>
+<th scope="col">AC</th>
+<th scope="col">PL</th>
+<th scope="col">ΔPL</th>
+<th scope="col">ΔPL%</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">Q1</th>
+<td>120</td>
+<td>110</td>
+<td>+10</td>
+<td>+9.1%</td>
+</tr>
+<tr>
+<th scope="row">Q2</th>
+<td>135</td>
+<td>125</td>
+<td>+10</td>
+<td>+8.0%</td>
+</tr>
+<tr>
+<th scope="row">Q4</th>
+<td>150</td>
+<td>145</td>
+<td>+5</td>
+<td>+3.4%</td>
+</tr>
+<tr>
+<th scope="row">Q3</th>
+<td>128</td>
+<td>132</td>
+<td>-4</td>
+<td>-3.0%</td>
+</tr>
+<tr>
+<th scope="row">Total</th>
+<td>533</td>
+<td>512</td>
+<td>+21</td>
+<td>+4.1%</td>
+</tr>
+</tbody>
+</table>"
+`;
+
+exports[`component markup snapshots > BubbleChart renders stable markup 1`] = `
+"<svg width="400" height="260" viewBox="0 0 400 260" role="img" aria-label="Bubble chart of 3 items" style="display:block;max-width:100%;margin-inline:auto;font-family:ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif">
+<line x1="52" y1="32" x2="52" y2="220" stroke="#eceae4" stroke-width="1">
+</line>
+<line x1="126.28571428571428" y1="32" x2="126.28571428571428" y2="220" stroke="#eceae4" stroke-width="1">
+</line>
+<line x1="200.57142857142856" y1="32" x2="200.57142857142856" y2="220" stroke="#eceae4" stroke-width="1">
+</line>
+<line x1="274.8571428571429" y1="32" x2="274.8571428571429" y2="220" stroke="#eceae4" stroke-width="1">
+</line>
+<line x1="349.1428571428571" y1="32" x2="349.1428571428571" y2="220" stroke="#eceae4" stroke-width="1">
+</line>
+<line x1="52" y1="220" x2="364" y2="220" stroke="#eceae4" stroke-width="1">
+</line>
+<line x1="52" y1="184.1904761904762" x2="364" y2="184.1904761904762" stroke="#eceae4" stroke-width="1">
+</line>
+<line x1="52" y1="148.38095238095238" x2="364" y2="148.38095238095238" stroke="#eceae4" stroke-width="1">
+</line>
+<line x1="52" y1="112.57142857142858" x2="364" y2="112.57142857142858" stroke="#eceae4" stroke-width="1">
+</line>
+<line x1="52" y1="76.76190476190476" x2="364" y2="76.76190476190476" stroke="#eceae4" stroke-width="1">
+</line>
+<line x1="52" y1="40.95238095238096" x2="364" y2="40.95238095238096" stroke="#eceae4" stroke-width="1">
+</line>
+<line x1="52" y1="220" x2="364" y2="220" stroke="#c9c8c2" stroke-width="1.5">
+</line>
+<line x1="52" y1="32" x2="52" y2="220" stroke="#c9c8c2" stroke-width="1.5">
+</line>
+<line x1="52" y1="32" x2="52" y2="220" stroke="#c9c8c2" stroke-width="1">
+</line>
+<line x1="52" y1="220" x2="364" y2="220" stroke="#c9c8c2" stroke-width="1">
+</line>
+<text x="52" y="234" font-size="10" fill="#6b6a64" text-anchor="middle">0</text>
+<text x="126.28571428571428" y="234" font-size="10" fill="#6b6a64" text-anchor="middle">1</text>
+<text x="200.57142857142856" y="234" font-size="10" fill="#6b6a64" text-anchor="middle">2</text>
+<text x="274.8571428571429" y="234" font-size="10" fill="#6b6a64" text-anchor="middle">3</text>
+<text x="349.1428571428571" y="234" font-size="10" fill="#6b6a64" text-anchor="middle">4</text>
+<text x="46" y="223.5" font-size="10" fill="#6b6a64" text-anchor="end">0</text>
+<text x="46" y="187.6904761904762" font-size="10" fill="#6b6a64" text-anchor="end">1</text>
+<text x="46" y="151.88095238095238" font-size="10" fill="#6b6a64" text-anchor="end">2</text>
+<text x="46" y="116.07142857142858" font-size="10" fill="#6b6a64" text-anchor="end">3</text>
+<text x="46" y="80.26190476190476" font-size="10" fill="#6b6a64" text-anchor="end">4</text>
+<text x="46" y="44.45238095238096" font-size="10" fill="#6b6a64" text-anchor="end">5</text>
+<g opacity="1">
+<g>
+<circle cx="349.1428571428571" cy="184.1904761904762" r="28" fill="#5e8c22" fill-opacity="0.32" stroke="#5e8c22" stroke-width="1">
+</circle>
+</g>
+<g>
+<circle cx="274.8571428571429" cy="40.95238095238096" r="23.228911104120876" fill="#3b82a6" fill-opacity="0.32" stroke="#3b82a6" stroke-width="1">
+</circle>
+</g>
+<g>
+<circle cx="126.28571428571428" cy="148.38095238095238" r="17.01110699893027" fill="#3b82a6" fill-opacity="0.32" stroke="#3b82a6" stroke-width="1">
+</circle>
+</g>
+</g>
+<g transform="translate(58, 38)">
+<g transform="translate(28, 0)">
+<circle cx="0" cy="28" r="28" fill="none" stroke="#6b6a64" stroke-width="1">
+</circle>
+<text x="34" y="59" font-size="9.5" fill="#6b6a64">30</text>
+</g>
+<g transform="translate(28, 13)">
+<circle cx="0" cy="15" r="15" fill="none" stroke="#6b6a64" stroke-width="1">
+</circle>
+<text x="34" y="33" font-size="9.5" fill="#6b6a64">8</text>
+</g>
+</g>
+<g>
+<g transform="translate(254, 36)">
+<rect x="0" y="-7" width="9" height="9" rx="1.5" fill="#3b82a6">
+</rect>
+<text x="13" y="1" font-size="10" fill="#6b6a64">A</text>
+</g>
+<g transform="translate(254, 50)">
+<rect x="0" y="-7" width="9" height="9" rx="1.5" fill="#5e8c22">
+</rect>
+<text x="13" y="1" font-size="10" fill="#6b6a64">B</text>
+</g>
+</g>
+</svg>
+<table style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<caption>Bubble chart data table</caption>
+<thead>
+<tr>
+<th scope="col">
+</th>
+<th scope="col">X</th>
+<th scope="col">Y</th>
+<th scope="col">Size</th>
+<th scope="col">Group</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">Item 1</th>
+<td>1</td>
+<td>2</td>
+<td>10</td>
+<td>A</td>
+</tr>
+<tr>
+<th scope="row">Item 2</th>
+<td>3</td>
+<td>5</td>
+<td>20</td>
+<td>A</td>
+</tr>
+<tr>
+<th scope="row">Item 3</th>
+<td>4</td>
+<td>1</td>
+<td>30</td>
+<td>B</td>
+</tr>
+</tbody>
+</table>"
+`;
+
+exports[`component markup snapshots > ChartBox renders stable markup 1`] = `
+"<div style="position:relative;width:100%;height:200px;display:flex;justify-content:flex-start;align-items:center;padding-top:0;padding-right:0;padding-bottom:0;padding-left:0;box-sizing:border-box;overflow-x:auto">
+<div style="flex:0 0 auto;width:400px;height:200px">
+<div>400x200</div>
+</div>
+</div>"
+`;
+
+exports[`component markup snapshots > ChartDataTable renders stable markup 1`] = `
+"<table style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<caption>Revenue by quarter</caption>
+<thead>
+<tr>
+<th scope="col">
+</th>
+<th scope="col">AC</th>
+<th scope="col">PY</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">Q1</th>
+<td>120</td>
+<td>100</td>
+</tr>
+<tr>
+<th scope="row">Q2</th>
+<td>135</td>
+<td>118</td>
+</tr>
+<tr>
+<th scope="row">Q3</th>
+<td>128</td>
+<td>130</td>
+</tr>
+<tr>
+<th scope="row">Q4</th>
+<td>150</td>
+<td>140</td>
+</tr>
+</tbody>
+</table>"
+`;
+
+exports[`component markup snapshots > ChartFrame renders stable markup 1`] = `
+"<div style="position:relative;width:320px;height:180px">
+<div style="position:absolute;left:0;top:0;width:320px;height:180px">
+<div>320x180</div>
+</div>
+</div>"
+`;
+
+exports[`component markup snapshots > ChartState renders stable markup 1`] = `
+"<div style="width:100%">
+<div role="status" aria-busy="true" aria-label="Loading…" style="width:100%">
+<svg width="100%" height="180" viewBox="0 0 600 180" preserveAspectRatio="none" style="display:block">
+<g>
+<rect x="16.666666666666668" y="78.19999999999999" width="33.333333333333336" height="85.80000000000001" rx="2" fill="#e7e6e1">
+<animate attributeName="opacity" values="0.45;0.9;0.45" dur="1.4s" begin="0s" repeatCount="indefinite">
+</animate>
+</rect>
+<rect x="83.33333333333334" y="39.19999999999999" width="33.333333333333336" height="124.80000000000001" rx="2" fill="#e7e6e1">
+<animate attributeName="opacity" values="0.45;0.9;0.45" dur="1.4s" begin="0.12s" repeatCount="indefinite">
+</animate>
+</rect>
+<rect x="150" y="98.48" width="33.333333333333336" height="65.52" rx="2" fill="#e7e6e1">
+<animate attributeName="opacity" values="0.45;0.9;0.45" dur="1.4s" begin="0.24s" repeatCount="indefinite">
+</animate>
+</rect>
+<rect x="216.66666666666666" y="15.800000000000011" width="33.333333333333336" height="148.2" rx="2" fill="#e7e6e1">
+<animate attributeName="opacity" values="0.45;0.9;0.45" dur="1.4s" begin="0.36s" repeatCount="indefinite">
+</animate>
+</rect>
+<rect x="283.33333333333337" y="70.4" width="33.333333333333336" height="93.6" rx="2" fill="#e7e6e1">
+<animate attributeName="opacity" values="0.45;0.9;0.45" dur="1.4s" begin="0.48s" repeatCount="indefinite">
+</animate>
+</rect>
+<rect x="350.00000000000006" y="51.68000000000001" width="33.333333333333336" height="112.32" rx="2" fill="#e7e6e1">
+<animate attributeName="opacity" values="0.45;0.9;0.45" dur="1.4s" begin="0.6s" repeatCount="indefinite">
+</animate>
+</rect>
+<rect x="416.6666666666667" y="86" width="33.333333333333336" height="78" rx="2" fill="#e7e6e1">
+<animate attributeName="opacity" values="0.45;0.9;0.45" dur="1.4s" begin="0.72s" repeatCount="indefinite">
+</animate>
+</rect>
+<rect x="483.33333333333337" y="26.72" width="33.333333333333336" height="137.28" rx="2" fill="#e7e6e1">
+<animate attributeName="opacity" values="0.45;0.9;0.45" dur="1.4s" begin="0.84s" repeatCount="indefinite">
+</animate>
+</rect>
+<rect x="550" y="61.03999999999999" width="33.333333333333336" height="102.96000000000001" rx="2" fill="#e7e6e1">
+<animate attributeName="opacity" values="0.45;0.9;0.45" dur="1.4s" begin="0s" repeatCount="indefinite">
+</animate>
+</rect>
+<rect x="0" y="164" width="600" height="2" fill="#e7e6e1" opacity="0.7">
+</rect>
+</g>
+</svg>
+</div>
+</div>"
+`;
+
+exports[`component markup snapshots > ChartTooltip renders stable markup 1`] = `
+"<div role="tooltip" style="position:fixed;left:0;top:0;transform:translate3d(36px, 36px, 0);z-index:1000;pointer-events:none;background:#2b2b29;color:#fff;border-radius:8px;padding:10px 12px;font-size:12px;line-height:1.5;min-width:160px;box-shadow:0 6px 24px rgba(0,0,0,0.22);font-variant-numeric:tabular-nums;font-family:ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;will-change:transform">
+<div style="font-weight:600;margin-bottom:6px">Q1</div>
+<div style="display:flex;justify-content:space-between;gap:18px">
+<span style="color:#fff;opacity:0.7">AC</span>
+<span style="font-weight:700;color:#fff">120</span>
+</div>
+<div style="display:flex;justify-content:space-between;gap:18px">
+<span style="color:#fff;opacity:0.7">ΔPY</span>
+<span style="font-weight:500;color:#fff">+20</span>
+</div>
+</div>"
+`;
+
+exports[`component markup snapshots > ColumnVarianceWaterfallChart renders stable markup 1`] = `
+"<svg width="400" height="260" viewBox="0 0 400 260" role="img" aria-label="IBCS C05: grouped AC versus PL columns with a horizontal variance waterfall over 4 periods." style="display:block;max-width:100%;margin-inline:auto;font-family:ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif">
+<defs>
+<pattern id="ID1" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+<line x1="0" y1="0" x2="0" y2="5" stroke="#54534e" stroke-width="1">
+</line>
+</pattern>
+<pattern id="ID2" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+<line x1="0" y1="0" x2="0" y2="5" stroke="#3f8f4f" stroke-width="1.4">
+</line>
+</pattern>
+<pattern id="ID3" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+<line x1="0" y1="0" x2="0" y2="5" stroke="#cf3a3a" stroke-width="1.4">
+</line>
+</pattern>
+</defs>
+<line x1="14" y1="43.5" x2="386" y2="43.5" stroke="#c9c8c2" stroke-width="1">
+</line>
+<g>
+<line x1="60.5" y1="43.5" x2="60.5" y2="30" stroke="#3f8f4f" stroke-width="2">
+</line>
+<rect x="57.3" y="26.8" width="6.4" height="6.4" fill="#3f8f4f">
+</rect>
+<text x="60.5" y="24" font-size="9" font-weight="400" fill="#3f8f4f" text-anchor="middle">+9.1%</text>
+</g>
+<g>
+<line x1="153.5" y1="43.5" x2="153.5" y2="31.619999999999997" stroke="#3f8f4f" stroke-width="2">
+</line>
+<rect x="150.3" y="28.419999999999998" width="6.4" height="6.4" fill="#3f8f4f">
+</rect>
+<text x="153.5" y="25.619999999999997" font-size="9" font-weight="400" fill="#3f8f4f" text-anchor="middle">+8.0%</text>
+</g>
+<g>
+<line x1="246.5" y1="43.5" x2="246.5" y2="48" stroke="#cf3a3a" stroke-width="2">
+</line>
+<rect x="243.3" y="44.8" width="6.4" height="6.4" fill="#cf3a3a">
+</rect>
+<text x="246.5" y="60" font-size="9" font-weight="400" fill="#cf3a3a" text-anchor="middle">-3.0%</text>
+</g>
+<g>
+<line x1="339.5" y1="43.5" x2="339.5" y2="38.37931034482759" stroke="#3f8f4f" stroke-width="2">
+</line>
+<rect x="336.3" y="35.179310344827584" width="6.4" height="6.4" fill="#3f8f4f">
+</rect>
+<text x="339.5" y="32.37931034482759" font-size="9" font-weight="400" fill="#3f8f4f" text-anchor="middle">+3.4%</text>
+</g>
+<line x1="14" y1="230" x2="386" y2="230" stroke="#c9c8c2" stroke-width="1">
+</line>
+<line x1="14" y1="104.16135084427768" x2="47.5" y2="104.16135084427768" stroke="#eceae4" stroke-width="1">
+</line>
+<line x1="352.5" y1="99" x2="386" y2="99" stroke="#eceae4" stroke-width="1">
+</line>
+<line x1="73.5" y1="101.70356472795498" x2="140.5" y2="101.70356472795498" stroke="#c9c8c2" stroke-width="1">
+</line>
+<line x1="166.5" y1="99.24577861163229" x2="233.5" y2="99.24577861163229" stroke="#c9c8c2" stroke-width="1">
+</line>
+<line x1="259.5" y1="100.22889305816136" x2="326.5" y2="100.22889305816136" stroke="#c9c8c2" stroke-width="1">
+</line>
+<g>
+<rect x="47.5" y="101.70356472795498" width="26" height="2.457786116322694" fill="#3f8f4f" stroke="none" stroke-width="0">
+</rect>
+<text x="60.5" y="98.70356472795498" font-size="8.5" fill="#3f8f4f" text-anchor="middle">+10</text>
+</g>
+<g>
+<rect x="140.5" y="99.24577861163229" width="26" height="2.457786116322694" fill="#3f8f4f" stroke="none" stroke-width="0">
+</rect>
+<text x="153.5" y="96.24577861163229" font-size="8.5" fill="#3f8f4f" text-anchor="middle">+10</text>
+</g>
+<g>
+<rect x="233.5" y="99.24577861163229" width="26" height="1" fill="#cf3a3a" stroke="none" stroke-width="0">
+</rect>
+<text x="246.5" y="110.24577861163229" font-size="8.5" fill="#cf3a3a" text-anchor="middle">-4</text>
+</g>
+<g>
+<rect x="326.5" y="99" width="26" height="1.2288930581613613" fill="#3f8f4f" stroke="none" stroke-width="0">
+</rect>
+<text x="339.5" y="96" font-size="8.5" fill="#3f8f4f" text-anchor="middle">+5</text>
+</g>
+<g>
+<ellipse cx="370.5" cy="99" rx="15" ry="10" fill="#fff" stroke="#c9c8c2" stroke-width="1">
+</ellipse>
+<text x="370.5" y="102.5" font-size="10" font-weight="600" fill="#3f8f4f" text-anchor="middle">+21</text>
+</g>
+<g>
+<rect x="14" y="18" width="93" height="212" fill="transparent">
+</rect>
+<rect x="34.5" y="202.96435272045028" width="52" height="27.03564727954972" fill="#fff" stroke="#54534e" stroke-width="1.1">
+</rect>
+<rect x="43.5" y="200.50656660412758" width="34" height="29.493433395872415" fill="#54534e" stroke="none" stroke-width="0">
+</rect>
+<text x="60.5" y="196.50656660412758" font-size="9.5" fill="#2b2b29" text-anchor="middle">120</text>
+</g>
+<g>
+<rect x="107" y="18" width="93" height="212" fill="transparent">
+</rect>
+<rect x="127.5" y="199.27767354596622" width="52" height="30.722326454033777" fill="#fff" stroke="#54534e" stroke-width="1.1">
+</rect>
+<rect x="136.5" y="196.81988742964353" width="34" height="33.18011257035647" fill="#54534e" stroke="none" stroke-width="0">
+</rect>
+<text x="153.5" y="192.81988742964353" font-size="9.5" fill="#2b2b29" text-anchor="middle">135</text>
+</g>
+<g>
+<rect x="200" y="18" width="93" height="212" fill="transparent">
+</rect>
+<rect x="220.5" y="197.55722326454034" width="52" height="32.44277673545966" fill="#fff" stroke="#54534e" stroke-width="1.1">
+</rect>
+<rect x="229.5" y="198.5403377110694" width="34" height="31.459662288930588" fill="#54534e" stroke="none" stroke-width="0">
+</rect>
+<text x="246.5" y="194.5403377110694" font-size="9.5" fill="#2b2b29" text-anchor="middle">128</text>
+</g>
+<g>
+<rect x="293" y="18" width="93" height="212" fill="transparent">
+</rect>
+<rect x="313.5" y="194.3621013133208" width="52" height="35.63789868667919" fill="#fff" stroke="#54534e" stroke-width="1.1">
+</rect>
+<rect x="322.5" y="193.13320825515947" width="34" height="36.866791744840526" fill="#54534e" stroke="none" stroke-width="0">
+</rect>
+<text x="339.5" y="189.13320825515947" font-size="9.5" fill="#2b2b29" text-anchor="middle">150</text>
+</g>
+<text x="60.5" y="250" font-size="11" fill="#6b6a64" text-anchor="middle">Q1</text>
+<text x="153.5" y="250" font-size="11" fill="#6b6a64" text-anchor="middle">Q2</text>
+<text x="246.5" y="250" font-size="11" fill="#6b6a64" text-anchor="middle">Q3</text>
+<text x="339.5" y="250" font-size="11" fill="#6b6a64" text-anchor="middle">Q4</text>
+</svg>
+<table style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<caption>AC versus PL with variance bridge — data table</caption>
+<thead>
+<tr>
+<th scope="col">
+</th>
+<th scope="col">AC</th>
+<th scope="col">PL</th>
+<th scope="col">ΔPL</th>
+<th scope="col">ΔPL%</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">Q1</th>
+<td>120</td>
+<td>110</td>
+<td>+10</td>
+<td>+9.1%</td>
+</tr>
+<tr>
+<th scope="row">Q2</th>
+<td>135</td>
+<td>125</td>
+<td>+10</td>
+<td>+8.0%</td>
+</tr>
+<tr>
+<th scope="row">Q3</th>
+<td>128</td>
+<td>132</td>
+<td>-4</td>
+<td>-3.0%</td>
+</tr>
+<tr>
+<th scope="row">Q4</th>
+<td>150</td>
+<td>145</td>
+<td>+5</td>
+<td>+3.4%</td>
+</tr>
+<tr>
+<th scope="row">Total</th>
+<td>533</td>
+<td>512</td>
+<td>+21</td>
+<td>+4.1%</td>
+</tr>
+</tbody>
+</table>"
+`;
+
+exports[`component markup snapshots > ComboChart renders stable markup 1`] = `
+"<svg width="400" height="260" viewBox="0 0 400 260" role="img" aria-label="Primary columns with a secondary line" style="display:block;max-width:100%;margin-inline:auto;font-family:ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif">
+<defs>
+<clipPath id="ID1">
+<rect x="48" y="14" width="300" height="238">
+</rect>
+</clipPath>
+<pattern id="ID2" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+<line x1="0" y1="0" x2="0" y2="5" stroke="#bdbcb6" stroke-width="1">
+</line>
+</pattern>
+</defs>
+<g>
+<line x1="48" y1="224" x2="348" y2="224" stroke="#eceae4" stroke-width="1">
+</line>
+<text x="42" y="227.5" font-size="9.5" fill="#6b6a64" text-anchor="end">0</text>
+</g>
+<g>
+<line x1="48" y1="163.33333333333334" x2="348" y2="163.33333333333334" stroke="#eceae4" stroke-width="1">
+</line>
+<text x="42" y="166.83333333333334" font-size="9.5" fill="#6b6a64" text-anchor="end">50</text>
+</g>
+<g>
+<line x1="48" y1="102.66666666666667" x2="348" y2="102.66666666666667" stroke="#eceae4" stroke-width="1">
+</line>
+<text x="42" y="106.16666666666667" font-size="9.5" fill="#6b6a64" text-anchor="end">100</text>
+</g>
+<g>
+<line x1="48" y1="42" x2="348" y2="42" stroke="#eceae4" stroke-width="1">
+</line>
+<text x="42" y="45.5" font-size="9.5" fill="#6b6a64" text-anchor="end">150</text>
+</g>
+<text x="354" y="227.5" font-size="9.5" fill="#7a7973" text-anchor="start">0</text>
+<text x="354" y="164.74137931034483" font-size="9.5" fill="#7a7973" text-anchor="start">50</text>
+<text x="354" y="101.98275862068965" font-size="9.5" fill="#7a7973" text-anchor="start">100</text>
+<line x1="48" y1="224" x2="348" y2="224" stroke="#c9c8c2" stroke-width="1">
+</line>
+<g>
+<rect x="54.04453870625663" y="102.66666666666667" width="49.31071049840933" height="121.33333333333333" fill="#bdbcb6">
+</rect>
+<rect x="61.99787910922588" y="78.4" width="33.404029692470836" height="145.6" fill="#54534e">
+</rect>
+<text x="78.69989395546129" y="73.4" font-size="10" fill="#2b2b29" text-anchor="middle">120</text>
+<text x="78.69989395546129" y="254" font-size="10.5" fill="#6b6a64" text-anchor="middle">Q1</text>
+</g>
+<g>
+<rect x="133.57794273594908" y="80.82666666666668" width="49.31071049840933" height="143.17333333333332" fill="#bdbcb6">
+</rect>
+<rect x="141.53128313891833" y="60.19999999999999" width="33.404029692470836" height="163.8" fill="#54534e">
+</rect>
+<text x="158.23329798515374" y="55.19999999999999" font-size="10" fill="#2b2b29" text-anchor="middle">135</text>
+<text x="158.23329798515374" y="254" font-size="10.5" fill="#6b6a64" text-anchor="middle">Q2</text>
+</g>
+<g>
+<rect x="213.11134676564154" y="66.26666666666665" width="49.31071049840933" height="157.73333333333335" fill="#bdbcb6">
+</rect>
+<rect x="221.0646871686108" y="68.69333333333333" width="33.404029692470836" height="155.30666666666667" fill="#54534e">
+</rect>
+<text x="237.7667020148462" y="63.69333333333333" font-size="10" fill="#2b2b29" text-anchor="middle">128</text>
+<text x="237.7667020148462" y="254" font-size="10.5" fill="#6b6a64" text-anchor="middle">Q3</text>
+</g>
+<g>
+<rect x="292.644750795334" y="54.133333333333326" width="49.31071049840933" height="169.86666666666667" fill="#bdbcb6">
+</rect>
+<rect x="300.5980911983032" y="42" width="33.404029692470836" height="182" fill="#54534e">
+</rect>
+<text x="317.30010604453867" y="37" font-size="10" fill="#2b2b29" text-anchor="middle">150</text>
+<text x="317.30010604453867" y="254" font-size="10.5" fill="#6b6a64" text-anchor="middle">Q4</text>
+</g>
+<g clip-path="url(#ID1)">
+<path d="M78.7,85.9 L158.2,67.1 L237.8,58.3 L317.3,42.0" fill="none" stroke="#7a7973" stroke-width="2" stroke-linejoin="round">
+</path>
+</g>
+<g>
+<circle cx="78.69989395546129" cy="85.93103448275863" r="3" fill="#7a7973">
+</circle>
+<text x="78.69989395546129" y="99.93103448275863" font-size="9" fill="#7a7973" text-anchor="middle">110</text>
+</g>
+<g>
+<circle cx="158.23329798515374" cy="67.10344827586209" r="3" fill="#7a7973">
+</circle>
+<text x="158.23329798515374" y="81.10344827586209" font-size="9" fill="#7a7973" text-anchor="middle">125</text>
+</g>
+<g>
+<circle cx="237.7667020148462" cy="58.31724137931033" r="3" fill="#7a7973">
+</circle>
+<text x="237.7667020148462" y="51.31724137931033" font-size="9" fill="#7a7973" text-anchor="middle">132</text>
+</g>
+<g>
+<circle cx="317.30010604453867" cy="42" r="3" fill="#7a7973">
+</circle>
+<text x="317.30010604453867" y="56" font-size="9" fill="#7a7973" text-anchor="middle">145</text>
+</g>
+</svg>
+<table style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<caption>Combination chart data table</caption>
+<thead>
+<tr>
+<th scope="col">
+</th>
+<th scope="col">AC</th>
+<th scope="col">PY</th>
+<th scope="col">Secondary</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">Q1</th>
+<td>120</td>
+<td>100</td>
+<td>110</td>
+</tr>
+<tr>
+<th scope="row">Q2</th>
+<td>135</td>
+<td>118</td>
+<td>125</td>
+</tr>
+<tr>
+<th scope="row">Q3</th>
+<td>128</td>
+<td>130</td>
+<td>132</td>
+</tr>
+<tr>
+<th scope="row">Q4</th>
+<td>150</td>
+<td>140</td>
+<td>145</td>
+</tr>
+</tbody>
+</table>"
+`;
+
+exports[`component markup snapshots > ComparisonTable renders stable markup 1`] = `
+"<div style="position:relative;min-width:0;font-family:ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif">
+<div style="overflow-x:auto;max-width:100%">
+<table style="border-collapse:collapse;table-layout:fixed;width:196px">
+<colgroup>
+<col style="width:40px"/>
+<col style="width:116px"/>
+<col style="width:40px"/>
+</colgroup>
+<thead>
+<tr>
+<th colSpan="1" style="font-size:12px;font-weight:600;color:#2b2b29;padding:0 6px 4px;text-align:center;white-space:nowrap;border-bottom:1px solid #2b2b29">This year</th>
+<th aria-hidden="true" style="padding:0">
+</th>
+<th colSpan="1" style="font-size:12px;font-weight:600;color:#2b2b29;padding:0 6px 4px;text-align:center;white-space:nowrap;border-bottom:1px solid #2b2b29">Last year</th>
+</tr>
+<tr style="border-bottom:1.5px solid #2b2b29">
+<th colSpan="1" style="font-size:11px;font-weight:500;color:#6b6a64;padding:0 6px 5px;text-align:right;white-space:nowrap;user-select:none">Revenue</th>
+<th style="font-size:11px;font-weight:500;color:#6b6a64;padding:0 6px 5px;text-align:left;white-space:nowrap;user-select:none"> </th>
+<th colSpan="1" style="font-size:11px;font-weight:500;color:#6b6a64;padding:0 6px 5px;text-align:right;white-space:nowrap;user-select:none">Revenue</th>
+</tr>
+</thead>
+<tbody>
+<tr style="height:26px;border-top:none;background:transparent;transition:background 90ms">
+<td style="padding:0;padding-left:0">
+<div style="font-size:12px;padding:0 6px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;font-weight:400;color:#2b2b29">120</div>
+</td>
+<td style="width:116px;max-width:116px;padding:0 12px;white-space:nowrap">
+<span title="EMEA" style="display:block;overflow:hidden;text-overflow:ellipsis;font-size:12px;font-weight:400;color:#2b2b29">EMEA</span>
+</td>
+<td style="padding:0;padding-left:0">
+<div style="font-size:12px;padding:0 6px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;font-weight:400;color:#2b2b29">120</div>
+</td>
+</tr>
+<tr style="height:26px;border-top:none;background:transparent;transition:background 90ms">
+<td style="padding:0;padding-left:0">
+<div style="font-size:12px;padding:0 6px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;font-weight:400;color:#2b2b29">90</div>
+</td>
+<td style="width:116px;max-width:116px;padding:0 12px;white-space:nowrap">
+<span title="Americas" style="display:block;overflow:hidden;text-overflow:ellipsis;font-size:12px;font-weight:400;color:#2b2b29">Americas</span>
+</td>
+<td style="padding:0;padding-left:0">
+<div style="font-size:12px;padding:0 6px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;font-weight:400;color:#2b2b29">90</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>"
+`;
+
+exports[`component markup snapshots > ConfiguredChart renders stable markup 1`] = `
+"<div>
+<svg width="400" height="260" viewBox="0 0 400 260" role="img" aria-label="Revenue vs PY. AC versus PY columns with a variance panel." style="display:block;max-width:100%;margin-inline:auto;font-family:ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif">
+<defs>
+<pattern id="ID1" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+<line x1="0" y1="0" x2="0" y2="5" stroke="#54534e" stroke-width="1">
+</line>
+</pattern>
+</defs>
+<text x="12" y="18" font-size="13" font-weight="500" fill="#2b2b29">Revenue vs PY</text>
+<line x1="12" y1="149" x2="388" y2="149" stroke="#c9c8c2" stroke-width="1">
+</line>
+<g>
+<rect x="0.636267232237536" y="30" width="99.68186638388123" height="230" fill="transparent">
+</rect>
+<rect x="19.57582184517497" y="79" width="61.80275715800636" height="70" fill="#bdbcb6">
+</rect>
+<rect x="25.556733828207843" y="65" width="49.840933191940614" height="84" fill="#54534e">
+</rect>
+<text x="50.47720042417815" y="60" font-size="11" fill="#2b2b29" text-anchor="middle">120</text>
+<text x="50.47720042417815" y="254" font-size="11" fill="#6b6a64" text-anchor="middle">Q1</text>
+</g>
+<g>
+<rect x="100.31813361611876" y="30" width="99.68186638388123" height="230" fill="transparent">
+</rect>
+<rect x="119.2576882290562" y="66.4" width="61.80275715800636" height="82.6" fill="#bdbcb6">
+</rect>
+<rect x="125.23860021208907" y="54.5" width="49.840933191940614" height="94.5" fill="#54534e">
+</rect>
+<text x="150.15906680805938" y="49.5" font-size="11" fill="#2b2b29" text-anchor="middle">135</text>
+<text x="150.15906680805938" y="254" font-size="11" fill="#6b6a64" text-anchor="middle">Q2</text>
+</g>
+<g>
+<rect x="200" y="30" width="99.68186638388123" height="230" fill="transparent">
+</rect>
+<rect x="218.93955461293746" y="58" width="61.80275715800636" height="91" fill="#bdbcb6">
+</rect>
+<rect x="224.9204665959703" y="59.39999999999999" width="49.840933191940614" height="89.60000000000001" fill="#54534e">
+</rect>
+<text x="249.84093319194062" y="54.39999999999999" font-size="11" fill="#2b2b29" text-anchor="middle">128</text>
+<text x="249.84093319194062" y="254" font-size="11" fill="#6b6a64" text-anchor="middle">Q3</text>
+</g>
+<g>
+<rect x="299.6818663838812" y="30" width="99.68186638388123" height="230" fill="transparent">
+</rect>
+<rect x="318.62142099681864" y="51" width="61.80275715800636" height="98" fill="#bdbcb6">
+</rect>
+<rect x="324.6023329798515" y="44" width="49.840933191940614" height="105" fill="#54534e">
+</rect>
+<text x="349.5227995758218" y="39" font-size="11" fill="#2b2b29" text-anchor="middle">150</text>
+<text x="349.5227995758218" y="254" font-size="11" fill="#6b6a64" text-anchor="middle">Q4</text>
+</g>
+<line x1="12" y1="194" x2="388" y2="194" stroke="#c9c8c2" stroke-width="1">
+</line>
+<g>
+<rect x="25.556733828207843" y="163" width="49.840933191940614" height="31" fill="#3f8f4f">
+</rect>
+<text x="50.47720042417815" y="159" font-size="10.5" fill="#3f8f4f" text-anchor="middle">+20</text>
+</g>
+<g>
+<rect x="125.23860021208907" y="167.65" width="49.840933191940614" height="26.349999999999998" fill="#3f8f4f">
+</rect>
+<text x="150.15906680805938" y="163.65" font-size="10.5" fill="#3f8f4f" text-anchor="middle">+17</text>
+</g>
+<g>
+<rect x="224.9204665959703" y="194" width="49.840933191940614" height="3.1" fill="#cf3a3a">
+</rect>
+<text x="249.84093319194062" y="209.1" font-size="10.5" fill="#cf3a3a" text-anchor="middle">-2</text>
+</g>
+<g>
+<rect x="324.6023329798515" y="178.5" width="49.840933191940614" height="15.5" fill="#3f8f4f">
+</rect>
+<text x="349.5227995758218" y="174.5" font-size="10.5" fill="#3f8f4f" text-anchor="middle">+10</text>
+</g>
+</svg>
+<table style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<caption>Revenue vs PY — data table</caption>
+<thead>
+<tr>
+<th scope="col">
+</th>
+<th scope="col">AC</th>
+<th scope="col">PY</th>
+<th scope="col">ΔPY</th>
+<th scope="col">ΔPY%</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">Q1</th>
+<td>120</td>
+<td>100</td>
+<td>+20</td>
+<td>+20.0%</td>
+</tr>
+<tr>
+<th scope="row">Q2</th>
+<td>135</td>
+<td>118</td>
+<td>+17</td>
+<td>+14.4%</td>
+</tr>
+<tr>
+<th scope="row">Q3</th>
+<td>128</td>
+<td>130</td>
+<td>-2</td>
+<td>-1.5%</td>
+</tr>
+<tr>
+<th scope="row">Q4</th>
+<td>150</td>
+<td>140</td>
+<td>+10</td>
+<td>+7.1%</td>
+</tr>
+</tbody>
+</table>
+</div>"
+`;
+
+exports[`component markup snapshots > ConformanceReport renders stable markup 1`] = `"<div style="font-family:ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;font-size:13px;color:#3f8f4f;padding:8px 12px">Conforms to IBCS / ISO 24896 — no findings.</div>"`;
+
+exports[`component markup snapshots > DataTable renders stable markup 1`] = `
+"<div style="position:relative;min-width:0;font-family:ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif">
+<style>
+.ibcs-dtbl tbody td, .ibcs-dtbl tbody th { transition: background 90ms }
+.ibcs-dtbl tbody tr:hover td, .ibcs-dtbl tbody tr:hover th { background: rgba(0,0,0,0.025) }
+.ibcs-dtbl-sort { font: inherit; color: inherit; letter-spacing: inherit; background: none; border: 0; padding: 0; margin: 0; cursor: pointer; white-space: nowrap }
+.ibcs-dtbl-sort:focus-visible { outline: 2px solid currentColor; outline-offset: 2px }
+@media (prefers-reduced-motion: reduce) { .ibcs-dtbl tbody td, .ibcs-dtbl tbody th { transition: none } }
+</style>
+<div style="overflow-x:auto;max-width:100%">
+<table class="ibcs-dtbl" style="border-collapse:collapse;width:100%;min-width:min-content">
+<thead>
+<tr style="border-bottom:2px solid #2b2b29">
+<th scope="col" style="font-size:11px;font-weight:600;color:#6b6a64;padding:0 10px 8px;white-space:nowrap;user-select:none;text-align:left"> </th>
+<th scope="col" style="font-size:11px;font-weight:600;color:#6b6a64;padding:0 10px 8px;white-space:nowrap;user-select:none;text-align:right;width:96px">
+<button type="button" class="ibcs-dtbl-sort">Revenue</button>
+</th>
+<th scope="col" style="font-size:11px;font-weight:600;color:#6b6a64;padding:0 10px 8px;white-space:nowrap;user-select:none;text-align:right;width:108px">
+<button type="button" class="ibcs-dtbl-sort">ΔPY</button>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr style="height:34px;border-top:1px solid #e6e5e0">
+<th scope="row" style="padding:0 10px;white-space:nowrap;text-align:left;font-weight:400">
+<span style="display:inline-flex;align-items:center;padding-left:0;min-width:0">
+<span style="width:16px;flex:0 0 auto">
+</span>
+<span title="EMEA" style="font-size:12.5px;font-weight:400;color:#2b2b29">EMEA</span>
+</span>
+</th>
+<td style="padding:0;width:96px">
+<div style="font-size:12.5px;padding:0 10px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;font-weight:400;color:#2b2b29">120</div>
+</td>
+<td style="padding:0;width:108px">
+<svg width="108" height="34" style="display:block">
+<line x1="8" y1="3" x2="8" y2="31" stroke="#c9c8c2" stroke-width="0.75">
+</line>
+<rect x="8" y="10.5" width="45.36" height="13" fill="#3f8f4f">
+</rect>
+<text x="102" y="20.5" text-anchor="end" font-size="11" font-style="normal" font-weight="400" fill="#2b2b29">+20</text>
+</svg>
+</td>
+</tr>
+<tr style="height:34px;border-top:1px solid #e6e5e0">
+<th scope="row" style="padding:0 10px;white-space:nowrap;text-align:left;font-weight:400">
+<span style="display:inline-flex;align-items:center;padding-left:0;min-width:0">
+<span style="width:16px;flex:0 0 auto">
+</span>
+<span title="Americas" style="font-size:12.5px;font-weight:400;color:#2b2b29">Americas</span>
+</span>
+</th>
+<td style="padding:0;width:96px">
+<div style="font-size:12.5px;padding:0 10px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;font-weight:400;color:#2b2b29">90</div>
+</td>
+<td style="padding:0;width:108px">
+<svg width="108" height="34" style="display:block">
+<line x1="8" y1="3" x2="8" y2="31" stroke="#c9c8c2" stroke-width="0.75">
+</line>
+<rect x="8" y="10.5" width="11.34" height="13" fill="#cf3a3a">
+</rect>
+<text x="102" y="20.5" text-anchor="end" font-size="11" font-style="normal" font-weight="400" fill="#2b2b29">-5</text>
+</svg>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>"
+`;
+
+exports[`component markup snapshots > ExportMenu renders stable markup 1`] = `
+"<div style="position:relative;display:inline-block">
+<div style="position:absolute;top:4px;right:4px;z-index:1">
+<button id="ID1" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="Export chart" title="Export" style="appearance:none;display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;padding:0;font-family:ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;font-size:13px;line-height:1;color:#6b6a64;background:#fff;border:1px solid #e6e5e0;border-radius:4px;cursor:pointer">⤓</button>
+</div>
+<div>
+<button type="button">Export</button>
+</div>
+</div>"
+`;
+
+exports[`component markup snapshots > GroupedVarianceChart renders stable markup 1`] = `
+"<svg width="400" height="260" viewBox="0 0 400 260" role="img" aria-label="Grouped columns of AC versus PL" style="display:block;max-width:100%;margin-inline:auto;font-family:ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif">
+<defs>
+<pattern id="ID1" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+<line x1="0" y1="0" x2="0" y2="5" stroke="#54534e" stroke-width="1">
+</line>
+</pattern>
+<pattern id="ID2" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+<line x1="0" y1="0" x2="0" y2="5" stroke="#54534e" stroke-width="1">
+</line>
+</pattern>
+<pattern id="ID3" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+<line x1="0" y1="0" x2="0" y2="5" stroke="#3f8f4f" stroke-width="1.4">
+</line>
+</pattern>
+<pattern id="ID4" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+<line x1="0" y1="0" x2="0" y2="5" stroke="#cf3a3a" stroke-width="1.4">
+</line>
+</pattern>
+</defs>
+<line x1="14" y1="35" x2="386" y2="35" stroke="#c9c8c2" stroke-width="1">
+</line>
+<g>
+<line x1="53.0031612223393" y1="35" x2="53.0031612223393" y2="27" stroke="#3f8f4f" stroke-width="2">
+</line>
+<rect x="49.8031612223393" y="23.8" width="6.4" height="6.4" fill="#3f8f4f">
+</rect>
+<text x="53.0031612223393" y="21" font-size="9" fill="#3f8f4f" text-anchor="middle">+20.0%</text>
+</g>
+<g>
+<line x1="151.00105374077975" y1="35" x2="151.00105374077975" y2="29.23728813559322" stroke="#3f8f4f" stroke-width="2">
+</line>
+<rect x="147.80105374077976" y="26.037288135593222" width="6.4" height="6.4" fill="#3f8f4f">
+</rect>
+<text x="151.00105374077975" y="23.23728813559322" font-size="9" fill="#3f8f4f" text-anchor="middle">+14.4%</text>
+</g>
+<g>
+<line x1="248.99894625922022" y1="35" x2="248.99894625922022" y2="35.61538461538461" stroke="#cf3a3a" stroke-width="2">
+</line>
+<rect x="245.79894625922023" y="32.41538461538461" width="6.4" height="6.4" fill="#cf3a3a">
+</rect>
+<text x="248.99894625922022" y="47.61538461538461" font-size="9" fill="#cf3a3a" text-anchor="middle">-1.5%</text>
+</g>
+<g>
+<line x1="346.9968387776607" y1="35" x2="346.9968387776607" y2="32.142857142857146" stroke="#3f8f4f" stroke-width="2">
+</line>
+<rect x="343.7968387776607" y="28.942857142857147" width="6.4" height="6.4" fill="#3f8f4f">
+</rect>
+<text x="346.9968387776607" y="26.142857142857146" font-size="9" fill="#3f8f4f" text-anchor="middle">+7.1%</text>
+</g>
+<line x1="14" y1="89" x2="386" y2="89" stroke="#c9c8c2" stroke-width="1">
+</line>
+<g>
+<rect x="32.42360379346681" y="81" width="41.15911485774499" height="8" fill="#3f8f4f" stroke="none" stroke-width="0">
+</rect>
+<text x="53.0031612223393" y="77" font-size="9" fill="#3f8f4f" text-anchor="middle">+20</text>
+</g>
+<g>
+<rect x="130.42149631190725" y="82.2" width="41.15911485774499" height="6.8" fill="#3f8f4f" stroke="none" stroke-width="0">
+</rect>
+<text x="151.00105374077975" y="78.2" font-size="9" fill="#3f8f4f" text-anchor="middle">+17</text>
+</g>
+<g>
+<rect x="228.4193888303477" y="89" width="41.15911485774499" height="1" fill="#cf3a3a" stroke="none" stroke-width="0">
+</rect>
+<text x="248.99894625922022" y="100.8" font-size="9" fill="#cf3a3a" text-anchor="middle">-2</text>
+</g>
+<g>
+<rect x="326.4172813487882" y="85" width="41.15911485774499" height="4" fill="#3f8f4f" stroke="none" stroke-width="0">
+</rect>
+<text x="346.9968387776607" y="81" font-size="9" fill="#3f8f4f" text-anchor="middle">+10</text>
+</g>
+<line x1="14" y1="238" x2="386" y2="238" stroke="#c9c8c2" stroke-width="1">
+</line>
+<g>
+<rect x="4.004214963119075" y="16" width="97.99789251844045" height="222" fill="transparent">
+</rect>
+<rect x="55.0031612223393" y="171.33333333333334" width="29.399367755532133" height="66.66666666666666" fill="#fff" stroke="#54534e" stroke-width="1.25">
+</rect>
+<rect x="21.603793466807172" y="158" width="29.399367755532133" height="80" fill="#54534e">
+</rect>
+<text x="36.30347734457324" y="154" font-size="9.5" fill="#2b2b29" text-anchor="middle">120</text>
+<text x="69.70284510010536" y="167.33333333333334" font-size="9.5" fill="#6b6a64" text-anchor="middle">100</text>
+<text x="53.0031612223393" y="254" font-size="11" fill="#6b6a64" text-anchor="middle">Q1</text>
+</g>
+<g>
+<rect x="102.00210748155953" y="16" width="97.99789251844045" height="222" fill="transparent">
+</rect>
+<rect x="153.00105374077975" y="159.33333333333334" width="29.399367755532133" height="78.66666666666666" fill="#fff" stroke="#54534e" stroke-width="1.25">
+</rect>
+<rect x="119.60168598524763" y="148" width="29.399367755532133" height="90" fill="#54534e">
+</rect>
+<text x="134.3013698630137" y="144" font-size="9.5" fill="#2b2b29" text-anchor="middle">135</text>
+<text x="167.70073761854582" y="155.33333333333334" font-size="9.5" fill="#6b6a64" text-anchor="middle">118</text>
+<text x="151.00105374077975" y="254" font-size="11" fill="#6b6a64" text-anchor="middle">Q2</text>
+</g>
+<g>
+<rect x="200" y="16" width="97.99789251844045" height="222" fill="transparent">
+</rect>
+<rect x="250.99894625922025" y="151.33333333333331" width="29.399367755532133" height="86.66666666666669" fill="#fff" stroke="#54534e" stroke-width="1.25">
+</rect>
+<rect x="217.5995785036881" y="152.66666666666666" width="29.399367755532133" height="85.33333333333334" fill="#54534e">
+</rect>
+<text x="232.29926238145416" y="148.66666666666666" font-size="9.5" fill="#2b2b29" text-anchor="middle">128</text>
+<text x="265.6986301369863" y="147.33333333333331" font-size="9.5" fill="#6b6a64" text-anchor="middle">130</text>
+<text x="248.99894625922022" y="254" font-size="11" fill="#6b6a64" text-anchor="middle">Q3</text>
+</g>
+<g>
+<rect x="297.99789251844044" y="16" width="97.99789251844045" height="222" fill="transparent">
+</rect>
+<rect x="348.9968387776607" y="144.66666666666669" width="29.399367755532133" height="93.33333333333331" fill="#fff" stroke="#54534e" stroke-width="1.25">
+</rect>
+<rect x="315.59747102212856" y="138" width="29.399367755532133" height="100" fill="#54534e">
+</rect>
+<text x="330.2971548998946" y="134" font-size="9.5" fill="#2b2b29" text-anchor="middle">150</text>
+<text x="363.69652265542675" y="140.66666666666669" font-size="9.5" fill="#6b6a64" text-anchor="middle">140</text>
+<text x="346.9968387776607" y="254" font-size="11" fill="#6b6a64" text-anchor="middle">Q4</text>
+</g>
+</svg>
+<table style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<caption>Grouped AC versus PL — data table</caption>
+<thead>
+<tr>
+<th scope="col">
+</th>
+<th scope="col">AC</th>
+<th scope="col">PL</th>
+<th scope="col">ΔPL</th>
+<th scope="col">ΔPL%</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">Q1</th>
+<td>120</td>
+<td>100</td>
+<td>+20</td>
+<td>+20.0%</td>
+</tr>
+<tr>
+<th scope="row">Q2</th>
+<td>135</td>
+<td>118</td>
+<td>+17</td>
+<td>+14.4%</td>
+</tr>
+<tr>
+<th scope="row">Q3</th>
+<td>128</td>
+<td>130</td>
+<td>-2</td>
+<td>-1.5%</td>
+</tr>
+<tr>
+<th scope="row">Q4</th>
+<td>150</td>
+<td>140</td>
+<td>+10</td>
+<td>+7.1%</td>
+</tr>
+</tbody>
+</table>"
+`;
+
+exports[`component markup snapshots > HorizontalWaterfallChart renders stable markup 1`] = `
+"<svg width="400" height="360" viewBox="0 0 400 360" role="img" aria-label="Horizontal bridge of 4 actual contributions to a running total." style="display:block;max-width:100%;margin-inline:auto;font-family:ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif">
+<line x1="87.8" y1="16" x2="87.8" y2="346" stroke="#c9c8c2" stroke-width="1">
+</line>
+<line x1="87.8" y1="74.25" x2="87.8" y2="122.75" stroke="#c9c8c2" stroke-width="1.25">
+</line>
+<line x1="266.59999999999997" y1="156.75" x2="266.59999999999997" y2="205.25" stroke="#c9c8c2" stroke-width="1.25">
+</line>
+<line x1="356" y1="239.25" x2="356" y2="287.75" stroke="#c9c8c2" stroke-width="1.25">
+</line>
+<g>
+<rect x="14" y="16" width="372" height="82.5" fill="transparent">
+</rect>
+<rect x="87.8" y="40.25" width="0.5" height="34" fill="#54534e">
+</rect>
+<text x="91.8" y="60.65" font-size="9.5" font-weight="600" fill="#2b2b29" text-anchor="start">0</text>
+</g>
+<g>
+<rect x="14" y="98.5" width="372" height="82.5" fill="transparent">
+</rect>
+<rect x="87.8" y="122.75" width="178.79999999999995" height="34" fill="#7a7973">
+</rect>
+<text x="270.59999999999997" y="143.15" font-size="9.5" font-weight="400" fill="#2b2b29" text-anchor="start">+30</text>
+</g>
+<g>
+<rect x="14" y="181" width="372" height="82.5" fill="transparent">
+</rect>
+<rect x="266.59999999999997" y="205.25" width="89.40000000000003" height="34" fill="#7a7973">
+</rect>
+<text x="360" y="225.65" font-size="9.5" font-weight="400" fill="#2b2b29" text-anchor="start">+15</text>
+</g>
+<g>
+<rect x="14" y="263.5" width="372" height="82.5" fill="transparent">
+</rect>
+<rect x="87.8" y="287.75" width="268.2" height="34" fill="#54534e">
+</rect>
+<text x="360" y="308.15" font-size="9.5" font-weight="600" fill="#2b2b29" text-anchor="start">45</text>
+</g>
+<text x="53.8" y="60.85" font-size="10.5" font-weight="600" fill="#2b2b29" text-anchor="end">Start</text>
+<text x="53.8" y="143.35" font-size="10.5" font-weight="400" fill="#6b6a64" text-anchor="end">Growth</text>
+<text x="53.8" y="225.85" font-size="10.5" font-weight="400" fill="#6b6a64" text-anchor="end">Cost</text>
+<text x="53.8" y="308.35" font-size="10.5" font-weight="600" fill="#2b2b29" text-anchor="end">End</text>
+</svg>
+<table style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<caption>Horizontal bridge of actual contributions — data table</caption>
+<thead>
+<tr>
+<th scope="col">
+</th>
+<th scope="col">Contribution</th>
+<th scope="col">Running total</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">Start</th>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<th scope="row">Growth</th>
+<td>+30</td>
+<td>30</td>
+</tr>
+<tr>
+<th scope="row">Cost</th>
+<td>+15</td>
+<td>45</td>
+</tr>
+<tr>
+<th scope="row">End</th>
+<td>45</td>
+<td>45</td>
+</tr>
+</tbody>
+</table>"
+`;
+
+exports[`component markup snapshots > IntegratedVarianceChart renders stable markup 1`] = `
+"<svg width="400" height="260" viewBox="0 0 400 260" role="img" aria-label="Integrated variance of AC versus PY" style="display:block;max-width:100%;margin-inline:auto;font-family:ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif">
+<defs>
+<pattern id="ID1" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+<line x1="0" y1="0" x2="0" y2="5" stroke="#54534e" stroke-width="1">
+</line>
+</pattern>
+<pattern id="ID2" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+<line x1="0" y1="0" x2="0" y2="5" stroke="#3f8f4f" stroke-width="1.4">
+</line>
+</pattern>
+<pattern id="ID3" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+<line x1="0" y1="0" x2="0" y2="5" stroke="#cf3a3a" stroke-width="1.4">
+</line>
+</pattern>
+</defs>
+<line x1="14" y1="37" x2="386" y2="37" stroke="#c9c8c2" stroke-width="1">
+</line>
+<g>
+<line x1="52.06786850477201" y1="37" x2="52.06786850477201" y2="27" stroke="#3f8f4f" stroke-width="2">
+</line>
+<rect x="48.867868504772005" y="23.8" width="6.4" height="6.4" fill="#3f8f4f">
+</rect>
+<text x="52.06786850477201" y="21" font-size="9" fill="#3f8f4f" text-anchor="middle">+20.0%</text>
+</g>
+<g>
+<line x1="150.68928950159065" y1="37" x2="150.68928950159065" y2="29.796610169491526" stroke="#3f8f4f" stroke-width="2">
+</line>
+<rect x="147.48928950159066" y="26.596610169491527" width="6.4" height="6.4" fill="#3f8f4f">
+</rect>
+<text x="150.68928950159065" y="23.796610169491526" font-size="9" fill="#3f8f4f" text-anchor="middle">+14.4%</text>
+</g>
+<g>
+<line x1="249.31071049840932" y1="37" x2="249.31071049840932" y2="37.76923076923077" stroke="#cf3a3a" stroke-width="2">
+</line>
+<rect x="246.11071049840933" y="34.569230769230764" width="6.4" height="6.4" fill="#cf3a3a">
+</rect>
+<text x="249.31071049840932" y="49.76923076923077" font-size="9" fill="#cf3a3a" text-anchor="middle">-1.5%</text>
+</g>
+<g>
+<line x1="347.932131495228" y1="37" x2="347.932131495228" y2="33.42857142857143" stroke="#3f8f4f" stroke-width="2">
+</line>
+<rect x="344.73213149522803" y="30.22857142857143" width="6.4" height="6.4" fill="#3f8f4f">
+</rect>
+<text x="347.932131495228" y="27.42857142857143" font-size="9" fill="#3f8f4f" text-anchor="middle">+7.1%</text>
+</g>
+<line x1="14" y1="95" x2="386" y2="95" stroke="#c9c8c2" stroke-width="1">
+</line>
+<g>
+<rect x="31.35737009544009" y="85" width="41.42099681866384" height="10" fill="#3f8f4f" stroke="none" stroke-width="0">
+</rect>
+<text x="52.06786850477201" y="81" font-size="9" fill="#3f8f4f" text-anchor="middle">+20</text>
+</g>
+<g>
+<rect x="129.97879109225875" y="86.5" width="41.42099681866384" height="8.5" fill="#3f8f4f" stroke="none" stroke-width="0">
+</rect>
+<text x="150.68928950159065" y="82.5" font-size="9" fill="#3f8f4f" text-anchor="middle">+17</text>
+</g>
+<g>
+<rect x="228.6002120890774" y="95" width="41.42099681866384" height="1" fill="#cf3a3a" stroke="none" stroke-width="0">
+</rect>
+<text x="249.31071049840932" y="107" font-size="9" fill="#cf3a3a" text-anchor="middle">-2</text>
+</g>
+<g>
+<rect x="327.2216330858961" y="90" width="41.42099681866384" height="5" fill="#3f8f4f" stroke="none" stroke-width="0">
+</rect>
+<text x="347.932131495228" y="86" font-size="9" fill="#3f8f4f" text-anchor="middle">+10</text>
+</g>
+<line x1="14" y1="238" x2="386" y2="238" stroke="#c9c8c2" stroke-width="1">
+</line>
+<g>
+<rect x="2.7571580063626797" y="16" width="98.62142099681866" height="222" fill="transparent">
+</rect>
+<rect x="21.495227995758224" y="176.66666666666669" width="61.14528101802757" height="61.333333333333314" fill="#bdbcb6">
+</rect>
+<rect x="31.35737009544009" y="164.39999999999998" width="41.42099681866384" height="73.60000000000002" fill="#54534e" stroke="none" stroke-width="0">
+</rect>
+<text x="52.06786850477201" y="159.39999999999998" font-size="10" fill="#2b2b29" text-anchor="middle">120</text>
+</g>
+<g>
+<rect x="101.37857900318133" y="16" width="98.62142099681866" height="222" fill="transparent">
+</rect>
+<rect x="120.11664899257687" y="165.62666666666667" width="61.14528101802757" height="72.37333333333333" fill="#bdbcb6">
+</rect>
+<rect x="129.97879109225875" y="155.2" width="41.42099681866384" height="82.80000000000001" fill="#54534e" stroke="none" stroke-width="0">
+</rect>
+<text x="150.68928950159065" y="150.2" font-size="10" fill="#2b2b29" text-anchor="middle">135</text>
+</g>
+<g>
+<rect x="200" y="16" width="98.62142099681866" height="222" fill="transparent">
+</rect>
+<rect x="218.73806998939554" y="158.26666666666665" width="61.14528101802757" height="79.73333333333335" fill="#bdbcb6">
+</rect>
+<rect x="228.6002120890774" y="159.49333333333334" width="41.42099681866384" height="78.50666666666666" fill="#54534e" stroke="none" stroke-width="0">
+</rect>
+<text x="249.31071049840932" y="154.49333333333334" font-size="10" fill="#2b2b29" text-anchor="middle">128</text>
+</g>
+<g>
+<rect x="298.6214209968187" y="16" width="98.62142099681866" height="222" fill="transparent">
+</rect>
+<rect x="317.3594909862142" y="152.13333333333333" width="61.14528101802757" height="85.86666666666667" fill="#bdbcb6">
+</rect>
+<rect x="327.2216330858961" y="146" width="41.42099681866384" height="92" fill="#54534e" stroke="none" stroke-width="0">
+</rect>
+<text x="347.932131495228" y="141" font-size="10" fill="#2b2b29" text-anchor="middle">150</text>
+</g>
+<text x="52.06786850477201" y="254" font-size="11" fill="#6b6a64" text-anchor="middle">Q1</text>
+<text x="150.68928950159065" y="254" font-size="11" fill="#6b6a64" text-anchor="middle">Q2</text>
+<text x="249.31071049840932" y="254" font-size="11" fill="#6b6a64" text-anchor="middle">Q3</text>
+<text x="347.932131495228" y="254" font-size="11" fill="#6b6a64" text-anchor="middle">Q4</text>
+</svg>
+<table style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<caption>Integrated variance of AC versus PY — data table</caption>
+<thead>
+<tr>
+<th scope="col">
+</th>
+<th scope="col">AC</th>
+<th scope="col">PY</th>
+<th scope="col">ΔPY</th>
+<th scope="col">ΔPY%</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">Q1</th>
+<td>120</td>
+<td>100</td>
+<td>+20</td>
+<td>+20.0%</td>
+</tr>
+<tr>
+<th scope="row">Q2</th>
+<td>135</td>
+<td>118</td>
+<td>+17</td>
+<td>+14.4%</td>
+</tr>
+<tr>
+<th scope="row">Q3</th>
+<td>128</td>
+<td>130</td>
+<td>-2</td>
+<td>-1.5%</td>
+</tr>
+<tr>
+<th scope="row">Q4</th>
+<td>150</td>
+<td>140</td>
+<td>+10</td>
+<td>+7.1%</td>
+</tr>
+</tbody>
+</table>"
+`;
+
+exports[`component markup snapshots > KpiCard renders stable markup 1`] = `
+"<div style="display:flex;flex-direction:column;gap:7px;font-family:ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;min-width:0;background:#fff;border-radius:8px;padding:15px 17px;box-sizing:border-box;border:1px solid #e6e5e0">
+<div style="font-size:12.5px;font-weight:600;color:#6b6a64;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%" title="Revenue">Revenue</div>
+<div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap;min-width:0">
+<span style="font-size:28px;font-weight:700;color:#2b2b29;font-variant-numeric:tabular-nums;letter-spacing:-0.5px;line-height:1.05;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+<span style="font-size:0.6em;font-weight:600;color:#6b6a64;margin-right:1px">€</span>500</span>
+<span style="display:inline-flex;align-items:baseline;gap:5px;color:#3f8f4f;font-size:13px;font-variant-numeric:tabular-nums;white-space:nowrap;max-width:100%">
+<span aria-hidden="true" style="font-size:8.282608695652174px;line-height:1;align-self:center">▲</span>
+<strong style="font-weight:700">+40</strong>
+<span style="font-weight:600;opacity:0.85">+8.7%</span>
+<span style="color:#6b6a64;font-weight:500;font-size:0.85em">vs <!-- -->PY</span>
+</span>
+</div>
+<div style="margin-top:auto;padding-top:6px">
+<svg width="100%" height="42" viewBox="0 0 260 42" preserveAspectRatio="none" style="display:block;max-width:100%" aria-hidden="true">
+<path d="M3.0 39.1 L87.6 21.0 L172.3 30.0 L257.1 3.0 L257.1 42 L3.0 42 Z" fill="#7a7973" fill-opacity="0.16" stroke="none">
+</path>
+<path d="M3.0 39.1 L87.6 21.0 L172.3 30.0 L257.1 3.0" fill="none" stroke="#7a7973" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round">
+</path>
+</svg>
+</div>
+</div>"
+`;
+
+exports[`component markup snapshots > LineChart renders stable markup 1`] = `
+"<svg width="400" height="260" viewBox="0 0 400 260" role="img" aria-label="Line chart of 4 periods across 4 series" style="display:block;max-width:100%;margin-inline:auto;font-family:ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif">
+<line x1="14" y1="238" x2="348" y2="238" stroke="#c9c8c2" stroke-width="1">
+</line>
+<path d="M33.6,63.4 L131.9,45.6 L230.1,41.2 L328.4,19.0" fill="none" stroke="#54534e" stroke-width="1.5" stroke-dasharray="1.5 2.5" stroke-linejoin="round" stroke-linecap="round">
+</path>
+<path d="M33.6,75.2 L131.9,53.0 L230.1,42.6 L328.4,23.4" fill="none" stroke="#54534e" stroke-width="1.5" stroke-dasharray="5 3" stroke-linejoin="round" stroke-linecap="round">
+</path>
+<path d="M33.6,90.0 L131.9,63.4 L230.1,45.6 L328.4,30.8" fill="none" stroke="#7a7973" stroke-width="1.75" stroke-linejoin="round" stroke-linecap="round">
+</path>
+<path d="M33.6,60.4 L131.9,38.2 L230.1,48.6 L328.4,16.0" fill="none" stroke="#54534e" stroke-width="2" stroke-linejoin="round" stroke-linecap="round">
+</path>
+<circle cx="33.64705882352941" cy="60.39999999999998" r="2.2" fill="#54534e">
+</circle>
+<circle cx="131.88235294117646" cy="38.19999999999999" r="2.2" fill="#54534e">
+</circle>
+<circle cx="230.11764705882354" cy="48.559999999999974" r="2.2" fill="#54534e">
+</circle>
+<circle cx="328.35294117647055" cy="16" r="2.2" fill="#54534e">
+</circle>
+<circle cx="33.64705882352941" cy="90" r="2.2" fill="#7a7973">
+</circle>
+<circle cx="131.88235294117646" cy="63.360000000000014" r="2.2" fill="#7a7973">
+</circle>
+<circle cx="230.11764705882354" cy="45.599999999999994" r="2.2" fill="#7a7973">
+</circle>
+<circle cx="328.35294117647055" cy="30.799999999999983" r="2.2" fill="#7a7973">
+</circle>
+<circle cx="33.64705882352941" cy="75.20000000000002" r="2.2" fill="#54534e">
+</circle>
+<circle cx="131.88235294117646" cy="53" r="2.2" fill="#54534e">
+</circle>
+<circle cx="230.11764705882354" cy="42.639999999999986" r="2.2" fill="#54534e">
+</circle>
+<circle cx="328.35294117647055" cy="23.400000000000006" r="2.2" fill="#54534e">
+</circle>
+<circle cx="33.64705882352941" cy="63.360000000000014" r="2.2" fill="#54534e">
+</circle>
+<circle cx="131.88235294117646" cy="45.599999999999994" r="2.2" fill="#54534e">
+</circle>
+<circle cx="230.11764705882354" cy="41.16" r="2.2" fill="#54534e">
+</circle>
+<circle cx="328.35294117647055" cy="18.960000000000008" r="2.2" fill="#54534e">
+</circle>
+<text x="334.35294117647055" y="23.5" font-size="10" font-weight="600" fill="#54534e" text-anchor="start">AC 150</text>
+<text x="334.35294117647055" y="34.5" font-size="10" font-weight="400" fill="#54534e" text-anchor="start">FC 148</text>
+<text x="334.35294117647055" y="45.5" font-size="10" font-weight="400" fill="#54534e" text-anchor="start">PL 145</text>
+<text x="334.35294117647055" y="56.5" font-size="10" font-weight="400" fill="#7a7973" text-anchor="start">PY 140</text>
+<text x="33.64705882352941" y="254" font-size="10.5" fill="#6b6a64" text-anchor="middle">Q1</text>
+<text x="131.88235294117646" y="254" font-size="10.5" fill="#6b6a64" text-anchor="middle">Q2</text>
+<text x="230.11764705882354" y="254" font-size="10.5" fill="#6b6a64" text-anchor="middle">Q3</text>
+<text x="328.35294117647055" y="254" font-size="10.5" fill="#6b6a64" text-anchor="middle">Q4</text>
+</svg>
+<table style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<caption>Line chart of 4 series — data table</caption>
+<thead>
+<tr>
+<th scope="col">
+</th>
+<th scope="col">AC</th>
+<th scope="col">PY</th>
+<th scope="col">PL</th>
+<th scope="col">FC</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">Q1</th>
+<td>120</td>
+<td>100</td>
+<td>110</td>
+<td>118</td>
+</tr>
+<tr>
+<th scope="row">Q2</th>
+<td>135</td>
+<td>118</td>
+<td>125</td>
+<td>130</td>
+</tr>
+<tr>
+<th scope="row">Q3</th>
+<td>128</td>
+<td>130</td>
+<td>132</td>
+<td>133</td>
+</tr>
+<tr>
+<th scope="row">Q4</th>
+<td>150</td>
+<td>140</td>
+<td>145</td>
+<td>148</td>
+</tr>
+</tbody>
+</table>"
+`;
+
+exports[`component markup snapshots > MatrixTable renders stable markup 1`] = `
+"<div style="font-family:ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;min-width:0">
+<style>
+.ibcs-mtx-hbtn { font: inherit; color: inherit; letter-spacing: inherit; background: none; border: 0; padding: 0; margin: 0; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap }
+.ibcs-mtx-hbtn:focus-visible, .ibcs-mtx-cell:focus-visible { outline: 2px solid currentColor; outline-offset: -2px }
+@media (max-width:640px){.ibcs-mtx-lbl{position:static !important;left:auto !important;}}</style>
+<div style="overflow-x:auto;overflow-y:visible;border:1px solid #eceae4;border-radius:8px">
+<table style="border-collapse:collapse;width:max-content;min-width:100%">
+<thead>
+<tr>
+<th scope="col" rowSpan="2" class="ibcs-mtx-lbl" style="font-size:11px;font-weight:600;color:#6b6a64;white-space:nowrap;background:#fff;height:26px;box-sizing:border-box;position:sticky;left:0;z-index:4;text-align:left;vertical-align:bottom;min-width:240px;max-width:240px;padding:0 12px 6px;border-bottom:2px solid #2b2b29"> </th>
+<th scope="col" colSpan="1" rowSpan="1" style="font-size:12px;font-weight:700;color:#2b2b29;white-space:nowrap;background:#fff;height:26px;box-sizing:border-box;text-align:center;vertical-align:bottom;padding:6px 8px 4px;padding-left:8px;border-bottom:1px solid #e6e5e0;cursor:default;user-select:none">
+<span style="display:inline-flex;align-items:center;gap:4px;justify-content:center">2023</span>
+</th>
+<th scope="col" colSpan="1" rowSpan="1" style="font-size:12px;font-weight:700;color:#2b2b29;white-space:nowrap;background:#fff;height:26px;box-sizing:border-box;text-align:center;vertical-align:bottom;padding:6px 8px 4px;padding-left:26px;border-bottom:1px solid #e6e5e0;cursor:default;user-select:none">
+<span style="display:inline-flex;align-items:center;gap:4px;justify-content:center">2024</span>
+</th>
+</tr>
+<tr>
+<th scope="col" style="font-size:11px;font-weight:600;color:#6b6a64;white-space:nowrap;background:#fff;height:26px;box-sizing:border-box;text-align:right;padding:2px 8px 6px;padding-left:8px;border-bottom:2px solid #2b2b29;font-style:normal" title="Actual">AC</th>
+<th scope="col" style="font-size:11px;font-weight:600;color:#6b6a64;white-space:nowrap;background:#fff;height:26px;box-sizing:border-box;text-align:right;padding:2px 8px 6px;padding-left:26px;border-bottom:2px solid #2b2b29;font-style:normal" title="Actual">AC</th>
+</tr>
+</thead>
+<tbody>
+<tr style="border-top:none">
+<th scope="row" class="ibcs-mtx-lbl" style="position:sticky;left:0;z-index:2;background:#fff;padding:0 12px;height:30px;white-space:nowrap;max-width:240px;text-align:left;font-weight:400;border-bottom:none">
+<span style="display:flex;align-items:center;padding-left:0;min-width:0">
+<span style="width:16px;flex:0 0 auto">
+</span>
+<span style="width:12px;flex:0 0 auto;color:#6b6a64;font-weight:600;font-size:12px">+</span>
+<span title="Revenue" style="font-size:12.5px;font-weight:400;color:#2b2b29;flex:1 1 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0">Revenue</span>
+</span>
+</th>
+<td data-cell-ref="rev::y23::AC" style="font-size:12.5px;padding:0 8px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;color:#2b2b29;position:relative;min-width:62px;font-weight:400;font-style:normal;padding-left:8px;border-top:none;border-bottom:none">100</td>
+<td data-cell-ref="rev::y24::AC" style="font-size:12.5px;padding:0 8px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;color:#2b2b29;position:relative;min-width:62px;font-weight:400;font-style:normal;padding-left:26px;border-top:none;border-bottom:none">120</td>
+</tr>
+<tr style="border-top:none">
+<th scope="row" class="ibcs-mtx-lbl" style="position:sticky;left:0;z-index:2;background:#fff;padding:0 12px;height:30px;white-space:nowrap;max-width:240px;text-align:left;font-weight:400;border-bottom:none">
+<span style="display:flex;align-items:center;padding-left:0;min-width:0">
+<span style="width:16px;flex:0 0 auto">
+</span>
+<span style="width:12px;flex:0 0 auto;color:#6b6a64;font-weight:600;font-size:12px">−</span>
+<span title="Cost" style="font-size:12.5px;font-weight:400;color:#2b2b29;flex:1 1 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0">Cost</span>
+</span>
+</th>
+<td data-cell-ref="cost::y23::AC" style="font-size:12.5px;padding:0 8px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;color:#2b2b29;position:relative;min-width:62px;font-weight:400;font-style:normal;padding-left:8px;border-top:none;border-bottom:none">60</td>
+<td data-cell-ref="cost::y24::AC" style="font-size:12.5px;padding:0 8px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;color:#2b2b29;position:relative;min-width:62px;font-weight:400;font-style:normal;padding-left:26px;border-top:none;border-bottom:none">70</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>"
+`;
+
+exports[`component markup snapshots > MiniVarianceMultiples renders stable markup 1`] = `
+"<div style="font-family:ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;color:#2b2b29">
+<style>
+.ID1 { display: grid; gap: 16px; grid-template-columns: repeat(1, minmax(0, 1fr)); }
+@media (min-width: 480px) { .ID1 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 768px) { .ID1 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+</style>
+<div class="ID1">
+<div>
+<svg width="100%" viewBox="0 0 220 120" preserveAspectRatio="xMidYMid meet" role="img" aria-label="EMEA: variance by category, shared scale." style="display:block">
+<text x="6" y="14" font-size="11.5" font-weight="600" fill="#2b2b29">EMEA</text>
+<line x1="6" y1="61" x2="214" y2="61" stroke="#c9c8c2" stroke-width="1">
+</line>
+<g>
+<rect x="27.666666666666664" y="28" width="26" height="33" fill="#3f8f4f">
+</rect>
+<text x="40.666666666666664" y="25" font-size="8.5" fill="#3f8f4f" text-anchor="middle">+20</text>
+<text x="40.666666666666664" y="113" font-size="8.5" fill="#6b6a64" text-anchor="middle">Q1</text>
+</g>
+<g>
+<rect x="97" y="32.95" width="26" height="28.05" fill="#3f8f4f">
+</rect>
+<text x="110" y="29.950000000000003" font-size="8.5" fill="#3f8f4f" text-anchor="middle">+17</text>
+<text x="110" y="113" font-size="8.5" fill="#6b6a64" text-anchor="middle">Q2</text>
+</g>
+<g>
+<rect x="166.33333333333331" y="61" width="26" height="3.3000000000000003" fill="#cf3a3a">
+</rect>
+<text x="179.33333333333331" y="73.3" font-size="8.5" fill="#cf3a3a" text-anchor="middle">-2</text>
+<text x="179.33333333333331" y="113" font-size="8.5" fill="#6b6a64" text-anchor="middle">Q3</text>
+</g>
+</svg>
+</div>
+<div>
+<svg width="100%" viewBox="0 0 220 120" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Americas: variance by category, shared scale." style="display:block">
+<text x="6" y="14" font-size="11.5" font-weight="600" fill="#2b2b29">Americas</text>
+<line x1="6" y1="61" x2="214" y2="61" stroke="#c9c8c2" stroke-width="1">
+</line>
+<g>
+<rect x="27.666666666666664" y="61" width="26" height="8.25" fill="#cf3a3a">
+</rect>
+<text x="40.666666666666664" y="78.25" font-size="8.5" fill="#cf3a3a" text-anchor="middle">-5</text>
+<text x="40.666666666666664" y="113" font-size="8.5" fill="#6b6a64" text-anchor="middle">Q1</text>
+</g>
+<g>
+<rect x="97" y="52.75" width="26" height="8.25" fill="#3f8f4f">
+</rect>
+<text x="110" y="49.75" font-size="8.5" fill="#3f8f4f" text-anchor="middle">+5</text>
+<text x="110" y="113" font-size="8.5" fill="#6b6a64" text-anchor="middle">Q2</text>
+</g>
+<g>
+<rect x="166.33333333333331" y="61" width="26" height="4.95" fill="#cf3a3a">
+</rect>
+<text x="179.33333333333331" y="74.95" font-size="8.5" fill="#cf3a3a" text-anchor="middle">-3</text>
+<text x="179.33333333333331" y="113" font-size="8.5" fill="#6b6a64" text-anchor="middle">Q3</text>
+</g>
+</svg>
+</div>
+</div>
+<table style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<caption>Variance versus PY — data table</caption>
+<thead>
+<tr>
+<th scope="col">
+</th>
+<th scope="col">AC</th>
+<th scope="col">PY</th>
+<th scope="col">ΔPY</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">EMEA — Q1</th>
+<td>120</td>
+<td>100</td>
+<td>+20</td>
+</tr>
+<tr>
+<th scope="row">EMEA — Q2</th>
+<td>135</td>
+<td>118</td>
+<td>+17</td>
+</tr>
+<tr>
+<th scope="row">EMEA — Q3</th>
+<td>128</td>
+<td>130</td>
+<td>-2</td>
+</tr>
+<tr>
+<th scope="row">Americas — Q1</th>
+<td>90</td>
+<td>95</td>
+<td>-5</td>
+</tr>
+<tr>
+<th scope="row">Americas — Q2</th>
+<td>104</td>
+<td>99</td>
+<td>+5</td>
+</tr>
+<tr>
+<th scope="row">Americas — Q3</th>
+<td>98</td>
+<td>101</td>
+<td>-3</td>
+</tr>
+</tbody>
+</table>
+</div>"
+`;
+
+exports[`component markup snapshots > PieChart renders stable markup 1`] = `
+"<svg width="160" height="160" viewBox="0 0 160 160" role="img" aria-label="Part-to-whole pie chart" style="display:block;max-width:100%;margin-inline:auto;font-family:ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif">
+<path d="M 80 80 L 80 8 A 72 72 0 0 1 122.321 138.249 Z" fill="#bdbcb6" stroke="#fff" stroke-width="1">
+</path>
+<path d="M 80 80 L 122.321 138.249 A 72 72 0 0 1 8 80 Z" fill="#9c9b95" stroke="#fff" stroke-width="1">
+</path>
+<path d="M 80 80 L 8 80 A 72 72 0 0 1 80 8 Z" fill="#7a7973" stroke="#fff" stroke-width="1">
+</path>
+<circle cx="80" cy="80" r="72" fill="none" stroke="#c9c8c2" stroke-width="1">
+</circle>
+</svg>
+<table style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<caption>Part-to-whole data table</caption>
+<thead>
+<tr>
+<th scope="col">
+</th>
+<th scope="col">Value</th>
+<th scope="col">Share</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">EMEA</th>
+<td>40</td>
+<td>40.0%</td>
+</tr>
+<tr>
+<th scope="row">Americas</th>
+<td>35</td>
+<td>35.0%</td>
+</tr>
+<tr>
+<th scope="row">APAC</th>
+<td>25</td>
+<td>25.0%</td>
+</tr>
+<tr>
+<th scope="row">Total</th>
+<td>100</td>
+<td>100.0%</td>
+</tr>
+</tbody>
+</table>"
+`;
+
+exports[`component markup snapshots > RankingVarianceChart renders stable markup 1`] = `
+"<svg width="400" height="172" viewBox="0 0 400 172" role="img" aria-label="4 entities ranked by variance versus PL" style="display:block;max-width:100%;margin-inline:auto;font-family:ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif">
+<defs>
+<pattern id="ID1" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+<line x1="0" y1="0" x2="0" y2="5" stroke="#54534e" stroke-width="1">
+</line>
+</pattern>
+</defs>
+<text x="109.76" y="24" font-size="10.5" fill="#6b6a64">AC</text>
+<text x="272.1216" y="24" font-size="10.5" fill="#6b6a64" text-anchor="middle">ΔPL</text>
+<text x="354.4288" y="24" font-size="10.5" font-style="italic" fill="#6b6a64" text-anchor="middle">ΔPL%</text>
+<line x1="109.76" y1="30" x2="109.76" y2="164" stroke="#c9c8c2" stroke-width="1">
+</line>
+<line x1="272.1216" y1="30" x2="272.1216" y2="164" stroke="#c9c8c2" stroke-width="0.75">
+</line>
+<line x1="354.4288" y1="30" x2="354.4288" y2="164" stroke="#c9c8c2" stroke-width="0.75">
+</line>
+<g>
+<rect x="12" y="30" width="376" height="26" fill="transparent">
+</rect>
+<text x="12" y="47.08" font-size="12" fill="#2b2b29">Q1<title>Q1</title>
+</text>
+<rect x="109.76" y="36.5" width="87.70048000000001" height="13" fill="#54534e">
+</rect>
+<rect x="109.76" y="34.68" width="80.39210666666666" height="16.64" fill="#fff" fill-opacity="0" stroke="#54534e" stroke-width="1.25">
+</rect>
+<rect x="272.1216" y="37.019999999999996" width="8" height="11.96" fill="#3f8f4f">
+</rect>
+<text x="308.8576" y="46.74" text-anchor="end" font-size="11" font-weight="400" fill="#2b2b29">+10</text>
+<line x1="354.4288" y1="43" x2="362.4288" y2="43" stroke="#3f8f4f" stroke-width="2">
+</line>
+<circle cx="362.4288" cy="43" r="3.5" fill="#3f8f4f">
+</circle>
+<text x="386" y="46.74" text-anchor="end" font-size="11" font-style="italic" font-weight="400" fill="#3f8f4f">+9.1%</text>
+<text x="201.46048000000002" y="46.74" text-anchor="start" font-size="11" fill="#2b2b29">120</text>
+</g>
+<g>
+<rect x="12" y="56" width="376" height="26" fill="transparent">
+</rect>
+<text x="12" y="73.08" font-size="12" fill="#2b2b29">Q2<title>Q2</title>
+</text>
+<rect x="109.76" y="62.5" width="98.66304000000001" height="13" fill="#54534e">
+</rect>
+<rect x="109.76" y="60.68" width="91.35466666666667" height="16.64" fill="#fff" fill-opacity="0" stroke="#54534e" stroke-width="1.25">
+</rect>
+<rect x="272.1216" y="63.019999999999996" width="8" height="11.96" fill="#3f8f4f">
+</rect>
+<text x="308.8576" y="72.74" text-anchor="end" font-size="11" font-weight="400" fill="#2b2b29">+10</text>
+<line x1="354.4288" y1="69" x2="361.46880000000004" y2="69" stroke="#3f8f4f" stroke-width="2">
+</line>
+<circle cx="361.46880000000004" cy="69" r="3.5" fill="#3f8f4f">
+</circle>
+<text x="386" y="72.74" text-anchor="end" font-size="11" font-style="italic" font-weight="400" fill="#3f8f4f">+8.0%</text>
+<text x="221.3856" y="72.74" text-anchor="end" font-size="11" fill="#2b2b29">135</text>
+</g>
+<g>
+<rect x="12" y="82" width="376" height="26" fill="transparent">
+</rect>
+<text x="12" y="99.08" font-size="12" fill="#2b2b29">Q4<title>Q4</title>
+</text>
+<rect x="109.76" y="88.5" width="109.6256" height="13" fill="#54534e">
+</rect>
+<rect x="109.76" y="86.68" width="105.97141333333335" height="16.64" fill="#fff" fill-opacity="0" stroke="#54534e" stroke-width="1.25">
+</rect>
+<rect x="272.1216" y="89.02" width="4" height="11.96" fill="#3f8f4f">
+</rect>
+<text x="308.8576" y="98.74" text-anchor="end" font-size="11" font-weight="400" fill="#2b2b29">+5</text>
+<line x1="354.4288" y1="95" x2="357.4632827586207" y2="95" stroke="#3f8f4f" stroke-width="2">
+</line>
+<circle cx="357.4632827586207" cy="95" r="3.5" fill="#3f8f4f">
+</circle>
+<text x="386" y="98.74" text-anchor="end" font-size="11" font-style="italic" font-weight="400" fill="#3f8f4f">+3.4%</text>
+<text x="221.3856" y="98.74" text-anchor="end" font-size="11" fill="#2b2b29">150</text>
+</g>
+<g>
+<rect x="12" y="108" width="376" height="26" fill="transparent">
+</rect>
+<text x="12" y="125.08" font-size="12" fill="#2b2b29">Q3<title>Q3</title>
+</text>
+<rect x="109.76" y="114.5" width="93.54717866666668" height="13" fill="#54534e">
+</rect>
+<rect x="109.76" y="112.68" width="96.470528" height="16.64" fill="#fff" fill-opacity="0" stroke="#54534e" stroke-width="1.25">
+</rect>
+<rect x="268.9216" y="115.02" width="3.1999999999999886" height="11.96" fill="#cf3a3a">
+</rect>
+<text x="235.3856" y="124.74" text-anchor="start" font-size="11" font-weight="400" fill="#2b2b29">-4</text>
+<line x1="354.4288" y1="121" x2="351.76213333333334" y2="121" stroke="#cf3a3a" stroke-width="2">
+</line>
+<circle cx="351.76213333333334" cy="121" r="3.5" fill="#cf3a3a">
+</circle>
+<text x="322.8576" y="124.74" text-anchor="start" font-size="11" font-style="italic" font-weight="400" fill="#cf3a3a">-3.0%</text>
+<text x="221.3856" y="124.74" text-anchor="end" font-size="11" fill="#2b2b29">128</text>
+</g>
+<g>
+<line x1="12" y1="136" x2="388" y2="136" stroke="#e6e5e0" stroke-width="1">
+</line>
+<text x="12" y="155.08" font-size="12" font-weight="700" fill="#2b2b29">Total</text>
+<text x="111.76" y="154.74" font-size="11" font-weight="700" fill="#2b2b29">533</text>
+<rect x="272.1216" y="145.02" width="8" height="11.96" fill="#3f8f4f">
+</rect>
+<polygon points="286.1216,151 280.1216,146 280.1216,156" fill="#3f8f4f">
+</polygon>
+<text x="308.8576" y="154.74" text-anchor="end" font-size="11" font-weight="700" fill="#2b2b29">+21</text>
+<line x1="354.4288" y1="151" x2="358.038175" y2="151" stroke="#3f8f4f" stroke-width="2.5">
+</line>
+<circle cx="358.038175" cy="151" r="4" fill="#3f8f4f">
+</circle>
+<text x="386" y="154.74" text-anchor="end" font-size="11" font-style="italic" font-weight="700" fill="#3f8f4f">+4.1%</text>
+</g>
+</svg>
+<table style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<caption>Ranked variance versus PL — data table</caption>
+<thead>
+<tr>
+<th scope="col">
+</th>
+<th scope="col">AC</th>
+<th scope="col">PL</th>
+<th scope="col">ΔPL</th>
+<th scope="col">ΔPL%</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">Q1</th>
+<td>120</td>
+<td>110</td>
+<td>+10</td>
+<td>+9.1%</td>
+</tr>
+<tr>
+<th scope="row">Q2</th>
+<td>135</td>
+<td>125</td>
+<td>+10</td>
+<td>+8.0%</td>
+</tr>
+<tr>
+<th scope="row">Q4</th>
+<td>150</td>
+<td>145</td>
+<td>+5</td>
+<td>+3.4%</td>
+</tr>
+<tr>
+<th scope="row">Q3</th>
+<td>128</td>
+<td>132</td>
+<td>-4</td>
+<td>-3.0%</td>
+</tr>
+<tr>
+<th scope="row">Total</th>
+<td>533</td>
+<td>512</td>
+<td>+21</td>
+<td>+4.1%</td>
+</tr>
+</tbody>
+</table>"
+`;
+
+exports[`component markup snapshots > RatioTreeChart renders stable markup 1`] = `
+"<svg width="400" height="222" viewBox="0 0 400 222" role="img" aria-label="Ratio tree of 3 time-series measures" style="display:block;max-width:100%;margin-inline:auto;font-family:ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif">
+<defs>
+<pattern id="ID1" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+<line x1="0" y1="0" x2="0" y2="5" stroke="#54534e" stroke-width="1">
+</line>
+</pattern>
+</defs>
+<path d="M166.0,111.0 L200.0,111.0 L200.0,58.0 L234.0,58.0" fill="none" stroke="#e6e5e0" stroke-width="1.25" opacity="1">
+</path>
+<path d="M166.0,111.0 L200.0,111.0 L200.0,164.0 L234.0,164.0" fill="none" stroke="#e6e5e0" stroke-width="1.25" opacity="1">
+</path>
+<g opacity="1">
+<circle cx="200" cy="111" r="9" fill="#fff" stroke="#c9c8c2" stroke-width="1">
+</circle>
+<text x="200" y="114.6" font-size="12" font-weight="700" fill="#2b2b29" text-anchor="middle">÷</text>
+</g>
+<g opacity="1">
+<rect x="14" y="69" width="152" height="84" rx="5" fill="#fff" stroke="#54534e" stroke-width="1.75">
+</rect>
+<text x="23" y="85" font-size="10" font-weight="500" fill="#6b6a64">ROA</text>
+<text x="157" y="85.5" font-size="12.5" font-weight="700" fill="#2b2b29" text-anchor="end">0</text>
+<g>
+<line x1="23" y1="146" x2="157" y2="146" stroke="#c9c8c2" stroke-width="1">
+</line>
+<path d="M45.3 108.5 L90.0 104.3 L134.7 100.2 L134.7 146.0 L45.3 146.0 Z" fill="#bdbcb6" fill-opacity="0.18" stroke="none">
+</path>
+<path d="M45.3 108.5 L90.0 104.3 L134.7 100.2" fill="none" stroke="#bdbcb6" stroke-width="1.25" opacity="0.85">
+</path>
+<rect x="38.83333333333333" y="104.33333333333333" width="13" height="41.66666666666667" fill="#54534e">
+</rect>
+<rect x="83.49999999999999" y="100.16666666666666" width="13" height="45.83333333333334" fill="#54534e">
+</rect>
+<rect x="128.16666666666666" y="96" width="13" height="50" fill="#54534e">
+</rect>
+</g>
+<rect x="14" y="69" width="152" height="84" fill="transparent">
+</rect>
+</g>
+<g opacity="1">
+<rect x="234" y="16" width="152" height="84" rx="5" fill="#fff" stroke="#e6e5e0" stroke-width="1">
+</rect>
+<text x="243" y="32" font-size="10" font-weight="500" fill="#6b6a64">Profit</text>
+<text x="377" y="32.5" font-size="12.5" font-weight="700" fill="#2b2b29" text-anchor="end">12</text>
+<g>
+<line x1="243" y1="93" x2="377" y2="93" stroke="#c9c8c2" stroke-width="1">
+</line>
+<rect x="258.8333333333333" y="51.33333333333333" width="13" height="41.66666666666667" fill="#54534e">
+</rect>
+<rect x="303.5" y="47.16666666666667" width="13" height="45.83333333333333" fill="#54534e">
+</rect>
+<rect x="348.16666666666663" y="43" width="13" height="50" fill="#54534e">
+</rect>
+</g>
+<rect x="234" y="16" width="152" height="84" fill="transparent">
+</rect>
+</g>
+<g opacity="1">
+<rect x="234" y="122" width="152" height="84" rx="5" fill="#fff" stroke="#e6e5e0" stroke-width="1">
+</rect>
+<text x="243" y="138" font-size="10" font-weight="500" fill="#6b6a64">Assets</text>
+<text x="377" y="138.5" font-size="12.5" font-weight="700" fill="#2b2b29" text-anchor="end">100</text>
+<g>
+<line x1="243" y1="199" x2="377" y2="199" stroke="#c9c8c2" stroke-width="1">
+</line>
+<rect x="258.8333333333333" y="149" width="13" height="50" fill="#54534e">
+</rect>
+<rect x="303.5" y="149" width="13" height="50" fill="#54534e">
+</rect>
+<rect x="348.16666666666663" y="149" width="13" height="50" fill="#54534e">
+</rect>
+</g>
+<rect x="234" y="122" width="152" height="84" fill="transparent">
+</rect>
+</g>
+</svg>
+<table style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<caption>Ratio tree data table</caption>
+<thead>
+<tr>
+<th scope="col">
+</th>
+<th scope="col">Latest</th>
+<th scope="col">PY</th>
+<th scope="col">ΔPY</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">ROA</th>
+<td>0</td>
+<td>0</td>
+<td>+0</td>
+</tr>
+<tr>
+<th scope="row">· Profit</th>
+<td>12</td>
+<td>n/a</td>
+<td>n/a</td>
+</tr>
+<tr>
+<th scope="row">· Assets</th>
+<td>100</td>
+<td>n/a</td>
+<td>n/a</td>
+</tr>
+</tbody>
+</table>"
+`;
+
+exports[`component markup snapshots > Report renders stable markup 1`] = `
+"<div style="font-family:ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;color:#2b2b29">
+<style>
+@media (max-width: 760px) {
+  .ibcs-report-grid { grid-template-columns: 1fr !important; }
+  .ibcs-report-grid > * { grid-column: auto !important; }
+}
+</style>
+<header style="margin-bottom:16px">
+<div style="font-size:20px;font-weight:600">Q4 review</div>
+</header>
+<div class="ibcs-report-grid" style="display:grid;grid-template-columns:repeat(12, 1fr);gap:14px;align-items:stretch">
+<section style="grid-column:span 12;min-width:0;background:#fff;border:1px solid #e6e5e0;border-radius:10px;padding:14px 16px;box-shadow:0 1px 2px rgba(0,0,0,0.03);display:flex;flex-direction:column">
+<div style="margin-bottom:12px">
+<div style="font-size:15px;font-weight:600">Summary</div>
+<p style="margin:4px 0 0;font-size:12.5px;color:#6b6a64">Revenue ahead of plan.</p>
+</div>
+</section>
+<section style="grid-column:span 3;min-width:0;background:#fff;border:1px solid #e6e5e0;border-radius:10px;padding:0;box-shadow:0 1px 2px rgba(0,0,0,0.03);display:flex;flex-direction:column">
+<div style="display:flex;flex-direction:column;gap:7px;font-family:ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;min-width:0;background:#fff;border-radius:10px;padding:15px 17px;box-sizing:border-box;border:1px solid #e6e5e0;flex:1;box-shadow:none">
+<div style="font-size:12.5px;font-weight:600;color:#6b6a64;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%" title="Revenue">Revenue</div>
+<div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap;min-width:0">
+<span style="font-size:28px;font-weight:700;color:#2b2b29;font-variant-numeric:tabular-nums;letter-spacing:-0.5px;line-height:1.05;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">500</span>
+<span style="display:inline-flex;align-items:baseline;gap:5px;color:#3f8f4f;font-size:13px;font-variant-numeric:tabular-nums;white-space:nowrap;max-width:100%">
+<span aria-hidden="true" style="font-size:8.282608695652174px;line-height:1;align-self:center">▲</span>
+<strong style="font-weight:700">+40</strong>
+<span style="font-weight:600;opacity:0.85">+8.7%</span>
+<span style="color:#6b6a64;font-weight:500;font-size:0.85em">vs <!-- -->PY</span>
+</span>
+</div>
+</div>
+</section>
+</div>
+</div>"
+`;
+
+exports[`component markup snapshots > ResponsiveChart renders stable markup 1`] = `
+"<div style="display:block;width:100%">
+</div>"
+`;
+
+exports[`component markup snapshots > ScatterChart renders stable markup 1`] = `
+"<svg width="400" height="260" viewBox="0 0 400 260" role="img" aria-label="Scatter plot of 3 points" style="display:block;max-width:100%;margin-inline:auto;font-family:ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif">
+<line x1="52" y1="16" x2="52" y2="220" stroke="#eceae4" stroke-width="1">
+</line>
+<line x1="131.04761904761904" y1="16" x2="131.04761904761904" y2="220" stroke="#eceae4" stroke-width="1">
+</line>
+<line x1="210.09523809523807" y1="16" x2="210.09523809523807" y2="220" stroke="#eceae4" stroke-width="1">
+</line>
+<line x1="289.1428571428571" y1="16" x2="289.1428571428571" y2="220" stroke="#eceae4" stroke-width="1">
+</line>
+<line x1="368.19047619047615" y1="16" x2="368.19047619047615" y2="220" stroke="#eceae4" stroke-width="1">
+</line>
+<line x1="52" y1="220" x2="384" y2="220" stroke="#eceae4" stroke-width="1">
+</line>
+<line x1="52" y1="181.14285714285714" x2="384" y2="181.14285714285714" stroke="#eceae4" stroke-width="1">
+</line>
+<line x1="52" y1="142.28571428571428" x2="384" y2="142.28571428571428" stroke="#eceae4" stroke-width="1">
+</line>
+<line x1="52" y1="103.42857142857143" x2="384" y2="103.42857142857143" stroke="#eceae4" stroke-width="1">
+</line>
+<line x1="52" y1="64.57142857142858" x2="384" y2="64.57142857142858" stroke="#eceae4" stroke-width="1">
+</line>
+<line x1="52" y1="25.714285714285722" x2="384" y2="25.714285714285722" stroke="#eceae4" stroke-width="1">
+</line>
+<line x1="52" y1="220" x2="384" y2="220" stroke="#c9c8c2" stroke-width="1.5">
+</line>
+<line x1="52" y1="16" x2="52" y2="220" stroke="#c9c8c2" stroke-width="1.5">
+</line>
+<line x1="52" y1="16" x2="52" y2="220" stroke="#c9c8c2" stroke-width="1">
+</line>
+<line x1="52" y1="220" x2="384" y2="220" stroke="#c9c8c2" stroke-width="1">
+</line>
+<text x="52" y="234" font-size="10" fill="#6b6a64" text-anchor="middle">0</text>
+<text x="131.04761904761904" y="234" font-size="10" fill="#6b6a64" text-anchor="middle">1</text>
+<text x="210.09523809523807" y="234" font-size="10" fill="#6b6a64" text-anchor="middle">2</text>
+<text x="289.1428571428571" y="234" font-size="10" fill="#6b6a64" text-anchor="middle">3</text>
+<text x="368.19047619047615" y="234" font-size="10" fill="#6b6a64" text-anchor="middle">4</text>
+<text x="46" y="223.5" font-size="10" fill="#6b6a64" text-anchor="end">0</text>
+<text x="46" y="184.64285714285714" font-size="10" fill="#6b6a64" text-anchor="end">1</text>
+<text x="46" y="145.78571428571428" font-size="10" fill="#6b6a64" text-anchor="end">2</text>
+<text x="46" y="106.92857142857143" font-size="10" fill="#6b6a64" text-anchor="end">3</text>
+<text x="46" y="68.07142857142858" font-size="10" fill="#6b6a64" text-anchor="end">4</text>
+<text x="46" y="29.214285714285722" font-size="10" fill="#6b6a64" text-anchor="end">5</text>
+<g opacity="1" style="transform:scale(1);transform-origin:52px 220px">
+<g>
+<circle cx="131.04761904761904" cy="142.28571428571428" r="3.5" fill="#3b82a6" fill-opacity="0.85" stroke="#3b82a6" stroke-width="0.75">
+</circle>
+</g>
+<g>
+<circle cx="289.1428571428571" cy="25.714285714285722" r="3.5" fill="#3b82a6" fill-opacity="0.85" stroke="#3b82a6" stroke-width="0.75">
+</circle>
+</g>
+<g>
+<circle cx="368.19047619047615" cy="181.14285714285714" r="3.5" fill="#5e8c22" fill-opacity="0.85" stroke="#5e8c22" stroke-width="0.75">
+</circle>
+</g>
+</g>
+<g>
+<g transform="translate(274, 20)">
+<rect x="0" y="-7" width="9" height="9" rx="1.5" fill="#3b82a6">
+</rect>
+<text x="13" y="1" font-size="10" fill="#6b6a64">A</text>
+</g>
+<g transform="translate(274, 34)">
+<rect x="0" y="-7" width="9" height="9" rx="1.5" fill="#5e8c22">
+</rect>
+<text x="13" y="1" font-size="10" fill="#6b6a64">B</text>
+</g>
+</g>
+</svg>
+<table style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<caption>Scatter plot data table</caption>
+<thead>
+<tr>
+<th scope="col">
+</th>
+<th scope="col">X</th>
+<th scope="col">Y</th>
+<th scope="col">Group</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">Point 1</th>
+<td>1</td>
+<td>2</td>
+<td>A</td>
+</tr>
+<tr>
+<th scope="row">Point 2</th>
+<td>3</td>
+<td>5</td>
+<td>A</td>
+</tr>
+<tr>
+<th scope="row">Point 3</th>
+<td>4</td>
+<td>1</td>
+<td>B</td>
+</tr>
+</tbody>
+</table>"
+`;
+
+exports[`component markup snapshots > ScrollChart renders stable markup 1`] = `
+"<div style="position:relative;width:100%;height:180px;display:flex;justify-content:flex-start;align-items:center;padding-top:0;padding-right:0;padding-bottom:0;padding-left:0;box-sizing:border-box;overflow-x:auto">
+<div style="flex:0 0 auto;width:600px;height:180px">
+<div>600x180</div>
+</div>
+</div>"
+`;
+
+exports[`component markup snapshots > Skeleton renders stable markup 1`] = `
+"<div role="status" aria-busy="true" aria-label="Loading…" style="width:320px">
+<svg width="100%" height="180" viewBox="0 0 600 180" preserveAspectRatio="none" style="display:block">
+<g>
+<rect x="16.666666666666668" y="78.19999999999999" width="33.333333333333336" height="85.80000000000001" rx="2" fill="#e7e6e1">
+<animate attributeName="opacity" values="0.45;0.9;0.45" dur="1.4s" begin="0s" repeatCount="indefinite">
+</animate>
+</rect>
+<rect x="83.33333333333334" y="39.19999999999999" width="33.333333333333336" height="124.80000000000001" rx="2" fill="#e7e6e1">
+<animate attributeName="opacity" values="0.45;0.9;0.45" dur="1.4s" begin="0.12s" repeatCount="indefinite">
+</animate>
+</rect>
+<rect x="150" y="98.48" width="33.333333333333336" height="65.52" rx="2" fill="#e7e6e1">
+<animate attributeName="opacity" values="0.45;0.9;0.45" dur="1.4s" begin="0.24s" repeatCount="indefinite">
+</animate>
+</rect>
+<rect x="216.66666666666666" y="15.800000000000011" width="33.333333333333336" height="148.2" rx="2" fill="#e7e6e1">
+<animate attributeName="opacity" values="0.45;0.9;0.45" dur="1.4s" begin="0.36s" repeatCount="indefinite">
+</animate>
+</rect>
+<rect x="283.33333333333337" y="70.4" width="33.333333333333336" height="93.6" rx="2" fill="#e7e6e1">
+<animate attributeName="opacity" values="0.45;0.9;0.45" dur="1.4s" begin="0.48s" repeatCount="indefinite">
+</animate>
+</rect>
+<rect x="350.00000000000006" y="51.68000000000001" width="33.333333333333336" height="112.32" rx="2" fill="#e7e6e1">
+<animate attributeName="opacity" values="0.45;0.9;0.45" dur="1.4s" begin="0.6s" repeatCount="indefinite">
+</animate>
+</rect>
+<rect x="416.6666666666667" y="86" width="33.333333333333336" height="78" rx="2" fill="#e7e6e1">
+<animate attributeName="opacity" values="0.45;0.9;0.45" dur="1.4s" begin="0.72s" repeatCount="indefinite">
+</animate>
+</rect>
+<rect x="483.33333333333337" y="26.72" width="33.333333333333336" height="137.28" rx="2" fill="#e7e6e1">
+<animate attributeName="opacity" values="0.45;0.9;0.45" dur="1.4s" begin="0.84s" repeatCount="indefinite">
+</animate>
+</rect>
+<rect x="550" y="61.03999999999999" width="33.333333333333336" height="102.96000000000001" rx="2" fill="#e7e6e1">
+<animate attributeName="opacity" values="0.45;0.9;0.45" dur="1.4s" begin="0s" repeatCount="indefinite">
+</animate>
+</rect>
+<rect x="0" y="164" width="600" height="2" fill="#e7e6e1" opacity="0.7">
+</rect>
+</g>
+</svg>
+</div>"
+`;
+
+exports[`component markup snapshots > SmallMultiples renders stable markup 1`] = `
+"<div style="font-family:ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;color:#2b2b29">
+<style>
+.ID1 { display: grid; gap: 16px; grid-template-columns: repeat(1, minmax(0, 1fr)); }
+@media (min-width: 480px) { .ID1 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 768px) { .ID1 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+</style>
+<div class="ID1">
+<div>
+<div data-testid="panel">Q1</div>
+</div>
+<div>
+<div data-testid="panel">Q2</div>
+</div>
+<div>
+<div data-testid="panel">Q3</div>
+</div>
+<div>
+<div data-testid="panel">Q4</div>
+</div>
+</div>
+<table style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<caption>Small multiples data table</caption>
+<thead>
+<tr>
+<th scope="col">
+</th>
+<th scope="col">Value 1</th>
+<th scope="col">Value 2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">Q1</th>
+<td>120</td>
+<td>100</td>
+</tr>
+<tr>
+<th scope="row">Q2</th>
+<td>135</td>
+<td>118</td>
+</tr>
+<tr>
+<th scope="row">Q3</th>
+<td>128</td>
+<td>130</td>
+</tr>
+<tr>
+<th scope="row">Q4</th>
+<td>150</td>
+<td>140</td>
+</tr>
+</tbody>
+</table>
+</div>"
+`;
+
+exports[`component markup snapshots > Sparkline renders stable markup 1`] = `
+"<svg width="120" height="24" viewBox="0 0 120 24" style="display:block;max-width:100%" aria-hidden="true">
+<path d="M3.0 21.1 L31.5 12.0 L60.0 16.5 L88.5 2.9 L117.0 7.5" fill="none" stroke="#54534e" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round">
+</path>
+<circle cx="117.05" cy="7.475" r="2.2" fill="#54534e">
+</circle>
+</svg>"
+`;
+
+exports[`component markup snapshots > StackedChart renders stable markup 1`] = `
+"<svg width="400" height="260" viewBox="0 0 400 260" role="img" aria-label="Stacked columns of 2 series across 4 periods" style="display:block;max-width:100%;margin-inline:auto;font-family:ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif">
+<line x1="14" y1="233.99999999999997" x2="290" y2="233.99999999999997" stroke="#c9c8c2" stroke-width="1">
+</line>
+<g>
+<rect x="5.658536585365859" y="32" width="73.17073170731707" height="202" fill="transparent">
+</rect>
+<rect x="19.560975609756103" y="150.41379310344826" width="45.36585365853659" height="83.58620689655172" fill="#54534e">
+</rect>
+<rect x="19.560975609756103" y="80.75862068965517" width="45.36585365853659" height="69.65517241379308" fill="#ccccca">
+</rect>
+<text x="42.243902439024396" y="75.75862068965517" font-size="11" font-weight="600" text-anchor="middle" fill="#2b2b29">220</text>
+<text x="42.243902439024396" y="250" font-size="11" text-anchor="middle" fill="#6b6a64">Q1</text>
+</g>
+<g>
+<rect x="78.82926829268294" y="32" width="73.17073170731707" height="202" fill="transparent">
+</rect>
+<rect x="92.73170731707317" y="139.9655172413793" width="45.36585365853659" height="94.03448275862067" fill="#54534e">
+</rect>
+<rect x="92.73170731707317" y="57.772413793103446" width="45.36585365853659" height="82.19310344827585" fill="#ccccca">
+</rect>
+<text x="115.41463414634147" y="52.772413793103446" font-size="11" font-weight="600" text-anchor="middle" fill="#2b2b29">253</text>
+<text x="115.41463414634147" y="250" font-size="11" text-anchor="middle" fill="#6b6a64">Q2</text>
+</g>
+<g>
+<rect x="152" y="32" width="73.17073170731707" height="202" fill="transparent">
+</rect>
+<rect x="165.90243902439025" y="144.84137931034482" width="45.36585365853659" height="89.15862068965515" fill="#54534e">
+</rect>
+<rect x="165.90243902439025" y="54.28965517241379" width="45.36585365853659" height="90.55172413793103" fill="#ccccca">
+</rect>
+<text x="188.58536585365854" y="49.28965517241379" font-size="11" font-weight="600" text-anchor="middle" fill="#2b2b29">258</text>
+<text x="188.58536585365854" y="250" font-size="11" text-anchor="middle" fill="#6b6a64">Q3</text>
+</g>
+<g>
+<rect x="225.17073170731706" y="32" width="73.17073170731707" height="202" fill="transparent">
+</rect>
+<rect x="239.0731707317073" y="129.51724137931035" width="45.36585365853659" height="104.48275862068962" fill="#54534e">
+</rect>
+<rect x="239.0731707317073" y="32" width="45.36585365853659" height="97.51724137931035" fill="#ccccca">
+</rect>
+<text x="261.7560975609756" y="27" font-size="11" font-weight="600" text-anchor="middle" fill="#2b2b29">290</text>
+<text x="261.7560975609756" y="250" font-size="11" text-anchor="middle" fill="#6b6a64">Q4</text>
+</g>
+<text x="298" y="84.25862068965517" font-size="11" fill="#ccccca" font-weight="500">West</text>
+<text x="298" y="185.25862068965517" font-size="11" fill="#54534e" font-weight="500">East</text>
+</svg>
+<table style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<caption>Stacked columns — data table</caption>
+<thead>
+<tr>
+<th scope="col">
+</th>
+<th scope="col">East</th>
+<th scope="col">West</th>
+<th scope="col">Total</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">Q1</th>
+<td>120</td>
+<td>100</td>
+<td>220</td>
+</tr>
+<tr>
+<th scope="row">Q2</th>
+<td>135</td>
+<td>118</td>
+<td>253</td>
+</tr>
+<tr>
+<th scope="row">Q3</th>
+<td>128</td>
+<td>130</td>
+<td>258</td>
+</tr>
+<tr>
+<th scope="row">Q4</th>
+<td>150</td>
+<td>140</td>
+<td>290</td>
+</tr>
+</tbody>
+</table>"
+`;
+
+exports[`component markup snapshots > StatementTable renders stable markup 1`] = `
+"<div style="position:relative;min-width:0;font-family:ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif">
+<style>
+.ibcs-stmt tbody tr:not(.ibcs-row-pad) > * { transition: background 90ms }
+.ibcs-stmt tbody tr:not(.ibcs-row-pad):hover > * { background: rgba(0,0,0,0.025) }
+@media (prefers-reduced-motion: reduce) { .ibcs-stmt tbody tr > * { transition: none } }
+
+@keyframes ibcsRowIn { from { opacity: 0 } to { opacity: 1 } }
+@media (prefers-reduced-motion: reduce) { tr.ibcs-row { animation: none !important; opacity: 1 !important } }
+</style>
+<div style="overflow-x:auto">
+<table class="ibcs-stmt" style="border-collapse:collapse;width:100%;min-width:min-content">
+<thead>
+<tr style="border-bottom:2px solid #2b2b29">
+<th scope="col" style="font-size:11px;font-weight:500;color:#6b6a64;padding:0 10px 8px;text-align:left;white-space:nowrap"> </th>
+<th scope="col" style="font-size:11px;font-weight:500;color:#6b6a64;padding:0 10px 8px;text-align:right;white-space:nowrap">PY</th>
+<th scope="col" style="font-size:11px;font-weight:500;color:#6b6a64;padding:0 10px 8px;text-align:left;white-space:nowrap;padding-left:8px;width:260px">AC</th>
+<th scope="col" style="font-size:11px;font-weight:500;color:#6b6a64;padding:0 10px 8px;text-align:center;white-space:nowrap;width:108px">ΔPY</th>
+<th scope="col" style="font-size:11px;font-weight:500;color:#6b6a64;padding:0 10px 8px;text-align:center;white-space:nowrap;width:150px">ΔPY%</th>
+</tr>
+</thead>
+<tbody>
+<tr class="ibcs-row" style="border-top:none;height:34px;animation:ibcsRowIn 360ms ease-out 0ms both">
+<th scope="row" style="padding:0 10px;white-space:nowrap;min-width:148px;text-align:left;font-weight:400">
+<span style="display:inline-flex;align-items:baseline;padding-left:0">
+<span style="width:16px">
+</span>
+<span style="width:12px;color:#6b6a64;font-weight:600;font-size:12px">
+</span>
+<span title="Revenue" style="font-size:12.5px;font-weight:400;color:#2b2b29;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;white-space:normal;word-break:break-word;max-width:260px">Revenue</span>
+</span>
+</th>
+<td style="font-size:12.5px;padding:0 10px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;color:#6b6a64;font-weight:400">460</td>
+<td style="padding:0;width:260px">
+<svg width="260" height="34" style="display:block">
+<line x1="8" y1="0" x2="8" y2="34" stroke="#c9c8c2" stroke-width="0.75">
+</line>
+<line x1="8" y1="0" x2="8" y2="17" stroke="#c9c8c2" stroke-width="1.5">
+</line>
+<line x1="208" y1="17" x2="208" y2="34" stroke="#c9c8c2" stroke-width="1.5">
+</line>
+<rect x="8" y="9" width="200" height="16" fill="#7a7973">
+</rect>
+<text x="213" y="21" text-anchor="start" font-size="11.5" font-weight="400" fill="#2b2b29">500</text>
+</svg>
+</td>
+<td style="padding:0;width:108px">
+<svg width="108" height="34" style="display:block">
+<line x1="8" y1="3" x2="8" y2="31" stroke="#c9c8c2" stroke-width="0.75">
+</line>
+<rect x="8" y="10.5" width="46" height="13" fill="#3f8f4f">
+</rect>
+<text x="102" y="20.5" text-anchor="end" font-size="11" font-style="normal" font-weight="400" fill="#2b2b29">+40</text>
+</svg>
+</td>
+<td style="padding:0;width:150px">
+<svg width="150" height="34" style="display:block">
+<line x1="60" y1="3" x2="60" y2="31" stroke="#c9c8c2" stroke-width="0.75">
+</line>
+<line x1="60" y1="17" x2="91.30434782608695" y2="17" stroke="#3f8f4f" stroke-width="2">
+</line>
+<circle cx="91.30434782608695" cy="17" r="3.5" fill="#2b2b29">
+</circle>
+<text x="97.30434782608695" y="20.5" text-anchor="start" font-size="11" font-style="italic" font-weight="400" fill="#3f8f4f">+8.7</text>
+</svg>
+</td>
+</tr>
+<tr class="ibcs-row" style="border-top:none;height:34px;animation:ibcsRowIn 360ms ease-out 22ms both">
+<th scope="row" style="padding:0 10px;white-space:nowrap;min-width:148px;text-align:left;font-weight:400">
+<span style="display:inline-flex;align-items:baseline;padding-left:0">
+<span style="width:16px">
+</span>
+<span style="width:12px;color:#6b6a64;font-weight:600;font-size:12px">−</span>
+<span title="COGS" style="font-size:12.5px;font-weight:400;color:#2b2b29;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;white-space:normal;word-break:break-word;max-width:260px">COGS</span>
+</span>
+</th>
+<td style="font-size:12.5px;padding:0 10px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;color:#6b6a64;font-weight:400">280</td>
+<td style="padding:0;width:260px">
+<svg width="260" height="34" style="display:block">
+<line x1="8" y1="0" x2="8" y2="34" stroke="#c9c8c2" stroke-width="0.75">
+</line>
+<line x1="208" y1="0" x2="208" y2="17" stroke="#c9c8c2" stroke-width="1.5">
+</line>
+<line x1="88" y1="17" x2="88" y2="34" stroke="#c9c8c2" stroke-width="1.5">
+</line>
+<rect x="88" y="9" width="120" height="16" fill="#7a7973">
+</rect>
+<text x="83" y="21" text-anchor="end" font-size="11.5" font-weight="400" fill="#2b2b29">300</text>
+</svg>
+</td>
+<td style="padding:0;width:108px">
+<svg width="108" height="34" style="display:block">
+<line x1="8" y1="3" x2="8" y2="31" stroke="#c9c8c2" stroke-width="0.75">
+</line>
+<rect x="8" y="10.5" width="23" height="13" fill="#cf3a3a">
+</rect>
+<text x="102" y="20.5" text-anchor="end" font-size="11" font-style="normal" font-weight="400" fill="#2b2b29">+20</text>
+</svg>
+</td>
+<td style="padding:0;width:150px">
+<svg width="150" height="34" style="display:block">
+<line x1="60" y1="3" x2="60" y2="31" stroke="#c9c8c2" stroke-width="0.75">
+</line>
+<line x1="60" y1="17" x2="85.71428571428571" y2="17" stroke="#cf3a3a" stroke-width="2">
+</line>
+<circle cx="85.71428571428571" cy="17" r="3.5" fill="#2b2b29">
+</circle>
+<text x="91.71428571428571" y="20.5" text-anchor="start" font-size="11" font-style="italic" font-weight="400" fill="#cf3a3a">+7.1</text>
+</svg>
+</td>
+</tr>
+<tr class="ibcs-row" style="border-top:1px solid #2b2b29;height:34px;animation:ibcsRowIn 360ms ease-out 44ms both">
+<th scope="row" style="padding:0 10px;white-space:nowrap;min-width:148px;text-align:left;font-weight:400">
+<span style="display:inline-flex;align-items:baseline;padding-left:0">
+<span style="width:16px">
+</span>
+<span style="width:12px;color:#6b6a64;font-weight:600;font-size:12px">=</span>
+<span title="Gross profit" style="font-size:13px;font-weight:600;color:#2b2b29;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;white-space:normal;word-break:break-word;max-width:260px">Gross profit</span>
+</span>
+</th>
+<td style="font-size:12.5px;padding:0 10px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;color:#2b2b29;font-weight:600">180</td>
+<td style="padding:0;width:260px">
+<svg width="260" height="34" style="display:block">
+<line x1="8" y1="0" x2="8" y2="34" stroke="#c9c8c2" stroke-width="0.75">
+</line>
+<line x1="88" y1="0" x2="88" y2="17" stroke="#c9c8c2" stroke-width="1.5">
+</line>
+<line x1="88" y1="17" x2="88" y2="34" stroke="#c9c8c2" stroke-width="1.5">
+</line>
+<rect x="8" y="8" width="80" height="18" fill="#54534e">
+</rect>
+<text x="93" y="21" text-anchor="start" font-size="11.5" font-weight="700" fill="#2b2b29">200</text>
+</svg>
+</td>
+<td style="padding:0;width:108px">
+<svg width="108" height="34" style="display:block">
+<line x1="8" y1="3" x2="8" y2="31" stroke="#c9c8c2" stroke-width="0.75">
+</line>
+<rect x="8" y="8.5" width="23" height="17" fill="#3f8f4f">
+</rect>
+<text x="102" y="20.5" text-anchor="end" font-size="11" font-style="normal" font-weight="700" fill="#2b2b29">+20</text>
+</svg>
+</td>
+<td style="padding:0;width:150px">
+<svg width="150" height="34" style="display:block">
+<line x1="60" y1="3" x2="60" y2="31" stroke="#c9c8c2" stroke-width="0.75">
+</line>
+<line x1="60" y1="17" x2="100" y2="17" stroke="#3f8f4f" stroke-width="2">
+</line>
+<circle cx="100" cy="17" r="3.5" fill="#2b2b29">
+</circle>
+<text x="106" y="20.5" text-anchor="start" font-size="11" font-style="italic" font-weight="700" fill="#3f8f4f">+11.1</text>
+</svg>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>"
+`;
+
+exports[`component markup snapshots > StructureChart renders stable markup 1`] = `
+"<svg width="400" height="260" viewBox="0 0 400 260" role="img" aria-label="Composition of 4 components versus PY" style="display:block;max-width:100%;margin-inline:auto;font-family:ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif">
+<defs>
+<pattern id="ID1" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+<line x1="0" y1="0" x2="0" y2="5" stroke="#bdbcb6" stroke-width="1">
+</line>
+</pattern>
+</defs>
+<line x1="144" y1="14" x2="144" y2="226" stroke="#c9c8c2" stroke-width="1">
+</line>
+<g>
+<rect x="12" y="8.303477344573235" width="376" height="55.84826132771338" fill="transparent">
+</rect>
+<rect x="144" y="24.227608008429925" width="112" height="24" fill="#bdbcb6">
+</rect>
+<rect x="144" y="28.227608008429925" width="120" height="16" fill="#7a7973">
+</rect>
+<text x="12" y="40.227608008429925" font-size="12" fill="#2b2b29">Q4</text>
+<text x="264" y="40.227608008429925" font-size="11" fill="#2b2b29">150</text>
+<text x="350" y="40.227608008429925" font-size="11" fill="#3f8f4f" text-anchor="end">+10</text>
+<text x="388" y="40.227608008429925" font-size="11" font-weight="600" fill="#6b6a64" text-anchor="end">28<!-- -->%</text>
+</g>
+<g>
+<rect x="12" y="64.15173867228661" width="376" height="55.84826132771338" fill="transparent">
+</rect>
+<rect x="144" y="80.0758693361433" width="94.39999999999999" height="24" fill="#bdbcb6">
+</rect>
+<rect x="144" y="84.0758693361433" width="108" height="16" fill="#7a7973">
+</rect>
+<text x="12" y="96.0758693361433" font-size="12" fill="#2b2b29">Q2</text>
+<text x="258" y="96.0758693361433" font-size="11" fill="#2b2b29">135</text>
+<text x="350" y="96.0758693361433" font-size="11" fill="#3f8f4f" text-anchor="end">+17</text>
+<text x="388" y="96.0758693361433" font-size="11" font-weight="600" fill="#6b6a64" text-anchor="end">25<!-- -->%</text>
+</g>
+<g>
+<rect x="12" y="120" width="376" height="55.84826132771338" fill="transparent">
+</rect>
+<rect x="144" y="135.9241306638567" width="104" height="24" fill="#bdbcb6">
+</rect>
+<rect x="144" y="139.9241306638567" width="102.4" height="16" fill="#7a7973">
+</rect>
+<text x="12" y="151.9241306638567" font-size="12" fill="#2b2b29">Q3</text>
+<text x="254" y="151.9241306638567" font-size="11" fill="#2b2b29">128</text>
+<text x="350" y="151.9241306638567" font-size="11" fill="#cf3a3a" text-anchor="end">-2</text>
+<text x="388" y="151.9241306638567" font-size="11" font-weight="600" fill="#6b6a64" text-anchor="end">24<!-- -->%</text>
+</g>
+<g>
+<rect x="12" y="175.84826132771337" width="376" height="55.84826132771338" fill="transparent">
+</rect>
+<rect x="144" y="191.77239199157006" width="80" height="24" fill="#bdbcb6">
+</rect>
+<rect x="144" y="195.77239199157006" width="96" height="16" fill="#7a7973">
+</rect>
+<text x="12" y="207.77239199157006" font-size="12" fill="#2b2b29">Q1</text>
+<text x="246" y="207.77239199157006" font-size="11" fill="#2b2b29">120</text>
+<text x="350" y="207.77239199157006" font-size="11" fill="#3f8f4f" text-anchor="end">+20</text>
+<text x="388" y="207.77239199157006" font-size="11" font-weight="600" fill="#6b6a64" text-anchor="end">23<!-- -->%</text>
+</g>
+<line x1="12" y1="226" x2="388" y2="226" stroke="#e6e5e0" stroke-width="1">
+</line>
+<text x="12" y="243" font-size="12" font-weight="600" fill="#2b2b29">Total</text>
+<text x="150" y="243" font-size="11.5" font-weight="600" fill="#2b2b29">533</text>
+<text x="350" y="243" font-size="11" font-weight="600" text-anchor="end" fill="#3f8f4f">+45</text>
+<text x="388" y="243" font-size="11" font-weight="600" fill="#6b6a64" text-anchor="end">100%</text>
+</svg>
+<table style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<caption>Composition versus PY — data table</caption>
+<thead>
+<tr>
+<th scope="col">
+</th>
+<th scope="col">Value</th>
+<th scope="col">PY</th>
+<th scope="col">ΔPY</th>
+<th scope="col">Share</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">Q4</th>
+<td>150</td>
+<td>140</td>
+<td>+10</td>
+<td>28%</td>
+</tr>
+<tr>
+<th scope="row">Q2</th>
+<td>135</td>
+<td>118</td>
+<td>+17</td>
+<td>25%</td>
+</tr>
+<tr>
+<th scope="row">Q3</th>
+<td>128</td>
+<td>130</td>
+<td>-2</td>
+<td>24%</td>
+</tr>
+<tr>
+<th scope="row">Q1</th>
+<td>120</td>
+<td>100</td>
+<td>+20</td>
+<td>23%</td>
+</tr>
+<tr>
+<th scope="row">Total</th>
+<td>533</td>
+<td>488</td>
+<td>+45</td>
+<td>100%</td>
+</tr>
+</tbody>
+</table>"
+`;
+
+exports[`component markup snapshots > TreeChart renders stable markup 1`] = `
+"<svg width="400" height="260" viewBox="0 0 400 260" role="img" aria-label="Calculation tree of 3 measures" style="display:block;max-width:100%;margin-inline:auto;font-family:ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif">
+<path d="M172.0,130.0 L200.0,130.0 L200.0,72.0 L228.0,72.0" fill="none" stroke="#e6e5e0" stroke-width="1.25" opacity="1">
+</path>
+<path d="M172.0,130.0 L200.0,130.0 L200.0,188.0 L228.0,188.0" fill="none" stroke="#e6e5e0" stroke-width="1.25" opacity="1">
+</path>
+<g opacity="1">
+<circle cx="219" cy="130" r="8" fill="#fff" stroke="#c9c8c2" stroke-width="1">
+</circle>
+<text x="219" y="133.5" font-size="11" font-weight="600" fill="#2b2b29" text-anchor="middle">÷</text>
+</g>
+<g opacity="1">
+<rect x="40" y="103" width="132" height="54" rx="4" fill="#fff" stroke="#54534e" stroke-width="1.75">
+</rect>
+<text x="106" y="118.12" font-size="10" fill="#6b6a64" text-anchor="middle">ROA</text>
+<text x="106" y="134.32" font-size="14" font-weight="600" fill="#2b2b29" text-anchor="middle">0</text>
+<text x="106" y="148.9" font-size="9.5" fill="#3f8f4f" text-anchor="middle">+0 vs PY</text>
+</g>
+<g opacity="1">
+<rect x="228" y="45" width="132" height="54" rx="4" fill="#fff" stroke="#e6e5e0" stroke-width="1">
+</rect>
+<text x="294" y="60.120000000000005" font-size="10" fill="#6b6a64" text-anchor="middle">Margin</text>
+<text x="294" y="76.32" font-size="14" font-weight="600" fill="#2b2b29" text-anchor="middle">0</text>
+<text x="294" y="90.9" font-size="9.5" fill="#3f8f4f" text-anchor="middle">+0 vs PY</text>
+</g>
+<g opacity="1">
+<rect x="228" y="161" width="132" height="54" rx="4" fill="#fff" stroke="#e6e5e0" stroke-width="1">
+</rect>
+<text x="294" y="176.12" font-size="10" fill="#6b6a64" text-anchor="middle">Turnover</text>
+<text x="294" y="192.32" font-size="14" font-weight="600" fill="#2b2b29" text-anchor="middle">1</text>
+<text x="294" y="206.9" font-size="9.5" fill="#3f8f4f" text-anchor="middle">+0 vs PY</text>
+</g>
+</svg>
+<table style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<caption>Calculation tree data table</caption>
+<thead>
+<tr>
+<th scope="col">
+</th>
+<th scope="col">Value</th>
+<th scope="col">PY</th>
+<th scope="col">ΔPY</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">ROA</th>
+<td>0</td>
+<td>0</td>
+<td>+0</td>
+</tr>
+<tr>
+<th scope="row">· Margin</th>
+<td>0</td>
+<td>0</td>
+<td>+0</td>
+</tr>
+<tr>
+<th scope="row">· Turnover</th>
+<td>1</td>
+<td>1</td>
+<td>+0</td>
+</tr>
+</tbody>
+</table>"
+`;
+
+exports[`component markup snapshots > TrendChart renders stable markup 1`] = `
+"<svg width="400" height="260" viewBox="0 0 400 260" role="img" aria-label="Trend of 4 periods, current series versus PY" style="display:block;max-width:100%;margin-inline:auto;font-family:ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif">
+<defs>
+<pattern id="ID1" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+<line x1="0" y1="0" x2="0" y2="5" stroke="#54534e" stroke-width="1">
+</line>
+</pattern>
+</defs>
+<g transform="translate(386, 14)" font-size="10.5" fill="#6b6a64">
+<text x="0" y="0" text-anchor="end">AC</text>
+<rect x="-30" y="-8" width="10" height="9" fill="#54534e">
+</rect>
+<text x="-44" y="0" text-anchor="end">PY</text>
+<line x1="-74" y1="-4" x2="-58" y2="-4" stroke="#7a7973" stroke-width="1.75">
+</line>
+<text x="-88" y="0" text-anchor="end">PL</text>
+<line x1="-118" y1="-4" x2="-102" y2="-4" stroke="#54534e" stroke-width="1.25" stroke-dasharray="4 3">
+</line>
+</g>
+<line x1="14" y1="146" x2="386" y2="146" stroke="#c9c8c2" stroke-width="1">
+</line>
+<g>
+<rect x="-1.0810810810810736" y="24" width="100.54054054054053" height="236" fill="transparent">
+</rect>
+<rect x="34.18918918918919" y="58" width="30" height="88" fill="#54534e">
+</rect>
+<text x="49.18918918918919" y="54" font-size="9" fill="#2b2b29" text-anchor="middle">120</text>
+</g>
+<g>
+<rect x="99.45945945945945" y="24" width="100.54054054054053" height="236" fill="transparent">
+</rect>
+<rect x="134.7297297297297" y="47" width="30" height="99" fill="#54534e">
+</rect>
+<text x="149.7297297297297" y="43" font-size="9" fill="#2b2b29" text-anchor="middle">135</text>
+</g>
+<g>
+<rect x="200" y="24" width="100.54054054054053" height="236" fill="transparent">
+</rect>
+<rect x="235.27027027027026" y="52.133333333333326" width="30" height="93.86666666666667" fill="#54534e">
+</rect>
+<text x="250.27027027027026" y="48.133333333333326" font-size="9" fill="#2b2b29" text-anchor="middle">128</text>
+</g>
+<g>
+<rect x="300.5405405405406" y="24" width="100.54054054054053" height="236" fill="transparent">
+</rect>
+<rect x="335.81081081081084" y="36" width="30" height="110" fill="#54534e">
+</rect>
+<text x="350.81081081081084" y="32" font-size="9" fill="#2b2b29" text-anchor="middle">150</text>
+</g>
+<path d="M49.2,65.3 L149.7,54.3 L250.3,49.2 L350.8,39.7" fill="none" stroke="#54534e" stroke-width="1.25" stroke-dasharray="4 3" stroke-linejoin="round">
+</path>
+<path d="M49.2,72.7 L149.7,59.5 L250.3,50.7 L350.8,43.3" fill="none" stroke="#7a7973" stroke-width="1.75" stroke-linejoin="round">
+</path>
+<circle cx="49.18918918918919" cy="72.66666666666667" r="2.2" fill="#7a7973">
+</circle>
+<circle cx="149.7297297297297" cy="59.46666666666667" r="2.2" fill="#7a7973">
+</circle>
+<circle cx="250.27027027027026" cy="50.66666666666666" r="2.2" fill="#7a7973">
+</circle>
+<circle cx="350.81081081081084" cy="43.33333333333333" r="2.2" fill="#7a7973">
+</circle>
+<text x="49.18918918918919" y="254" font-size="10.5" font-weight="400" fill="#6b6a64" text-anchor="middle">Q1</text>
+<text x="149.7297297297297" y="254" font-size="10.5" font-weight="400" fill="#6b6a64" text-anchor="middle">Q2</text>
+<text x="250.27027027027026" y="254" font-size="10.5" font-weight="400" fill="#6b6a64" text-anchor="middle">Q3</text>
+<text x="350.81081081081084" y="254" font-size="10.5" font-weight="400" fill="#6b6a64" text-anchor="middle">Q4</text>
+<line x1="14" y1="194" x2="386" y2="194" stroke="#c9c8c2" stroke-width="1">
+</line>
+<g opacity="1">
+<rect x="34.18918918918919" y="162" width="30" height="32" fill="#3f8f4f">
+</rect>
+<text x="49.18918918918919" y="158" font-size="9" fill="#3f8f4f" text-anchor="middle">+20</text>
+</g>
+<g opacity="1">
+<rect x="134.7297297297297" y="166.8" width="30" height="27.2" fill="#3f8f4f">
+</rect>
+<text x="149.7297297297297" y="162.8" font-size="9" fill="#3f8f4f" text-anchor="middle">+17</text>
+</g>
+<g opacity="1">
+<rect x="235.27027027027026" y="194" width="30" height="3.2" fill="#cf3a3a">
+</rect>
+<text x="250.27027027027026" y="208.2" font-size="9" fill="#cf3a3a" text-anchor="middle">-2</text>
+</g>
+<g opacity="1">
+<rect x="335.81081081081084" y="178" width="30" height="16" fill="#3f8f4f">
+</rect>
+<text x="350.81081081081084" y="174" font-size="9" fill="#3f8f4f" text-anchor="middle">+10</text>
+</g>
+</svg>
+<table style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<caption>Trend versus PY — data table</caption>
+<thead>
+<tr>
+<th scope="col">
+</th>
+<th scope="col">Current</th>
+<th scope="col">PY</th>
+<th scope="col">PL</th>
+<th scope="col">ΔPY</th>
+<th scope="col">ΔPY%</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">Q1</th>
+<td>120</td>
+<td>100</td>
+<td>110</td>
+<td>+20</td>
+<td>+20.0%</td>
+</tr>
+<tr>
+<th scope="row">Q2</th>
+<td>135</td>
+<td>118</td>
+<td>125</td>
+<td>+17</td>
+<td>+14.4%</td>
+</tr>
+<tr>
+<th scope="row">Q3</th>
+<td>128</td>
+<td>130</td>
+<td>132</td>
+<td>-2</td>
+<td>-1.5%</td>
+</tr>
+<tr>
+<th scope="row">Q4</th>
+<td>150</td>
+<td>140</td>
+<td>145</td>
+<td>+10</td>
+<td>+7.1%</td>
+</tr>
+</tbody>
+</table>"
+`;
+
+exports[`component markup snapshots > VarianceAreaChart renders stable markup 1`] = `
+"<svg width="400" height="260" viewBox="0 0 400 260" role="img" aria-label="Actual versus reference area over 4 periods" style="display:block;max-width:100%;margin-inline:auto;font-family:ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif">
+<defs>
+<pattern id="ID1" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+<line x1="0" y1="0" x2="0" y2="5" stroke="#54534e" stroke-width="1">
+</line>
+</pattern>
+</defs>
+<polygon points="29.9,240.0 29.9,88.0 129.3,60.6 228.7,42.4 328.1,27.2 328.1,240.0" fill="#7a7973" fill-opacity="0.16" stroke="none">
+</polygon>
+<polygon points="29.9,57.6 129.3,34.8 129.3,60.6 29.9,88.0" fill="#3f8f4f" stroke="none">
+</polygon>
+<polygon points="129.3,34.8 218.2,44.3 129.3,60.6" fill="#3f8f4f" stroke="none">
+</polygon>
+<polygon points="218.2,44.3 228.7,45.4 228.7,42.4" fill="#cf3a3a" stroke="none">
+</polygon>
+<polygon points="228.7,45.4 245.3,39.9 228.7,42.4" fill="#cf3a3a" stroke="none">
+</polygon>
+<polygon points="245.3,39.9 328.1,12.0 328.1,27.2" fill="#3f8f4f" stroke="none">
+</polygon>
+<line x1="10" y1="240" x2="348" y2="240" stroke="#c9c8c2" stroke-width="1">
+</line>
+<path d="M29.9,88.0 L129.3,60.6 L228.7,42.4 L328.1,27.2" fill="none" stroke="#9a9992" stroke-width="1" stroke-linejoin="round">
+</path>
+<path d="M29.9,57.6 L129.3,34.8 L228.7,45.4 L328.1,12.0" fill="none" stroke="#54534e" stroke-width="2" stroke-linejoin="round" stroke-linecap="round">
+</path>
+<circle cx="29.882352941176475" cy="57.599999999999994" r="2.2" fill="#54534e">
+</circle>
+<circle cx="129.29411764705884" cy="34.79999999999998" r="2.2" fill="#54534e">
+</circle>
+<circle cx="228.70588235294122" cy="45.44" r="2.2" fill="#54534e">
+</circle>
+<circle cx="328.11764705882354" cy="12" r="2.2" fill="#54534e">
+</circle>
+<text x="12" y="84" font-size="10" fill="#6b6a64">Ø</text>
+<line x1="367" y1="240" x2="381" y2="240" stroke="#c9c8c2" stroke-width="1">
+</line>
+<rect x="369" y="221.077868852459" width="10" height="18.922131147540995" fill="#3f8f4f">
+</rect>
+<text x="374" y="217.077868852459" font-size="10.5" font-weight="600" fill="#3f8f4f" text-anchor="middle">+9.2%</text>
+<text x="29.882352941176475" y="254" font-size="10" fill="#6b6a64" text-anchor="middle">Q1</text>
+<text x="129.29411764705884" y="254" font-size="10" fill="#6b6a64" text-anchor="middle">Q2</text>
+<text x="228.70588235294122" y="254" font-size="10" fill="#6b6a64" text-anchor="middle">Q3</text>
+<text x="328.11764705882354" y="254" font-size="10" fill="#6b6a64" text-anchor="middle">Q4</text>
+<rect x="-19.823529411764707" y="12" width="99.41176470588236" height="228" fill="transparent">
+</rect>
+<rect x="79.58823529411765" y="12" width="99.41176470588236" height="228" fill="transparent">
+</rect>
+<rect x="179.00000000000003" y="12" width="99.41176470588236" height="228" fill="transparent">
+</rect>
+<rect x="278.4117647058824" y="12" width="99.41176470588236" height="228" fill="transparent">
+</rect>
+</svg>
+<table style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<caption>Actual versus Ø — data table</caption>
+<thead>
+<tr>
+<th scope="col">
+</th>
+<th scope="col">AC</th>
+<th scope="col">Ø</th>
+<th scope="col">Δ</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">Q1</th>
+<td>120</td>
+<td>100</td>
+<td>+20</td>
+</tr>
+<tr>
+<th scope="row">Q2</th>
+<td>135</td>
+<td>118</td>
+<td>+17</td>
+</tr>
+<tr>
+<th scope="row">Q3</th>
+<td>128</td>
+<td>130</td>
+<td>-2</td>
+</tr>
+<tr>
+<th scope="row">Q4</th>
+<td>150</td>
+<td>140</td>
+<td>+10</td>
+</tr>
+<tr>
+<th scope="row">Total variance</th>
+<td>n/a</td>
+<td>n/a</td>
+<td>+45 (+9.2%)</td>
+</tr>
+</tbody>
+</table>"
+`;
+
+exports[`component markup snapshots > VarianceBar renders stable markup 1`] = `
+"<svg width="120" height="16" style="display:block" aria-hidden="true">
+<line x1="60" y1="0" x2="60" y2="16" stroke="#c9c8c2" stroke-width="0.5">
+</line>
+<rect x="60" y="2.5" width="18" height="11" fill="#3f8f4f">
+</rect>
+</svg>"
+`;
+
+exports[`component markup snapshots > VarianceColumnChart renders stable markup 1`] = `
+"<svg width="400" height="260" viewBox="0 0 400 260" role="img" aria-label="AC versus PY columns" style="display:block;max-width:100%;margin-inline:auto;font-family:ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif">
+<defs>
+<pattern id="ID1" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+<line x1="0" y1="0" x2="0" y2="5" stroke="#54534e" stroke-width="1">
+</line>
+</pattern>
+</defs>
+<line x1="12" y1="144" x2="388" y2="144" stroke="#c9c8c2" stroke-width="1">
+</line>
+<g>
+<rect x="0.636267232237536" y="14" width="99.68186638388123" height="246" fill="transparent">
+</rect>
+<rect x="19.57582184517497" y="66.66666666666667" width="61.80275715800636" height="77.33333333333333" fill="#bdbcb6">
+</rect>
+<rect x="25.556733828207843" y="51.19999999999999" width="49.840933191940614" height="92.80000000000001" fill="#54534e">
+</rect>
+<rect x="19.57582184517497" y="58.93333333333334" width="61.80275715800636" height="85.06666666666666" fill="none" stroke="#54534e" stroke-width="1">
+</rect>
+<text x="50.47720042417815" y="46.19999999999999" font-size="11" fill="#2b2b29" text-anchor="middle">120</text>
+<text x="50.47720042417815" y="254" font-size="11" fill="#6b6a64" text-anchor="middle">Q1</text>
+</g>
+<g>
+<rect x="100.31813361611876" y="14" width="99.68186638388123" height="246" fill="transparent">
+</rect>
+<rect x="119.2576882290562" y="52.74666666666667" width="61.80275715800636" height="91.25333333333333" fill="#bdbcb6">
+</rect>
+<rect x="125.23860021208907" y="39.599999999999994" width="49.840933191940614" height="104.4" fill="#54534e">
+</rect>
+<rect x="119.2576882290562" y="47.33333333333333" width="61.80275715800636" height="96.66666666666667" fill="none" stroke="#54534e" stroke-width="1">
+</rect>
+<text x="150.15906680805938" y="34.599999999999994" font-size="11" fill="#2b2b29" text-anchor="middle">135</text>
+<text x="150.15906680805938" y="254" font-size="11" fill="#6b6a64" text-anchor="middle">Q2</text>
+</g>
+<g>
+<rect x="200" y="14" width="99.68186638388123" height="246" fill="transparent">
+</rect>
+<rect x="218.93955461293746" y="43.46666666666667" width="61.80275715800636" height="100.53333333333333" fill="#bdbcb6">
+</rect>
+<rect x="224.9204665959703" y="45.01333333333332" width="49.840933191940614" height="98.98666666666668" fill="#54534e">
+</rect>
+<rect x="218.93955461293746" y="41.92" width="61.80275715800636" height="102.08" fill="none" stroke="#54534e" stroke-width="1">
+</rect>
+<text x="249.84093319194062" y="40.01333333333332" font-size="11" fill="#2b2b29" text-anchor="middle">128</text>
+<text x="249.84093319194062" y="254" font-size="11" fill="#6b6a64" text-anchor="middle">Q3</text>
+</g>
+<g>
+<rect x="299.6818663838812" y="14" width="99.68186638388123" height="246" fill="transparent">
+</rect>
+<rect x="318.62142099681864" y="35.733333333333334" width="61.80275715800636" height="108.26666666666667" fill="#bdbcb6">
+</rect>
+<rect x="324.6023329798515" y="28" width="49.840933191940614" height="116" fill="#54534e">
+</rect>
+<rect x="318.62142099681864" y="31.86666666666666" width="61.80275715800636" height="112.13333333333334" fill="none" stroke="#54534e" stroke-width="1">
+</rect>
+<text x="349.5227995758218" y="23" font-size="11" fill="#2b2b29" text-anchor="middle">150</text>
+<text x="349.5227995758218" y="254" font-size="11" fill="#6b6a64" text-anchor="middle">Q4</text>
+</g>
+<line x1="12" y1="191.5" x2="388" y2="191.5" stroke="#c9c8c2" stroke-width="1">
+</line>
+<g>
+<rect x="25.556733828207843" y="158" width="49.840933191940614" height="33.5" fill="#3f8f4f">
+</rect>
+<text x="50.47720042417815" y="154" font-size="10.5" fill="#3f8f4f" text-anchor="middle">+20</text>
+</g>
+<g>
+<rect x="125.23860021208907" y="163.025" width="49.840933191940614" height="28.474999999999998" fill="#3f8f4f">
+</rect>
+<text x="150.15906680805938" y="159.025" font-size="10.5" fill="#3f8f4f" text-anchor="middle">+17</text>
+</g>
+<g>
+<rect x="224.9204665959703" y="191.5" width="49.840933191940614" height="3.35" fill="#cf3a3a">
+</rect>
+<text x="249.84093319194062" y="206.85" font-size="10.5" fill="#cf3a3a" text-anchor="middle">-2</text>
+</g>
+<g>
+<rect x="324.6023329798515" y="174.75" width="49.840933191940614" height="16.75" fill="#3f8f4f">
+</rect>
+<text x="349.5227995758218" y="170.75" font-size="10.5" fill="#3f8f4f" text-anchor="middle">+10</text>
+</g>
+</svg>
+<table style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<caption>AC versus PY — data table</caption>
+<thead>
+<tr>
+<th scope="col">
+</th>
+<th scope="col">AC</th>
+<th scope="col">PY</th>
+<th scope="col">ΔPY</th>
+<th scope="col">ΔPY%</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">Q1</th>
+<td>120</td>
+<td>100</td>
+<td>+20</td>
+<td>+20.0%</td>
+</tr>
+<tr>
+<th scope="row">Q2</th>
+<td>135</td>
+<td>118</td>
+<td>+17</td>
+<td>+14.4%</td>
+</tr>
+<tr>
+<th scope="row">Q3</th>
+<td>128</td>
+<td>130</td>
+<td>-2</td>
+<td>-1.5%</td>
+</tr>
+<tr>
+<th scope="row">Q4</th>
+<td>150</td>
+<td>140</td>
+<td>+10</td>
+<td>+7.1%</td>
+</tr>
+</tbody>
+</table>"
+`;
+
+exports[`component markup snapshots > WaterfallChart renders stable markup 1`] = `
+"<svg width="400" height="260" viewBox="0 0 400 260" role="img" aria-label="Bridge of 4 actual contributions to a running total." style="display:block;max-width:100%;margin-inline:auto;font-family:ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif">
+<line x1="14" y1="226" x2="386" y2="226" stroke="#c9c8c2" stroke-width="1">
+</line>
+<line x1="72.6423982869379" y1="226" x2="128.21413276231263" y2="226" stroke="#c9c8c2" stroke-width="1.25">
+</line>
+<line x1="172.21413276231263" y1="94" x2="227.78586723768734" y2="94" stroke="#c9c8c2" stroke-width="1.25">
+</line>
+<line x1="271.78586723768734" y1="28" x2="327.357601713062" y2="28" stroke="#c9c8c2" stroke-width="1.25">
+</line>
+<g>
+<rect x="0.8565310492505418" y="16" width="99.57173447537473" height="222" fill="transparent">
+</rect>
+<rect x="28.642398286937905" y="226" width="44" height="0.5" fill="#54534e">
+</rect>
+<text x="50.642398286937905" y="221" font-size="9.5" font-weight="600" fill="#2b2b29" text-anchor="middle">0</text>
+</g>
+<g>
+<rect x="100.42826552462526" y="16" width="99.57173447537473" height="222" fill="transparent">
+</rect>
+<rect x="128.21413276231263" y="94" width="44" height="132" fill="#7a7973">
+</rect>
+<text x="150.21413276231263" y="89" font-size="9.5" font-weight="400" fill="#2b2b29" text-anchor="middle">+30</text>
+</g>
+<g>
+<rect x="199.99999999999997" y="16" width="99.57173447537473" height="222" fill="transparent">
+</rect>
+<rect x="227.78586723768734" y="28" width="44" height="66" fill="#7a7973">
+</rect>
+<text x="249.78586723768734" y="23" font-size="9.5" font-weight="400" fill="#2b2b29" text-anchor="middle">+15</text>
+</g>
+<g>
+<rect x="299.5717344753747" y="16" width="99.57173447537473" height="222" fill="transparent">
+</rect>
+<rect x="327.357601713062" y="28" width="44" height="198" fill="#54534e">
+</rect>
+<text x="349.357601713062" y="23" font-size="9.5" font-weight="600" fill="#2b2b29" text-anchor="middle">45</text>
+</g>
+<text x="50.642398286937905" y="254" font-size="10.5" font-weight="600" fill="#2b2b29" text-anchor="middle">Start</text>
+<text x="150.21413276231263" y="254" font-size="10.5" font-weight="400" fill="#6b6a64" text-anchor="middle">Growth</text>
+<text x="249.78586723768734" y="254" font-size="10.5" font-weight="400" fill="#6b6a64" text-anchor="middle">Cost</text>
+<text x="349.357601713062" y="254" font-size="10.5" font-weight="600" fill="#2b2b29" text-anchor="middle">End</text>
+</svg>
+<table style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<caption>Bridge of actual contributions — data table</caption>
+<thead>
+<tr>
+<th scope="col">
+</th>
+<th scope="col">Contribution</th>
+<th scope="col">Running total</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">Start</th>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<th scope="row">Growth</th>
+<td>+30</td>
+<td>30</td>
+</tr>
+<tr>
+<th scope="row">Cost</th>
+<td>+15</td>
+<td>45</td>
+</tr>
+<tr>
+<th scope="row">End</th>
+<td>45</td>
+<td>45</td>
+</tr>
+</tbody>
+</table>"
+`;
+
+exports[`component markup snapshots > WaterfallStatementChart renders stable markup 1`] = `
+"<svg width="400" height="134" viewBox="0 0 400 134" role="img" aria-label="P&amp;L calculation scheme: PY and AC waterfalls with ΔPY absolute and relative variance, 3 lines." style="display:block;max-width:100%;margin-inline:auto;font-family:ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif">
+<text x="149.10000000000002" y="30" font-size="11" font-weight="500" fill="#6b6a64" text-anchor="middle">PY</text>
+<text x="209.7" y="30" font-size="11" font-weight="500" fill="#6b6a64" text-anchor="middle">AC</text>
+<text x="274" y="30" font-size="11" font-weight="500" fill="#6b6a64" text-anchor="middle">ΔPY</text>
+<text x="350" y="30" font-size="11" font-weight="500" fill="#6b6a64" text-anchor="middle">ΔPY%</text>
+<line x1="14" y1="38" x2="386" y2="38" stroke="#2b2b29" stroke-width="1.25">
+</line>
+<line x1="14" y1="94" x2="386" y2="94" stroke="#c9c8c2" stroke-width="1">
+</line>
+<g>
+<line x1="130.8" y1="38" x2="130.8" y2="122" stroke="#c9c8c2" stroke-width="1">
+</line>
+<line x1="154.78992" y1="60.4" x2="154.78992" y2="71.6" stroke="#c9c8c2" stroke-width="1.25">
+</line>
+<g>
+<rect x="130.8" y="43.6" width="23.989919999999984" height="16.8" fill="#bdbcb6" stroke="none" stroke-width="0">
+</rect>
+<text x="156.3" y="55.4" font-size="9.5" font-weight="400" fill="#2b2b29" text-anchor="start">460</text>
+</g>
+<g>
+<rect x="140.18736" y="71.6" width="14.602559999999983" height="16.8" fill="#bdbcb6" stroke="none" stroke-width="0">
+</rect>
+<text x="141.9" y="83.4" font-size="9.5" font-weight="400" fill="#2b2b29" text-anchor="end">280</text>
+</g>
+<g>
+<rect x="130.8" y="97.92" width="9.387360000000001" height="20.16" fill="#7a7973" stroke="none" stroke-width="0">
+</rect>
+<text x="144.18736" y="111.4" font-size="9.5" font-weight="700" fill="#2b2b29" text-anchor="start">180</text>
+</g>
+</g>
+<g>
+<line x1="191.4" y1="38" x2="191.4" y2="122" stroke="#c9c8c2" stroke-width="1">
+</line>
+<line x1="217.476" y1="60.4" x2="217.476" y2="71.6" stroke="#c9c8c2" stroke-width="1.25">
+</line>
+<g>
+<rect x="191.4" y="43.6" width="26.075999999999993" height="16.8" fill="#7a7973" stroke="none" stroke-width="0">
+</rect>
+<text x="216.9" y="55.4" font-size="9.5" font-weight="400" fill="#2b2b29" text-anchor="start">500</text>
+</g>
+<g>
+<rect x="201.8304" y="71.6" width="15.645600000000002" height="16.8" fill="#7a7973" stroke="none" stroke-width="0">
+</rect>
+<text x="202.5" y="83.4" font-size="9.5" font-weight="400" fill="#2b2b29" text-anchor="end">300</text>
+</g>
+<g>
+<rect x="191.4" y="97.92" width="10.430399999999992" height="20.16" fill="#54534e" stroke="none" stroke-width="0">
+</rect>
+<text x="205.8304" y="111.4" font-size="9.5" font-weight="700" fill="#2b2b29" text-anchor="start">200</text>
+</g>
+</g>
+<g>
+<line x1="274" y1="38" x2="274" y2="122" stroke="#c9c8c2" stroke-width="1">
+</line>
+<g>
+<rect x="274" y="45" width="22" height="14" fill="#3f8f4f">
+</rect>
+<text x="284.9" y="55.4" font-size="9.5" font-weight="400" fill="#2b2b29" text-anchor="start">+40</text>
+</g>
+<g>
+<rect x="274" y="73" width="11" height="14" fill="#cf3a3a">
+</rect>
+<text x="284.9" y="83.4" font-size="9.5" font-weight="400" fill="#2b2b29" text-anchor="start">+20</text>
+</g>
+<g>
+<rect x="274" y="99" width="11" height="18" fill="#3f8f4f">
+</rect>
+<text x="284.9" y="111.4" font-size="9.5" font-weight="700" fill="#2b2b29" text-anchor="start">+20</text>
+</g>
+</g>
+<g>
+<line x1="342.8" y1="38" x2="342.8" y2="122" stroke="#c9c8c2" stroke-width="1">
+</line>
+<g>
+<line x1="342.8" y1="52" x2="350" y2="52" stroke="#3f8f4f" stroke-width="2">
+</line>
+<circle cx="350" cy="52" r="3" fill="#2b2b29">
+</circle>
+<text x="356" y="55.4" font-size="9.5" font-style="italic" font-weight="400" fill="#3f8f4f" text-anchor="start">+8.7</text>
+</g>
+<g>
+<line x1="342.8" y1="80" x2="348.7142857142857" y2="80" stroke="#cf3a3a" stroke-width="2">
+</line>
+<circle cx="348.7142857142857" cy="80" r="3" fill="#2b2b29">
+</circle>
+<text x="354.7142857142857" y="83.4" font-size="9.5" font-style="italic" font-weight="400" fill="#cf3a3a" text-anchor="start">+7.1</text>
+</g>
+<g>
+<line x1="342.8" y1="108" x2="352" y2="108" stroke="#3f8f4f" stroke-width="2">
+</line>
+<circle cx="352" cy="108" r="3.6" fill="#2b2b29">
+</circle>
+<text x="357.5" y="111.4" font-size="9.5" font-style="italic" font-weight="700" fill="#3f8f4f" text-anchor="start">+11.1</text>
+</g>
+</g>
+<g>
+<text x="14" y="55.6" font-size="11" font-weight="600" fill="#6b6a64" text-anchor="start">+</text>
+<text x="27" y="55.6" font-size="11" font-weight="400" fill="#6b6a64" text-anchor="start">Revenue</text>
+</g>
+<g>
+<text x="14" y="83.6" font-size="11" font-weight="600" fill="#6b6a64" text-anchor="start">−</text>
+<text x="27" y="83.6" font-size="11" font-weight="400" fill="#6b6a64" text-anchor="start">COGS</text>
+</g>
+<g>
+<text x="14" y="111.6" font-size="11" font-weight="600" fill="#6b6a64" text-anchor="start">=</text>
+<text x="27" y="111.6" font-size="11.5" font-weight="700" fill="#2b2b29" text-anchor="start">Gross profit</text>
+</g>
+<rect x="14" y="38" width="372" height="28" fill="transparent">
+</rect>
+<rect x="14" y="66" width="372" height="28" fill="transparent">
+</rect>
+<rect x="14" y="94" width="372" height="28" fill="transparent">
+</rect>
+</svg>
+<table style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<caption>P&amp;L calculation scheme, AC versus PY — data table</caption>
+<thead>
+<tr>
+<th scope="col">
+</th>
+<th scope="col">PY</th>
+<th scope="col">AC</th>
+<th scope="col">ΔPY</th>
+<th scope="col">ΔPY%</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">Revenue</th>
+<td>460</td>
+<td>500</td>
+<td>+40</td>
+<td>+8.7</td>
+</tr>
+<tr>
+<th scope="row">COGS</th>
+<td>280</td>
+<td>300</td>
+<td>+20</td>
+<td>+7.1</td>
+</tr>
+<tr>
+<th scope="row">Gross profit</th>
+<td>180</td>
+<td>200</td>
+<td>+20</td>
+<td>+11.1</td>
+</tr>
+</tbody>
+</table>"
+`;

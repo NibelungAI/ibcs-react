@@ -1,0 +1,22 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["react", "typescript", "oxc"],
+  "categories": {
+    "correctness": "error"
+  },
+  "rules": {
+    "react/react-in-jsx-scope": "off",
+    "react/rules-of-hooks": "error",
+    "react/exhaustive-deps": "warn",
+    "no-unused-expressions": "warn",
+    "no-unused-vars": "warn"
+  },
+  "ignorePatterns": [
+    "dist/**",
+    "demo-dist/**",
+    "storybook-static/**",
+    "node_modules/**",
+    "research/data/**",
+    "tests/visual/__screenshots__/**"
+  ]
+}

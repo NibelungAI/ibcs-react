@@ -1,0 +1,861 @@
+---
+title: Industry reports
+description: The standard management report for SaaS, retail, manufacturing, banking, healthcare and a corporate P&L — KPI strip, charts and statement, built from ibcs-react components.
+---
+
+import {
+  KpiCard,
+  TrendChart,
+  VarianceColumnChart,
+  GroupedVarianceChart,
+  RankingVarianceChart,
+  WaterfallChart,
+  WaterfallStatementChart,
+  StatementTable,
+  DataTable,
+} from "ibcs-react";
+
+The management report a controller in each of six industries would recognise —
+SaaS, retail, manufacturing, banking, healthcare and a classic corporate profit
+& loss — each built entirely from `ibcs-react` components. Pick the one closest
+to your world and copy the composition.
+
+Every report follows the same pattern: the **message** first, then
+**who / what / when**, then a KPI strip, one or two charts and a statement or
+table. Data is realistic but fictitious, and company names are invented.
+
+Two notation habits hold throughout, and they are worth copying. There are no
+gauges or pies for KPIs — a `KpiCard` with an impact-coloured delta says more in
+less space. And every cost, churn, scrap or ratio measure carries
+`higherIsBetter={false}`, so an increase reads unfavorable even though its sign
+is positive.
+
+## SaaS
+
+_Helix Cloud Inc. (B2B SaaS) · ARR, retention and unit economics — AC vs PY, PL and FC · 2025_
+
+**ARR grew to 48.6 mEUR (+22% vs PY) on 118% net revenue retention: expansion
+more than covered churn, and the forecast holds the pace into Q4.**
+
+<Frame>
+  <div
+    style={{
+      display: "grid",
+      gap: 14,
+      gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+      width: "100%",
+    }}
+  >
+    <KpiCard
+      label="ARR"
+      values={{ AC: 48.6e6, PY: 39.8e6 }}
+      comparisons={["PY"]}
+      format={{ compact: true, decimals: 1 }}
+    />
+    <KpiCard
+      label="Net revenue retention"
+      values={{ AC: 118, PY: 112 }}
+      comparisons={["PY"]}
+      format={{ decimals: 0, suffix: "%" }}
+    />
+    <KpiCard
+      label="Gross margin"
+      values={{ AC: 79, PY: 77 }}
+      comparisons={["PY"]}
+      format={{ decimals: 0, suffix: "%" }}
+    />
+    <KpiCard
+      label="LTV : CAC"
+      values={{ AC: 4.1, PY: 3.6 }}
+      comparisons={["PY"]}
+      format={{ decimals: 1 }}
+    />
+    <KpiCard
+      label="CAC payback"
+      values={{ AC: 14, PY: 17 }}
+      comparisons={["PY"]}
+      higherIsBetter={false}
+      format={{ decimals: 0, suffix: " mo" }}
+    />
+    <KpiCard
+      label="Monthly logo churn"
+      values={{ AC: 1.4, PY: 1.9 }}
+      comparisons={["PY"]}
+      higherIsBetter={false}
+      format={{ decimals: 1, suffix: "%" }}
+    />
+  </div>
+</Frame>
+
+**ARR bridge — opening to closing (mEUR)**
+
+<Frame>
+  <WaterfallChart
+    width={860}
+    height={300}
+    format={{ compact: true, decimals: 1 }}
+    data={[
+      { category: "Opening ARR", value: 39.8e6, flow: "result" },
+      { category: "New business", value: 6.9e6, flow: "add" },
+      { category: "Expansion", value: 5.4e6, flow: "add" },
+      { category: "Contraction", value: 2.1e6, flow: "subtract", higherIsBetter: false },
+      { category: "Gross churn", value: 1.4e6, flow: "subtract", higherIsBetter: false },
+      { category: "Closing ARR", value: 48.6e6, flow: "result" },
+    ]}
+  />
+</Frame>
+
+**MRR — monthly, AC and FC vs PY (kEUR)**
+
+<Frame>
+  <TrendChart
+    comparison="PY"
+    width={860}
+    height={300}
+    format={{ compact: true }}
+    data={[
+      { category: "Jan", AC: 3320, PY: 2720 },
+      { category: "Feb", AC: 3390, PY: 2790 },
+      { category: "Mar", AC: 3480, PY: 2860 },
+      { category: "Apr", AC: 3560, PY: 2930 },
+      { category: "May", AC: 3660, PY: 3010 },
+      { category: "Jun", AC: 3770, PY: 3090 },
+      { category: "Jul", AC: 3840, PY: 3160 },
+      { category: "Aug", AC: 3930, PY: 3240 },
+      { category: "Sep", AC: 4050, PY: 3310 },
+      { category: "Oct", FC: 4140, PY: 3390 },
+      { category: "Nov", FC: 4230, PY: 3470 },
+      { category: "Dec", FC: 4330, PY: 3560 },
+    ]}
+  />
+</Frame>
+
+**ARR by plan tier — AC vs PY and PL (kEUR)**
+
+<Frame>
+  <DataTable
+    format={{ compact: false, decimals: 0 }}
+    showTotals
+    totalsLabel="Total ARR"
+    defaultSort={{ key: "arr", dir: "desc" }}
+    columns={[
+      { key: "arr", label: "AC", kind: "value", scenario: "AC" },
+      {
+        key: "arr_dpy",
+        label: "ΔPY",
+        kind: "variance",
+        measure: "arr",
+        base: "PY",
+        mode: "abs",
+        mark: "bar",
+      },
+      {
+        key: "arr_ppy",
+        label: "ΔPY %",
+        kind: "variance",
+        measure: "arr",
+        base: "PY",
+        mode: "pct",
+        mark: "pin",
+      },
+      {
+        key: "arr_dpl",
+        label: "ΔPL",
+        kind: "variance",
+        measure: "arr",
+        base: "PL",
+        mode: "abs",
+        mark: "bar",
+      },
+    ]}
+    rows={[
+      { id: "ent", label: "Enterprise", values: { arr: { AC: 27900, PY: 21400, PL: 26000 } } },
+      { id: "pro", label: "Pro", values: { arr: { AC: 14800, PY: 12900, PL: 14200 } } },
+      { id: "team", label: "Team", values: { arr: { AC: 4300, PY: 4100, PL: 4500 } } },
+      { id: "starter", label: "Starter", values: { arr: { AC: 1600, PY: 1400, PL: 1700 } } },
+    ]}
+  />
+</Frame>
+
+The ARR bridge is the report's backbone: opening and closing are `flow: "result"`
+levels, and the four movements between them are signed steps. Contraction and
+churn carry `higherIsBetter={false}`, so growth in either reads red.
+
+## Retail
+
+_Northgate Retail Group · Sales, like-for-like and margin by category — AC vs PY · FY 2025_
+
+**Net sales reached 1,284 mEUR (+6.1% vs PY) on +3.2% like-for-like; Food and
+Home led, while margin pressure in Apparel trimmed the gross rate by 0.4 points.**
+
+<Frame>
+  <div
+    style={{
+      display: "grid",
+      gap: 14,
+      gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+      width: "100%",
+    }}
+  >
+    <KpiCard
+      label="Net sales"
+      values={{ AC: 1284e6, PY: 1210e6 }}
+      comparisons={["PY"]}
+      format={{ compact: true, decimals: 0 }}
+    />
+    <KpiCard
+      label="Like-for-like"
+      values={{ AC: 3.2, PY: 1.8 }}
+      comparisons={["PY"]}
+      format={{ decimals: 1, suffix: "%" }}
+    />
+    <KpiCard
+      label="Gross margin"
+      values={{ AC: 38.1, PY: 38.5 }}
+      comparisons={["PY"]}
+      format={{ decimals: 1, suffix: "%" }}
+    />
+    <KpiCard
+      label="Avg basket"
+      values={{ AC: 34.7, PY: 33.1 }}
+      comparisons={["PY"]}
+      format={{ decimals: 1, currency: "€" }}
+    />
+    <KpiCard
+      label="Footfall"
+      values={{ AC: 41.2e6, PY: 40.0e6 }}
+      comparisons={["PY"]}
+      format={{ compact: true, decimals: 1 }}
+    />
+  </div>
+</Frame>
+
+**Like-for-like sales by category — ranked, AC vs PY (%)**
+
+<Frame center>
+  <RankingVarianceChart
+    title="LFL growth by category"
+    baseLabel="PY"
+    width={760}
+    format={{ decimals: 1 }}
+    data={[
+      { label: "Food", AC: 5.4, base: 2.1 },
+      { label: "Home", AC: 4.8, base: 1.6 },
+      { label: "Beauty", AC: 3.6, base: 2.4 },
+      { label: "Leisure", AC: 1.9, base: 1.2 },
+      { label: "Electronics", AC: 0.7, base: 1.1 },
+      { label: "Apparel", AC: -1.8, base: 0.9 },
+    ]}
+  />
+</Frame>
+
+**Sales and gross margin by category — AC vs PY and PL (mEUR)**
+
+<Frame>
+  <DataTable
+    format={{ compact: false, decimals: 0 }}
+    showTotals
+    totalsLabel="Group"
+    defaultSort={{ key: "sales", dir: "desc" }}
+    columns={[
+      { key: "sales", label: "Sales AC", kind: "value", scenario: "AC" },
+      {
+        key: "sales_dpy",
+        label: "ΔPY",
+        kind: "variance",
+        measure: "sales",
+        base: "PY",
+        mode: "abs",
+        mark: "bar",
+      },
+      { key: "gm", label: "Gross margin AC", kind: "value", scenario: "AC" },
+      {
+        key: "gm_dpl",
+        label: "ΔPL",
+        kind: "variance",
+        measure: "gm",
+        base: "PL",
+        mode: "abs",
+        mark: "bar",
+      },
+    ]}
+    rows={[
+      {
+        id: "food",
+        label: "Food",
+        values: { sales: { AC: 512, PY: 478 }, gm: { AC: 138, PY: 129, PL: 134 } },
+      },
+      {
+        id: "home",
+        label: "Home",
+        values: { sales: { AC: 286, PY: 268 }, gm: { AC: 121, PY: 112, PL: 117 } },
+      },
+      {
+        id: "apparel",
+        label: "Apparel",
+        values: { sales: { AC: 214, PY: 222 }, gm: { AC: 79, PY: 88, PL: 86 } },
+      },
+      {
+        id: "elec",
+        label: "Electronics",
+        values: { sales: { AC: 158, PY: 152 }, gm: { AC: 38, PY: 37, PL: 39 } },
+      },
+      {
+        id: "beauty",
+        label: "Beauty",
+        values: { sales: { AC: 114, PY: 90 }, gm: { AC: 53, PY: 41, PL: 48 } },
+      },
+    ]}
+  />
+</Frame>
+
+Ranking by deviation, not by size, is what makes the category story readable:
+Apparel is a mid-sized category but the only negative one, so it sorts to the
+bottom of the ranking and into the message.
+
+## Manufacturing
+
+_Rhine Manufacturing AG, Plant Düsseldorf · Output, OEE, scrap and unit-cost variance — AC vs PL and standard · 2025_
+
+**Unit cost rose +110 €/unit against standard — adverse material prices (+180)
+outweighed favourable usage and overhead; OEE recovered to 78% after a weak Q2.**
+
+<Frame>
+  <div
+    style={{
+      display: "grid",
+      gap: 14,
+      gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+      width: "100%",
+    }}
+  >
+    <KpiCard
+      label="Output"
+      values={{ AC: 184500, PY: 176200 }}
+      comparisons={["PY"]}
+      format={{ compact: true, decimals: 1, suffix: " u" }}
+    />
+    <KpiCard
+      label="OEE"
+      values={{ AC: 78, PL: 80 }}
+      comparisons={["PL"]}
+      format={{ decimals: 0, suffix: "%" }}
+    />
+    <KpiCard
+      label="Scrap rate"
+      values={{ AC: 3.1, PL: 2.5 }}
+      comparisons={["PL"]}
+      higherIsBetter={false}
+      format={{ decimals: 1, suffix: "%" }}
+    />
+    <KpiCard
+      label="Unit cost"
+      values={{ AC: 4310, PL: 4200 }}
+      comparisons={["PL"]}
+      higherIsBetter={false}
+      format={{ decimals: 0, currency: "€" }}
+    />
+    <KpiCard
+      label="On-time delivery"
+      values={{ AC: 94, PL: 96 }}
+      comparisons={["PL"]}
+      format={{ decimals: 0, suffix: "%" }}
+    />
+  </div>
+</Frame>
+
+**Unit-cost variance — standard to actual (€/unit)**
+
+<Frame>
+  <WaterfallChart
+    width={860}
+    height={300}
+    format={{ compact: false, decimals: 0 }}
+    data={[
+      { category: "Standard cost", value: 820, flow: "add" },
+      { category: "Material price", value: 180, flow: "add", higherIsBetter: false },
+      { category: "Material usage", value: 90, flow: "subtract", higherIsBetter: false },
+      { category: "Labour efficiency", value: 70, flow: "add", higherIsBetter: false },
+      { category: "Overhead absorption", value: 50, flow: "subtract", higherIsBetter: false },
+      { category: "Actual cost", value: 930, flow: "result" },
+    ]}
+  />
+</Frame>
+
+One modelling detail worth stealing: the standard cost is the _opening level_,
+so it is `flow: "add"` (a full bar from zero), not `flow: "result"`. A result at
+the top of a bridge would be drawn at the running total — which is zero before
+anything has accrued — and render as an empty bar.
+
+**OEE by quarter — AC vs plan (%)**
+
+<Frame center>
+  <VarianceColumnChart
+    comparison="PL"
+    width={760}
+    height={300}
+    format={{ decimals: 0 }}
+    data={[
+      { category: "Q1", AC: 79, PL: 80 },
+      { category: "Q2", AC: 72, PL: 80 },
+      { category: "Q3", AC: 78, PL: 80 },
+      { category: "Q4", AC: 81, PL: 80 },
+    ]}
+  />
+</Frame>
+
+**Cost of production — AC vs PY and PL (kEUR)**
+
+<Frame>
+  <StatementTable
+    waterfallWidth={220}
+    format={{ compact: true, decimals: 0 }}
+    lines={[
+      {
+        id: "material",
+        label: "Direct material",
+        flow: "add",
+        higherIsBetter: false,
+        values: { AC: 412000, PY: 388000, PL: 398000 },
+      },
+      {
+        id: "labour",
+        label: "Direct labour",
+        flow: "add",
+        higherIsBetter: false,
+        values: { AC: 168000, PY: 161000, PL: 165000 },
+      },
+      {
+        id: "energy",
+        label: "Energy",
+        flow: "add",
+        higherIsBetter: false,
+        values: { AC: 74000, PY: 69000, PL: 71000 },
+      },
+      {
+        id: "prime",
+        label: "Prime cost",
+        flow: "result",
+        values: { AC: 654000, PY: 618000, PL: 634000 },
+      },
+      {
+        id: "moh",
+        label: "Manufacturing overhead",
+        flow: "add",
+        higherIsBetter: false,
+        values: { AC: 142000, PY: 138000, PL: 140000 },
+      },
+      {
+        id: "scrap",
+        label: "Scrap & rework",
+        flow: "add",
+        higherIsBetter: false,
+        values: { AC: 19000, PY: 15000, PL: 14000 },
+      },
+      {
+        id: "total",
+        label: "Total cost of production",
+        flow: "result",
+        values: { AC: 815000, PY: 771000, PL: 788000 },
+      },
+    ]}
+  />
+</Frame>
+
+A cost statement builds _up_, so every line is `flow: "add"` — and every line is
+`higherIsBetter: false`, which is what makes the deviation bars read correctly
+on a report where more is worse.
+
+## Banking
+
+_Meridian Bank · Net interest income, efficiency and loan book — AC vs PY · 2025_
+
+**Pre-tax profit rose to 312 mEUR (+9% vs PY) as net interest income climbed
++94 mEUR; the cost-income ratio improved 2.1 points and loan losses stayed
+contained.**
+
+<Frame>
+  <div
+    style={{
+      display: "grid",
+      gap: 14,
+      gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+      width: "100%",
+    }}
+  >
+    <KpiCard
+      label="Net interest income"
+      values={{ AC: 1146e6, PY: 1052e6 }}
+      comparisons={["PY"]}
+      format={{ compact: true, decimals: 0 }}
+    />
+    <KpiCard
+      label="Net interest margin"
+      values={{ AC: 2.34, PY: 2.21 }}
+      comparisons={["PY"]}
+      format={{ decimals: 2, suffix: "%" }}
+    />
+    <KpiCard
+      label="Cost-income ratio"
+      values={{ AC: 54.2, PY: 56.3 }}
+      comparisons={["PY"]}
+      higherIsBetter={false}
+      format={{ decimals: 1, suffix: "%" }}
+    />
+    <KpiCard
+      label="NPL ratio"
+      values={{ AC: 1.8, PY: 1.6 }}
+      comparisons={["PY"]}
+      higherIsBetter={false}
+      format={{ decimals: 1, suffix: "%" }}
+    />
+    <KpiCard
+      label="Return on equity"
+      values={{ AC: 11.4, PY: 10.6 }}
+      comparisons={["PY"]}
+      format={{ decimals: 1, suffix: "%" }}
+    />
+  </div>
+</Frame>
+
+**Income statement — AC vs PY, calculation bridge (mEUR)**
+
+<Frame>
+  <WaterfallStatementChart
+    comparison="PY"
+    width={880}
+    rowHeight={26}
+    format={{ compact: false, decimals: 0 }}
+    lines={[
+      { label: "Net interest income", ac: 1146, base: 1052, flow: "add" },
+      { label: "Net fee & commission", ac: 392, base: 360, flow: "add" },
+      { label: "Trading income", ac: 88, base: 102, flow: "add" },
+      { label: "Total income", ac: 1626, base: 1514, flow: "result" },
+      { label: "Staff costs", ac: 512, base: 498, flow: "subtract", higherIsBetter: false },
+      {
+        label: "Other operating exp.",
+        ac: 369,
+        base: 354,
+        flow: "subtract",
+        higherIsBetter: false,
+      },
+      { label: "Operating profit", ac: 745, base: 662, flow: "result" },
+      { label: "Loan loss provisions", ac: 118, base: 86, flow: "subtract", higherIsBetter: false },
+      { label: "Other / associates", ac: -15, base: -10, flow: "add", higherIsBetter: false },
+      { label: "Profit before tax", ac: 312, base: 286, flow: "result" },
+    ]}
+  />
+</Frame>
+
+**Loan book by segment — AC vs PY and PL (mEUR)**
+
+<Frame>
+  <DataTable
+    format={{ compact: false, decimals: 0 }}
+    showTotals
+    totalsLabel="Gross loans"
+    defaultSort={{ key: "loans", dir: "desc" }}
+    columns={[
+      { key: "loans", label: "AC", kind: "value", scenario: "AC" },
+      {
+        key: "loans_dpy",
+        label: "ΔPY",
+        kind: "variance",
+        measure: "loans",
+        base: "PY",
+        mode: "abs",
+        mark: "bar",
+      },
+      {
+        key: "loans_ppy",
+        label: "ΔPY %",
+        kind: "variance",
+        measure: "loans",
+        base: "PY",
+        mode: "pct",
+        mark: "pin",
+      },
+      {
+        key: "loans_dpl",
+        label: "ΔPL",
+        kind: "variance",
+        measure: "loans",
+        base: "PL",
+        mode: "abs",
+        mark: "bar",
+      },
+    ]}
+    rows={[
+      {
+        id: "mortgage",
+        label: "Mortgages",
+        values: { loans: { AC: 24800, PY: 23100, PL: 24200 } },
+      },
+      {
+        id: "corporate",
+        label: "Corporate",
+        values: { loans: { AC: 18400, PY: 17900, PL: 18900 } },
+      },
+      { id: "sme", label: "SME", values: { loans: { AC: 9600, PY: 8700, PL: 9200 } } },
+      { id: "consumer", label: "Consumer", values: { loans: { AC: 6300, PY: 6100, PL: 6400 } } },
+    ]}
+  />
+</Frame>
+
+Loan loss provisions and the two ratio KPIs are the only lines where more is
+worse, and each says so once through `higherIsBetter` — the colours then follow
+without any per-cell styling.
+
+## Healthcare
+
+_St. Mary's Health System · Volumes, cost per case and quality — AC vs PY and PL · 2025_
+
+**More patients at a lower cost per case: admissions +4% vs PY and cost per case
+2% under plan, with a shorter stay freeing capacity — readmissions (+0.3 points)
+the one watch item.**
+
+<Frame>
+  <div
+    style={{
+      display: "grid",
+      gap: 14,
+      gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+      width: "100%",
+    }}
+  >
+    <KpiCard
+      label="Admissions"
+      values={{ AC: 48900, PY: 47000 }}
+      comparisons={["PY"]}
+      format={{ compact: true, decimals: 1 }}
+    />
+    <KpiCard
+      label="Avg length of stay"
+      values={{ AC: 4.6, PY: 4.9 }}
+      comparisons={["PY"]}
+      higherIsBetter={false}
+      format={{ decimals: 1, suffix: " d" }}
+    />
+    <KpiCard
+      label="Cost per case"
+      values={{ AC: 6420, PL: 6550 }}
+      comparisons={["PL"]}
+      higherIsBetter={false}
+      format={{ decimals: 0, currency: "€" }}
+    />
+    <KpiCard
+      label="Bed occupancy"
+      values={{ AC: 86, PL: 84 }}
+      comparisons={["PL"]}
+      format={{ decimals: 0, suffix: "%" }}
+    />
+    <KpiCard
+      label="30-day readmission"
+      values={{ AC: 8.1, PY: 7.8 }}
+      comparisons={["PY"]}
+      higherIsBetter={false}
+      format={{ decimals: 1, suffix: "%" }}
+    />
+  </div>
+</Frame>
+
+**Patient volume by service line — AC vs PY (cases)**
+
+<Frame>
+  <GroupedVarianceChart
+    orientation="bar"
+    comparison="PY"
+    width={800}
+    height={320}
+    format={{ compact: true }}
+    data={[
+      { category: "Cardiology", AC: 9840, comparisonValue: 9210 },
+      { category: "Orthopaedics", AC: 8620, comparisonValue: 8400 },
+      { category: "Oncology", AC: 7180, comparisonValue: 6650 },
+      { category: "General surgery", AC: 6940, comparisonValue: 6980 },
+      { category: "Maternity", AC: 5310, comparisonValue: 5220 },
+      { category: "Emergency", AC: 11010, comparisonValue: 10540 },
+    ]}
+  />
+</Frame>
+
+**Cost per case by quarter — AC vs plan (€)**
+
+<Frame center>
+  <VarianceColumnChart
+    comparison="PL"
+    higherIsBetter={false}
+    width={760}
+    height={300}
+    format={{ compact: false, decimals: 0 }}
+    data={[
+      { category: "Q1", AC: 6610, PL: 6550 },
+      { category: "Q2", AC: 6480, PL: 6550 },
+      { category: "Q3", AC: 6390, PL: 6550 },
+      { category: "Q4", AC: 6220, PL: 6550 },
+    ]}
+  />
+</Frame>
+
+The cost chart is the clearest illustration of impact colouring: `Q1` is above
+plan and reads red, `Q2` to `Q4` are below plan and read green — the opposite of
+what the raw sign would suggest, because the chart is told
+`higherIsBetter={false}` once at the top.
+
+## Corporate P&L
+
+_Atlas Corporation · Group profit & loss — AC vs PY and PL · 2025_
+
+**Net income reached 96.4 mEUR (+14% vs PY, +8% vs plan) as revenue grew 9% and
+disciplined operating expenses lifted the EBIT margin 1.3 points to 18.7%.**
+
+<Frame>
+  <div
+    style={{
+      display: "grid",
+      gap: 14,
+      gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+      width: "100%",
+    }}
+  >
+    <KpiCard
+      label="Revenue"
+      values={{ AC: 642e6, PY: 589e6 }}
+      comparisons={["PY"]}
+      format={{ compact: true, decimals: 0 }}
+    />
+    <KpiCard
+      label="EBIT margin"
+      values={{ AC: 18.7, PY: 17.4 }}
+      comparisons={["PY"]}
+      format={{ decimals: 1, suffix: "%" }}
+    />
+    <KpiCard
+      label="Net income"
+      values={{ AC: 96.4e6, PY: 84.6e6 }}
+      comparisons={["PY"]}
+      format={{ compact: true, decimals: 1 }}
+    />
+    <KpiCard
+      label="Cost ratio"
+      values={{ AC: 81.3, PY: 82.6 }}
+      comparisons={["PY"]}
+      higherIsBetter={false}
+      format={{ decimals: 1, suffix: "%" }}
+    />
+  </div>
+</Frame>
+
+**Income statement — AC vs PY, calculation bridge (mEUR)**
+
+<Frame>
+  <WaterfallStatementChart
+    comparison="PY"
+    width={880}
+    rowHeight={26}
+    format={{ compact: false, decimals: 0 }}
+    lines={[
+      { label: "Revenue", ac: 642, base: 589, flow: "add" },
+      { label: "Cost of sales", ac: 372, base: 348, flow: "subtract", higherIsBetter: false },
+      { label: "Gross profit", ac: 270, base: 241, flow: "result" },
+      { label: "Sales & marketing", ac: 84, base: 79, flow: "subtract", higherIsBetter: false },
+      { label: "R&D", ac: 41, base: 38, flow: "subtract", higherIsBetter: false },
+      { label: "General & admin.", ac: 25, base: 22, flow: "subtract", higherIsBetter: false },
+      { label: "EBIT", ac: 120, base: 102, flow: "result" },
+      { label: "Net financial result", ac: 8, base: 6, flow: "subtract", higherIsBetter: false },
+      { label: "Profit before tax", ac: 112, base: 96, flow: "result" },
+      { label: "Income tax", ac: 16, base: 11, flow: "subtract", higherIsBetter: false },
+      { label: "Net income", ac: 96, base: 85, flow: "result" },
+    ]}
+  />
+</Frame>
+
+**Profit & loss statement — AC with ΔPY and ΔPL (mEUR)**
+
+<Frame>
+  <StatementTable
+    waterfallWidth={220}
+    format={{ compact: true, decimals: 1 }}
+    lines={[
+      { id: "rev", label: "Revenue", flow: "add", values: { AC: 642e6, PY: 589e6, PL: 631e6 } },
+      {
+        id: "cogs",
+        label: "Cost of sales",
+        flow: "subtract",
+        higherIsBetter: false,
+        values: { AC: 372e6, PY: 348e6, PL: 369e6 },
+      },
+      {
+        id: "gross",
+        label: "Gross profit",
+        flow: "result",
+        values: { AC: 270e6, PY: 241e6, PL: 262e6 },
+      },
+      {
+        id: "sm",
+        label: "Sales & marketing",
+        flow: "subtract",
+        higherIsBetter: false,
+        values: { AC: 84e6, PY: 79e6, PL: 86e6 },
+      },
+      {
+        id: "rnd",
+        label: "Research & development",
+        flow: "subtract",
+        higherIsBetter: false,
+        values: { AC: 41e6, PY: 38e6, PL: 40e6 },
+      },
+      {
+        id: "ga",
+        label: "General & admin.",
+        flow: "subtract",
+        higherIsBetter: false,
+        values: { AC: 25e6, PY: 22e6, PL: 24e6 },
+      },
+      { id: "ebit", label: "EBIT", flow: "result", values: { AC: 120e6, PY: 102e6, PL: 112e6 } },
+      {
+        id: "fin",
+        label: "Net financial result",
+        flow: "subtract",
+        higherIsBetter: false,
+        values: { AC: 8e6, PY: 6e6, PL: 7e6 },
+      },
+      {
+        id: "pbt",
+        label: "Profit before tax",
+        flow: "result",
+        values: { AC: 112e6, PY: 96e6, PL: 105e6 },
+      },
+      {
+        id: "tax",
+        label: "Income tax",
+        flow: "subtract",
+        higherIsBetter: false,
+        values: { AC: 16e6, PY: 11e6, PL: 16e6 },
+      },
+      { id: "net", label: "Net income", flow: "result", values: { AC: 96e6, PY: 85e6, PL: 89e6 } },
+    ]}
+  />
+</Frame>
+
+The bridge and the table are two views of one model: the chart carries the shape
+of the calculation, the table carries the exact figures and both deviations. In
+a real report you would author the statement once and project it into both — see
+[Data model](/docs/data-model) for the adapters that do it.
+
+## Making these fit your layout
+
+The charts above are drawn at fixed pixel widths, which is what keeps IBCS
+geometry honest. To drop one into a fluid dashboard, wrap it in `ChartBox` (or
+its `ScrollChart` preset) and pick a fit — see
+[Sizing and fit](/docs/interaction#sizing-and-fit).
+
+## Where to next
+
+- [Example reports](/docs/example-reports) — the flagship chart and table
+  templates, one exhibit at a time.
+- [Theming](/docs/theming) — put your palette on any of these without touching
+  the notation.
+- [Report](/report) — the same composition driven by a JSON `ReportConfig`.
+- [Conformance](/docs/conformance) — the library's own check against IBCS
+  notation rules, run over a report config.

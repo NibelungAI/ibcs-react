@@ -1,0 +1,38 @@
+---
+title: Sparkline
+description: A tiny line / area / bar micro-chart for inline trends in cards and table cells.
+---
+
+import { Sparkline } from "ibcs-react";
+
+A micro-chart with no axes and no labels: the shape carries the trend, the
+number next to it carries the value. The last point is the current value.
+
+## When to use
+
+Inline trend context next to a number — inside a KPI card or a table cell.
+
+## Example
+
+<Frame center>
+  <div style={{ display: "flex", gap: 24, alignItems: "center" }}>
+    <Sparkline data={[3, 5, 4, 6, 5, 7, 8]} type="line" />
+    <Sparkline data={[3, 5, 4, 6, 5, 7, 8]} type="area" color="#5e8c22" />
+    <Sparkline data={[3, 5, 4, 6, 5, 7, 8]} type="bar" color="#3b82a6" />
+  </div>
+</Frame>
+
+```tsx
+import { Sparkline } from "ibcs-react";
+
+<Sparkline data={[3, 5, 4, 6, 5, 7, 8]} type="line" />
+<Sparkline data={series} type="area" color="#5e8c22" />
+```
+
+`KpiCard` draws its own sparkline (`sparkline` + `sparklineType`), so reach for
+this component directly when you need the micro-chart somewhere else — a table
+cell, a list row, next to a headline in prose.
+
+## Props
+
+<AutoTypeTable path="../src/react/Sparkline.tsx" name="SparklineProps" />

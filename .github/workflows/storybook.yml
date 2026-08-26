@@ -1,0 +1,53 @@
+name: Storybook
+
+# Publishes the Storybook to GitHub Pages. This is MANUAL on purpose: the deploy
+# needs Pages enabled for the repo, and a deploy to a disabled Pages site fails
+# the run (a red "deployment" on every push). To turn it on:
+#   1. Repo Settings → Pages → Source: "GitHub Actions".
+#   2. (optional) re-add `push: { branches: [main] }` below for auto-publish.
+# Until then, run it by hand from the Actions tab when you want a fresh build.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: storybook-pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      # Turn GitHub Pages on automatically on the first run so the deploy job
+      # below doesn't fail with "Pages is not enabled" on a fresh repo. No
+      # effect once Pages is already on. If your org forbids Actions from
+      # enabling Pages, enable it once under Settings → Pages → Source: GitHub
+      # Actions and this is a no-op.
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+      - run: npm ci
+      - run: npm run build-storybook
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: storybook-static
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

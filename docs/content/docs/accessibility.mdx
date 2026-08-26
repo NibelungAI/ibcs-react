@@ -1,0 +1,72 @@
+---
+title: Accessibility
+description: Screen-reader data tables, keyboard interaction, dismissible tooltips and reduced motion — what ibcs-react does out of the box.
+---
+
+ibcs-react treats accessibility as part of the component contract, not an
+add-on. This page describes what every chart and table ships by default and
+what you should still do on your side.
+
+## Screen readers: a real table behind every chart
+
+Every chart renders a visually-hidden `<table>` next to its `<svg>` with the
+same numbers the chart draws — row and column headers, a `caption`, and values
+formatted exactly as the chart labels them. Screen-reader users read actual
+values instead of a picture description.
+
+The `<svg>` itself carries an accessible name (`role="img"` plus a descriptive
+`aria-label`) when the chart is non-interactive. It is never `aria-hidden` —
+the label and the data table complement each other.
+
+```tsx
+<TrendChart
+  data={data}
+  width={640}
+  height={300}
+  // The caption of the hidden data table (and part of the svg label):
+  title="Net sales — AC vs PY, mEUR"
+/>
+```
+
+Tables (`StatementTable`, `DataTable`, `MatrixTable`, `ComparisonTable`) are
+semantic HTML tables with `scope` attributes and an optional visually-hidden
+`caption` prop.
+
+## Keyboard
+
+- **Selectable marks are buttons.** When a chart gets an `onSelect` handler,
+  its marks become focusable with `role="button"` — `Tab` reaches them,
+  `Enter`/`Space` activates, and focusing a mark shows the same tooltip hover
+  shows, anchored to the mark (WCAG 1.4.13 hover-content-on-focus).
+- **Tables** — sorting headers, expand/collapse chevrons and matrix cells are
+  keyboard-operable; internal buttons are `type="button"` so they never
+  submit an enclosing form.
+- **ExportMenu** is a real menu: focus moves into it on open, arrow keys rove
+  (wrapping), `Home`/`End` jump, `Escape` closes and restores focus.
+
+## Tooltips (WCAG 1.4.13)
+
+Built-in tooltips appear on hover **near the mark**, on keyboard focus of a
+selectable mark, and on tap (touch). They are dismissible with `Escape`
+without moving the pointer or focus, and they never trap the pointer (the
+panel is `pointer-events: none`). For charts without `onSelect`, the hidden
+data table carries the same values the tooltip shows — keyboard users are not
+locked out of information.
+
+## Color and motion
+
+- The [CVD-safe preset](/docs/theming) swaps the red/green variance pair for a
+  colour-vision-safe teal/orange; the Mono preset removes hue entirely.
+  Variance is additionally always encoded by signed labels and IBCS
+  fill/frame/hatch shapes, never by color alone.
+- Entrance animations respect `prefers-reduced-motion` and render the final
+  state immediately, with no flash.
+
+## What remains your job
+
+- Give charts meaningful `title`s — they become the svg label and the data
+  table caption.
+- Keep text contrast in your surrounding page; the default themes are tuned
+  for their own surfaces.
+- If you replace the built-in tooltip via `onHover`, provide your own
+  focus/dismiss behavior.

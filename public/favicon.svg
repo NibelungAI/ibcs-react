@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="react-ibcs">
+  <!-- Rounded dark tile (Ocean / IBCS dark) -->
+  <rect width="32" height="32" rx="7" fill="#233549"/>
+  <!-- Ascending IBCS scenario columns: faded → light → solid (PY → AC) -->
+  <rect x="6"  y="19" width="4.2" height="7"  rx="1" fill="#9DAEBE"/>
+  <rect x="13" y="14" width="4.2" height="12" rx="1" fill="#C5CFD9"/>
+  <rect x="20" y="10" width="4.2" height="16" rx="1" fill="#FFFFFF"/>
+  <!-- Favorable variance cap (IBCS green) on the actual column -->
+  <rect x="20" y="6.5" width="4.2" height="3" rx="1" fill="#22B673"/>
+  <!-- Zero baseline -->
+  <rect x="5" y="26" width="22" height="1.4" rx="0.7" fill="#5B728B"/>
+</svg>

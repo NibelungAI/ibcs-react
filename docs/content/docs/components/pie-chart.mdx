@@ -1,0 +1,95 @@
+---
+title: PieChart
+description: A part-to-whole pie / donut — and pie multiples — for the occasional valid share.
+---
+
+import { PieChart } from "ibcs-react";
+
+A pie or donut with muted greys and at most one emphasised slice, plus a
+single-share mode with an impact-coloured growth sliver for "pie multiples"
+layouts. Included for the occasional valid share and to reproduce IBCS pie
+multiple exhibits.
+
+## When to use
+
+Reach for a column or bar chart first — angles and areas are hard to compare.
+Use a pie only for a single, simple part-to-whole share (or to reproduce an
+IBCS "pie multiples" layout), never for trends or precise comparison.
+
+<Callout type="warn" title="checkIbcs flags every pie">
+  `checkIbcs` is the library's own check against IBCS notation rules — pass it a chart or report
+  config and it returns rule violations. Its `linear-chart-type` rule permits only linear charts
+  (column, bar, line, area, scatter, bubble, waterfall), so a pie trips the linter by design. Prefer
+  a bar or column unless the pie is truly the point.
+</Callout>
+
+## Example
+
+<Frame center>
+  <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+    <div style={{ display: "flex", gap: 28, alignItems: "center", flexWrap: "wrap" }}>
+      <PieChart
+        data={[
+          { label: "Software", value: 50 },
+          { label: "Support", value: 20 },
+          { label: "Consulting", value: 30 },
+        ]}
+        emphasisIndex={0}
+        donut
+        size={170}
+        showValueLabels
+      />
+      <PieChart
+        share={{ value: 69, total: 100, delta: 18, higherIsBetter: true }}
+        donut
+        size={130}
+      />
+    </div>
+    <div>
+      <div style={{ display: "flex", gap: 18, flexWrap: "wrap" }}>
+        {[
+          { label: "EMEA", value: 48, total: 100, delta: 3 },
+          { label: "Americas", value: 41, total: 100, delta: -2 },
+          { label: "APAC", value: 33, total: 100, delta: 6 },
+          { label: "LATAM", value: 22, total: 100, delta: 1 },
+        ].map((r) => (
+          <div key={r.label} style={{ textAlign: "center" }}>
+            <PieChart
+              share={{ value: r.value, total: r.total, delta: r.delta, higherIsBetter: true }}
+              donut
+              size={104}
+            />
+            <div style={{ fontSize: 12, color: "#6b6a64", marginTop: 2 }}>{r.label}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</Frame>
+
+```tsx
+import { PieChart } from "ibcs-react";
+
+// Multi-slice (one emphasised slice, muted greys — not a rainbow)
+<PieChart
+  data={[
+    { label: "Software", value: 50 },
+    { label: "Support", value: 20 },
+    { label: "Consulting", value: 30 },
+  ]}
+  emphasisIndex={0}
+  donut
+  showValueLabels
+/>
+
+// "Pie multiples" share with a green/red growth sliver
+<PieChart share={{ value: 69, total: 100, delta: 18, higherIsBetter: true }} donut size={130} />
+```
+
+The second example above is the pie-multiples pattern: one donut per entity,
+same size and same total, so the comparison happens across panels rather than
+between slices. Donuts stay legible down to about 120px.
+
+## Props
+
+<AutoTypeTable path="../src/react/PieChart.tsx" name="PieChartProps" />

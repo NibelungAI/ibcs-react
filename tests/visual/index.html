@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>ibcs-react — visual regression harness</title>
+    <style>
+      /* Deliberately boring, fully static page chrome: every pixel that is not a
+         component must be identical on every run, on every machine. No web fonts
+         (the library asks for the system UI stack), no dark mode, no scrollbar
+         gutter surprises — the fixtures are screenshotted one element at a time. */
+      :root {
+        color-scheme: light;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        background: #ffffff;
+        color: #2b2b29;
+      }
+      #root {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 24px;
+        padding: 24px;
+      }
+      /* One fixture cell. The fixed width makes the container-measuring
+         components render at a reproducible size.
+
+         `position: relative` + `contain: layout` keep out-of-flow parts inside
+         the screenshot box: layout containment makes the cell the containing
+         block for FIXED descendants too, so ChartTooltip lands in its own cell
+         instead of floating over whichever fixture is scrolled into view. Layout
+         containment (unlike `paint`) neither clips overflow nor forces a
+         compositing layer, so it does not change how anything rasterizes. */
+      [data-fixture] {
+        position: relative;
+        contain: layout;
+        min-height: 32px;
+        padding: 8px;
+        background: #ffffff;
+      }
+      /* ChartTooltip is a pointer-following overlay: out of flow, so it cannot
+         grow its cell. Reserve enough room for it to be fully inside the shot. */
+      [data-fixture="ChartTooltip"] {
+        min-height: 160px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="./main.tsx"></script>
+  </body>
+</html>

@@ -1,0 +1,127 @@
+---
+title: KpiCard
+description: A headline figure (count-up animated) with impact-coloured deltas vs PY/PL and an optional sparkline.
+---
+
+import { KpiCard } from "ibcs-react";
+
+A single headline number with one or more IBCS impact-coloured deltas — the
+colour follows favorability, not the sign — and an optional sparkline under the
+figure. Built to drop into a report grid as a `kpi` block.
+
+## When to use
+
+A single KPI in a dashboard strip — revenue, margin, headcount — with its
+variance and trend at a glance.
+
+## Example
+
+<Frame center>
+  <div style={{ width: 240 }}>
+    <KpiCard
+      label="Revenue"
+      values={{ AC: 30.1e6, PY: 25.6e6, PL: 28.5e6 }}
+      comparisons={["PY", "PL"]}
+      format={{ compact: true, decimals: 1 }}
+      sparkline={[2.3e6, 2.45e6, 2.6e6, 2.4e6, 2.7e6, 2.9e6]}
+    />
+  </div>
+</Frame>
+
+```tsx
+import { KpiCard } from "ibcs-react";
+
+<KpiCard
+  label="Revenue"
+  values={{ AC: 30.1e6, PY: 25.6e6, PL: 28.5e6 }}
+  comparisons={["PY", "PL"]}
+  sparkline={[2.3e6, 2.45e6, 2.6e6, 2.9e6]}
+/>;
+```
+
+## More examples
+
+### A cost KPI (higherIsBetter = false)
+
+For costs, an increase is unfavorable. Setting `higherIsBetter={false}` flips
+the impact colouring, so the +1.3M rise reads red even though the number went
+up.
+
+<Frame center>
+  <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
+    <div style={{ width: 220 }}>
+      <KpiCard
+        label="Revenue"
+        values={{ AC: 30.1e6, PY: 25.6e6 }}
+        comparisons={["PY"]}
+        format={{ compact: true, decimals: 1 }}
+      />
+    </div>
+    <div style={{ width: 220 }}>
+      <KpiCard
+        label="Operating cost"
+        values={{ AC: 9.7e6, PY: 8.4e6 }}
+        comparisons={["PY"]}
+        higherIsBetter={false}
+        format={{ compact: true, decimals: 1 }}
+      />
+    </div>
+  </div>
+</Frame>
+
+```tsx
+// Revenue up -> green (favorable)
+<KpiCard label="Revenue" values={{ AC: 30.1e6, PY: 25.6e6 }} comparisons={["PY"]} />
+
+// Cost up -> red, because higher is worse
+<KpiCard
+  label="Operating cost"
+  values={{ AC: 9.7e6, PY: 8.4e6 }}
+  comparisons={["PY"]}
+  higherIsBetter={false}
+/>
+```
+
+### Units live in `format`
+
+There is no `unit` prop. The unit is part of `format`: `currency` for a leading
+symbol (`{ currency: "€" }` renders €30.1M), `suffix` for a trailing one
+(`{ suffix: "%" }` renders 18.4%). The card states the unit once, muted, beside
+the headline instead of repeating it on every delta.
+
+<Frame center>
+  <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
+    <div style={{ width: 220 }}>
+      <KpiCard
+        label="Revenue"
+        values={{ AC: 30.1e6, PY: 25.6e6 }}
+        comparisons={["PY"]}
+        format={{ currency: "€", compact: true, decimals: 1 }}
+      />
+    </div>
+    <div style={{ width: 220 }}>
+      <KpiCard
+        label="Gross margin"
+        values={{ AC: 18.4, PY: 17.1 }}
+        comparisons={["PY"]}
+        format={{ suffix: "%", compact: false, decimals: 1 }}
+      />
+    </div>
+  </div>
+</Frame>
+
+```tsx
+<KpiCard label="Revenue" values={{ AC: 30.1e6, PY: 25.6e6 }} format={{ currency: "€" }} />
+<KpiCard
+  label="Gross margin"
+  values={{ AC: 18.4, PY: 17.1 }}
+  format={{ suffix: "%", compact: false, decimals: 1 }}
+/>
+```
+
+Set `animate={false}` to render the headline outright — no frame loop, no
+re-renders — which is what you want in tests, print and SSR-heavy pages.
+
+## Props
+
+<AutoTypeTable path="../src/react/KpiCard.tsx" name="KpiCardProps" />

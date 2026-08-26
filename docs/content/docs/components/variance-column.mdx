@@ -1,0 +1,104 @@
+---
+title: VarianceColumnChart
+description: AC vs a comparison as overlapped columns (or pins), with an absolute/relative variance panel beneath.
+---
+
+import { VarianceColumnChart } from "ibcs-react";
+
+The workhorse period comparison: solid AC columns over the comparison
+scenario's own notation (PY solid grey, PL hollow frame, FC hatched), with an
+absolute or percent variance panel underneath.
+
+## When to use
+
+Comparison / deviation across a few categories or periods — e.g. revenue by
+quarter, AC vs PY.
+
+## Example
+
+<Frame center>
+  <VarianceColumnChart
+    title="Net sales — AC vs PY, mEUR"
+    data={[
+      { category: "Jan", AC: 30.1, PY: 28.6 },
+      { category: "Feb", AC: 27.4, PY: 28.9 },
+      { category: "Mar", AC: 32.2, PY: 29.4 },
+      { category: "Apr", AC: 29.8, PY: 30.4 },
+      { category: "May", AC: 33.1, PY: 30.1 },
+    ]}
+    width={620}
+    height={320}
+  />
+</Frame>
+
+```tsx
+import { VarianceColumnChart } from "ibcs-react";
+
+<VarianceColumnChart
+  data={[
+    { category: "Jan", AC: 30.1, PY: 28.6 },
+    { category: "Feb", AC: 27.4, PY: 28.9 },
+  ]}
+  comparison="PY"
+  variance="abs" // or "pct" / "none"
+  mark="bar" // or "pin"
+  width={620}
+  height={320}
+/>;
+```
+
+## More examples
+
+### Relative variance as pins
+
+Switch the lower panel to percent and the marks to pins — Q4 is well ahead of
+last year, which the percent variance makes explicit.
+
+<Frame center>
+  <VarianceColumnChart
+    data={[
+      { category: "Q1", AC: 6.8e6, PY: 6.1e6, PL: 6.5e6 },
+      { category: "Q2", AC: 7.3e6, PY: 6.4e6, PL: 7.0e6 },
+      { category: "Q3", AC: 7.6e6, PY: 6.7e6, PL: 7.4e6 },
+      { category: "Q4", AC: 8.4e6, PY: 6.4e6, PL: 7.6e6 },
+    ]}
+    comparison="PY"
+    variance="pct"
+    mark="pin"
+    width={460}
+    height={280}
+    format={{ compact: true }}
+  />
+</Frame>
+
+```tsx
+<VarianceColumnChart data={quarterly} comparison="PY" variance="pct" mark="pin" />
+```
+
+### Compare against plan (PL)
+
+Point the variance at a different base — here actuals vs plan instead of prior
+year.
+
+<Frame center>
+  <VarianceColumnChart
+    data={[
+      { category: "Q1", AC: 6.8e6, PY: 6.1e6, PL: 6.5e6 },
+      { category: "Q2", AC: 7.3e6, PY: 6.4e6, PL: 7.0e6 },
+      { category: "Q3", AC: 7.6e6, PY: 6.7e6, PL: 7.4e6 },
+      { category: "Q4", AC: 8.4e6, PY: 6.4e6, PL: 7.6e6 },
+    ]}
+    comparison="PL"
+    width={460}
+    height={280}
+    format={{ compact: true }}
+  />
+</Frame>
+
+```tsx
+<VarianceColumnChart data={quarterly} comparison="PL" />
+```
+
+## Props
+
+<AutoTypeTable path="../src/react/VarianceColumnChart.tsx" name="VarianceColumnChartProps" />

@@ -1,0 +1,59 @@
+---
+title: ComboChart
+description: Primary scenario columns plus a secondary measure on a right-hand axis (IBCS C05 family).
+---
+
+import { ComboChart } from "ibcs-react";
+
+Scenario columns on the left axis with a second, differently-scaled measure
+drawn against a right-hand axis — and the column variance underneath.
+
+## When to use
+
+Two related measures with different units on one chart — e.g. revenue (€,
+columns) and margin (%, line).
+
+## Example
+
+<Frame center>
+  <ComboChart
+    data={[
+      { category: "Q1", AC: 4.2e6, PY: 3.8e6 },
+      { category: "Q2", AC: 4.9e6, PY: 4.5e6 },
+      { category: "Q3", AC: 5.3e6, PY: 5.1e6 },
+      { category: "Q4", AC: 6.1e6, PY: 5.4e6 },
+    ]}
+    secondary={[
+      { category: "Q1", value: 18.4 },
+      { category: "Q2", value: 21.0 },
+      { category: "Q3", value: 19.6 },
+      { category: "Q4", value: 22.3 },
+    ]}
+    primaryLabel="Revenue (€)"
+    secondaryLabel="Margin (%)"
+    secondaryFormat={{ compact: false, decimals: 1 }}
+    width={520}
+    height={300}
+    format={{ compact: true }}
+  />
+</Frame>
+
+```tsx
+import { ComboChart } from "ibcs-react";
+
+<ComboChart
+  data={[{ category: "Q1", AC: 4.2e6, PY: 3.8e6 } /* … */]}
+  secondary={[{ category: "Q1", value: 18.4 } /* … */]}
+  primaryLabel="Revenue (€)"
+  secondaryLabel="Margin (%)"
+/>;
+```
+
+Two axes only earn their keep when the two measures are genuinely related and
+carry different units — always label both, and format the secondary series in
+its own unit via `secondaryFormat`. If the units match, one axis is the honest
+choice.
+
+## Props
+
+<AutoTypeTable path="../src/react/ComboChart.tsx" name="ComboChartProps" />

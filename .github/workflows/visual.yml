@@ -1,0 +1,105 @@
+# Visual regression — pixel diffing of every fixture in the shared catalogue.
+#
+# Deliberately NOT part of ci.yml. Screenshot baselines are platform-specific:
+# font rasterization and antialiasing differ between Windows, macOS and Linux, so
+# a baseline recorded on a contributor's laptop would fail on every other machine.
+# The committed set is therefore the LINUX one and it is only ever produced here,
+# on ubuntu-latest with the Chromium build pinned by @playwright/test. Locally,
+# `npm run test:visual` still works — those baselines land in an untracked
+# platform folder (see .gitignore).
+#
+# Two entry points:
+#   * schedule / plain manual run — compares against the committed linux
+#     baselines and uploads the report plus actual/diff PNGs when something moved.
+#   * manual run with `update-baselines` — regenerates the baselines and uploads
+#     them as an artifact for a human to review and commit. Also how the very
+#     first set is created: until then the compare job legitimately fails with
+#     "A snapshot doesn't exist".
+#
+# See the "Visual regression" section of CONTRIBUTING.md.
+name: Visual regression
+
+on:
+  workflow_dispatch:
+    inputs:
+      update-baselines:
+        description: "Regenerate the linux baselines instead of comparing against them"
+        type: boolean
+        default: false
+  schedule:
+    # Mondays, 05:00 UTC. Weekly is enough: this catches slow drift (a browser or
+    # dependency bump changing how something rasterizes), not per-PR regressions.
+    - cron: "0 5 * * 1"
+
+concurrency:
+  group: visual-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  compare:
+    # `inputs` is empty for schedule runs, so this is the default path.
+    if: ${{ !inputs.update-baselines }}
+    name: compare against linux baselines
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # Chromium only — the harness renders inline SVG, a second engine would add
+      # a second baseline set for no extra signal.
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Visual tests
+        run: npm run test:visual
+
+      # Expected / actual / diff for every fixture that moved, plus the trace.
+      - name: Upload report and diffs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 14
+
+  baselines:
+    if: ${{ inputs.update-baselines }}
+    name: regenerate linux baselines
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Rewrite baselines
+        run: npm run test:visual:update
+
+      # Download, unzip over tests/visual/__screenshots__/linux/, eyeball the
+      # diff, commit. The workflow never pushes: a baseline change is a review
+      # decision, not an automated one.
+      - name: Upload refreshed baselines
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-baselines-linux
+          path: tests/visual/__screenshots__/linux/
+          if-no-files-found: error
+          retention-days: 14

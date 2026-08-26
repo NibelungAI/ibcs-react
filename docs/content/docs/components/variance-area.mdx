@@ -1,0 +1,69 @@
+---
+title: VarianceAreaChart
+description: An actual-vs-reference area chart — the gap is filled green where favorable and red where unfavorable.
+---
+
+import { VarianceAreaChart } from "ibcs-react";
+
+The actual line runs over a grey reference; the band between them is filled
+with the impact colour, so favorable and unfavorable stretches read as shapes.
+The tail can be hatched as forecast.
+
+## When to use
+
+Show a trend against a benchmark (average Ø, previous year, plan) where the
+running over/under-performance matters — favorable and unfavorable stretches
+read at a glance. Tiles well as small multiples.
+
+## Example
+
+<Frame center>
+  <VarianceAreaChart
+    title="Profit vs location average (Ø)"
+    referenceLabel="Ø"
+    forecastFrom={9}
+    width={520}
+    height={240}
+    format={{ compact: true }}
+    data={[
+      { category: "04", AC: 66, reference: 47 },
+      { category: "05", AC: 41, reference: 47 },
+      { category: "06", AC: 38, reference: 47 },
+      { category: "07", AC: 62, reference: 47 },
+      { category: "08", AC: 120, reference: 47 },
+      { category: "09", AC: 210, reference: 47 },
+      { category: "10", AC: 280, reference: 47 },
+      { category: "11", AC: 311, reference: 47 },
+      { category: "12", AC: 344, reference: 47 },
+      { category: "13", AC: 311, reference: 47, FC: 311 },
+      { category: "14", AC: 311, reference: 47, FC: 311 },
+      { category: "15", AC: 311, reference: 47, FC: 311 },
+    ]}
+  />
+</Frame>
+
+```tsx
+import { VarianceAreaChart } from "ibcs-react";
+
+<VarianceAreaChart
+  title="Profit vs location average (Ø)"
+  referenceLabel="Ø"
+  forecastFrom={9} // index where the hatched FC tail begins
+  data={[
+    { category: "04", AC: 66, reference: 47 },
+    { category: "08", AC: 120, reference: 47 },
+    { category: "13", AC: 311, reference: 47, FC: 311 },
+  ]}
+/>;
+```
+
+The reference can be any benchmark — a location average, previous year, plan —
+as long as `referenceLabel` names it. For a cost measure set
+`higherIsBetter={false}` so the fill above the reference turns red.
+
+Because a panel stays legible when small, this chart tiles well through
+[SmallMultiples](/docs/components/small-multiples).
+
+## Props
+
+<AutoTypeTable path="../src/react/VarianceAreaChart.tsx" name="VarianceAreaChartProps" />

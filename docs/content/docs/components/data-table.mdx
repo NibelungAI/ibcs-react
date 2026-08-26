@@ -1,0 +1,115 @@
+---
+title: DataTable
+description: The general cross-entity IBCS table — rows are entities, columns are values, embedded variances and sparklines.
+---
+
+import { DataTable } from "ibcs-react";
+import { regionRows, regionColumns } from "@/lib/demo-data/tables";
+
+The general comparison table: rows are entities (regions, teams, products),
+columns are measures. A column is a plain value, a variance drawn as an
+embedded bar or pin, or a sparkline — so magnitude, deviation and trend sit
+side by side in one grid.
+
+## When to use
+
+A cross-entity comparison: revenue by region, headcount by team, cost by
+category. Use [StatementTable](/docs/components/statement-table) instead when
+rows build up to subtotals (a P&L or a balance sheet), and
+[ComparisonTable](/docs/components/comparison-table) when the row labels should
+sit in the centre, flanked by two period groups.
+
+## Example
+
+Six regions and two measures (revenue and operating income), each with an
+absolute ΔPY bar; revenue also gets a relative-variance pin and a sparkline.
+Header clicks re-sort, and `showTotals` appends a summed row.
+
+<Frame>
+  <DataTable
+    columns={regionColumns}
+    rows={regionRows}
+    format={{ compact: true, decimals: 1 }}
+    showTotals
+    defaultSort={{ key: "rev", dir: "desc" }}
+  />
+</Frame>
+
+```tsx
+import { DataTable } from "ibcs-react";
+
+<DataTable
+  columns={[
+    { key: "rev", label: "Revenue", kind: "value", scenario: "AC" },
+    {
+      key: "rev_d",
+      label: "ΔPY",
+      kind: "variance",
+      measure: "rev",
+      base: "PY",
+      mode: "abs",
+      mark: "bar",
+    },
+    {
+      key: "rev_p",
+      label: "ΔPY %",
+      kind: "variance",
+      measure: "rev",
+      base: "PY",
+      mode: "pct",
+      mark: "pin",
+    },
+    { key: "trend", label: "Trend", kind: "sparkline", measure: "rev" },
+    { key: "oi", label: "Op. income", kind: "value", scenario: "AC" },
+    {
+      key: "oi_d",
+      label: "ΔPY",
+      kind: "variance",
+      measure: "oi",
+      base: "PY",
+      mode: "abs",
+      mark: "bar",
+    },
+  ]}
+  rows={performanceByRegion} // { id, label, values: { rev: { AC, PY }, oi: { AC, PY } }, spark: { rev } }
+  showTotals
+  defaultSort={{ key: "rev", dir: "desc" }}
+/>;
+```
+
+Rows may nest through `children`: a parent renders as a bold group that sums
+its children and collapses on click.
+
+## Sorting: controlled or uncontrolled
+
+Clicking a header cycles the sort: descending, then ascending, then off.
+
+- **Uncontrolled** — seed the initial order with `defaultSort` (`{ key, dir }`,
+  or `null` for unsorted) and let the table own it. `onSortChange` still fires
+  as an observer.
+- **Controlled** — pass `sort` (or `null`) plus `onSortChange`. The table
+  renders exactly that sort and never mutates it; each header activation
+  reports the next sort — `null` when the cycle clears it — for you to apply.
+
+The collapsed groups follow the same convention: `defaultCollapsed` is the
+uncontrolled seed, `collapsed` (a `ReadonlySet<string>` or string array) plus
+`onCollapsedChange` is the controlled pair. Once `collapsed` is provided, the
+matching `default*` prop is ignored.
+
+```tsx
+const [sort, setSort] = useState<DataTableSort | null>({ key: "rev", dir: "desc" });
+const [collapsed, setCollapsed] = useState<string[]>([]);
+
+<DataTable
+  columns={columns}
+  rows={rows}
+  sort={sort}
+  onSortChange={setSort}
+  collapsed={collapsed}
+  onCollapsedChange={setCollapsed}
+/>;
+```
+
+## Props
+
+<AutoTypeTable path="../src/react/DataTable.tsx" name="DataTableProps" />

@@ -1,0 +1,14 @@
+@import "tailwindcss";
+@import "fumadocs-ui/css/neutral.css";
+@import "fumadocs-ui/css/preset.css";
+
+/* iOS hardening (salvaged from the original site): keep text at its intended
+   size on orientation change, kill the grey tap flash, and reserve the
+   scrollbar gutter so overlays never shift the centered layout sideways. */
+html {
+  -webkit-text-size-adjust: 100%;
+  scrollbar-gutter: stable;
+}
+* {
+  -webkit-tap-highlight-color: transparent;
+}

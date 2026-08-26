@@ -1,0 +1,60 @@
+---
+title: GroupedVarianceChart
+description: Grouped two-scenario multi-tier chart (IBCS C03 columns / C04 bars) with absolute and relative variance tiers.
+---
+
+import { GroupedVarianceChart } from "ibcs-react";
+
+AC and its comparison stand side by side rather than overlaid, with an absolute
+and a relative deviation tier. The comparison keeps its own notation: PY solid
+grey, PL a hollow frame, FC hatched.
+
+## When to use
+
+Compare two scenarios side by side (not overlaid) with both Δ and Δ% tiers —
+the canonical IBCS multi-tier column (vertical) or bar (horizontal) layout. Use
+[IntegratedVarianceChart](/docs/components/integrated-variance) instead when you
+want the comparison overlaid behind AC.
+
+## Example
+
+<Frame center>
+  <GroupedVarianceChart
+    orientation="column"
+    comparison="PY"
+    title="Revenue by region — AC vs PY"
+    width={680}
+    height={440}
+    format={{ compact: true }}
+    data={[
+      { category: "North", AC: 1240, comparisonValue: 1100 },
+      { category: "South", AC: 880, comparisonValue: 950 },
+      { category: "East", AC: 1320, comparisonValue: 1180 },
+      { category: "West", AC: 1510, comparisonValue: 1480, isForecast: true },
+    ]}
+  />
+</Frame>
+
+```tsx
+import { GroupedVarianceChart } from "ibcs-react";
+
+// C03 — grouped columns (vertical), tiers stack: Δ% / Δabs / columns
+<GroupedVarianceChart
+  orientation="column" // or "bar" for C04 (panels side by side)
+  comparison="PY" // "PY" | "PL" (hollow frame) | "FC" (hatched)
+  data={[
+    { category: "North", AC: 1240, comparisonValue: 1100 },
+    { category: "South", AC: 880, comparisonValue: 950 },
+    { category: "West", AC: 1510, comparisonValue: 1480, isForecast: true },
+  ]}
+/>;
+```
+
+In column orientation the tiers stack vertically (Δ% on top, then Δ, then the
+columns); in bar orientation they sit side by side as panels. Set
+`higherIsBetter={false}` for cost measures, and use `clampPct` so one extreme
+percentage draws an off-scale arrow instead of compressing the tier.
+
+## Props
+
+<AutoTypeTable path="../src/react/GroupedVarianceChart.tsx" name="GroupedVarianceChartProps" />

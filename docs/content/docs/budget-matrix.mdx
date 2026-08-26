@@ -1,0 +1,290 @@
+---
+title: Budget matrix
+description: A budget and control statement crossed two ways — a P&L row hierarchy against an expanding period column tree, with Plan / Actual / Forecast sub-columns and a signed ΔBudget.
+---
+
+import { MatrixTable, oceanTokens } from "ibcs-react";
+import {
+  budgetRows,
+  budgetValues,
+  budgetColumns,
+  budgetColumnsForecast,
+  budgetColumnsQuarters,
+  budgetColumnsMonths,
+  budgetColumnsYearMonths,
+  budgetFormat,
+} from "@/lib/demo-data/budget-matrix";
+import { CommentableMatrix } from "@/components/demos/budget-matrix/commentable-matrix";
+import { MonthlyDistribution } from "@/components/demos/budget-matrix/monthly-distribution";
+
+A budget / control statement crossed two ways: a P&L **row hierarchy** down the
+side and an **expanding period column tree** across the top. Click a year
+header to drill Year to Quarter to Month in place, expand the row groups, and
+read full-year Plan versus Actual with a signed ΔBudget — all on a sticky first
+column with horizontal scroll.
+
+This guide is the deep-dive; the component reference lives at
+[MatrixTable](/docs/components/matrix-table).
+
+## What it does
+
+- **Row hierarchy** — a statement tree with `+` / `−` / `=` markers, bold
+  subtotals with rules, a double rule on the final result, and expand/collapse
+  on any group.
+- **Column tree** — periods nest (Year to Quarter to Month). Clicking a period
+  header expands its children _in place_, with centered super-headers over the
+  scenario sub-columns.
+- **Scenario sub-columns** — each leaf period fans out into Plan / Actual /
+  Forecast (FC is italic and hatched, per IBCS notation), configurable per
+  period.
+- **ΔBudget variance** — an optional AC − PL column per period, signed and
+  coloured by business impact.
+- **Sticky scroll** — the label column is frozen and the header sticks, so many
+  period columns scroll horizontally (and vertically once `maxHeight` caps the
+  body).
+
+## 1 · The budget and control statement
+
+The full picture: a P&L for **three years** with Plan, Actual and a signed
+**ΔBudget**, opened on the live **Year to Quarter to Month** drill-down. 2024
+is expanded to quarters and Q1 to its months — click any period header to
+collapse it or drill further, expand **Revenue** or **Operating expenses** to
+break the rows down, and scroll horizontally while the P&L labels and the
+period bands stay aligned.
+
+<Frame>
+  <MatrixTable
+    rows={budgetRows}
+    columns={budgetColumns}
+    values={budgetValues}
+    scenarios={["PL", "AC"]}
+    showVariance
+    tokens={oceanTokens}
+    format={budgetFormat}
+    defaultExpandedCols={["2024", "2024-Q1"]}
+  />
+</Frame>
+
+## Per-cell interaction — commentable cells
+
+Every value sub-cell (AC, the comparison, Δ) is an addressable, clickable
+target. `onCellClick` fires with the row and period ids and labels, the
+scenario (`"DELTA"` for the Δ cell) and the value; `cellDecorations` draws a
+corner ribbon; and each cell carries a `data-cell-ref` attribute (the value of
+`cellRefOf(rowId, periodId, scenario)`) so an outside panel can scroll to it
+and flash it. That is enough to build a full comment layer on top of the grid
+without forking the table. **Click any number below to flag it.**
+
+<Frame>
+  <CommentableMatrix />
+</Frame>
+
+```tsx
+import { MatrixTable, cellRefOf } from "ibcs-react";
+
+const [comments, setComments] = useState(new Set<string>()); // refs with a thread
+
+<MatrixTable
+  rows={rows}
+  columns={periods}
+  values={values}
+  scenarios={["PL", "AC"]}
+  showVariance
+  onCellClick={(c) => {
+    const ref = cellRefOf(c.rowId, c.periodId, c.scenario); // "net::2024-01::DELTA"
+    openCommentThread(ref, c); // your sidebar
+  }}
+  cellDecorations={(ref) => (comments.has(ref) ? { ribbon: true } : undefined)}
+  getCellClassName={(ref) => (ref === selectedRef ? "is-flashing" : undefined)}
+/>;
+
+// scroll to + flash a cell from the sidebar:
+document.querySelector(`[data-cell-ref="${ref}"]`)?.scrollIntoView({ block: "center" });
+```
+
+## 2 · IBCS scenario notation (Plan / Actual / Forecast)
+
+The classic statement template: historic years compare **PL** against **AC**,
+while the current year shows **PL** against **FC** — the forecast header italic
+and hatched. The scenario mix is set per period via `period.scenarios`; no
+variance column here.
+
+<Frame>
+  <MatrixTable
+    rows={budgetRows}
+    columns={budgetColumnsForecast}
+    values={budgetValues}
+    scenarios={["PL", "AC"]}
+    format={budgetFormat}
+  />
+</Frame>
+
+```tsx
+const columns = [
+  { id: "2022", label: "2022", scenarios: ["PL", "AC"] },
+  { id: "2023", label: "2023", scenarios: ["PL", "AC"] },
+  { id: "2024", label: "2024", scenarios: ["PL", "FC"] }, // current year: forecast
+];
+```
+
+## 3 · Quarters only, capped and scrolling
+
+The minimal layout when you do not need the multi-year drill-down: a single
+year as four quarters with a ΔBudget column. It scrolls horizontally under a
+sticky header, while `maxHeight` caps the body for vertical scroll. The Revenue
+and Operating-expenses groups start collapsed — `defaultExpandedRows={[]}`
+seeds an empty open set.
+
+<Frame>
+  <MatrixTable
+    rows={budgetRows}
+    columns={budgetColumnsQuarters}
+    values={budgetValues}
+    scenarios={["PL", "AC"]}
+    showVariance
+    format={budgetFormat}
+    maxHeight={320}
+    defaultExpandedCols={["2024"]}
+    defaultExpandedRows={[]}
+  />
+</Frame>
+
+## 4 · Months only (one year)
+
+The simplest period layout: a single year shown straight as its **12 months**,
+with no year or quarter tier — pass the months as the top-level `columns`. It
+scrolls horizontally under the sticky label column.
+
+<Frame>
+  <MatrixTable
+    rows={budgetRows}
+    columns={budgetColumnsMonths}
+    values={budgetValues}
+    scenarios={["PL", "AC"]}
+    showVariance
+    format={budgetFormat}
+    maxHeight={360}
+  />
+</Frame>
+
+## 5 · Years plus months (drill a year straight to months)
+
+Two years, each expanding **directly into its 12 months**, skipping the quarter
+tier. Click a year header to open or close it, or use the **Expand all periods**
+toolbar (`columnExpandControls`) to open every year at once rather than one at
+a time.
+
+<Frame>
+  <MatrixTable
+    rows={budgetRows}
+    columns={budgetColumnsYearMonths}
+    values={budgetValues}
+    scenarios={["PL", "AC"]}
+    showVariance
+    format={budgetFormat}
+    maxHeight={360}
+    columnExpandControls
+    defaultExpandedCols={["2024"]}
+  />
+</Frame>
+
+## 6 · Monthly distribution (AC vs PL / PY)
+
+A table gives the numbers; a chart gives the _shape_ of the year. This
+companion view spreads full-year revenue across all **12 months** as solid
+**Actual** columns with a comparison column behind — toggle it between **Plan
+(PL)**, a hollow outline, and **Previous year (PY)**, solid grey. The variance
+panel below re-reads against whichever base you pick, so the same data answers
+both "are we on budget?" and "are we growing?". It is a plain
+[VarianceColumnChart](/docs/components/variance-column); clicking a month fires
+`onSelect`, which you would wire to filter the matrix above.
+
+<Frame>
+  <MonthlyDistribution />
+</Frame>
+
+## Building the model
+
+Three serializable inputs: a `rows` tree, a `columns` period tree and a
+`values` lookup. Parent rows aggregate from their children automatically, so
+only the leaf lines have to be supplied — and derived subtotals should be
+stored at every granularity you let the reader drill to, so a quarter still
+adds up once it is opened.
+
+```tsx
+import { MatrixTable, oceanTokens } from "ibcs-react";
+
+// ROWS: a P&L tree — flow markers (+ / − / =), subtotals, drill-down.
+const rows = [
+  {
+    id: "revenue",
+    label: "Revenue",
+    flow: "result",
+    children: [
+      { id: "software", label: "Software revenue", flow: "add" },
+      { id: "support", label: "Support revenue", flow: "add" },
+    ],
+  },
+  { id: "cogs", label: "Cost of sales", flow: "subtract", higherIsBetter: false },
+  { id: "gross", label: "Gross profit", flow: "result" },
+];
+
+// COLUMNS: a PERIOD tree — a year expands into quarters, into months, in place.
+const columns = [
+  {
+    id: "2023",
+    label: "2023",
+    children: [
+      {
+        id: "2023-Q1",
+        label: "Q1",
+        children: [
+          { id: "2023-01", label: "Jan" },
+          { id: "2023-02", label: "Feb" },
+          { id: "2023-03", label: "Mar" },
+        ],
+      },
+    ],
+  },
+  { id: "2024", label: "2024" }, // PL/FC handled via period.scenarios
+];
+
+// VALUES: a serializable lookup, values[rowId][periodId][scenario].
+const values = {
+  software: { "2023": { PL: 543, AC: 565 }, "2023-Q1": { PL: 130, AC: 138 } },
+  // … parent rows (Revenue) auto-aggregate from their children.
+};
+
+<MatrixTable
+  rows={rows}
+  columns={columns}
+  values={values}
+  scenarios={["PL", "AC"]} // sub-column order per leaf period
+  showVariance // adds a ΔBudget (AC − PL) column
+  tokens={oceanTokens} // theme via tokens, never hardcoded colours
+  format={{ compact: false, decimals: 0 }}
+  stickyFirstColumn // freeze labels during horizontal scroll
+/>;
+```
+
+`higherIsBetter: false` on the cost lines is what makes an overspend read red
+in the ΔBudget column: the variance is coloured by business impact, not by
+sign. Change which scenarios the Δ column compares with
+`varianceScenarios={{ actual: "AC", base: "PL" }}`.
+
+## Props
+
+Every prop — including the controlled `expandedRows` / `expandedCols` pairs and
+the per-cell hooks used above — is documented on the component page:
+[MatrixTable](/docs/components/matrix-table).
+
+## Where to next
+
+- [MatrixTable](/docs/components/matrix-table) — the full prop reference and
+  the controlled/uncontrolled expansion contract.
+- [StatementTable](/docs/components/statement-table) — the same statement for a
+  single period, with an integrated waterfall.
+- [DataTable](/docs/components/data-table) — entities rather than periods
+  across the top.
+- [Data model](/docs/data-model) — scenarios, flows and `higherIsBetter`.
+- [IBCS & ISO 24896](/docs/ibcs) — why PL is hollow and FC is hatched.

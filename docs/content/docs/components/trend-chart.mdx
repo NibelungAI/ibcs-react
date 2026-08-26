@@ -1,0 +1,93 @@
+---
+title: TrendChart
+description: A many-period time series — AC solid / FC hatched columns, PY & PL reference lines, variance panel.
+---
+
+import { TrendChart } from "ibcs-react";
+
+Actuals as solid columns, forecast periods hatched, prior year and plan drawn
+as reference lines over them, and a variance panel underneath. A `summary` row
+is set off as a total.
+
+## When to use
+
+Trend over time — 12–13 periods with actuals then forecast, against prior year
+and plan.
+
+## Example
+
+<Frame center>
+  <TrendChart
+    data={[
+      { category: "Jan 2023", AC: 13.7e6, PY: 13.4e6 },
+      { category: "Feb 2023", AC: 14.3e6, PY: 13.8e6 },
+      { category: "Mar 2023", AC: 15.1e6, PY: 14.2e6 },
+      { category: "Apr 2023", AC: 13.7e6, PY: 14.0e6 },
+      { category: "May 2023", AC: 14.2e6, PY: 13.9e6 },
+      { category: "Jun 2023", AC: 14.8e6, PY: 14.6e6 },
+      { category: "Jul 2023", AC: 14.9e6, PY: 14.1e6 },
+      { category: "Aug 2023", AC: 13.6e6, PY: 13.7e6 },
+      { category: "Sep 2023", AC: 14.2e6, PY: 13.6e6 },
+      { category: "Oct 2023", AC: 14.6e6, PY: 13.9e6 },
+      { category: "Nov 2023", AC: 14.3e6, PY: 13.5e6 },
+      { category: "Dec 2023", AC: 14.5e6, PY: 13.8e6 },
+    ]}
+    comparison="PY"
+    width={680}
+    height={300}
+    format={{ compact: true }}
+  />
+</Frame>
+
+```tsx
+import { TrendChart } from "ibcs-react";
+
+<TrendChart
+  data={months} // { category, AC?, FC?, PY?, PL?, summary? }
+  comparison="PY"
+  referenceLines={["PY", "PL"]}
+/>;
+```
+
+## More examples
+
+### Relative variance vs plan
+
+Compare the forecast tail against plan as a percent — the hatched FC periods
+carry through to the percent variance panel.
+
+<Frame center>
+  <TrendChart
+    data={[
+      { category: "P1", AC: 2.3e6, PY: 2.15e6, PL: 2.25e6 },
+      { category: "P2", AC: 2.42e6, PY: 2.2e6, PL: 2.35e6 },
+      { category: "P3", AC: 2.55e6, PY: 2.38e6, PL: 2.48e6 },
+      { category: "P4", AC: 2.48e6, PY: 2.42e6, PL: 2.5e6 },
+      { category: "P5", AC: 2.62e6, PY: 2.45e6, PL: 2.55e6 },
+      { category: "P6", AC: 2.71e6, PY: 2.5e6, PL: 2.62e6 },
+      { category: "P7", AC: 2.66e6, PY: 2.58e6, PL: 2.68e6 },
+      { category: "P8", AC: 2.8e6, PY: 2.63e6, PL: 2.74e6 },
+      { category: "P9", AC: 2.93e6, PY: 2.7e6, PL: 2.85e6 },
+      { category: "P10", FC: 2.97e6, PY: 2.78e6, PL: 2.9e6 },
+      { category: "P11", FC: 3.05e6, PY: 2.86e6, PL: 3.0e6 },
+      { category: "P12", FC: 3.12e6, PY: 2.95e6, PL: 3.08e6 },
+      { category: "P13", FC: 3.2e6, PY: 3.02e6, PL: 3.15e6 },
+    ]}
+    comparison="PL"
+    variance="pct"
+    width={620}
+    height={300}
+    format={{ compact: true }}
+  />
+</Frame>
+
+```tsx
+<TrendChart data={months} comparison="PL" variance="pct" />
+```
+
+Reference lines follow IBCS notation: PY solid with dots, PL dashed. Drop one
+by narrowing `referenceLines`, e.g. `referenceLines={["PY"]}`.
+
+## Props
+
+<AutoTypeTable path="../src/react/TrendChart.tsx" name="TrendChartProps" />

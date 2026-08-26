@@ -1,0 +1,57 @@
+---
+title: ScatterChart
+description: A value/value scattergram (IBCS C09) with optional constant-product iso-lines.
+---
+
+import { ScatterChart } from "ibcs-react";
+
+Two measures on two value axes, points optionally grouped, with hyperbolas of
+constant x·y drawn behind them — the iso-lines that turn a cloud into a
+statement about a meaningful product (e.g. equal gross profit).
+
+## When to use
+
+Correlation between two measures — margin vs revenue, price vs volume.
+Iso-lines reveal a meaningful product (x·y).
+
+## Example
+
+<Frame center>
+  <ScatterChart
+    data={[
+      { x: 120, y: 18, group: "Enterprise", label: "Acme" },
+      { x: 60, y: 9, group: "SMB" },
+      { x: 90, y: 14, group: "Enterprise" },
+      { x: 40, y: 6, group: "SMB" },
+      { x: 150, y: 22, group: "Enterprise", label: "Globex" },
+      { x: 30, y: 11, group: "Mid" },
+      { x: 75, y: 8, group: "Mid" },
+      { x: 110, y: 16, group: "Mid" },
+    ]}
+    xLabel="Revenue"
+    yLabel="Gross profit"
+    isoLines={[1000, 2000, 3000]}
+    width={520}
+    height={340}
+    format={{ compact: true }}
+  />
+</Frame>
+
+```tsx
+import { ScatterChart } from "ibcs-react";
+
+<ScatterChart
+  data={[{ x: 120, y: 18, group: "Enterprise", label: "Acme" } /* …thousands… */]}
+  xLabel="Revenue"
+  yLabel="Gross profit"
+  isoLines={[1000, 2000, 3000]} // equal x·y hyperbolas
+/>;
+```
+
+The chart handles anything from a handful of points to thousands — dense data
+is down-sampled automatically. Label only the points that carry the message;
+unlabelled points still read as the cloud they belong to.
+
+## Props
+
+<AutoTypeTable path="../src/react/ScatterChart.tsx" name="ScatterChartProps" />

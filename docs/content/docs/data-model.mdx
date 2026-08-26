@@ -1,0 +1,310 @@
+---
+title: Data model
+description: ScenarioKey, StatementLine and the category datum shapes — plus the statement adapters that project one model onto every view.
+---
+
+import { StatementTable } from "ibcs-react";
+import { StatementViews } from "@/components/demos/statement-views";
+
+A handful of small types describe everything the components render. They all
+share one idea — a bag of values keyed by scenario — so the same figures flow
+into tables, charts and cards unchanged.
+
+## ScenarioKey and ScenarioDatum
+
+The four IBCS scenarios. Every value in the library lives under one of these
+keys; a component reads whichever ones it needs and ignores the rest.
+
+```ts
+// AC = actual · PY = previous year · PL = plan/budget · FC = forecast
+type ScenarioKey = "AC" | "PY" | "PL" | "FC";
+
+// The standard category row: one label plus one optional value per scenario.
+// Trend periods, line points, combo columns and variance columns are all this
+// shape (or a narrow extension of it).
+interface ScenarioDatum {
+  category: string; // "EMEA", "Jan", "Q1", "2024"
+  AC?: number;
+  PY?: number;
+  PL?: number;
+  FC?: number;
+}
+```
+
+A scenario is optional because real data is ragged: a forecast period has no
+AC, a new product has no PY. Missing means "not drawn" — never zero.
+
+## StatementLine
+
+The core tree. A P&L or a balance sheet is an array of these. `flow` drives the
+waterfall, `children` make a line a collapsible group, and `higherIsBetter`
+flips variance favorability for cost-like lines.
+
+```ts
+interface StatementLine {
+  id: string;
+  label: string;
+  // How the line moves the actual waterfall. Default "add".
+  //  "add"      → moves the running total up   (revenue, other income)
+  //  "subtract" → moves the running total down (cost, expense, tax)
+  //  "result"   → a subtotal drawn to the running total; it does not move it
+  flow?: "add" | "subtract" | "result";
+  values: Partial<Record<ScenarioKey, number>>; // real currency units
+  higherIsBetter?: boolean; // default true; set false on cost/expense/tax
+  children?: StatementLine[]; // breakdown; collapsible. Must sum to the parent.
+  defaultCollapsed?: boolean;
+  emphasis?: boolean; // bold; auto-true for flow "result"
+}
+```
+
+### A flow statement vs a stock statement
+
+The same shape renders a P&L (period flows, waterfall) and a balance sheet
+(point-in-time levels). Pass `mode="stock"` for the latter so each line draws
+an absolute bar instead of a step.
+
+<Frame>
+  <div style={{ display: "flex", flexDirection: "column", gap: 22, width: "100%" }}>
+    <div>
+      <div
+        style={{
+          fontSize: 11.5,
+          textTransform: "uppercase",
+          letterSpacing: 0.6,
+          color: "#9a9992",
+          marginBottom: 6,
+        }}
+      >
+        flow · profit and loss
+      </div>
+      <StatementTable
+        lines={[
+          {
+            id: "rev-product",
+            label: "Product revenue",
+            flow: "add",
+            values: { AC: 17200000, PY: 16100000 },
+          },
+          {
+            id: "rev-service",
+            label: "Service revenue",
+            flow: "add",
+            values: { AC: 12900000, PY: 9500000 },
+          },
+          {
+            id: "revenue",
+            label: "Revenue",
+            flow: "result",
+            values: { AC: 30100000, PY: 25600000 },
+          },
+          {
+            id: "cogs",
+            label: "Cost of goods sold",
+            flow: "subtract",
+            higherIsBetter: false,
+            values: { AC: 9700000, PY: 8400000 },
+          },
+          {
+            id: "gross-margin",
+            label: "Gross margin",
+            flow: "result",
+            values: { AC: 20400000, PY: 17200000 },
+          },
+        ]}
+        waterfallWidth={200}
+        format={{ compact: true, decimals: 1 }}
+      />
+    </div>
+    <div>
+      <div
+        style={{
+          fontSize: 11.5,
+          textTransform: "uppercase",
+          letterSpacing: 0.6,
+          color: "#9a9992",
+          marginBottom: 6,
+        }}
+      >
+        stock · balance sheet
+      </div>
+      <StatementTable
+        mode="stock"
+        lines={[
+          {
+            id: "current-assets",
+            label: "Current assets",
+            flow: "add",
+            emphasis: true,
+            values: {},
+            children: [
+              {
+                id: "cash",
+                label: "Cash and equivalents",
+                flow: "add",
+                values: { AC: 8200000, PY: 6500000 },
+              },
+              {
+                id: "receivables",
+                label: "Accounts receivable",
+                flow: "add",
+                values: { AC: 5400000, PY: 4900000 },
+              },
+              {
+                id: "inventory",
+                label: "Inventory",
+                flow: "add",
+                values: { AC: 3100000, PY: 3400000 },
+              },
+            ],
+          },
+          {
+            id: "noncurrent-assets",
+            label: "Non-current assets",
+            flow: "add",
+            emphasis: true,
+            values: { AC: 21400000, PY: 20100000 },
+          },
+          {
+            id: "total-assets",
+            label: "Total assets",
+            flow: "result",
+            values: { AC: 38100000, PY: 34900000 },
+          },
+        ]}
+        waterfallWidth={200}
+        format={{ compact: true, decimals: 1 }}
+      />
+    </div>
+  </div>
+</Frame>
+
+A group with an empty `values` reports the sum of its children, so a collapsed
+group still carries its full weight.
+
+## The category datum shapes
+
+```ts
+// VarianceColumnChart rows: a ScenarioDatum where AC is required.
+type ColumnDatum = ScenarioDatum & { AC: number };
+
+const quarterly: ColumnDatum[] = [
+  { category: "Q1", AC: 6.8e6, PY: 6.1e6, PL: 6.5e6 },
+  { category: "Q2", AC: 7.3e6, PY: 6.4e6, PL: 7.0e6 },
+];
+
+// TrendChart periods. Actual periods carry AC; the forecast tail carries FC
+// (drawn hatched). PY / PL ride along as reference lines.
+interface TrendDatum extends ScenarioDatum {
+  summary?: boolean; // set off as a total, e.g. a full-year column
+}
+
+// StructureChart components — note the key is `label`, not `category`.
+interface StructureDatum {
+  label: string; // "North America", "Europe", …
+  AC?: number;
+  PY?: number;
+  PL?: number;
+  FC?: number;
+  higherIsBetter?: boolean; // per-component override (e.g. a cost part)
+}
+
+// WaterfallChart contributions, in order.
+interface WaterfallDatum {
+  category: string;
+  value: number;
+  flow?: "add" | "subtract" | "result";
+  higherIsBetter?: boolean;
+}
+```
+
+## One data model, many views: the statement adapters
+
+Each chart view has its own flat input shape, because those views are also
+usable without a statement. The adapters are the bridge: pure projections from
+the `StatementLine` tree onto each view's shape, so you keep **one** authored
+data set and derive the rest instead of hand-reshaping the same lines on every
+screen.
+
+```ts
+import { statementToWaterfall, statementToStructure, statementToDataTableRows } from "ibcs-react";
+
+// statementToWaterfall(lines, scenario = "AC", { expandGroups = false })
+const acBridge = statementToWaterfall(lines); // top-level lines, AC
+const pyBridge = statementToWaterfall(lines, "PY"); // the same bridge, PY
+const detailed = statementToWaterfall(lines, "AC", { expandGroups: true });
+
+// statementToStructure(lines, { skipResults = true })
+const parts = statementToStructure(costLines); // subtotals dropped
+
+// statementToDataTableRows(lines, { measure = "value" })
+const rows = statementToDataTableRows(lines); // hierarchy preserved
+```
+
+`statementToWaterfall` keeps each line's label, `flow` (defaulting to `"add"`)
+and `higherIsBetter`, so the bridge tells the same story as the statement's own
+waterfall lane. Group values resolve through the tree, so a collapsed group
+still carries its children's sum. With `expandGroups: true`, a group that has
+children, is not `defaultCollapsed` and is not a `"result"` hands the flow to
+its children — exactly what the table shows on first paint. An `add` or
+`subtract` line with no value for that scenario is skipped rather than drawn as
+a zero column; `"result"` lines are always emitted, because a result is drawn
+to the running total.
+
+`statementToStructure` emits one datum per top-level line with every scenario
+it has data for. It drops `flow: "result"` lines by default — a composition
+shows the parts of a whole, and charting a subtotal next to the lines it
+already contains double-counts the total and shrinks every real component's
+share. Pass `{ skipResults: false }` when the subtotals themselves are the
+composition you want.
+
+`statementToDataTableRows` files each line's own scenario values under one
+measure (default `"value"`) and recurses `children` in place, carrying `flow`,
+`emphasis` and `defaultCollapsed` across so the table draws the statement
+markers without extra wiring. Own values are used deliberately: the table
+already sums the children of a row that has no own value.
+
+```tsx
+import { DataTable, statementToDataTableRows } from "ibcs-react";
+
+const columns = [
+  { key: "value", label: "AC" }, // measure defaults to the key
+  { key: "value_py", label: "PY", measure: "value", scenario: "PY" },
+  { key: "d_py", label: "ΔPY", kind: "variance", measure: "value", base: "PY" },
+];
+
+<DataTable columns={columns} rows={statementToDataTableRows(lines)} />;
+```
+
+Below, one `StatementLine[]` powers two views at once: the statement table
+reads the model directly, and the bridge is projected from the same array —
+twice, once per scenario, so the AC bridge can be compared against the PY one.
+
+<Frame>
+  <StatementViews />
+</Frame>
+
+```tsx
+import { StatementTable, WaterfallChart, statementToWaterfall } from "ibcs-react";
+
+const lines = fetchPnl(); // the ONE model
+
+<StatementTable lines={lines} />
+<WaterfallChart
+  data={statementToWaterfall(lines)}
+  comparisonData={statementToWaterfall(lines, "PY")}
+/>
+```
+
+For export there are two more projections of the same model:
+`statementToMatrix(lines, opts)` returns a row/column matrix and
+`statementToCSV(lines, opts)` serializes it to CSV.
+
+## Consistency tip
+
+Keep your model internally consistent: children should sum to their parent, and
+every `flow: "result"` line should equal the running total of the steps above
+it. The waterfall geometry and the share percentages depend on it.
+
+- [IBCS & ISO 24896](/docs/ibcs) — what `higherIsBetter` and the scenario keys
+  mean visually.
+- [Components](/docs/components) — which component eats which shape.

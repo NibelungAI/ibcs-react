@@ -1,0 +1,72 @@
+---
+title: StructureChart
+description: Ranked horizontal bars showing composition / contribution, with AC vs PY overlap and % share.
+---
+
+import { StructureChart } from "ibcs-react";
+
+Components ranked largest to smallest as horizontal bars, each overlapped with
+its comparison scenario, with the share of the total and a variance beside it.
+
+## When to use
+
+Structure / composition — revenue by region, cost by category. Ranked, with a
+total row.
+
+## Example
+
+<Frame center>
+  <StructureChart
+    data={[
+      { label: "North America", AC: 12.4e6, PY: 11.1e6, PL: 12.0e6 },
+      { label: "Europe", AC: 8.9e6, PY: 8.0e6, PL: 8.6e6 },
+      { label: "Asia Pacific", AC: 5.6e6, PY: 4.2e6, PL: 5.2e6 },
+      { label: "Latin America", AC: 2.1e6, PY: 1.5e6, PL: 2.0e6 },
+      { label: "Middle East & Africa", AC: 1.1e6, PY: 0.8e6, PL: 0.7e6 },
+    ]}
+    comparison="PY"
+    width={520}
+    height={280}
+    format={{ compact: true }}
+  />
+</Frame>
+
+```tsx
+import { StructureChart } from "ibcs-react";
+
+<StructureChart data={[{ label: "EMEA", AC: 12e6, PY: 10e6 } /* … */]} comparison="PY" />;
+```
+
+## More examples
+
+### Composition vs plan
+
+Rank the same regions but measure each against plan — Middle East & Africa,
+ahead of a small plan, stands out.
+
+<Frame center>
+  <StructureChart
+    data={[
+      { label: "North America", AC: 12.4e6, PY: 11.1e6, PL: 12.0e6 },
+      { label: "Europe", AC: 8.9e6, PY: 8.0e6, PL: 8.6e6 },
+      { label: "Asia Pacific", AC: 5.6e6, PY: 4.2e6, PL: 5.2e6 },
+      { label: "Latin America", AC: 2.1e6, PY: 1.5e6, PL: 2.0e6 },
+      { label: "Middle East & Africa", AC: 1.1e6, PY: 0.8e6, PL: 0.7e6 },
+    ]}
+    comparison="PL"
+    width={520}
+    height={280}
+    format={{ compact: true }}
+  />
+</Frame>
+
+```tsx
+<StructureChart data={regions} comparison="PL" />
+```
+
+Cost components take `higherIsBetter: false` on the row so an increase reads as
+unfavorable.
+
+## Props
+
+<AutoTypeTable path="../src/react/StructureChart.tsx" name="StructureChartProps" />

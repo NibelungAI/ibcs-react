@@ -1,0 +1,69 @@
+---
+title: WaterfallChart
+description: A standalone add / subtract / result bridge — how contributions move a running total from start to end.
+---
+
+import { WaterfallChart } from "ibcs-react";
+
+Contributions float above a running total; `result` rows drop to a full
+zero-based bar. Subtractions carry `higherIsBetter: false`, so a cost increase
+reads as unfavorable in the variance panel.
+
+## When to use
+
+Variance contribution / bridge — explain how a total got from A to B (e.g.
+revenue → costs → operating income), as a chart rather than a table.
+
+## Example
+
+<Frame center>
+  <WaterfallChart
+    data={[
+      { category: "Total revenue", value: 589.5e6, flow: "add" },
+      { category: "Cost of sales", value: 238.6e6, flow: "subtract", higherIsBetter: false },
+      { category: "Gross profit", value: 0, flow: "result" },
+      { category: "Operating expenses", value: 178.7e6, flow: "subtract", higherIsBetter: false },
+      { category: "EBITDA", value: 0, flow: "result" },
+      {
+        category: "Depreciation & amortization",
+        value: 98.6e6,
+        flow: "subtract",
+        higherIsBetter: false,
+      },
+      { category: "EBIT", value: 0, flow: "result" },
+      { category: "Financial result", value: 13.5e6, flow: "add" },
+      { category: "Profit before tax", value: 0, flow: "result" },
+      { category: "Net income", value: 0, flow: "result" },
+    ]}
+    scenario="AC"
+    width={760}
+    height={360}
+    format={{ compact: true, decimals: 1 }}
+  />
+</Frame>
+
+```tsx
+import { WaterfallChart } from "ibcs-react";
+
+<WaterfallChart
+  data={[
+    { category: "Revenue", value: 30.1e6, flow: "add" },
+    { category: "COGS", value: 9.7e6, flow: "subtract", higherIsBetter: false },
+    { category: "Gross margin", value: 0, flow: "result" },
+  ]}
+  scenario="AC"
+/>;
+```
+
+A `result` row needs no value — the component computes the running total. Pass
+`comparisonData` (the same categories for another scenario) to get a variance
+panel; `mark` decides whether those deviations draw as bars or pins.
+
+For long line labels, lay the bridge on its side with
+[HorizontalWaterfallChart](/docs/components/horizontal-waterfall); for a
+statement with embedded variance columns use
+[StatementTable](/docs/components/statement-table).
+
+## Props
+
+<AutoTypeTable path="../src/react/WaterfallChart.tsx" name="WaterfallChartProps" />

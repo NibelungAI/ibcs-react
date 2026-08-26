@@ -1,0 +1,87 @@
+---
+title: ColumnVarianceWaterfallChart
+description: IBCS C05 — grouped AC/PL columns under a horizontal waterfall of the period variances.
+---
+
+import { ColumnVarianceWaterfallChart } from "ibcs-react";
+
+Each period's actual and plan columns sit under a bridge of the period
+deviations, which walks from the plan total on the left to the actual plus
+forecast total on the right, with a relative deviation tier on top.
+
+## When to use
+
+A monthly plan-vs-actual build-up: see each period's columns, how the variances
+bridge from the plan total to the actual+forecast total, and the relative
+deviations — the flagship integrated period chart.
+
+## Example
+
+<Frame center>
+  <ColumnVarianceWaterfallChart
+    title="Net sales in kEUR — 2025 (AC vs PL)"
+    width={900}
+    height={460}
+    data={[
+      { category: "Jan", ac: 15, pl: 11 },
+      { category: "Feb", ac: 13, pl: 10 },
+      { category: "Mar", ac: 17, pl: 10 },
+      { category: "Apr", ac: 7, pl: 10 },
+      { category: "May", ac: 5, pl: 10 },
+      { category: "Jun", ac: 6, pl: 10 },
+      { category: "Jul", ac: 11, pl: 15 },
+      { category: "Aug", ac: 9, pl: 14 },
+      { category: "Sep", ac: 26, pl: 15, isForecast: true },
+      { category: "Oct", ac: 22, pl: 15, isForecast: true },
+      { category: "Nov", ac: 18, pl: 15, isForecast: true },
+      { category: "Dec", ac: 29, pl: 19, isForecast: true },
+    ]}
+    priorTotals={[
+      { label: "2024 AC", value: 174, scenario: "PY" },
+      { label: "2025 PL", value: 154, scenario: "PL" },
+    ]}
+    endTotal={{
+      label: "2025 AC+FC",
+      segments: [
+        { label: "AC", value: 83 },
+        { label: "FC", value: 95, forecast: true },
+      ],
+    }}
+  />
+</Frame>
+
+```tsx
+import { ColumnVarianceWaterfallChart } from "ibcs-react";
+
+<ColumnVarianceWaterfallChart
+  title="Net sales in kEUR — 2025 (AC vs PL)"
+  data={[
+    { category: "Jan", ac: 15, pl: 11 },
+    { category: "Sep", ac: 26, pl: 15, isForecast: true },
+    { category: "Dec", ac: 29, pl: 19, isForecast: true },
+  ]}
+  priorTotals={[
+    { label: "2024 AC", value: 174, scenario: "PY" },
+    { label: "2025 PL", value: 154, scenario: "PL" },
+  ]}
+  endTotal={{
+    label: "2025 AC+FC",
+    segments: [
+      { label: "AC", value: 83 },
+      { label: "FC", value: 95, forecast: true },
+    ],
+  }}
+/>;
+```
+
+Periods marked `isForecast` draw hatched, and the matching `forecast: true`
+segment in `endTotal` keeps the year total honest about how much of it is still
+forecast. The total columns are set apart from the period axis, as IBCS
+prescribes for figures that are not part of the series.
+
+## Props
+
+<AutoTypeTable
+  path="../src/react/ColumnVarianceWaterfallChart.tsx"
+  name="ColumnVarianceWaterfallChartProps"
+/>

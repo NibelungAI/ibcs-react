@@ -1,0 +1,333 @@
+---
+title: IBCS templates
+description: The ibcs.com chart-template catalogue (C01–C13) mapped to the ibcs-react component that draws each one, with a live preview per code.
+---
+
+import {
+  StackedChart,
+  GroupedVarianceChart,
+  ColumnVarianceWaterfallChart,
+  BarVarianceWaterfallChart,
+  LineChart,
+  AreaChart,
+  ScatterChart,
+  BubbleChart,
+  RatioTreeChart,
+  WaterfallChart,
+  MiniVarianceMultiples,
+  DataTable,
+  StatementTable,
+} from "ibcs-react";
+import {
+  stackedData,
+  stackedSeries,
+  groupedQuarters,
+  groupedRegions,
+  columnVarianceMonths,
+  barVarianceRegions,
+  scatterSegments,
+  bubbleCountries,
+  ratioTreeRoot,
+  bridgeSteps,
+  miniGroups,
+  templateTableColumns,
+  templateTableRows,
+} from "@/lib/demo-data/templates";
+import { sampleMonthlyTrend, sampleStatementFlat } from "@/lib/demo-data/sample-data";
+
+The components on this page reproduce the **ibcs.com template set** — the
+catalogue of standard chart and table layouts described by the IBCS notation,
+the basis of ISO 24896:2026, "Notation for business reporting". Each template
+carries a code (`C01`…`C13` for charts, `T01`…`T04` for tables); below, every
+chart code maps to the `ibcs-react` component that draws it, with a small live
+preview.
+
+Every preview is a real component rendered with sample data at roughly
+300×180px. Follow the component link under a card for the full page: more
+examples, the code and the prop table.
+
+## Chart templates
+
+### C01 · Stacked columns
+
+Vertical columns split into their parts — the composition of a total per
+period.
+
+<Frame center>
+  <StackedChart
+    data={stackedData}
+    series={stackedSeries}
+    orientation="column"
+    width={300}
+    height={180}
+    format={{ compact: true }}
+  />
+</Frame>
+
+Component: [StackedChart](/docs/components/stacked-chart)
+
+### C02 · Stacked bars
+
+The same composition rotated: horizontal bars, so long category labels stay
+readable.
+
+<Frame center>
+  <StackedChart
+    data={stackedData}
+    series={stackedSeries}
+    orientation="bar"
+    width={300}
+    height={180}
+    format={{ compact: true }}
+  />
+</Frame>
+
+Component: [StackedChart](/docs/components/stacked-chart)
+
+### C03 · Multi-tier columns
+
+Actual next to its comparison, with the absolute and relative variance stacked
+above as separate tiers.
+
+<Frame center>
+  <GroupedVarianceChart
+    data={groupedQuarters}
+    orientation="column"
+    comparison="PY"
+    width={300}
+    height={220}
+    format={{ compact: true }}
+  />
+</Frame>
+
+Component: [GroupedVarianceChart](/docs/components/grouped-variance)
+
+### C04 · Multi-tier bars
+
+The horizontal reading of the same chart: grouped bars with the variance tiers
+as side-by-side panels.
+
+<Frame center>
+  <GroupedVarianceChart
+    data={groupedRegions}
+    orientation="bar"
+    comparison="PL"
+    width={300}
+    height={220}
+    format={{ compact: true }}
+  />
+</Frame>
+
+Component: [GroupedVarianceChart](/docs/components/grouped-variance)
+
+### C05 · Columns plus horizontal waterfall
+
+Monthly actual against plan, with the period variances carried into a
+horizontal waterfall that bridges the gap for the year.
+
+<Frame center>
+  <ColumnVarianceWaterfallChart
+    data={columnVarianceMonths}
+    width={340}
+    height={240}
+    format={{ compact: true }}
+  />
+</Frame>
+
+Component: [ColumnVarianceWaterfallChart](/docs/components/column-variance-waterfall)
+
+### C06 · Bars plus vertical waterfall
+
+The bar counterpart: grouped rows on the left, a vertical waterfall on the
+right accumulating each row's contribution to the total variance.
+
+<Frame center>
+  <BarVarianceWaterfallChart
+    data={barVarianceRegions}
+    width={330}
+    rowHeight={20}
+    pyTotal={620}
+    format={{ compact: true }}
+  />
+</Frame>
+
+Component: [BarVarianceWaterfallChart](/docs/components/bar-variance-waterfall)
+
+### C07 · Line charts
+
+A time series with its comparison scenario as a reference line — the standard
+trend reading.
+
+<Frame center>
+  <LineChart
+    data={sampleMonthlyTrend}
+    comparison="PY"
+    width={300}
+    height={180}
+    format={{ compact: true }}
+  />
+</Frame>
+
+Component: [LineChart](/docs/components/line-chart)
+
+### C08 · Area charts
+
+The same series with the area between actual and baseline filled, so the
+cumulative gap is the visible quantity.
+
+<Frame center>
+  <AreaChart
+    data={sampleMonthlyTrend}
+    scenario="AC"
+    baseline="PY"
+    width={300}
+    height={180}
+    format={{ compact: true }}
+  />
+</Frame>
+
+Component: [AreaChart](/docs/components/area-chart)
+
+### C09 · Scattergrams
+
+Two measures against each other, one point per object, with iso-lines marking
+constant products or ratios.
+
+<Frame center>
+  <ScatterChart
+    data={scatterSegments}
+    xLabel="Revenue"
+    yLabel="Gross profit"
+    isoLines={[1000, 2000]}
+    width={300}
+    height={180}
+    format={{ compact: true }}
+  />
+</Frame>
+
+Component: [ScatterChart](/docs/components/scatter-chart)
+
+### C10 · Bubble charts
+
+A scattergram with a third measure carried by the area of each mark.
+
+<Frame center>
+  <BubbleChart
+    data={bubbleCountries}
+    xLabel="Growth %"
+    yLabel="Margin %"
+    sizeLabel="Revenue"
+    width={300}
+    height={180}
+    format={{ compact: true }}
+  />
+</Frame>
+
+Component: [BubbleChart](/docs/components/bubble-chart)
+
+### C11 · Calculation and ratio trees
+
+A ratio decomposed into its drivers, each node carrying its own small trend.
+
+<Frame center>
+  <RatioTreeChart
+    root={ratioTreeRoot}
+    width={360}
+    nodeWidth={120}
+    nodeHeight={70}
+    format={{ decimals: 1 }}
+  />
+</Frame>
+
+Components: [RatioTreeChart](/docs/components/ratio-tree) ·
+[TreeChart](/docs/components/tree-chart)
+
+### C12 · Vertical waterfalls
+
+A result built from its add and subtract steps — the bridge from one figure to
+another.
+
+<Frame center>
+  <WaterfallChart
+    data={bridgeSteps}
+    scenario="AC"
+    width={300}
+    height={180}
+    format={{ compact: true }}
+  />
+</Frame>
+
+Components: [WaterfallChart](/docs/components/waterfall-chart) ·
+[WaterfallStatementChart](/docs/components/waterfall-statement)
+
+### C13 · Small multiples
+
+One small chart per group, all on a shared scale, so the panels are directly
+comparable.
+
+<Frame center>
+  <div style={{ width: 300 }}>
+    <MiniVarianceMultiples
+      groups={miniGroups}
+      comparison="PY"
+      columns={2}
+      format={{ compact: true }}
+    />
+  </div>
+</Frame>
+
+Component: [MiniVarianceMultiples](/docs/components/small-multiples)
+
+## Table templates
+
+### T01 · Hierarchical table with variance columns
+
+Rows of a hierarchy with their figures, then the variance against a base as an
+embedded bar plus a percentage pin.
+
+<Frame center>
+  <div style={{ width: 300, fontSize: 12 }}>
+    <DataTable
+      columns={templateTableColumns}
+      rows={templateTableRows}
+      format={{ compact: true, decimals: 1 }}
+      showTotals
+      defaultSort={{ key: "revenue", dir: "desc" }}
+    />
+  </div>
+</Frame>
+
+Component: [DataTable](/docs/components/data-table)
+
+The table codes have a page of their own: [Table templates](/docs/table-templates)
+builds `T01`–`T04` at full size, with the flanking layout, the multi-year
+profit and loss statement and the integrated statement.
+
+## C12 as an integrated statement
+
+The vertical-waterfall idea also appears embedded in a financial statement:
+each line is a step in the running total, with its variance bars alongside.
+
+<Frame>
+  <StatementTable
+    lines={sampleStatementFlat.slice(0, 6)}
+    waterfallWidth={170}
+    format={{ compact: true, decimals: 1 }}
+  />
+</Frame>
+
+Component: [StatementTable](/docs/components/statement-table)
+
+## One model, every template
+
+The same scenario-keyed values (AC / PY / PL / FC) feed all of these. Switching
+template is mostly a matter of choosing the component and its orientation, not
+reshaping the data — see [The data model](/docs/data-model) for the shape every
+component expects.
+
+## Where to next
+
+- [Table templates](/docs/table-templates) — `T01`–`T04` at full size.
+- [Examples](/docs/examples) — the templates composed into complete dashboards.
+- [IBCS and ISO 24896](/docs/ibcs) — the notation the templates encode.
+- [Components](/docs/components) — the full reference.

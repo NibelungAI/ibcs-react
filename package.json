@@ -1,0 +1,142 @@
+{
+  "name": "ibcs-react",
+  "version": "0.1.0",
+  "description": "IBCS / ISO 24896:2026 business reporting components for React: statement tables, variance and waterfall charts, KPI cards and a conformance linter. One data model, many views.",
+  "keywords": [
+    "actual-vs-budget",
+    "budget-vs-actual",
+    "business-charts",
+    "business-intelligence",
+    "charts",
+    "dashboard",
+    "data-table",
+    "data-visualization",
+    "finance",
+    "financial-reporting",
+    "fp-and-a",
+    "ibcs",
+    "ibcs-react",
+    "income-statement",
+    "iso-24896",
+    "kpi",
+    "kpi-card",
+    "management-reporting",
+    "plan-vs-actual",
+    "pnl",
+    "react",
+    "report",
+    "scenario-analysis",
+    "ssr",
+    "svg-charts",
+    "table",
+    "typescript",
+    "variance",
+    "variance-analysis",
+    "waterfall",
+    "waterfall-chart",
+    "zero-dependency"
+  ],
+  "homepage": "https://ibcs-react.com",
+  "bugs": {
+    "url": "https://github.com/NibelungAI/ibcs-react/issues"
+  },
+  "license": "MIT",
+  "author": "ibcs-react contributors",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NibelungAI/ibcs-react.git"
+  },
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "typesVersions": {
+    "*": {
+      "core": [
+        "./dist/core/index.d.ts"
+      ]
+    }
+  },
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./core": {
+      "import": {
+        "types": "./dist/core/index.d.ts",
+        "default": "./dist/core/index.js"
+      },
+      "require": {
+        "types": "./dist/core/index.d.cts",
+        "default": "./dist/core/index.cjs"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "prepublishOnly": "npm run ci",
+    "ci": "npm run typecheck && npm run lint && npm test && npm run build && npm run verify-dist",
+    "lint": "oxlint src demo tests scripts examples",
+    "build": "tsup && node scripts/postbuild.mjs",
+    "verify-dist": "node scripts/verify-dist.mjs",
+    "dev": "tsup --watch --onSuccess \"node scripts/postbuild.mjs\"",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:visual": "playwright test",
+    "test:visual:update": "playwright test --update-snapshots",
+    "format": "node scripts/format.mjs",
+    "format:all": "oxfmt --write .",
+    "check-format": "oxfmt --check .",
+    "local-release": "changeset version && changeset publish",
+    "demo": "vite",
+    "demo:build": "vite build",
+    "storybook": "storybook dev -p 6006 --no-open",
+    "build-storybook": "storybook build"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.31.0",
+    "@playwright/test": "^1.61.0",
+    "@storybook/addon-essentials": "^8.4.7",
+    "@storybook/react": "^8.4.7",
+    "@storybook/react-vite": "^8.4.7",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "jsdom": "^27.0.1",
+    "oxfmt": "^0.55.0",
+    "oxlint": "^1.79.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "storybook": "^8.4.7",
+    "tsup": "^8.0.0",
+    "typescript": "^5.4.0",
+    "vite": "^5.4.11",
+    "vitest": "^3.2.6"
+  },
+  "peerDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18"
+  },
+  "peerDependenciesMeta": {
+    "react-dom": {
+      "optional": true
+    }
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

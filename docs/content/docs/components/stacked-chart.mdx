@@ -1,0 +1,57 @@
+---
+title: StackedChart
+description: Stacked columns (IBCS C01, over time) or stacked bars (C02, structure) — composition with category totals.
+---
+
+import { StackedChart } from "ibcs-react";
+
+Series stack in the order you declare them, each category printing its total at
+the end of the stack. `orientation="column"` is the C01 time layout;
+`orientation="bar"` is the C02 structure layout.
+
+## When to use
+
+Part-to-whole over time or across a structure — when one series dominates and
+the total matters. IBCS prefers small multiples when many series compete.
+
+## Example
+
+<Frame center>
+  <StackedChart
+    data={[
+      { category: "Q1", values: { product: 12.0e6, service: 8.0e6, other: 3.0e6 } },
+      { category: "Q2", values: { product: 13.5e6, service: 9.2e6, other: 3.4e6 } },
+      { category: "Q3", values: { product: 14.1e6, service: 9.8e6, other: 3.6e6 } },
+      { category: "Q4", values: { product: 15.6e6, service: 10.4e6, other: 4.1e6 } },
+    ]}
+    series={[
+      { key: "product", label: "Product" },
+      { key: "service", label: "Service" },
+      { key: "other", label: "Other" },
+    ]}
+    width={480}
+    height={300}
+    format={{ compact: true }}
+  />
+</Frame>
+
+```tsx
+import { StackedChart } from "ibcs-react";
+
+<StackedChart
+  data={[{ category: "Q1", values: { product: 12e6, service: 8e6 } } /* … */]}
+  series={[
+    { key: "product", label: "Product" },
+    { key: "service", label: "Service" },
+  ]}
+  orientation="column" // "bar" for C02 structure
+/>;
+```
+
+Only one series can carry the story: `highlight="product"` emphasises that
+segment and greys the rest. If several series compete for attention, split the
+chart into [small multiples](/docs/components/small-multiples) instead.
+
+## Props
+
+<AutoTypeTable path="../src/react/StackedChart.tsx" name="StackedChartProps" />

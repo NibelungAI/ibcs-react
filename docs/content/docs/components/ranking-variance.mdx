@@ -1,0 +1,64 @@
+---
+title: RankingVarianceChart
+description: A sorted horizontal variance chart — AC bars with a plan overlay, a ΔPL bar panel and a ΔPL% pin panel.
+---
+
+import { RankingVarianceChart } from "ibcs-react";
+
+Rows sorted by deviation: AC bars with the comparison overlaid, then the
+absolute variance as bars, then the relative variance as pins — with a bold
+total row underneath.
+
+## When to use
+
+Rank entities (regions, states, products) by their variance vs plan — see who
+beats and who misses, with absolute and relative deviation side by side and a
+bold total.
+
+## Example
+
+<Frame center>
+  <RankingVarianceChart
+    title="Net sales by state — AC vs Plan"
+    baseLabel="PL"
+    width={680}
+    format={{ compact: true }}
+    data={[
+      { label: "California", AC: 188, base: 154 },
+      { label: "New York", AC: 211, base: 201 },
+      { label: "Texas", AC: 197, base: 201 },
+      { label: "Ohio", AC: 131, base: 100 },
+      { label: "Maryland", AC: 125, base: 123 },
+      { label: "New Jersey", AC: 78, base: 109 },
+      { label: "Virginia", AC: 69, base: 166 },
+      { label: "Nevada", AC: 23, base: 18 },
+    ]}
+  />
+</Frame>
+
+```tsx
+import { RankingVarianceChart } from "ibcs-react";
+
+<RankingVarianceChart
+  title="Net sales by state — AC vs Plan"
+  baseLabel="PL"
+  sortBy="variance" // "variance" | "value" | "none"
+  data={[
+    { label: "California", AC: 188, base: 154 },
+    { label: "Texas", AC: 197, base: 201 },
+    { label: "Virginia", AC: 69, base: 166 },
+  ]}
+/>;
+```
+
+The relative panel is the reason small bases stay honest: a tiny entity can
+double while contributing almost nothing in absolute terms. Percentages beyond
+`clampPct` draw an off-scale arrow instead of stretching the whole scale for
+one outlier.
+
+`baseLabel` is what the headers say — set it to `"PY"` when the base values are
+last year's.
+
+## Props
+
+<AutoTypeTable path="../src/react/RankingVarianceChart.tsx" name="RankingVarianceChartProps" />

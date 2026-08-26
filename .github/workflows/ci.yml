@@ -1,0 +1,75 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# Cancel superseded runs on the same ref.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # 20 / 22 / 24. Node 18 is EOL and cannot run the toolchain anyway
+        # (jsdom and oxfmt both declare `engines.node >= 20.19`), so an 18 leg
+        # is a false green. setup-node resolves the latest minor of each major,
+        # which satisfies >= 20.19.
+        node: [20, 22, 24]
+    name: verify (node ${{ matrix.node }})
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node ${{ matrix.node }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+
+      - run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Test
+        run: npm test
+
+      - name: Build (ESM + CJS + types)
+        run: npm run build
+
+      # Smoke-tests the artifact consumers actually install: both formats load,
+      # the entries share one instance (no dual-package hazard) and "use client"
+      # is stamped on the root entries only.
+      - name: Verify dist
+        run: npm run verify-dist
+
+      # Packaging lint: exports map, file extensions, types resolution. Node
+      # version independent, so one leg is enough.
+      - name: publint
+        if: matrix.node == 22
+        run: npx --yes publint
+
+      # "Are the types wrong?" — checks the ESM/CJS type conditions resolve for
+      # every module resolution mode a consumer might use.
+      - name: Check type resolution (attw)
+        if: matrix.node == 22
+        run: npx --yes @arethetypeswrong/cli --pack .
+
+      # Formatting last, and on one leg: it is the cheapest signal and the least
+      # interesting failure, so it must not mask a real test/build error.
+      # `npm run format` fixes what you touched; `npm run format:all` sweeps the
+      # whole repo (needed once after an oxfmt upgrade changes its output).
+      - name: Check formatting
+        if: matrix.node == 22
+        run: npm run check-format

@@ -1,0 +1,119 @@
+---
+title: Conformance
+description: checkIbcs is the library's own IBCS-notation linter — lint a chart, KPI or report config in CI and get findings by rule id and JSON path.
+---
+
+import { ConformancePlayground } from "@/components/demos/conformance-playground";
+import { IbcsRulesTable } from "@/components/demos/ibcs-rules-table";
+
+Most chart libraries only let you draw. This one can also **check** a config
+against the IBCS notation rules it implements and tell you where the config
+departs from them — before it ships.
+
+## A notation linter
+
+The same JSON config that _renders_ a chart, KPI or report can also be
+_linted_. Call `checkIbcs(config)` and you get back an array of `IbcsFinding`
+objects: non-linear chart types, unstructured titles, missing data, wrong
+favorability for cost measures, and so on. An empty array means the config
+passes every rule the linter implements. It is pure logic — zero React, zero
+dependencies, JSON in and JSON out — so it runs in a unit test, a CI gate or an
+authoring tool.
+
+```tsx
+import { checkIbcs, ConformanceReport } from "ibcs-react";
+
+// A config that breaks the rules: pie isn't a linear chart type, the title is
+// a bare string (not Who/What/When), and there's no data to plot.
+const config = { type: "pie", title: "Revenue 2026", data: [] };
+
+const findings = checkIbcs(config);
+// → [
+//     { rule: "linear-chart-type", severity: "error",   path: "type",  message: … },
+//     { rule: "data-present",      severity: "error",   path: "data",  message: … },
+//     { rule: "structured-title",  severity: "warning", path: "title", message: … },
+//   ]
+// An empty array means no rule was violated.
+
+// Or render the findings — pass a target to lint on the fly…
+<ConformanceReport target={config} />
+// …or hand it findings you computed yourself:
+<ConformanceReport findings={findings} />
+```
+
+The linter runs at build time, not as a house-style debate. A config either
+passes the IBCS notation rules the linter implements, or it lists exactly what
+to change — by rule id and JSON path.
+
+## Live playground
+
+The config below deliberately breaks three rules: a `pie` (a non-linear chart
+type), a bare string `title` instead of a structured Who/What/When, and an
+empty `data` array. Edit the JSON and watch the findings update live — the same
+`ConformanceReport` component renders the result.
+
+<Frame>
+  <ConformancePlayground />
+</Frame>
+
+Out of the box this example produces **two errors** (non-linear chart type, no
+data) and **one warning** (bare-string title). Switch `"pie"` to a linear type
+such as `"varianceColumn"`, give it a data row and replace the title — the list
+empties and the report says so.
+
+## The rule catalog
+
+Every finding references a rule id from `IBCS_RULES`, a serializable catalog
+you can surface in your own UI legends or docs. The full set the linter
+encodes:
+
+<Frame>
+  <IbcsRulesTable />
+</Frame>
+
+```tsx
+import { IBCS_RULES } from "ibcs-react";
+
+IBCS_RULES.map((rule) => `${rule.id} (${rule.severity}) — ${rule.title}`);
+```
+
+## What a finding looks like
+
+Each `IbcsFinding` carries a `rule` id, a `severity` (`"error"`, `"warning"` or
+`"info"`), a human-readable `message` and an optional `path` locating the
+offending value (for example `blocks[2].config.type`).
+
+| Field      | Type                             | Meaning                                                       |
+| ---------- | -------------------------------- | ------------------------------------------------------------- |
+| `rule`     | `string`                         | Rule id — matches an entry in `IBCS_RULES`.                   |
+| `severity` | `"error" \| "warning" \| "info"` | Errors mark a broken rule; warnings and info are advisory.    |
+| `message`  | `string`                         | Human-readable description of the departure.                  |
+| `path`     | `string?`                        | JSON-ish path to the offending value, e.g. `blocks[2].title`. |
+
+## Scope
+
+`checkIbcs` is the library's own check against the IBCS notation rules listed
+above, implemented from the publicly described notation. It is not a
+certification, an audit or an assessment by IBCS or ISO, and a clean run says
+nothing beyond "none of these rules were violated". Rules the linter does not
+implement — and anything about the correctness of your numbers — remain your
+call.
+
+## Pair it with rendering
+
+The linter works on the very same configs the components render, so you can
+lint in CI and render in the app from one source of truth.
+
+```ts
+import { checkIbcs } from "ibcs-react";
+
+test("dashboard configs break no notation rule", () => {
+  for (const config of dashboardConfigs) {
+    const errors = checkIbcs(config).filter((f) => f.severity === "error");
+    expect(errors).toEqual([]);
+  }
+});
+```
+
+- [IBCS & ISO 24896](/docs/ibcs) — what the rules mean.
+- [Components](/docs/components) — the config shapes the linter understands.

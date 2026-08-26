@@ -1,0 +1,68 @@
+---
+title: HorizontalWaterfallChart
+description: An IBCS horizontal bridge (chart template C05) — categories run top-to-bottom, contributions float left-to-right.
+---
+
+import { HorizontalWaterfallChart } from "ibcs-react";
+
+The same bridge as [WaterfallChart](/docs/components/waterfall-chart), turned on
+its side: each step gets a full-width label, and a parallel comparison bridge
+adds a row-aligned variance panel on the right.
+
+## When to use
+
+A P&L / driver bridge where the line labels are long — laying the waterfall on
+its side gives each step a full-width label, unlike the vertical
+`WaterfallChart`. Add `comparisonData` for a row-aligned variance panel.
+
+## Example
+
+<Frame center>
+  <HorizontalWaterfallChart
+    title="P&L bridge — AC vs PY"
+    width={680}
+    height={320}
+    format={{ compact: true }}
+    data={[
+      { category: "Revenue", value: 1200, flow: "add" },
+      { category: "Cost of sales", value: 540, flow: "subtract", higherIsBetter: false },
+      { category: "Gross margin", value: 0, flow: "result" },
+      { category: "Operating expenses", value: 280, flow: "subtract", higherIsBetter: false },
+      { category: "Operating income", value: 0, flow: "result" },
+    ]}
+    comparisonData={[
+      { category: "Revenue", value: 1100, flow: "add" },
+      { category: "Cost of sales", value: 520, flow: "subtract", higherIsBetter: false },
+      { category: "Gross margin", value: 0, flow: "result" },
+      { category: "Operating expenses", value: 300, flow: "subtract", higherIsBetter: false },
+      { category: "Operating income", value: 0, flow: "result" },
+    ]}
+  />
+</Frame>
+
+```tsx
+import { HorizontalWaterfallChart } from "ibcs-react";
+
+<HorizontalWaterfallChart
+  title="P&L bridge — AC vs PY"
+  data={[
+    { category: "Revenue", value: 1200, flow: "add" },
+    { category: "Cost of sales", value: 540, flow: "subtract", higherIsBetter: false },
+    { category: "Gross margin", value: 0, flow: "result" },
+    { category: "Operating expenses", value: 280, flow: "subtract", higherIsBetter: false },
+    { category: "Operating income", value: 0, flow: "result" },
+  ]}
+  comparisonData={py} // same categories, another scenario -> variance panel
+/>;
+```
+
+`comparisonData` must carry the same categories in the same order — the
+variance panel aligns row by row. `mark="pin"` draws those deviations as pins
+instead of bars, which keeps small lines readable next to large ones.
+
+## Props
+
+<AutoTypeTable
+  path="../src/react/HorizontalWaterfallChart.tsx"
+  name="HorizontalWaterfallChartProps"
+/>

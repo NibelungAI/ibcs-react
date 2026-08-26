@@ -1,0 +1,78 @@
+---
+title: TreeChart
+description: A calculation tree of related measures (IBCS C11) — e.g. Return on assets = Return ÷ Assets.
+---
+
+import { TreeChart } from "ibcs-react";
+
+Nodes carry a value, an optional prior-year value and the operator that binds
+their children (`+`, `-`, `*`, `/`), so the arithmetic of a derived KPI is on
+the page next to its result.
+
+## When to use
+
+Show how a derived KPI decomposes into its drivers, each with its value and Δ
+vs prior year.
+
+## Example
+
+<Frame center>
+  <TreeChart
+    root={{
+      id: "roa",
+      label: "Return on assets",
+      value: 0.124,
+      py: 0.118,
+      op: "/",
+      format: { decimals: 3 },
+      children: [
+        {
+          id: "ret",
+          label: "Return",
+          value: 31e6,
+          py: 28.4e6,
+          op: "-",
+          children: [
+            { id: "ns", label: "Net sales", value: 240e6, py: 232e6 },
+            { id: "cost", label: "Total cost", value: 209e6, py: 203.6e6 },
+          ],
+        },
+        { id: "assets", label: "Assets", value: 250e6, py: 240.7e6 },
+      ],
+    }}
+    width={620}
+    height={300}
+    format={{ compact: true }}
+  />
+</Frame>
+
+```tsx
+import { TreeChart } from "ibcs-react";
+
+<TreeChart
+  root={{
+    id: "roa",
+    label: "Return on assets",
+    value: 0.124,
+    py: 0.118,
+    op: "/",
+    format: { decimals: 3 },
+    children: [
+      { id: "ret", label: "Return", value: 31e6, py: 28.4e6 },
+      { id: "assets", label: "Assets", value: 250e6, py: 240.7e6 },
+    ],
+  }}
+/>;
+```
+
+Each node can override `format`, which matters when a ratio and its
+currency-valued drivers share one tree. Supply `py` per node and the impact
+colouring shows which driver moved the headline; `showVariance={false}` turns
+the deltas off.
+
+For the same decomposition with a mini time series per node, use
+[RatioTreeChart](/docs/components/ratio-tree).
+
+## Props
+
+<AutoTypeTable path="../src/react/TreeChart.tsx" name="TreeChartProps" />

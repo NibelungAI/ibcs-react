@@ -1,0 +1,130 @@
+---
+title: StatementTable
+description: The IBCS integrated waterfall — a P&L or balance sheet with embedded variance bars and pins.
+---
+
+import { StatementTable } from "ibcs-react";
+import { statementLines, balanceSheetLines } from "@/lib/demo-data/tables";
+
+A financial statement rendered as one integrated view: the label column, an
+embedded waterfall lane for the actual scenario, and right-hand variance panels
+against each comparison base. Deviation and structure are read in a single
+pass, without leaving the table.
+
+## When to use
+
+An income statement, a balance sheet, or any build-up of figures to subtotals —
+lines that add, subtract and resolve into results. For a cross-entity
+comparison (revenue by region, headcount by team) where rows do not build up to
+a total, use [DataTable](/docs/components/data-table) instead.
+
+## Example
+
+<Frame>
+  <StatementTable
+    lines={statementLines}
+    waterfallWidth={230}
+    format={{ compact: true, decimals: 1 }}
+  />
+</Frame>
+
+```tsx
+import { StatementTable } from "ibcs-react";
+
+<StatementTable
+  lines={statement}
+  varianceColumns={[
+    { base: "PY", mode: "abs", mark: "bar" },
+    { base: "PY", mode: "pct", mark: "pin" },
+  ]}
+  mark="bar"
+  format={{ compact: true, decimals: 1 }}
+/>;
+```
+
+## Pin mark and relative variance
+
+Draw the waterfall lane as pins and add a percent (ΔPY%) panel — pins keep
+small bases honest against the absolute bars.
+
+<Frame>
+  <StatementTable
+    lines={statementLines}
+    mark="pin"
+    varianceColumns={[
+      { base: "PY", mode: "abs", mark: "bar" },
+      { base: "PY", mode: "pct", mark: "pin" },
+    ]}
+    waterfallWidth={230}
+    format={{ compact: true, decimals: 1 }}
+  />
+</Frame>
+
+```tsx
+<StatementTable
+  lines={statement}
+  mark="pin"
+  varianceColumns={[
+    { base: "PY", mode: "abs", mark: "bar" },
+    { base: "PY", mode: "pct", mark: "pin" },
+  ]}
+  format={{ compact: true, decimals: 1 }}
+/>
+```
+
+## Stock mode — a balance sheet
+
+The same component renders point-in-time levels instead of a flow waterfall:
+each line is an absolute bar, with no running total. Liability lines carry
+`higherIsBetter: false`, so a rise in debt reads as unfavorable. Groups with
+`children` collapse and expand.
+
+<Frame>
+  <StatementTable
+    lines={balanceSheetLines}
+    mode="stock"
+    waterfallWidth={230}
+    format={{ compact: true, decimals: 1 }}
+  />
+</Frame>
+
+```tsx
+<StatementTable
+  lines={balanceSheet} // ending balances, not period movements
+  mode="stock" // absolute levels, not a waterfall
+  format={{ compact: true, decimals: 1 }}
+/>
+```
+
+## Collapsed groups: controlled or uncontrolled
+
+Grouped statements track a **collapsed** set of group ids. Both modes are
+supported, and mixing them is the usual mistake:
+
+- **Uncontrolled** — pass `defaultCollapsed` (a seed applied on mount, which
+  overrides each line's own `defaultCollapsed` flag) and let the table own the
+  state. `onCollapsedChange` still fires, as a plain observer.
+- **Controlled** — pass `collapsed` (a `ReadonlySet<string>` or a string array).
+  The table then renders exactly that set and never mutates it; every toggle,
+  and the Expand all / Collapse all buttons, report the next ids through
+  `onCollapsedChange` for you to apply — useful for URL sync, persistence, or
+  keeping two tables in step.
+
+```tsx
+const [collapsed, setCollapsed] = useState<string[]>(["noncurrent-assets"]);
+
+<StatementTable
+  lines={balanceSheet}
+  mode="stock"
+  expandControls
+  collapsed={collapsed}
+  onCollapsedChange={setCollapsed}
+/>;
+```
+
+Set `maxHeight` for long consolidations: the body scrolls under a sticky
+header and row virtualization turns on by default (`virtualize`).
+
+## Props
+
+<AutoTypeTable path="../src/react/StatementTable.tsx" name="StatementTableProps" />

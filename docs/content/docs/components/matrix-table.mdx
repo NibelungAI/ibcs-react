@@ -1,0 +1,94 @@
+---
+title: MatrixTable
+description: A statement crossed with a period tree — rows drill down, period columns expand in place, with an optional variance column.
+---
+
+import { MatrixTable } from "ibcs-react";
+import { matrixRows, matrixColumns, matrixValues } from "@/lib/demo-data/tables";
+
+Two hierarchies at right angles: a statement row tree (with `+` / `−` / `=`
+flow markers) down the side, and a period tree — year, quarter, month — across
+the top. Every leaf period prints its scenario sub-columns (PL and AC by
+default) and, with `showVariance`, the ΔBudget between them. Both axes expand
+and collapse in place.
+
+## When to use
+
+Budget-versus-actual reporting and any other planning grid where the reader
+starts at the year and drills into the quarter or month that moved. For a
+single-period statement use [StatementTable](/docs/components/statement-table);
+for entities rather than periods use [DataTable](/docs/components/data-table).
+
+## Example
+
+Click a period header to drill into (or fold up) its children, and a row label
+to break the line down. The label column stays frozen while the period bands
+scroll.
+
+<Frame>
+  <MatrixTable
+    rows={matrixRows}
+    columns={matrixColumns}
+    values={matrixValues}
+    scenarios={["PL", "AC"]}
+    showVariance
+    format={{ compact: false, decimals: 0 }}
+    labelWidth={200}
+    defaultExpandedCols={["2024"]}
+  />
+</Frame>
+
+```tsx
+import { MatrixTable } from "ibcs-react";
+
+<MatrixTable
+  rows={rows} // [{ id, label, flow: "add" | "subtract" | "result", children? }]
+  columns={periods} // [{ id, label, children? }] — year > quarter > month
+  values={values} // values[rowId][periodId][scenario]
+  scenarios={["PL", "AC"]}
+  showVariance
+  defaultExpandedCols={["2024"]}
+/>;
+```
+
+A row with `children` and no values of its own aggregates them, so only the
+leaf lines have to be supplied.
+
+## Expansion: controlled or uncontrolled
+
+Note the polarity. Unlike [StatementTable](/docs/components/statement-table)
+and [DataTable](/docs/components/data-table), which track what is _collapsed_,
+the matrix names what is **expanded** — its periods deliberately start closed,
+because a matrix is opened year by year.
+
+- **Uncontrolled** — `defaultExpandedRows` and `defaultExpandedCols` seed the
+  two open sets on mount (rows default to everything except lines flagged
+  `defaultCollapsed`; periods default to those flagged `defaultExpanded`).
+- **Controlled** — `expandedRows` / `expandedCols` (a `ReadonlySet<string>` or
+  a string array) with `onExpandedRowsChange` / `onExpandedColsChange`. The
+  matrix then renders exactly those sets and never mutates them; every toggle,
+  and the Expand all / Collapse all buttons, report the next sorted ids for you
+  to apply. The change callbacks also fire uncontrolled, as observers.
+
+```tsx
+const [cols, setCols] = useState<string[]>(["2024"]);
+
+<MatrixTable
+  rows={rows}
+  columns={periods}
+  values={values}
+  columnExpandControls
+  expandedCols={cols}
+  onExpandedColsChange={setCols}
+/>;
+```
+
+Each value sub-cell is an addressable target: `onCellClick` reports the row and
+period ids and labels, the scenario (`"DELTA"` for the variance cell) and the
+value, while `cellDecorations` draws a corner ribbon — enough to build a
+comment layer on top of the grid. See the
+[budget matrix](/docs/budget-matrix) guide for that walkthrough.
+
+## Props
+
+<AutoTypeTable path="../src/react/MatrixTable.tsx" name="MatrixTableProps" />

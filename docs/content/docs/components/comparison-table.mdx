@@ -1,0 +1,138 @@
+---
+title: ComparisonTable
+description: The centre-label flanking table of IBCS templates T01 and T02 — two period column groups either side of the row labels.
+---
+
+import { ComparisonTable } from "ibcs-react";
+import { comparisonRows, comparisonLeft, comparisonRight } from "@/lib/demo-data/tables";
+
+The flanking layout of the IBCS table templates **T01** and **T02**: the row
+labels sit in the centre of the table, with one column group to their left
+(here the current month) and a second, structurally identical group to their
+right (year to date). Each group carries its own scenario columns — PY, PL,
+AC — followed by the variances against a chosen base, either as numeric
+figures (T01) or as embedded bars and pins (T02).
+
+Rows are hierarchical: a top-level row with `children` renders as a bold
+subtotal summed from its detail rows, and `showTotals` caps the table with a
+grand total under a double rule.
+
+## When to use
+
+A period-over-period comparison where the same measures are read twice — a
+month against the year to date, a quarter against the full year — and the
+reader should scan both without the labels drifting to one edge. If you only
+need one column group, use [DataTable](/docs/components/data-table); if the
+rows build up to a result through add/subtract steps, use
+[StatementTable](/docs/components/statement-table).
+
+This component is a **static layout**: it holds no interactive state. There is
+no sorting, and no collapse or expand — what you pass is what is rendered.
+Hierarchy comes from the row tree, and everything else is computed from the
+columns. Only a horizontal scroll wrapper is added when the two groups do not
+fit their container.
+
+## Example
+
+Profit after tax by region, in kEUR. The left group prints numeric AC-PY
+variances (`mark: "none"`, the T01 notation, with the pair centred under a
+shared `subgroup` header); the right group embeds the same variance as a bar
+plus a percentage pin (T02). `gapBefore` opens the IBCS group gap — whitespace,
+never a rule.
+
+<Frame>
+  <ComparisonTable
+    rows={comparisonRows}
+    leftColumns={comparisonLeft}
+    rightColumns={comparisonRight}
+    leftGroupLabel="November"
+    rightGroupLabel="January–November"
+    showTotals
+    totalsLabel="World"
+    format={{ compact: false }}
+    labelWidth={120}
+  />
+</Frame>
+
+```tsx
+import { ComparisonTable } from "ibcs-react";
+
+// One measure per side: `m` = the current month, `y` = year to date.
+const left = [
+  { key: "m_py", label: "PY", kind: "value", measure: "m", scenario: "PY" },
+  { key: "m_pl", label: "PL", kind: "value", measure: "m", scenario: "PL" },
+  { key: "m_ac", label: "AC", kind: "value", measure: "m", scenario: "AC" },
+  {
+    key: "m_dpy",
+    label: "ΔPY",
+    kind: "variance",
+    measure: "m",
+    base: "PY",
+    mode: "abs",
+    mark: "none",
+    subgroup: "AC-PY",
+    gapBefore: true,
+  },
+  {
+    key: "m_dpy_pct",
+    label: "%",
+    kind: "variance",
+    measure: "m",
+    base: "PY",
+    mode: "pct",
+    mark: "none",
+    subgroup: "AC-PY",
+  },
+];
+
+const right = [
+  { key: "y_py", label: "PY", kind: "value", measure: "y", scenario: "PY" },
+  { key: "y_pl", label: "PL", kind: "value", measure: "y", scenario: "PL" },
+  { key: "y_ac", label: "AC", kind: "value", measure: "y", scenario: "AC" },
+  {
+    key: "y_dpy",
+    label: "ΔPY",
+    kind: "variance",
+    measure: "y",
+    base: "PY",
+    mode: "abs",
+    mark: "bar",
+    gapBefore: true,
+  },
+  {
+    key: "y_dpy_pct",
+    label: "ΔPY%",
+    kind: "variance",
+    measure: "y",
+    base: "PY",
+    mode: "pct",
+    mark: "pin",
+    gapBefore: true,
+  },
+];
+
+<ComparisonTable
+  rows={regions} // [{ id, label, emphasis, children: [{ id, label, values: { m: {...}, y: {...} } }] }]
+  leftColumns={left}
+  rightColumns={right}
+  leftGroupLabel="November"
+  rightGroupLabel="January–November"
+  showTotals
+  totalsLabel="World"
+  format={{ compact: false }}
+/>;
+```
+
+Both sides take the same `DataTableColumn` shape as
+[DataTable](/docs/components/data-table), so a column is a value, a numeric
+variance (`mark: "none"`, signed and impact-coloured, percentages in italics),
+or an embedded mark (`"bar"` for absolute magnitude, `"pin"` for relative,
+with off-scale arrows). Column widths are derived from the widest formatted
+figure per side, so each group stays internally aligned while the two sides may
+differ in width. Sparkline columns are not drawn in this layout.
+
+See [table templates](/docs/table-templates) for the full T01–T04 set.
+
+## Props
+
+<AutoTypeTable path="../src/react/ComparisonTable.tsx" name="ComparisonTableProps" />

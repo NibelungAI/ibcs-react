@@ -1,0 +1,595 @@
+---
+title: Example reports
+description: Management reports in the style of the IBCS chart and table templates — a P&L bridge, variance waterfalls, ranked deviations, a KPI strip — built entirely from ibcs-react components.
+---
+
+import {
+  WaterfallStatementChart,
+  BarVarianceWaterfallChart,
+  IntegratedVarianceChart,
+  ColumnVarianceWaterfallChart,
+  RankingVarianceChart,
+  StatementTable,
+  DataTable,
+  StackedChart,
+  GroupedVarianceChart,
+  VarianceColumnChart,
+  TrendChart,
+  KpiCard,
+} from "ibcs-react";
+
+Reports in the style of the IBCS® chart and table templates, built entirely
+from `ibcs-react` components — no wrapper library, no post-processing, just the
+props shown alongside each one.
+
+Each report follows the same reporting pattern: the **message** first (the
+takeaway is the headline, not a neutral label), then **who / what / when**, then
+the exhibit. Data is realistic but fictitious, and company names are invented.
+
+## Profit & loss as a dual bridge
+
+_Software and Service Group · Profit & loss statement in kEUR — AC, PY and ΔPY · 2025_
+
+**Compared to 2024, higher operating expenses (+187 kEUR) were mainly offset by
+higher licence sales (+183 kEUR), lifting the group result by +91 kEUR (+48%).**
+
+<Frame>
+  <WaterfallStatementChart
+    comparison="PY"
+    width={900}
+    rowHeight={26}
+    format={{ compact: false, decimals: 0 }}
+    lines={[
+      { label: "Licences", ac: 896, base: 713, flow: "add" },
+      { label: "Consulting", ac: 90, base: 72, flow: "add" },
+      { label: "Maintenance", ac: 10, base: 22, flow: "add" },
+      { label: "Other revenue", ac: 65, base: 6, flow: "add" },
+      { label: "Sales revenue", ac: 1061, base: 813, flow: "result" },
+      { label: "Other op. income", ac: 17, base: 45, flow: "add" },
+      { label: "Purchases", ac: 379, base: 344, flow: "subtract", higherIsBetter: false },
+      { label: "Material expenses", ac: 54, base: 11, flow: "subtract", higherIsBetter: false },
+      { label: "Personnel expenses", ac: 127, base: 76, flow: "subtract", higherIsBetter: false },
+      { label: "Amortization", ac: 40, base: 56, flow: "subtract", higherIsBetter: false },
+      { label: "Other op. expenses", ac: 152, base: 78, flow: "subtract", higherIsBetter: false },
+      { label: "Operating result", ac: 326, base: 293, flow: "result" },
+      { label: "Investment income", ac: 53, base: 43, flow: "add" },
+      { label: "Financial income, net", ac: 66, base: 73, flow: "add" },
+      { label: "Result before tax", ac: 445, base: 409, flow: "result" },
+      { label: "Income tax", ac: 111, base: 132, flow: "subtract", higherIsBetter: false },
+      { label: "Group result", ac: 334, base: 277, flow: "result" },
+    ]}
+  />
+</Frame>
+
+Two row-aligned bridges (PY and AC) plus the absolute and relative deviation
+tiers. Expense lines carry `higherIsBetter: false`, so a cost above last year
+reads unfavorable even though its delta is positive.
+[WaterfallStatementChart](/docs/components/waterfall-statement)
+
+## Net sales by state, with a variance bridge
+
+_Housing and Construction Inc. · Net sales in kUSD — by state, AC vs PY and PL · Q3 2025_
+
+**Net sales fell 343 kUSD against previous year — Illinois (−288) drove almost
+the entire decline.**
+
+<Frame>
+  <BarVarianceWaterfallChart
+    pyTotal={2071}
+    width={880}
+    rowHeight={22}
+    format={{ compact: false, decimals: 0 }}
+    data={[
+      { label: "Illinois", ac: 169, base: 430, py: 457 },
+      { label: "California", ac: 257, base: 300, py: 305 },
+      { label: "New York", ac: 216, base: 240, py: 246 },
+      { label: "Wisconsin", ac: 157, base: 175, py: 180 },
+      { label: "Texas", ac: 134, base: 145, py: 149 },
+      { label: "Iowa", ac: 179, base: 140, py: 135 },
+      { label: "Michigan", ac: 67, base: 64, py: 66 },
+      { label: "Others", ac: 234, base: 180, py: 152 },
+    ]}
+  />
+</Frame>
+
+The bar chart carries the level, the attached waterfall carries the bridge from
+the previous-year total to the actual one — one exhibit answering both "how big"
+and "what moved".
+[BarVarianceWaterfallChart](/docs/components/bar-variance-waterfall)
+
+## Monthly contribution margin with an integrated variance
+
+_Furniture Inc. · Contribution margin in kEUR — AC vs PY, monthly · 2025_
+
+**Contribution margin runs ahead of prior year for most months; the forecast
+closes the year at 2,036 kEUR (+5%).**
+
+<Frame>
+  <IntegratedVarianceChart
+    comparison="PY"
+    width={900}
+    height={430}
+    format={{ compact: true }}
+    data={[
+      { category: "Jan", AC: 128, PY: 115 },
+      { category: "Feb", AC: 147, PY: 134 },
+      { category: "Mar", AC: 136, PY: 141 },
+      { category: "Apr", AC: 139, PY: 144 },
+      { category: "May", AC: 170, PY: 161 },
+      { category: "Jun", AC: 193, PY: 167 },
+      { category: "Jul", AC: 178, PY: 153 },
+      { category: "Aug", AC: 189, PY: 164 },
+      { category: "Sep", AC: 178, PY: 173 },
+      { category: "Oct", AC: 179, PY: 184, isForecast: true },
+      { category: "Nov", AC: 189, PY: 201, isForecast: true },
+      { category: "Dec", AC: 211, PY: 183, isForecast: true },
+    ]}
+    fyTotal={{
+      label: "2,036",
+      segments: [
+        { label: "AC", value: 1458 },
+        { label: "FC", value: 578 },
+      ],
+    }}
+  />
+</Frame>
+
+Forecast months are hatched (`isForecast: true`), and `fyTotal` sets the
+full-year column apart on the right as an AC + FC stack.
+[IntegratedVarianceChart](/docs/components/integrated-variance)
+
+## Net sales build-up, columns plus a waterfall
+
+_Furniture Inc. · Net sales in kEUR — AC vs PL, monthly build-up · 2025_
+
+**We expect to close 24 kEUR (+15.6%) above plan on the back of a strong
+forecast from September.**
+
+<Frame>
+  <ColumnVarianceWaterfallChart
+    width={900}
+    height={440}
+    format={{ compact: false, decimals: 0 }}
+    data={[
+      { category: "Jan", ac: 15, pl: 11 },
+      { category: "Feb", ac: 13, pl: 10 },
+      { category: "Mar", ac: 17, pl: 10 },
+      { category: "Apr", ac: 7, pl: 10 },
+      { category: "May", ac: 5, pl: 10 },
+      { category: "Jun", ac: 6, pl: 10 },
+      { category: "Jul", ac: 11, pl: 15 },
+      { category: "Aug", ac: 9, pl: 14 },
+      { category: "Sep", ac: 26, pl: 15, isForecast: true },
+      { category: "Oct", ac: 22, pl: 15, isForecast: true },
+      { category: "Nov", ac: 18, pl: 15, isForecast: true },
+      { category: "Dec", ac: 29, pl: 19, isForecast: true },
+    ]}
+    priorTotals={[
+      { label: "2024 AC", value: 174, scenario: "PY" },
+      { label: "2025 PL", value: 154, scenario: "PL" },
+    ]}
+    endTotal={{
+      label: "2025 AC+FC",
+      segments: [
+        { label: "AC", value: 83 },
+        { label: "FC", value: 95, forecast: true },
+      ],
+    }}
+  />
+</Frame>
+
+Reference totals sit apart on the left in their own scenario notation; the
+stacked AC + FC total closes the year on the right.
+[ColumnVarianceWaterfallChart](/docs/components/column-variance-waterfall)
+
+## Income statement as a calculation bridge
+
+_Enterprise Software Group · Income statement in bn EUR — AC vs PY · 2025_
+
+**Operating profit grew +0.1 bn EUR: +1.6 bn of higher software revenue was
+almost entirely consumed by +1.8 bn of higher operating expenses.**
+
+<Frame>
+  <WaterfallStatementChart
+    comparison="PY"
+    width={900}
+    rowHeight={26}
+    format={{ compact: false, decimals: 1 }}
+    lines={[
+      { label: "Software revenue", ac: 3.3, base: 2.6, flow: "add" },
+      { label: "Support revenue", ac: 6.1, base: 5.3, flow: "add" },
+      { label: "Subscription / other", ac: 0.3, base: 0.3, flow: "add" },
+      { label: "Software & sw-related", ac: 9.8, base: 8.2, flow: "result" },
+      { label: "Consulting revenue", ac: 2.2, base: 2.1, flow: "add" },
+      { label: "Other service revenue", ac: 0.5, base: 0.4, flow: "add" },
+      { label: "Professional service", ac: 2.7, base: 2.5, flow: "result" },
+      { label: "Revenue", ac: 12.5, base: 10.7, flow: "result" },
+      {
+        label: "Sw-related service exp.",
+        ac: 1.9,
+        base: 1.7,
+        flow: "subtract",
+        higherIsBetter: false,
+      },
+      { label: "Other service exp.", ac: 2.1, base: 1.9, flow: "subtract", higherIsBetter: false },
+      { label: "R&D expenses", ac: 1.7, base: 1.6, flow: "subtract", higherIsBetter: false },
+      { label: "Sales & marketing", ac: 2.6, base: 2.2, flow: "subtract", higherIsBetter: false },
+      { label: "General & admin.", ac: 0.7, base: 0.6, flow: "subtract", higherIsBetter: false },
+      { label: "Other expenses", ac: 0.9, base: 0.2, flow: "subtract", higherIsBetter: false },
+      { label: "Operating profit", ac: 2.6, base: 2.5, flow: "result" },
+      { label: "Non-operating, net", ac: -0.2, base: -0.1, flow: "add", higherIsBetter: false },
+      { label: "Profit before tax", ac: 2.4, base: 2.4, flow: "result" },
+      { label: "Income tax expense", ac: 0.6, base: 0.7, flow: "subtract", higherIsBetter: false },
+      { label: "Profit after tax", ac: 1.8, base: 1.7, flow: "result" },
+    ]}
+  />
+</Frame>
+
+The same component as the first report, on a longer scheme with two nested
+subtotals — a statement stays legible as a bridge as long as the calculation
+scheme is explicit.
+
+## Profit after tax by region
+
+_Electronic Inc. · Profit after tax in kEUR — by region, AC vs PY and PL · November 2025_
+
+**Profit after tax beat plan by +234 kEUR (+5%) — the Americas (+292) carried
+the month, partly offset by shortfalls in Europe.**
+
+<Frame>
+  <DataTable
+    format={{ compact: false, decimals: 0 }}
+    showTotals
+    totalsLabel="World"
+    defaultSort={{ key: "pat", dir: "desc" }}
+    columns={[
+      { key: "pat", label: "AC", kind: "value", scenario: "AC" },
+      {
+        key: "pat_dpy",
+        label: "ΔPY",
+        kind: "variance",
+        measure: "pat",
+        base: "PY",
+        mode: "abs",
+        mark: "bar",
+      },
+      {
+        key: "pat_ppy",
+        label: "ΔPY %",
+        kind: "variance",
+        measure: "pat",
+        base: "PY",
+        mode: "pct",
+        mark: "pin",
+      },
+      {
+        key: "pat_dpl",
+        label: "ΔPL",
+        kind: "variance",
+        measure: "pat",
+        base: "PL",
+        mode: "abs",
+        mark: "bar",
+      },
+      {
+        key: "pat_ppl",
+        label: "ΔPL %",
+        kind: "variance",
+        measure: "pat",
+        base: "PL",
+        mode: "pct",
+        mark: "pin",
+      },
+    ]}
+    rows={[
+      { id: "europe", label: "Europe", values: { pat: { AC: 17934, PY: 17834, PL: 18587 } } },
+      { id: "americas", label: "Americas", values: { pat: { AC: 9279, PY: 9406, PL: 8987 } } },
+      { id: "asia", label: "Asia-Pacific", values: { pat: { AC: 5276, PY: 5042, PL: 4720 } } },
+      { id: "row", label: "Rest of world", values: { pat: { AC: 3243, PY: 3350, PL: 3330 } } },
+    ]}
+  />
+</Frame>
+
+One measure, four deviation columns: absolute bars for size, relative pins for
+rate, against two bases. The header sort is uncontrolled here — see
+[Interaction & data](/docs/interaction#controlled-tables) to own it.
+[DataTable](/docs/components/data-table)
+
+## Net sales by product line, ranked by deviation
+
+_Furniture Inc. · Net sales in kEUR — by product line, ranked by ΔPL · 2025_
+
+**Net sales missed plan by −1,420 kEUR: Seating and Tables drove the gap, while
+Storage and Lighting beat plan.**
+
+<Frame>
+  <RankingVarianceChart
+    title="Net sales by product line — AC vs Plan"
+    baseLabel="PL"
+    width={760}
+    format={{ compact: false, decimals: 0 }}
+    data={[
+      { label: "Storage", AC: 4310, base: 3980 },
+      { label: "Lighting", AC: 2560, base: 2410 },
+      { label: "Outdoor", AC: 1870, base: 1840 },
+      { label: "Office", AC: 3120, base: 3260 },
+      { label: "Beds", AC: 2240, base: 2520 },
+      { label: "Tables", AC: 3640, base: 4180 },
+      { label: "Seating", AC: 5180, base: 6150 },
+    ]}
+  />
+</Frame>
+
+Sorting by deviation rather than by size puts the story — where the plan broke —
+at the top of the page.
+[RankingVarianceChart](/docs/components/ranking-variance)
+
+## Order intake with a forecast tail
+
+_Machinery Group · Order intake in kEUR — monthly, AC and FC vs PY · 2025_
+
+**Order intake has tracked above prior year all year; the forecast holds the
+lead into Q4, closing +8% vs PY.**
+
+<Frame>
+  <TrendChart
+    comparison="PY"
+    width={900}
+    height={320}
+    format={{ compact: true }}
+    data={[
+      { category: "Jan", AC: 1240, PY: 1180 },
+      { category: "Feb", AC: 1310, PY: 1205 },
+      { category: "Mar", AC: 1420, PY: 1330 },
+      { category: "Apr", AC: 1380, PY: 1360 },
+      { category: "May", AC: 1510, PY: 1410 },
+      { category: "Jun", AC: 1600, PY: 1470 },
+      { category: "Jul", AC: 1560, PY: 1500 },
+      { category: "Aug", AC: 1690, PY: 1540 },
+      { category: "Sep", AC: 1740, PY: 1610 },
+      { category: "Oct", FC: 1780, PY: 1660 },
+      { category: "Nov", FC: 1850, PY: 1700 },
+      { category: "Dec", FC: 1910, PY: 1780 },
+    ]}
+  />
+</Frame>
+
+Switching a period from `AC` to `FC` is all it takes: the forecast tail picks up
+the hatched forecast notation automatically.
+[TrendChart](/docs/components/trend-chart)
+
+## Net sales by region over time
+
+_Software and Service Group · Net sales in mEUR — by region, quarterly · 2025_
+
+**Group net sales climbed from 27.0 to 33.9 mEUR over four quarters, led by EMEA
+and a fast-growing APAC.**
+
+<Frame>
+  <StackedChart
+    orientation="column"
+    width={860}
+    height={360}
+    format={{ compact: true, decimals: 1 }}
+    series={[
+      { key: "emea", label: "EMEA" },
+      { key: "amer", label: "Americas" },
+      { key: "apac", label: "APAC" },
+    ]}
+    data={[
+      { category: "Q1", values: { emea: 12.4e6, amer: 9.1e6, apac: 5.5e6 } },
+      { category: "Q2", values: { emea: 13.1e6, amer: 9.4e6, apac: 6.2e6 } },
+      { category: "Q3", values: { emea: 13.6e6, amer: 9.8e6, apac: 7.0e6 } },
+      { category: "Q4", values: { emea: 14.2e6, amer: 10.3e6, apac: 9.4e6 } },
+    ]}
+  />
+</Frame>
+
+A structure over time. Keep the series count low — a stack is readable for the
+bottom segment and the total, and little else.
+[StackedChart](/docs/components/stacked-chart)
+
+## Quarterly EBIT against plan
+
+_Industrial Components Ltd. · EBIT in kEUR — quarterly, AC vs PL · 2025_
+
+**EBIT recovered through the year: after a soft Q2 (−40 vs plan) the second half
+beat plan, closing +260 kEUR ahead.**
+
+<Frame>
+  <GroupedVarianceChart
+    orientation="column"
+    comparison="PL"
+    width={820}
+    height={380}
+    format={{ compact: true }}
+    data={[
+      { category: "Q1", AC: 1240, comparisonValue: 1180 },
+      { category: "Q2", AC: 980, comparisonValue: 1020 },
+      { category: "Q3", AC: 1320, comparisonValue: 1180 },
+      { category: "Q4", AC: 1510, comparisonValue: 1410 },
+    ]}
+  />
+</Frame>
+
+Grouped columns with the deviation tiers below — the plan bar is hollow-framed,
+so scenario and variance never compete for the same visual channel.
+[GroupedVarianceChart](/docs/components/grouped-variance)
+
+## P&L calculation scheme as a table
+
+_Software and Service Group · Profit & loss statement in mEUR — AC with ΔPY and ΔPL · 2025_
+
+**Net income reached 8.9 mEUR (+10% vs PY, +19% vs plan) on strong service
+revenue and disciplined operating expenses.**
+
+<Frame>
+  <StatementTable
+    waterfallWidth={220}
+    format={{ compact: true, decimals: 1 }}
+    lines={[
+      {
+        id: "rev-product",
+        label: "Product revenue",
+        flow: "add",
+        values: { AC: 17.2e6, PY: 16.1e6, PL: 17.0e6 },
+      },
+      {
+        id: "rev-service",
+        label: "Service revenue",
+        flow: "add",
+        values: { AC: 16.7e6, PY: 14.0e6, PL: 15.0e6 },
+      },
+      {
+        id: "revenue",
+        label: "Revenue",
+        flow: "result",
+        values: { AC: 33.9e6, PY: 30.1e6, PL: 32.0e6 },
+      },
+      {
+        id: "cogs",
+        label: "Cost of sales",
+        flow: "subtract",
+        higherIsBetter: false,
+        values: { AC: 9.7e6, PY: 9.0e6, PL: 9.6e6 },
+      },
+      {
+        id: "gross",
+        label: "Gross margin",
+        flow: "result",
+        values: { AC: 24.2e6, PY: 21.1e6, PL: 22.4e6 },
+      },
+      {
+        id: "rnd",
+        label: "Research & development",
+        flow: "subtract",
+        higherIsBetter: false,
+        values: { AC: 3.9e6, PY: 3.5e6, PL: 4.0e6 },
+      },
+      {
+        id: "sm",
+        label: "Sales & marketing",
+        flow: "subtract",
+        higherIsBetter: false,
+        values: { AC: 4.8e6, PY: 4.3e6, PL: 4.6e6 },
+      },
+      {
+        id: "ga",
+        label: "General & admin.",
+        flow: "subtract",
+        higherIsBetter: false,
+        values: { AC: 1.3e6, PY: 1.4e6, PL: 1.4e6 },
+      },
+      {
+        id: "ebit",
+        label: "Operating income",
+        flow: "result",
+        values: { AC: 14.2e6, PY: 11.9e6, PL: 12.4e6 },
+      },
+      {
+        id: "fin",
+        label: "Financial result, net",
+        flow: "add",
+        values: { AC: 0.3e6, PY: 0.28e6, PL: 0.29e6 },
+      },
+      {
+        id: "ibt",
+        label: "Income before taxes",
+        flow: "result",
+        values: { AC: 14.5e6, PY: 12.2e6, PL: 12.7e6 },
+      },
+      {
+        id: "tax",
+        label: "Income taxes",
+        flow: "subtract",
+        higherIsBetter: false,
+        values: { AC: 5.6e6, PY: 4.1e6, PL: 5.2e6 },
+      },
+      {
+        id: "net",
+        label: "Net income",
+        flow: "result",
+        values: { AC: 8.9e6, PY: 8.1e6, PL: 7.5e6 },
+      },
+    ]}
+  />
+</Frame>
+
+The exact figures, with the waterfall lane drawn inside the table so the shape
+of the calculation is visible without leaving the numbers.
+[StatementTable](/docs/components/statement-table)
+
+## Operating profit by segment
+
+_Enterprise Software Group · Operating profit by segment in kEUR — AC vs PY · 2025_
+
+**All four segments grew operating profit against prior year; Cloud (+118 kEUR)
+was the strongest absolute contributor.**
+
+<Frame center>
+  <VarianceColumnChart
+    comparison="PY"
+    width={720}
+    height={320}
+    format={{ compact: false, decimals: 0 }}
+    data={[
+      { category: "Applications", AC: 1240, PY: 1180 },
+      { category: "Cloud", AC: 980, PY: 862 },
+      { category: "Services", AC: 540, PY: 505 },
+      { category: "Other", AC: 210, PY: 196 },
+    ]}
+  />
+</Frame>
+
+Segments on one shared scale, so a division is never flattered by its own axis.
+[VarianceColumnChart](/docs/components/variance-column)
+
+## Headline KPIs
+
+_Software and Service Group · Headline KPIs — AC vs PY · 2025_
+
+**The group closed 2025 ahead of prior year on every headline KPI: revenue +12%,
+margin up 1.4 points, and a lower cost ratio.**
+
+<Frame>
+  <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
+    <KpiCard
+      label="Revenue"
+      values={{ AC: 33.9e6, PY: 30.1e6 }}
+      comparisons={["PY"]}
+      format={{ compact: true, decimals: 1 }}
+    />
+    <KpiCard
+      label="EBIT margin"
+      values={{ AC: 18.4, PY: 17.0 }}
+      comparisons={["PY"]}
+      format={{ decimals: 1, suffix: "%" }}
+    />
+    <KpiCard
+      label="Net income"
+      values={{ AC: 8.9e6, PY: 8.1e6 }}
+      comparisons={["PY"]}
+      format={{ compact: true, decimals: 1 }}
+    />
+    <KpiCard
+      label="Cost ratio"
+      values={{ AC: 64, PY: 67 }}
+      comparisons={["PY"]}
+      higherIsBetter={false}
+      format={{ decimals: 0, suffix: "%" }}
+    />
+  </div>
+</Frame>
+
+The unit belongs to `format` — `currency` for a leading symbol, `suffix` for a
+trailing one — and the cost ratio sets `higherIsBetter={false}`, so its fall
+reads favorable.
+[KpiCard](/docs/components/kpi-card)
+
+## Where to next
+
+- [Industry reports](/docs/industry-reports) — the same pattern applied to SaaS,
+  retail, manufacturing, banking, healthcare and a corporate P&L.
+- [Gallery](/gallery) — every component at a glance.
+- [Report](/report) — a full report assembled from a JSON `ReportConfig`.
+- [IBCS & ISO 24896](/docs/ibcs) — the notation rules these exhibits follow.

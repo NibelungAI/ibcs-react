@@ -1,0 +1,71 @@
+name: Release
+
+# Changesets release automation.
+#
+# SETUP (one-time, by a maintainer):
+#   1. Create an npm **automation** token with publish rights on `ibcs-react`
+#      (npmjs.com → Access Tokens → Generate → "Automation") and add it to the
+#      repo as Settings → Secrets and variables → Actions → `NPM_TOKEN`.
+#      Without that secret this workflow opens the version PR but the publish
+#      step fails with ENEEDAUTH.
+#   2. Settings → Actions → General → Workflow permissions: allow GitHub Actions
+#      to **create and approve pull requests** (the action opens the "Version
+#      Packages" PR on your behalf).
+#
+# HOW IT WORKS:
+#   - Every user-facing PR adds a changeset (`npx changeset`) describing the
+#     bump. On merge to `main` this workflow opens/updates a "Version Packages"
+#     PR that consumes the pending changesets, bumps the version and writes
+#     CHANGELOG.md.
+#   - Merging that PR runs this workflow again; with no changesets left, the
+#     action runs the publish command and pushes the git tag + GitHub release.
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write # commit the version bump, push tags, create the release
+  pull-requests: write # open / update the "Version Packages" PR
+
+jobs:
+  release:
+    name: Version or publish
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Changesets needs the full history to work out what changed.
+          fetch-depth: 0
+
+      - name: Use Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # Gate the release on the same chain CI runs: typecheck, tests, build and
+      # the dist smoke test. `prepublishOnly` re-runs it during `npm publish`
+      # as a belt-and-braces guard, but failing here means we never even open
+      # the version PR with a broken tree.
+      - name: Verify (typecheck, test, build, dist smoke)
+        run: npm run ci
+
+      - name: Create version PR or publish to npm
+        uses: changesets/action@v1
+        with:
+          # Bump versions + regenerate CHANGELOG.md, and keep the lockfile in
+          # sync with the new version so `npm ci` stays reproducible.
+          version: npx changeset version && npm install --package-lock-only
+          publish: npx changeset publish
+          commit: "chore: version packages"
+          title: "chore: version packages"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

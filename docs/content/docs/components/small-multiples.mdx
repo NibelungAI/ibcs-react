@@ -1,0 +1,83 @@
+---
+title: SmallMultiples
+description: A grid of the same chart repeated by a dimension — all panels share ONE scale (the IBCS CHECK rule).
+---
+
+import { MiniVarianceMultiples } from "ibcs-react";
+
+Two components: `MiniVarianceMultiples`, a ready-made grid of mini variance
+panels (one per group), and the generic `SmallMultiples`, which renders any
+chart per item and hands each panel the shared scale.
+
+## When to use
+
+Structure / comparison across many groups — regions, products, business units —
+where one big chart would be cluttered. Shared scaling keeps panels honestly
+comparable.
+
+## Example
+
+<Frame center>
+  <MiniVarianceMultiples
+    groups={[
+      {
+        label: "EMEA",
+        data: [
+          { category: "Q1", AC: 3.1e6, PY: 2.8e6 },
+          { category: "Q2", AC: 3.4e6, PY: 3.0e6 },
+          { category: "Q3", AC: 3.6e6, PY: 3.2e6 },
+        ],
+      },
+      {
+        label: "Americas",
+        data: [
+          { category: "Q1", AC: 4.2e6, PY: 4.4e6 },
+          { category: "Q2", AC: 4.0e6, PY: 4.3e6 },
+          { category: "Q3", AC: 4.5e6, PY: 4.2e6 },
+        ],
+      },
+      {
+        label: "APAC",
+        data: [
+          { category: "Q1", AC: 1.4e6, PY: 1.0e6 },
+          { category: "Q2", AC: 1.7e6, PY: 1.2e6 },
+          { category: "Q3", AC: 2.0e6, PY: 1.5e6 },
+        ],
+      },
+    ]}
+    comparison="PY"
+    columns={3}
+    format={{ compact: true }}
+  />
+</Frame>
+
+```tsx
+import { MiniVarianceMultiples, SmallMultiples } from "ibcs-react";
+
+// Built-in: one mini ΔPY panel per group, shared scale
+<MiniVarianceMultiples groups={byRegion} comparison="PY" columns={3} />
+
+// Generic: render any chart per item with a shared scale
+<SmallMultiples
+  items={regions}
+  valuesOf={(r) => r.points.flatMap((p) => [p.AC, p.PY])}
+  renderItem={(r, scale) => <TrendChart data={r.points} /* map scale -> axis */ />}
+/>
+```
+
+`valuesOf` is what makes the grid honest: every number a panel contributes goes
+into one shared domain, so a bar in one panel means the same as a bar in the
+next. `sharedScale` on `MiniVarianceMultiples` additionally rounds that domain
+to a nice symmetric bound (and, via `showScaleHint`, states it once as a caption
+above the grid); `clampPercentile` stops one extreme group flattening the
+others.
+
+## Props
+
+### MiniVarianceMultiples
+
+<AutoTypeTable path="../src/react/SmallMultiples.tsx" name="MiniVarianceMultiplesProps" />
+
+### SmallMultiples
+
+<AutoTypeTable path="../src/react/SmallMultiples.tsx" name="SmallMultiplesProps" />

@@ -1,0 +1,10 @@
+# Build context hygiene for deploy/Dockerfile (context = repo root).
+.git
+node_modules
+docs/node_modules
+docs/.next
+docs/.source
+dist
+coverage
+tests/visual/__screenshots__
+storybook-static

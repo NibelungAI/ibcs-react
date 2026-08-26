@@ -1,0 +1,140 @@
+---
+title: Report
+description: Render a whole report from a JSON ReportConfig — a responsive grid of KPI, chart, statement, table and text blocks.
+---
+
+import { Report } from "ibcs-react";
+
+One component renders an entire page from a serializable `ReportConfig`: a
+structured Who / What / When title, a key message, and a responsive grid of
+blocks. Each block names its type, its span on the grid, and a config object —
+so a report is data you can store, version and generate, not hand-written JSX.
+
+## When to use
+
+Assembling a dynamic report from cards and blocks that are authored, stored or
+produced elsewhere — a report builder, a saved layout, a server-generated
+dashboard. When the layout is fixed and hand-written, compose the individual
+components directly instead.
+
+## Example
+
+<Frame>
+  <Report
+    config={{
+      title: { who: "Acme", what: "Revenue — EUR thousands", when: "FY 2026 vs PY" },
+      message: "Up 17.5% on prior year.",
+      columns: 12,
+      blocks: [
+        {
+          id: "k1",
+          type: "kpi",
+          span: 4,
+          config: { label: "Revenue", values: { AC: 30.1e6, PY: 25.6e6 }, comparisons: ["PY"] },
+        },
+        {
+          id: "k2",
+          type: "kpi",
+          span: 4,
+          config: {
+            label: "Gross margin",
+            values: { AC: 20.4e6, PY: 17.2e6 },
+            comparisons: ["PY"],
+          },
+        },
+        {
+          id: "k3",
+          type: "kpi",
+          span: 4,
+          config: { label: "Net income", values: { AC: 8.9e6, PY: 8.1e6 }, comparisons: ["PY"] },
+        },
+        {
+          id: "c1",
+          type: "chart",
+          span: 12,
+          config: {
+            type: "varianceColumn",
+            data: [
+              { category: "Q1", AC: 6.8e6, PY: 6.1e6, PL: 6.5e6 },
+              { category: "Q2", AC: 7.3e6, PY: 6.4e6, PL: 7.0e6 },
+              { category: "Q3", AC: 7.6e6, PY: 6.7e6, PL: 7.4e6 },
+              { category: "Q4", AC: 8.4e6, PY: 6.4e6, PL: 7.6e6 },
+            ],
+            comparison: "PY",
+            width: 700,
+            height: 260,
+            format: { compact: true },
+          },
+        },
+      ],
+    }}
+  />
+</Frame>
+
+```tsx
+import { Report } from "ibcs-react";
+
+const config = {
+  title: { who: "Acme", what: "Revenue — EUR thousands", when: "FY 2026 vs PY" },
+  message: "Up 17.5% on prior year.",
+  columns: 12,
+  blocks: [
+    {
+      id: "k1",
+      type: "kpi",
+      span: 4,
+      config: { label: "Revenue", values: { AC: 30.1e6, PY: 25.6e6 } },
+    },
+    { id: "c1", type: "chart", span: 8, config: { type: "trend", data: months } },
+    { id: "s1", type: "statement", span: 12, config: { lines: statement } },
+  ],
+};
+
+<Report config={config} />;
+```
+
+## Blocks
+
+Every block carries an `id`, an optional `span` (columns of the grid, which
+defaults per type), an optional structured `title` and an optional `message` —
+the interpretive one-liner, kept separate from the neutral title. The `type`
+then selects the renderer and the shape of `config`:
+
+| `type`      | Renders                                            | `config`                                                                      |
+| ----------- | -------------------------------------------------- | ----------------------------------------------------------------------------- |
+| `kpi`       | [KpiCard](/docs/components/kpi-card)               | `KpiConfig` — label, scenario values, comparisons, format, optional sparkline |
+| `chart`     | `ConfiguredChart`                                  | `ChartConfig` — a `type` plus that chart's data and options                   |
+| `statement` | [StatementTable](/docs/components/statement-table) | `StatementBlockConfig` — lines, mode, variance columns, format                |
+| `table`     | [DataTable](/docs/components/data-table)           | `TableBlockConfig` — columns, rows, totals, initial sort, format              |
+| `text`      | Prose                                              | the block's own `title`, `message` and `body` (blank lines split paragraphs)  |
+
+Below 760px the grid collapses to a single column, so every block spans the
+full width.
+
+Chart blocks go through `ConfiguredChart`, which validates the config and
+renders a readable message instead of throwing when it is invalid — 11 of the
+23 chart components are reachable this way. Use `validateReportConfig` to check
+an untrusted (JSON-authored) report before rendering it.
+
+```tsx
+import { ConfiguredChart, validateReportConfig } from "ibcs-react";
+
+<ConfiguredChart config={{ type: "trend", data: months, width: 620, height: 300 }} />;
+
+const result = validateReportConfig(JSON.parse(saved));
+if (!result.ok) console.warn(result.error);
+```
+
+Blocks that measure the same thing can be tagged with the same
+`sharedScaleGroup` and resolved with `sharedScales` (or the standalone
+`resolveSharedScales`). Today this is advisory: the resolved domain is
+published on each chart block's wrapper as `data-shared-scale-group` and
+`data-shared-scale-domain`, rather than forced onto the rendered axis.
+
+## Props
+
+<AutoTypeTable path="../src/react/Report.tsx" name="ReportProps" />
+
+### ConfiguredChart
+
+<AutoTypeTable path="../src/react/ConfiguredChart.tsx" name="ConfiguredChartProps" />

@@ -1,0 +1,188 @@
+---
+title: "IBCS & ISO 24896"
+description: The notation rules baked into every component — scenario fills, favorability colouring, signed values, zero baselines and structured titles.
+---
+
+import { KpiCard, VarianceColumnChart } from "ibcs-react";
+import { ScenarioFills } from "@/components/demos/scenario-fills";
+import { ScenarioShowcase } from "@/components/demos/scenario-showcase";
+
+This library implements the IBCS® notation — the notation described by
+**ISO 24896:2026, "Notation for business reporting"**. The rules below are
+baked into every component, so reports come out consistent without a
+house-style debate on every chart.
+
+## Scenario fills
+
+Scenarios are distinguished by _fill_, not colour — so a report stays legible
+in greyscale and never confuses "what happened" with "what we planned". The
+four scenario keys render as:
+
+<Frame>
+  <ScenarioFills />
+</Frame>
+
+Actuals are **solid**, previous year is **solid grey**, plan is an **outline**
+(it hasn't happened yet) and forecast is **hatched** (expected). You see the
+same grammar in `TrendChart`, where actual columns are solid and the forecast
+tail is hatched.
+
+Plan / budget (PL) is the easy one to miss — a deliberately hollow outline.
+Below, solid actuals are compared against plan: the thin rectangular frames
+behind each quarter are the PL columns, and the variance panel reads AC vs PL.
+Switch the toggle to compare against previous year instead — same data, a
+different yardstick.
+
+<Frame>
+  <ScenarioShowcase />
+</Frame>
+
+## Variance is coloured by impact, not sign
+
+A deviation is green when it is **good for the business** and red when it is
+**bad** — regardless of whether the number went up or down. Revenue up is
+green; cost up is red. Lines and data carry `higherIsBetter` (set it to `false`
+on cost, expense and tax measures) so the colour follows favorability, not the
+arithmetic sign.
+
+<Frame>
+  <div style={{ display: "flex", gap: 32, flexWrap: "wrap" }}>
+    <div style={{ width: 210 }}>
+      <KpiCard
+        label="Revenue"
+        values={{ AC: 30100000, PY: 25600000 }}
+        comparisons={["PY"]}
+        format={{ compact: true, decimals: 1, currency: "€" }}
+      />
+      <div style={{ fontSize: 12, color: "#6b6a64", marginTop: 6 }}>
+        Up +4.5M — favorable, so green.
+      </div>
+    </div>
+    <div style={{ width: 210 }}>
+      <KpiCard
+        label="Operating cost"
+        values={{ AC: 9700000, PY: 8400000 }}
+        comparisons={["PY"]}
+        higherIsBetter={false}
+        format={{ compact: true, decimals: 1, currency: "€" }}
+      />
+      <div style={{ fontSize: 12, color: "#6b6a64", marginTop: 6 }}>
+        Also up — but cost up is unfavorable, so red.
+      </div>
+    </div>
+  </div>
+</Frame>
+
+```tsx
+<KpiCard label="Revenue" values={{ AC: 30.1e6, PY: 25.6e6 }} comparisons={["PY"]} />
+
+// Same arithmetic, opposite meaning:
+<KpiCard
+  label="Operating cost"
+  values={{ AC: 9.7e6, PY: 8.4e6 }}
+  comparisons={["PY"]}
+  higherIsBetter={false}
+/>
+```
+
+## Signed values
+
+Variances always show their sign — `+4.5M`, `−1.3M`, `+17.6%`. The sign tells
+the direction of change; the colour tells whether that change is good. The two
+are independent on purpose, which is why a `+1.3M` cost overrun reads red.
+
+## Absolute deviations are bars, relative ones are pins
+
+Absolute deviations (currency units) are drawn as **bars** — they share the
+value axis, so magnitudes are comparable. Relative deviations (percent) are
+drawn as **pins** (a lollipop: line plus dot) on their own percent scale, so a
+small absolute swing on a small base doesn't masquerade as a big bar.
+
+<Frame>
+  <div style={{ display: "flex", gap: 24, flexWrap: "wrap", alignItems: "flex-start" }}>
+    <VarianceColumnChart
+      title="Absolute · bars"
+      data={[
+        { category: "Q1", AC: 6.8, PY: 6.1 },
+        { category: "Q2", AC: 7.3, PY: 6.4 },
+        { category: "Q3", AC: 7.6, PY: 6.7 },
+        { category: "Q4", AC: 8.4, PY: 6.4 },
+      ]}
+      comparison="PY"
+      variance="abs"
+      mark="bar"
+      width={320}
+      height={250}
+      format={{ compact: false, suffix: " m" }}
+    />
+    <VarianceColumnChart
+      title="Relative · pins"
+      data={[
+        { category: "Q1", AC: 6.8, PY: 6.1 },
+        { category: "Q2", AC: 7.3, PY: 6.4 },
+        { category: "Q3", AC: 7.6, PY: 6.7 },
+        { category: "Q4", AC: 8.4, PY: 6.4 },
+      ]}
+      comparison="PY"
+      variance="pct"
+      mark="pin"
+      width={320}
+      height={250}
+      format={{ compact: false, suffix: " m" }}
+    />
+  </div>
+</Frame>
+
+```tsx
+<VarianceColumnChart data={quarterly} comparison="PY" variance="abs" mark="bar" />
+<VarianceColumnChart data={quarterly} comparison="PY" variance="pct" mark="pin" />
+```
+
+`StatementTable` follows the same convention out of the box: its default
+variance panels are an absolute bar column and a percent pin column against
+PY.
+
+## Zero-baseline axes
+
+Bar and column charts always start at zero — never a truncated axis — so the
+length of a bar is proportional to its value and visual comparisons aren't
+exaggerated. The waterfall lane in `StatementTable` shares one zero baseline
+across all rows, and steps that cross zero render to the left of it.
+
+## Who / What / When titles, message kept separate
+
+A report title answers **Who** (entity or unit), **What** (measure and unit,
+e.g. "Revenue — € thousands") and **When** (period and comparison). The
+_interpretive_ key message ("Up 17.5% on prior year") is kept separate from the
+descriptive title — `Report` takes a structured `title` and a `message` field
+for exactly this reason.
+
+<Frame>
+  <div
+    style={{
+      padding: "14px 16px",
+      border: "1px solid #ece9e2",
+      borderRadius: 8,
+      background: "#fff",
+      width: "100%",
+    }}
+  >
+    <div style={{ fontSize: 12, color: "#9a9992" }}>Acme Corporation</div>
+    <div style={{ fontSize: 16, fontWeight: 600, color: "#2b2b29" }}>Revenue — € thousands</div>
+    <div style={{ fontSize: 12.5, color: "#6b6a64" }}>FY 2026 vs PY</div>
+    <div style={{ marginTop: 8, fontSize: 13, color: "#3f8f4f", fontWeight: 600 }}>
+      Key message · Up 17.5% on prior year, led by Service revenue.
+    </div>
+  </div>
+</Frame>
+
+## In short
+
+Fills carry the scenario, colour carries favorability, length carries magnitude
+from zero, and the title states facts while the message states the point.
+
+- [Conformance](/docs/conformance) — lint a config against the IBCS notation
+  rules the library implements.
+- [Theming](/docs/theming) — change the palette without breaking the grammar.
+- [Data model](/docs/data-model) — the shapes that carry `higherIsBetter` and
+  the scenario values.

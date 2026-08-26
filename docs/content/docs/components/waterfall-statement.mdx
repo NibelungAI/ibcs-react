@@ -1,0 +1,66 @@
+---
+title: WaterfallStatementChart
+description: IBCS C12 — a P&L calculation scheme as two side-by-side waterfalls (PY + AC) with variance tiers.
+---
+
+import { WaterfallStatementChart } from "ibcs-react";
+
+Two row-aligned bridges — the comparison scenario and AC — followed by the
+absolute and relative deviation tiers. The richest of the statement-as-chart
+templates.
+
+## When to use
+
+Tell a full P&L story comparing two scenarios as bridges: the previous-year and
+actual waterfalls sit side by side, row-aligned, with ΔPY and ΔPY% tiers.
+
+## Example
+
+<Frame center>
+  <WaterfallStatementChart
+    title="Profit & loss — AC 2025, PY and ΔPY"
+    comparison="PY"
+    width={900}
+    format={{ compact: true }}
+    lines={[
+      { label: "Licences", ac: 896, base: 713, flow: "add" },
+      { label: "Consulting", ac: 90, base: 72, flow: "add" },
+      { label: "Other revenue", ac: 65, base: 6, flow: "add" },
+      { label: "Sales revenue", ac: 1061, base: 813, flow: "result" },
+      { label: "Purchases", ac: 379, base: 344, flow: "subtract", higherIsBetter: false },
+      { label: "Personnel expenses", ac: 127, base: 76, flow: "subtract", higherIsBetter: false },
+      { label: "Operating result", ac: 326, base: 293, flow: "result" },
+      { label: "Income tax", ac: 111, base: 132, flow: "subtract", higherIsBetter: false },
+      { label: "Group result", ac: 279, base: 188, flow: "result" },
+    ]}
+  />
+</Frame>
+
+```tsx
+import { WaterfallStatementChart } from "ibcs-react";
+
+<WaterfallStatementChart
+  title="Profit & loss — AC 2025, PY and ΔPY"
+  comparison="PY"
+  lines={[
+    { label: "Licences", ac: 896, base: 713, flow: "add" },
+    { label: "Sales revenue", ac: 1061, base: 813, flow: "result" },
+    { label: "Personnel expenses", ac: 127, base: 76, flow: "subtract", higherIsBetter: false },
+    { label: "Group result", ac: 279, base: 188, flow: "result" },
+  ]}
+/>;
+```
+
+Expense lines carry `higherIsBetter: false`, so a cost above last year reads as
+unfavorable even though the absolute deviation is positive. `showPctPanel={false}`
+drops the relative tier when the absolute story is enough.
+
+Prefer [StatementTable](/docs/components/statement-table) when the exact figures
+matter more than the shape of the bridge.
+
+## Props
+
+<AutoTypeTable
+  path="../src/react/WaterfallStatementChart.tsx"
+  name="WaterfallStatementChartProps"
+/>

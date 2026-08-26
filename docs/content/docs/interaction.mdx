@@ -1,0 +1,345 @@
+---
+title: Interaction & data
+description: Tooltips, onHover and onSelect, controlled tables, async data with useAsyncData — and the ChartBox sizing wrappers that fit a chart to its space.
+---
+
+import { VarianceColumnChart, StructureChart } from "ibcs-react";
+import { sampleQuarterlyRevenue, sampleRevenueStructure } from "@/lib/demo-data/sample-data";
+import { ClickToFilterDemo } from "@/components/demos/interaction/click-to-filter";
+import { CustomTooltipDemo } from "@/components/demos/interaction/custom-tooltip";
+import { AsyncDataDemo } from "@/components/demos/interaction/async-data";
+import { ControlledTableDemo } from "@/components/demos/interaction/controlled-table";
+import { ControlledStatementDemo } from "@/components/demos/interaction/controlled-statement";
+import { SizingDemo } from "@/components/demos/interaction/sizing";
+
+Everything that turns a static report into a live one: the tooltip and the
+`onHover` / `onSelect` events charts emit, tables whose sort and collapse state
+you can own, an async data hook with first-class loading and refresh state, and
+the wrappers that fit a chart to the space it is given. All of it is SSR-safe
+and adds no dependencies.
+
+## Hover tooltips
+
+Every chart that draws interactive marks — and `StatementTable`'s rows — shows a
+floating tooltip. It is **on by default**: `tooltip` defaults to `true`, so
+there is nothing to wire.
+
+What it does today, exactly:
+
+- **Trigger** — a pointer within a few pixels of the mark itself (the generous
+  hit band stays for clicks, but the tooltip no longer fires over blank plot
+  space), keyboard focus on a selectable mark, or a tap on touch, where the
+  panel anchors to the mark rather than the finger.
+- **Placement** — on the client it renders into a `document.body` portal, so
+  an ancestor with `transform`, `filter` or `overflow` (a dashboard shell, a
+  `ChartBox`) can neither clip it nor re-anchor it. It sits 16 px from the
+  pointer and flips to the other side at the right or bottom viewport edge, and
+  it never captures the pointer.
+- **Content** — the category as the title, the value, the comparison value and
+  the impact-coloured delta, printed at **full precision** even when the chart's
+  own labels are compact: the tooltip is where you go for the exact figure.
+- **Dismissal** — `Escape` hides it without moving the pointer or focus
+  (WCAG 1.4.13), a tap elsewhere dismisses a tap-anchored one, and leaving or
+  blurring the mark clears it.
+- **At rest** — nothing is rendered. The server output is just the `<svg>`, so
+  there is no stray panel in static HTML or in a print.
+
+<Frame>
+  <div style={{ display: "flex", gap: 28, flexWrap: "wrap", alignItems: "flex-start" }}>
+    <VarianceColumnChart
+      data={sampleQuarterlyRevenue}
+      comparison="PY"
+      width={380}
+      height={260}
+      format={{ compact: true }}
+    />
+    <StructureChart
+      data={sampleRevenueStructure}
+      comparison="PY"
+      width={420}
+      height={260}
+      format={{ compact: true }}
+    />
+  </div>
+</Frame>
+
+```tsx
+import { VarianceColumnChart } from "ibcs-react";
+
+// On by default — hover, focus or tap a column.
+<VarianceColumnChart data={data} comparison="PY" />
+
+// Opt out, or listen yourself with the mirror of onSelect:
+<VarianceColumnChart data={data} tooltip={false} onHover={(h) => setHovered(h)} />
+```
+
+`onHover` fires with `{ category, scenario?, value, datum, x, y }` as the
+pointer moves over a mark and with `null` when it leaves — the same payload as
+`onSelect` plus the pointer's viewport coordinates.
+
+## Custom tooltips
+
+To design the panel yourself, switch the built-in one off and pair
+[useChartHover](/docs/hooks#usecharthover) with `ChartTooltip`. The hook holds
+the hovered datum and the pointer position and brings the Escape / outside-tap
+dismissal with it; passing its `tooltipRef` to the panel lets pointer moves be
+applied on an animation frame, so following the cursor costs no re-render.
+
+<Frame>
+  <CustomTooltipDemo />
+</Frame>
+
+```tsx
+import { VarianceColumnChart, ChartTooltip, useChartHover, type ColumnDatum } from "ibcs-react";
+
+function CustomTooltipChart({ data }) {
+  const hover = useChartHover<ColumnDatum>();
+
+  return (
+    <>
+      <VarianceColumnChart
+        data={data}
+        comparison="PY"
+        tooltip={false}
+        onHover={(h) => (h ? hover.onMove(h, { clientX: h.x, clientY: h.y }) : hover.onLeave())}
+      />
+      {hover.hovered && (
+        <ChartTooltip
+          ref={hover.tooltipRef}
+          x={hover.hovered.x}
+          y={hover.hovered.y}
+          title={hover.hovered.category}
+          rows={[{ label: "AC", value: formatValue(hover.hovered.value), strong: true }]}
+        />
+      )}
+    </>
+  );
+}
+```
+
+For a mark you draw yourself there is no `onHover` to borrow: call
+`hover.onMove(info, event)` from the element's own `onPointerMove` and
+`hover.onLeave` from `onPointerLeave`. Any event carrying `clientX` / `clientY`
+works, so the same panel can label a custom SVG shape.
+
+## Click to filter
+
+`VarianceColumnChart`, `StructureChart`, `TrendChart`, `StackedChart` and
+`PieChart` take an optional `onSelect`. Click any mark and it fires
+`{ category, scenario?, value, datum }` — the whole element is a click target,
+the cursor turns to a pointer, and the mark is reachable and activatable by
+keyboard. Omit the prop and nothing changes: no visual, no behaviour.
+
+Pair it with [useChartSelection](/docs/hooks#usechartselection), a small `Set`
+model, to drive a second view:
+
+<Frame>
+  <ClickToFilterDemo />
+</Frame>
+
+```tsx
+import { VarianceColumnChart, useChartSelection } from "ibcs-react";
+
+function QuarterFilter({ data }) {
+  const sel = useChartSelection<string>();
+  const chosen = data.filter((d) => sel.isSelected(d.category));
+
+  return (
+    <>
+      <VarianceColumnChart
+        data={data}
+        comparison="PY"
+        onSelect={(info) => sel.toggle(info.category)}
+      />
+      <ul>
+        {chosen.map((d) => (
+          <li key={d.category}>
+            {d.category}: {d.AC}
+          </li>
+        ))}
+      </ul>
+    </>
+  );
+}
+```
+
+**When to use:** cross-filtering dashboards, drill-downs, or letting a user pick
+which categories a detail table or a second chart should show.
+
+## Controlled tables
+
+Every stateful table follows the React convention: a `default*` prop seeds the
+uncontrolled behaviour, and a value + `on*Change` pair hands the state to you.
+Provide the controlled value and the table never mutates it — it only reports
+what the next state would be, which is what makes URL sync, persistence and two
+views kept in step possible.
+
+| Component        | Uncontrolled seed                                            | Controlled pair                                                                  |
+| ---------------- | ------------------------------------------------------------ | -------------------------------------------------------------------------------- |
+| `DataTable`      | `defaultSort`, `defaultCollapsed`                            | `sort` + `onSortChange`, `collapsed` + `onCollapsedChange`                       |
+| `StatementTable` | `defaultCollapsed` (or a line's own `defaultCollapsed` flag) | `collapsed` + `onCollapsedChange`                                                |
+| `MatrixTable`    | `defaultExpandedRows`, `defaultExpandedCols`                 | `expandedRows` + `onExpandedRowsChange`, `expandedCols` + `onExpandedColsChange` |
+
+Note the matrix's polarity: it names what is **open**, because its period
+columns deliberately start collapsed — a matrix opens year by year.
+
+The sort below is owned by the page. Header clicks and the buttons write to the
+same state, so they can never disagree:
+
+<Frame>
+  <ControlledTableDemo />
+</Frame>
+
+```tsx
+import { useState } from "react";
+import { DataTable, type DataTableSort } from "ibcs-react";
+
+const [sort, setSort] = useState<DataTableSort | null>({ key: "rev", dir: "desc" });
+
+<DataTable rows={rows} columns={columns} sort={sort} onSortChange={setSort} showTotals />;
+```
+
+Collapse state works the same way. `onCollapsedChange` reports the **next**
+sorted id list on every toggle, so persisting it is a one-liner:
+
+<Frame>
+  <ControlledStatementDemo />
+</Frame>
+
+```tsx
+const [collapsed, setCollapsed] = useState<string[]>(["opex"]);
+
+<StatementTable lines={lines} collapsed={collapsed} onCollapsedChange={setCollapsed} />;
+```
+
+Leave the controlled props off and the table owns its state as before —
+`onCollapsedChange` then acts as a plain observer, useful for analytics.
+The same engine is available on its own as
+[useStatement](/docs/hooks#usestatement) when you render your own statement
+chrome.
+
+## Async and API data
+
+`useAsyncData` runs a fetcher on mount and whenever its `deps` change, exposing
+`loading` (the first load), `refreshing` (a re-fetch with the previous data
+still on screen), `error`, `lastUpdated` and a manual `refetch()`. It hands the
+fetcher an `AbortSignal`, cancels in-flight requests on unmount, refetch or an
+`enabled` flip, ignores aborts, and can poll through `refreshMs`. Nothing
+fetches during render, so it is SSR-safe.
+
+`ChartState` is its rendering counterpart: a skeleton while loading, an error
+message with an optional retry, an empty state, or your content — each slot
+overridable through `renderLoading` / `renderError` / `renderEmpty`. The demo
+below uses a mock fetcher that resolves after about 0.9 s.
+
+<Frame>
+  <AsyncDataDemo />
+</Frame>
+
+```tsx
+import { useAsyncData, ChartState, StatementTable } from "ibcs-react";
+
+function LivePnl() {
+  const { data, loading, refreshing, error, refetch } = useAsyncData(
+    // The fetcher gets an AbortSignal — forward it to fetch().
+    (signal) => fetch("/api/pnl", { signal }).then((r) => r.json()),
+    { refreshMs: 30_000, keepPreviousData: true },
+  );
+
+  return (
+    <ChartState
+      loading={loading}
+      error={error}
+      empty={!data?.length}
+      variant="table"
+      onRetry={refetch}
+    >
+      <div style={{ opacity: refreshing ? 0.6 : 1 }}>
+        <StatementTable lines={data} />
+      </div>
+    </ChartState>
+  );
+}
+```
+
+For a timer-driven feed with no network behind it — a demo, a monitoring wall —
+reach for [useLiveData](/docs/hooks#uselivedata) instead.
+
+## Sizing and fit
+
+Charts take explicit `width` and `height` in pixels, because IBCS geometry is
+pixel work: a shared scale across small multiples, hairline gridlines, labels
+that must not collide. To fit one into a fluid layout, wrap it the way you would
+fit a picture into a frame.
+
+`ChartBox` is the one sizing primitive. Pick a `fit` and it re-renders the chart
+at the resolved integer size — unlike scaling a bitmap, text and strokes stay
+crisp:
+
+- `"scale"` (default) — fill the available width keeping the aspect ratio, but
+  never below `minWidth`; past that it scrolls. The everyday responsive choice.
+- `"contain"` — scale to fit both dimensions, then letterbox and align the spare
+  space. Needs a bounded height (`maxHeight`).
+- `"fixed"` — always the intrinsic size; the container scrolls around it.
+- `"fill"` — stretch to the box: the width fills, the height is `maxHeight` or
+  the intrinsic height.
+
+Switch the mode and resize the window to feel each:
+
+<Frame>
+  <SizingDemo />
+</Frame>
+
+```tsx
+import { ChartBox, TrendChart } from "ibcs-react";
+
+// fit works like an image's object-fit: "scale" | "contain" | "fixed" | "fill"
+<ChartBox width={760} height={300} fit="scale" minWidth={680} align="center">
+  {(w, h) => <TrendChart width={w} height={h} data={trend} />}
+</ChartBox>;
+```
+
+`align`, `verticalAlign`, `padding`, `background` and `scroll` place the chart
+inside the box; the render-prop child receives whole pixels, never `0` or `NaN`.
+
+### ScrollChart, ResponsiveChart and ChartFrame
+
+- **`ScrollChart`** is a thin preset of `ChartBox` for the common
+  "fill one dimension, scroll the other" case. Give it a `height` and it renders
+  `fit="scale"` with your `minWidth`; give it a `width` and it renders
+  `fit="fixed"` inside a `maxHeight` viewport. Reach for `ChartBox` directly
+  when you want control over fit, alignment or padding.
+- **`ResponsiveChart`** is an independent aspect-ratio wrapper, not a `ChartBox`
+  preset. It measures its parent and hands the child integer dimensions; with
+  `aspect` set, the height is derived from the measured width
+  (`height = width / aspect`) and the container's own height is ignored, clamped
+  by `minWidth` / `minHeight` / `maxHeight`. Nothing is drawn before the first
+  measurement, so there is no layout jump. Use it when the ratio is the
+  requirement.
+- **`ChartFrame`** is **deprecated**. It still exports and still works, but the
+  `fit` union on `ChartBox` covers both of its modes and adds `"scale"` and
+  `"fixed"` with the same `align` / `verticalAlign` / `padding` / `background`
+  controls. Port it by renaming the element.
+
+```tsx
+// A wide trend that stays readable on a phone by scrolling.
+<ScrollChart height={300} minWidth={680}>
+  {(w, h) => <TrendChart width={w} height={h} data={trend} />}
+</ScrollChart>
+
+// A 16:9 panel that follows its parent's width.
+<ResponsiveChart aspect={16 / 9} minWidth={240}>
+  {(w, h) => <VarianceColumnChart width={w} height={h} data={data} />}
+</ResponsiveChart>
+```
+
+All three measure with [useElementSize](/docs/hooks#useelementsize), which you
+can use directly for your own containers.
+
+## Where to next
+
+- [Hooks](/docs/hooks) — the full signatures of `useChartSelection`,
+  `useChartHover`, `useAsyncData` and the rest.
+- [Accessibility](/docs/accessibility) — keyboard reachability of selectable
+  marks, and how the tooltip satisfies WCAG 1.4.13.
+- [Playground](/playground) — the same interaction wiring on live data.

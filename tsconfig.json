@@ -1,0 +1,33 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "moduleDetection": "force",
+    "jsx": "react-jsx",
+    "declaration": true,
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+    "strict": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "noUnusedLocals": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    // The demo app imports the library by name (mirroring the `ibcs-react`
+    // alias in vite.config.ts). Point that at SOURCE: `typecheck` runs before
+    // `build`, so resolving it through package.json `exports` would check the
+    // demo against a stale — or missing — `dist/`.
+    "paths": {
+      "ibcs-react": ["./src/index.ts"],
+      "ibcs-react/core": ["./src/core/index.ts"]
+    }
+  },
+  // `demo/` is the dev playground — type-check it like the library.
+  "include": ["src", "demo"],
+  "exclude": ["dist", "node_modules"]
+}

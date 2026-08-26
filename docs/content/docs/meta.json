@@ -1,0 +1,28 @@
+{
+  "title": "Documentation",
+  "pages": [
+    "index",
+    "getting-started",
+    "---Concepts---",
+    "ibcs",
+    "data-model",
+    "theming",
+    "conformance",
+    "accessibility",
+    "---Galleries---",
+    "templates",
+    "table-templates",
+    "example-reports",
+    "industry-reports",
+    "dashboards",
+    "examples",
+    "budget-matrix",
+    "---Recipes---",
+    "cookbook",
+    "hooks",
+    "interaction",
+    "export",
+    "---Reference---",
+    "components"
+  ]
+}

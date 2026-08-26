@@ -1,0 +1,9 @@
+{
+  "ignorePatterns": [
+    "dist/**",
+    "demo-dist/**",
+    "storybook-static/**",
+    "node_modules/**",
+    "research/data/**"
+  ]
+}

@@ -1,0 +1,144 @@
+# Changelog
+
+All notable changes to this project are documented in this file. The format is
+based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this
+project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+Entries below this heading are generated at release time from the changesets in
+`.changeset/` — add one with `npx changeset` instead of editing this file by
+hand (see [CONTRIBUTING.md](./CONTRIBUTING.md#changesets)).
+
+## [0.1.0] - 2026-08-26
+
+Initial public release. A zero-dependency, SSR-safe IBCS / ISO 24896:2026
+component library for React with one shared data model (scenario-keyed values:
+AC / PY / PL / FC) feeding every view. Complete IBCS chart-template coverage
+(C01–C13) and table templates (T01–T04).
+
+### Added
+
+- **Tables (T01–T04):** `StatementTable` (flow & stock modes, integrated
+  waterfall, expand/collapse-all, virtualization, CSV export), `DataTable`,
+  `ComparisonTable`, `MatrixTable` (budget / control matrix with an expanding
+  Year → Quarter → Month column tree). `MatrixTable` exposes per-cell hooks —
+  `onCellClick`, `cellDecorations` (corner ribbon), `getCellClassName` and a
+  `data-cell-ref` (+ `cellRefOf` helper) on every value cell — so a comment /
+  annotation layer can be built on top without forking the table.
+- **Controlled or uncontrolled table state**, exactly like a React `<input>`:
+  uncontrolled seeds are `defaultCollapsed` / `defaultSort` /
+  `defaultExpandedRows` / `defaultExpandedCols`, and each has a value +
+  `onChange` pair to take the state over (`collapsed`/`onCollapsedChange` on
+  `StatementTable`, `DataTable` and `useStatement`; `sort`/`onSortChange` on
+  `DataTable`; `expandedRows`/`expandedCols` + change callbacks on
+  `MatrixTable`) — URL sync, persistence and cross-linked views work out of
+  the box. Callbacks fire in both modes, so `on…Change` doubles as an observer.
+- **Charts (C01–C13):** `VarianceColumnChart`, `TrendChart`, `StructureChart`,
+  `StackedChart` (C01/C02), `GroupedVarianceChart` (C03/C04), `LineChart` (C07,
+  forecast tail + reference lines), `AreaChart` (C08), `VarianceAreaChart`,
+  `ScatterChart` (C09, hyperbolic iso-lines), `BubbleChart` (C10), `ComboChart`,
+  `TreeChart` / `RatioTreeChart` (C11), `WaterfallChart`,
+  `HorizontalWaterfallChart` / `ColumnVarianceWaterfallChart` (C05),
+  `BarVarianceWaterfallChart` (C06), `WaterfallStatementChart` (C12),
+  `IntegratedVarianceChart`, `RankingVarianceChart`,
+  `SmallMultiples` / `MiniVarianceMultiples` (C13), `PieChart` (+ pie multiples;
+  flagged by `checkIbcs`), `VarianceBar`.
+- **One API vocabulary across charts:** variance panels are a single
+  `variance?: "abs" | "pct" | "none"` union; panel toggles are
+  `showAbsPanel` / `showPctPanel`; totals are `showTotals`; trend reference
+  lines are `referenceLines?: ScenarioKey[]`; waterfall contribution datasets
+  are `comparisonData`. `ScenarioDatum`
+  (`{ category, AC?, PY?, PL?, FC? }`, exported from `ibcs-react/core`) is THE
+  canonical category-row shape — `CategoryDatum`, `ColumnDatum`, `LineDatum`
+  and `ComboDatum` are aliases of it, and `TrendDatum` extends it with
+  `summary?`.
+- **Interactive tooltips** on every chart: triggered within 8 px of a visible
+  mark (not anywhere in the category band), printing the exact figure
+  (e.g. "30,123,457" where the chart label says "30.1M") plus the comparison
+  and the signed Δ with percent. Keyboard focus shows the same tooltip
+  (WCAG 1.4.13), touch shows a sticky mark-anchored tooltip on tap, and Escape
+  or an outside tap dismisses. Tooltips render into a `document.body` portal,
+  flip at viewport edges instead of clipping, and take their inks from the
+  token theme so they stay legible on dark surfaces.
+- **KPI:** `KpiCard` (configurable `appearance`: border / background / radius /
+  accent / shadow) and `Sparkline`. One `format` drives the headline and every
+  delta — `format.currency` renders as the muted prefix, `format.suffix` as
+  the postfix — so a unit symbol can never print twice.
+- **Report builder:** `Report` and `ConfiguredChart` from serializable
+  `ReportConfig` / `ChartConfig`, with `validateReportConfig` /
+  `validateChartConfig`.
+- **Conformance:** `checkIbcs` (+ `IBCS_RULES`) ISO 24896 linter and the
+  `ConformanceReport` view.
+- **Hooks:** `useStatement` (literally `StatementTable`'s engine — same
+  controlled/uncontrolled options, plus `groupIds`, `allCollapsed`,
+  `allExpanded` for toolbar wiring), `useVariance`/`useVariances`,
+  `useFilters`, `useLiveData`, `useAsyncData`, `useChartSelection`,
+  `useChartHover`, `usePrefersReducedMotion`, `useMountGrow`,
+  `useAnimatedValue`, `useCountUp`.
+- **Statement adapters:** `statementToWaterfall`, `statementToStructure` and
+  `statementToDataTableRows` derive chart/table inputs from a
+  `StatementLine[]` — one data model, many views, no hand-reshaping.
+- **Theming:** design tokens with presets `defaultTokens`, `oceanTokens`,
+  `azureTokens`, `greenRedTokens`, `vividTokens`, `cvdTokens`
+  (colour-blind-safe), `monoTokens` (greyscale / print) and `darkTokens`
+  (`tokenPresets.Dark`). `IbcsThemeProvider` + `useIbcsTokens` set the theme
+  once for a whole subtree; every component alternatively accepts a partial
+  `tokens` override (`IbcsTokensOverride`), and `mergeTokens` composes presets.
+  Tokens are dark-capable end to end: `color.surface`, `color.surfaceMuted`,
+  `color.onFill` and `font.family` theme cards, menus, tooltips, sticky table
+  cells and hollow plan fills — not just the marks.
+- **Export helpers:** `downloadCSV`, `downloadSVG`, `downloadPNG`, `ExportMenu`,
+  plus clipboard + print: `copySvgToClipboard`, `copyPngToClipboard`,
+  `printSvg`, `canCopyImage` (surfaced as "Copy PNG / Copy SVG / Print" in
+  `ExportMenu`). `ExportMenu` is fully keyboard-operable and reports export
+  failures via `onError` (typed with the exported `ExportMenuAction`).
+- **Sizing (`ChartBox`):** one object-fit-style sizer for any chart — `fit` of
+  `scale` (fill width, scroll below `minWidth`) / `contain` / `fixed` / `fill`,
+  plus nine-point alignment, padding and scroll. `ResponsiveChart`
+  (ResizeObserver render-prop wrapper) and `ScrollChart` are thin presets of
+  it, and the `useElementSize` hook sizes charts from their container.
+  (`ChartFrame` is a deprecated preset — still exported and functional.)
+- **Band spacing:** every categorical chart gains a `bandPadding` prop
+  (`bandScale` core helper) to control column spacing and the edge gutter. The
+  default trims that gutter so charts fill their box; pass
+  `bandPadding={{ outer: 0 }}` for flush-to-edge.
+- **Accessibility:** every chart renders a visually-hidden `ChartDataTable`
+  beside the `aria-hidden` SVG (`role="img"` + `aria-label`), with values
+  formatted exactly as the chart labels them — screen readers get the
+  underlying numbers, not a decorative blob. Tables are keyboard-operable
+  throughout (sorting, matrix cells, expand/collapse; chevron buttons never
+  submit enclosing forms), header cells carry `scope`, and every table accepts
+  an optional visually-hidden `caption`.
+- **SSR guarantees:** no `window` / `document` access at module load or first
+  render; server-rendered charts produce real geometry (no zero-height flash);
+  entrance animations start client-side, respect `prefers-reduced-motion`
+  without a flash, and replay on data changes rather than on every re-render.
+- **Numeric robustness:** all-negative series scale correctly (loss / margin
+  charts), non-finite values (`NaN` / `Infinity`) are treated as missing
+  instead of blanking the chart, and `formatValue` / `formatSigned` print
+  `n/a` for non-finite input.
+- **i18n:** `formatValue` compact mode is locale-aware (decimal separator via
+  `Intl`) with overridable `compactSuffixes` (e.g. `Mrd.`/`Mio.`/`Tsd.`).
+- **Packaging:** dual ESM + CJS with correct type declarations for each
+  (`require("ibcs-react")` type-checks under `node16`/`nodenext`), sharing one
+  chunk so both entries hand out the same objects (no dual-package hazard).
+  The root entry is marked `"use client"` — importing `ibcs-react` from a
+  Next.js App Router server component just works — while `ibcs-react/core` is
+  a directive-free, curated barrel with zero React dependency, importable from
+  server components for pure layout math. `react-dom` is an optional peer
+  (only the tooltip portal uses it), and `./package.json` is exported for
+  tooling. A surface-guard test pins both public barrels so the API changes
+  only deliberately.
+- **React 18 & 19:** peer range `react >=18`; developed and tested on React
+  19 (hover / size refs are typed `RefObject<T | null>`, matching React 19's
+  ref model).
+- **Tests:** vitest suite over the core logic plus jsdom render + SSR smoke
+  tests for every component, markup snapshots of every fixture in the shared
+  catalogue, and an opt-in Playwright screenshot harness (see CONTRIBUTING);
+  CI runs on Node 20/22/24.
+- **Docs:** the documentation site under `docs/`
+  ([ibcs-react.com](https://ibcs-react.com)) — per-component pages with live
+  examples and generated prop tables, guides, a gallery, a playground and a
+  report-builder demo.
+- **Examples:** a runnable Next.js (App Router) starter under `examples/nextjs`.

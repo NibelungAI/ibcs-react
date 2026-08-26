@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Docs & live demo
+    url: https://ibcs-react.com
+    about: Browse every component with live examples, code and props.

@@ -1,0 +1,198 @@
+---
+title: Theming
+description: Token presets, the IbcsThemeProvider context and per-component overrides — every colour and scenario fill in ibcs-react is a token.
+---
+
+import { ThemePresetGallery } from "@/components/demos/theme-preset-gallery";
+import { ThemeProviderDemo } from "@/components/demos/theme-provider-demo";
+import { ThemeDarkDemo } from "@/components/demos/theme-dark-demo";
+
+Every colour, font stack and scenario fill is a token. Pass a ready-made
+preset, set one for a whole subtree with a provider, or override just the few
+values you care about — overrides are deep-merged onto the theme underneath.
+
+## How a component resolves its tokens
+
+Nearest wins, and each layer is deep-merged onto the one below:
+
+1. the component's own `tokens` prop (a partial override is fine), merged onto
+2. the nearest `IbcsThemeProvider` theme, merged onto
+3. `defaultTokens`.
+
+Providers nest: an inner provider's override composes onto the outer theme
+rather than replacing it. That means "brand palette at the app root, dark
+surface for one panel, one red tweaked on one card" is three small overrides,
+not three full themes.
+
+## IbcsThemeProvider
+
+Set the theme once instead of threading a `tokens` prop through every
+component:
+
+```tsx
+import { IbcsThemeProvider, KpiCard, StatementTable, tokenPresets } from "ibcs-react";
+
+<IbcsThemeProvider tokens={tokenPresets["CVD-safe"]}>
+  <KpiCard label="Revenue" values={{ AC: 30.1e6, PY: 25.6e6 }} />
+  <StatementTable lines={statement} />
+</IbcsThemeProvider>;
+```
+
+`tokens` accepts a full theme (a `tokenPresets` entry) or a partial
+`IbcsTokensOverride` — either way it is deep-merged onto the parent theme.
+
+Below, one provider (the Ocean preset) themes all three components; the middle
+card additionally passes its own `tokens` prop, which wins over the provider
+for that one leaf.
+
+<Frame>
+  <ThemeProviderDemo />
+</Frame>
+
+```tsx
+<IbcsThemeProvider tokens={tokenPresets.Ocean}>
+  <KpiCard label="Revenue" values={{ AC: 30.1e6, PY: 25.6e6 }} />
+
+  {/* Provider theme + this card's own override — the prop wins. */}
+  <KpiCard
+    label="Revenue"
+    values={{ AC: 30.1e6, PY: 25.6e6 }}
+    tokens={{ color: { good: "#7d3cc8" } }}
+  />
+
+  <VarianceColumnChart data={quarterly} comparison="PY" />
+</IbcsThemeProvider>
+```
+
+## The tokens prop is deep-merged
+
+Every component takes `tokens?: IbcsTokensOverride`. You supply only the leaves
+you want to change; everything else falls back to the provider theme and then
+to `defaultTokens`. Tweaking the favorable colour does not force you to
+re-specify all four scenario fills:
+
+```tsx
+import { StatementTable } from "ibcs-react";
+
+<StatementTable
+  lines={statement}
+  tokens={{
+    color: { good: "#0f8a5f", bad: "#d23b3b" }, // variance colours
+    scenario: {
+      AC: { fill: "#1f5e7d", stroke: "#1f5e7d", variant: "solid" }, // teal actuals
+    },
+  }}
+/>;
+```
+
+Prefer the strict black/red "good = neutral" convention? Override `color.good`
+to your neutral ink and keep `color.bad` red — the deep merge makes that a
+one-line change.
+
+## useIbcsTokens
+
+`useIbcsTokens(override?)` is what every component calls internally to resolve
+its `tokens` prop against the active theme. It is public, so a custom chart you
+build on the library's core helpers participates in the same theme:
+
+```tsx
+import { useIbcsTokens, type IbcsTokensOverride } from "ibcs-react";
+
+function MyMiniBar({ tokens }: { tokens?: IbcsTokensOverride }) {
+  const t = useIbcsTokens(tokens); // provider theme + this override + defaults
+  return <rect fill={t.scenario.AC.fill} width={80} height={12} />;
+}
+```
+
+Outside any provider it returns `defaultTokens` with your override applied, so
+a component works standalone as well as inside a theme.
+
+## The eight presets
+
+The library ships eight full token sets plus a named registry:
+
+- `defaultTokens` — neutral greys for actuals, muted green/red variance. Tuned
+  for a light surface.
+- `oceanTokens` — a cool blue-grey set: dark navy actuals, light blue-grey
+  previous year, IBCS semantic green/red.
+- `azureTokens` — a monochromatic bright-blue alternative: navy actuals, azure
+  previous year.
+- `greenRedTokens` — the strict "good stands out, bad stands out" business
+  look: darker actuals, vivid green/red.
+- `vividTokens` — teal/blue actual bars with vivid variance, for a more
+  colourful deck.
+- `cvdTokens` — colour-vision-deficiency safe: favorable teal, unfavorable
+  orange. Only the impact colours change; scenario fills stay greyscale,
+  because IBCS distinguishes scenarios by fill, not hue.
+- `monoTokens` — greyscale for black-and-white printing: favorable reads as a
+  darker grey, unfavorable as a lighter one, with the signed labels and the
+  hatched/framed fills carrying the rest.
+- `darkTokens` — a dark-surface ink set (including `color.surface` and
+  `color.onFill`, so cards, tooltips and in-bar labels come along).
+- `tokenPresets` — a `Record<string, IbcsTokens>` holding all eight under the
+  names `"Default"`, `"Ocean"`, `"Azure"`, `"Green / Red"`, `"Vivid"`,
+  `"CVD-safe"`, `"Mono / print"` and `"Dark"` — ready to drive a theme
+  switcher.
+
+Same data, same props — only `tokens` changes. Each card is painted with its
+preset's own `color.surface`:
+
+<Frame>
+  <ThemePresetGallery />
+</Frame>
+
+```tsx
+import { VarianceColumnChart, greenRedTokens, tokenPresets } from "ibcs-react";
+
+// Pass a whole preset…
+<VarianceColumnChart data={data} tokens={greenRedTokens} />
+
+// …or pick one by name from the registry (handy for a theme switcher):
+<VarianceColumnChart data={data} tokens={tokenPresets["Vivid"]} />
+```
+
+## Dark surfaces
+
+The surface itself is a token, so dark mode is a preset swap rather than a
+fork: `darkTokens` carries `color.surface` (cards, menus, tooltips, the fill of
+hollow plan shapes), `color.surfaceMuted` and `color.onFill` (ink drawn on a
+solid bar) alongside the scenario fills.
+
+<Frame dark>
+  <ThemeDarkDemo />
+</Frame>
+
+```tsx
+import { IbcsThemeProvider, KpiCard, StatementTable, darkTokens } from "ibcs-react";
+
+<div style={{ background: darkTokens.color.surface }}>
+  <IbcsThemeProvider tokens={darkTokens}>
+    <KpiCard label="Revenue" values={{ AC: 30.1e6, PY: 25.6e6 }} />
+    <StatementTable lines={statement} />
+  </IbcsThemeProvider>
+</div>;
+```
+
+## What each token controls
+
+| Token                                 | Type                | What it drives                                                                                      |
+| ------------------------------------- | ------------------- | --------------------------------------------------------------------------------------------------- |
+| `color.neutral`                       | `string`            | Actual step bars (add / subtract waterfall steps).                                                  |
+| `color.total`                         | `string`            | Emphasised actual bars — subtotals and results.                                                     |
+| `color.good`                          | `string`            | Favorable variance (impact, not sign).                                                              |
+| `color.bad`                           | `string`            | Unfavorable variance.                                                                               |
+| `color.zero`                          | `string`            | Zero / no-change marks.                                                                             |
+| `color.axis`, `color.gridline`        | `string`            | Axis line and gridlines.                                                                            |
+| `color.text`, `color.textMuted`       | `string`            | Labels and secondary text.                                                                          |
+| `color.rowBorder`                     | `string`            | Table row rules and hairlines.                                                                      |
+| `color.surface`, `color.surfaceMuted` | `string`            | Opaque component background (cards, tooltips, sticky cells, hollow plan fills) and its subtle tint. |
+| `color.onFill`                        | `string`            | Ink drawn on a solid scenario bar — in-bar value labels.                                            |
+| `scenario.AC` / `PY` / `PL` / `FC`    | `IbcsScenarioStyle` | Per-scenario `fill`, `stroke` and `variant` (`"solid"`, `"frame"`, `"hatch"`).                      |
+| `font.family`                         | `string`            | Font stack for component chrome and SVG text.                                                       |
+
+## Where to next
+
+- [IBCS & ISO 24896](/docs/ibcs) — why the fills and colours mean what they
+  mean before you change them.
+- [Components](/docs/components) — every component takes the same `tokens`
+  prop.
