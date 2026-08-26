@@ -26,12 +26,8 @@ npm run build && npm run start   # production build
 
 ## A note on the `ibcs-react` dependency
 
-`package.json` asks for `"ibcs-react": "^0.1.0"` — the first real release.
-
-> **Heads-up:** npm currently serves a `0.0.0` placeholder for the `ibcs-react`
-> name, so `npm install` here only resolves **after 0.1.0 is published**. Until
-> then, link or file-path the library from a local checkout (below) — otherwise
-> the install fails with `No matching version found for ibcs-react@^0.1.0`.
+`package.json` asks for `"ibcs-react": "^1.0.0"` — the published release on
+npm, so a plain `npm install` just works.
 
 If you're developing **against a local checkout** of the library (this repo),
 point the example at it instead of npm. From `examples/nextjs/`:

@@ -10,7 +10,7 @@ Entries below this heading are generated at release time from the changesets in
 `.changeset/` — add one with `npx changeset` instead of editing this file by
 hand (see [CONTRIBUTING.md](./CONTRIBUTING.md#changesets)).
 
-## [0.1.0] - 2026-08-26
+## [1.0.0] - 2026-08-26
 
 Initial public release. A zero-dependency, SSR-safe IBCS / ISO 24896:2026
 component library for React with one shared data model (scenario-keyed values:

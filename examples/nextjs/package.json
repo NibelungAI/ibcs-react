@@ -8,7 +8,7 @@
     "start": "next start"
   },
   "dependencies": {
-    "ibcs-react": "^0.1.0",
+    "ibcs-react": "^1.0.0",
     "next": "^15.0.0",
     "react": "^18.3.0",
     "react-dom": "^18.3.0"
