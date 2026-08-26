@@ -5,6 +5,7 @@ import { createRelativeLink } from "fumadocs-ui/mdx";
 import type { Metadata } from "next";
 import { getMDXComponents } from "@/components/mdx";
 import { DocsFooter } from "@/components/docs-footer";
+import { PageActions } from "@/components/ai/page-actions";
 
 interface Props {
   params: Promise<{ slug?: string[] }>;
@@ -21,6 +22,7 @@ export default async function Page(props: Props) {
     <DocsPage toc={page.data.toc} full={page.data.full} slots={{ footer: DocsFooter }}>
       <DocsTitle>{page.data.title}</DocsTitle>
       <DocsDescription>{page.data.description}</DocsDescription>
+      <PageActions markdownUrl={`${page.url}.mdx`} />
       <DocsBody>
         <MDX components={getMDXComponents({ a: createRelativeLink(source, page) })} />
       </DocsBody>
@@ -40,5 +42,7 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
   return {
     title: page.data.title,
     description: page.data.description,
+    // llms.txt v2: advertise the raw-Markdown twin of this page.
+    alternates: { types: { "text/markdown": `${page.url}.mdx` } },
   };
 }
