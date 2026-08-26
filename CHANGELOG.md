@@ -1,5 +1,30 @@
 # Changelog
 
+## 1.1.0
+
+### Minor Changes
+
+- 735a559: `checkIbcs` no longer rewards deleting the title, and cost detection no longer hangs off the title text alone.
+
+  - A chart or report with **no** title now emits a `structured-title` warning (ISO 24896 SAY requires a Who/What/When title) — previously a bare-string title warned while omitting the title passed clean, so the linter incentivised removing it. A chart block inside a report is satisfied by either its own title or the block's.
+  - The `cost-favorability` heuristic now also reads **structured** titles (the recommended form used to bypass it) and the hosting block's title.
+  - New optional `measureKind?: "cost" | "revenue"` on chart and KPI configs declares what the measure is: `"cost"` makes the linter insist on `higherIsBetter: false` regardless of wording, `"revenue"` silences the heuristic for measures that merely sound like costs. Rendering is unaffected — favorability still follows `higherIsBetter`.
+
+  If you lint configs in CI, previously-clean untitled configs will now report a warning (errors are unchanged).
+
+- 735a559: `StructureDatum` now keys the component name on `category` — the same key every other datum in the library uses — so one array can feed a `VarianceColumnChart` and a `StructureChart` without a renaming `.map()`. `label` (the only key before this release) is accepted as an alias permanently; when both are present, `category` wins. Resolved `StructureSegment`s keep exposing `label` (now also echoing `category` when provided), and `statementToStructure` emits both keys so adapter output reaches category charts unchanged.
+- 735a559: `tokenPresets` is now keyed by stable code ids (`default`, `ocean`, `azure`, `greenRed`, `vivid`, `cvd`, `mono`, `dark` — the new `TokenPresetId` type) instead of display strings, with display names in the new `tokenPresetLabels` map. Lookups autocomplete and typos fail to compile, and UI copy can change without breaking saved theme ids.
+
+  The v1.0 display-string keys (`"Default"`, `"Green / Red"`, `"CVD-safe"`, `"Mono / print"`, …) still resolve at **runtime** as non-enumerable aliases — existing JavaScript keeps working, and `Object.keys`/`Object.entries` iteration sees each preset exactly once — but they are gone from the **type**: TypeScript code doing `tokenPresets.Dark` or `tokenPresets["Green / Red"]` must switch to `tokenPresets.dark` / `tokenPresets.greenRed`.
+
+### Patch Changes
+
+- 735a559: `checkIbcs` chart-type errors now speak the API's vocabulary. An unknown `type` gets a did-you-mean (`"variance-column"` → `did you mean "varianceColumn"?`, typos within edit distance 2 are corrected) plus the list of valid `CHART_TYPES` values; a known non-linear type (pie, gauge, radar, …) keeps the IBCS explanation but lists the real alternatives instead of conceptual names like "column" and "bar" that the config vocabulary does not accept; a missing `type` gets its own message. All three variants stay under the `linear-chart-type` rule id.
+- 735a559: Document that `KpiCard`'s default count-up already respects `prefers-reduced-motion` (the final value renders immediately, with no frame loop) and that SSR always emits the finished figure — the `animate` prop JSDoc and docs never said so. Behavior is unchanged; a regression test now pins it down.
+- 16d5e95: Tree-shaking actually works now. The dist was a single bundled module (plus a shared chunk), so bundlers could not drop unused components — importing one `KpiCard` cost ~55 KB gzip and carried WaterfallChart, StructureChart and TrendChart along. The build (now tsdown in unbundle mode, replacing tsup) emits one file per source module with the barrels as pure re-exports: a `KpiCard`-only bundle is now ~4.2 KB gzip (13× smaller), six components ~19 KB (3× smaller), measured with both esbuild and Rollup. `"use client"` is stamped on the root barrels and every `dist/react` module; `ibcs-react/core` stays directive-free for React Server Components. A new CI guard (`verify-treeshake`) bundles a KpiCard-only fixture against the dist on every build and fails on a size-budget or component-leak regression. Public entry points, exports map and types are unchanged (publint and attw both clean).
+- 735a559: Fix the screen-reader data table inflating ancestor `scrollHeight` by its full height (~340px per chart). The visually-hidden style used to sit directly on the `<table>`, but CSS table layout treats `width`/`height` as a minimum — the box stayed full-size (invisible, clipped) and any ancestor with `overflow` set grew a phantom scrollbar. The hiding style now sits on a wrapper `<div>`, which honours the 1×1 clamp; the table stays in the accessibility tree exactly as before. If you use the exported `srOnly` style yourself, apply it to a `div`/`span` — never directly to a table.
+- e37dab8: `TrendChart`'s documented "year + total" layout is actually usable now. A `summary` period used to affect styling only (divider + emphasis colour) while its value still defined the shared scale — so a 30M full-year total crushed twelve ~2.5M months to slivers ~8% of the plot. Summary periods are now excluded from the period domain and the variance half-scale; a summary that exceeds the resulting domain is drawn capped with a marked scale break (the classic slanted cut) and its value label, in both the column and the variance panel. Summaries in the same range as the periods (an average, say) share the scale unchanged. The PY/PL reference lines also stop before summary periods — a total is not a point in the time series. `computeTrend` gains an `offScale` flag on cells; `TrendLayout` domains now describe the periods alone.
+
 All notable changes to this project are documented in this file. The format is
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this
 project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
