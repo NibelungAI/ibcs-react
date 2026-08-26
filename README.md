@@ -49,6 +49,21 @@ npm i ibcs-react
 [**Open in StackBlitz ↗**](https://stackblitz.com/github/NibelungAI/ibcs-react/tree/main/examples/nextjs)
 (works once `ibcs-react` is published to npm).
 
+## AI agents
+
+Building with a coding agent? Install the **ibcs-react skill** — IBCS notation
+rules plus component recipes, packaged in the open `SKILL.md` format for Claude
+Code, Cursor, Codex and 70+ other agents:
+
+```bash
+npx skills add NibelungAI/ibcs-react
+```
+
+Agents can also read the docs directly: [`ibcs-react.com/llms.txt`](https://ibcs-react.com/llms.txt)
+(index), [`llms-full.txt`](https://ibcs-react.com/llms-full.txt) (whole corpus, one file),
+or any docs page as raw Markdown by appending `.mdx` to its URL — e.g.
+[`/docs/getting-started.mdx`](https://ibcs-react.com/docs/getting-started.mdx).
+
 ## Quick start
 
 ```tsx
