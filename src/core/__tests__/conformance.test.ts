@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { checkIbcs, IBCS_RULES, type IbcsFinding } from "../conformance";
+import { checkIbcs, checkIbcsProps, IBCS_RULES, type IbcsFinding } from "../conformance";
 import { defaultTrendConfig, defaultWaterfallConfig, type TreeChartConfig } from "../config";
 
 const rulesOf = (f: IbcsFinding[]) => f.map((x) => x.rule);
@@ -372,6 +372,112 @@ describe("checkIbcs — report configs", () => {
   });
 });
 
+describe("checkIbcsProps — the JSX authoring path", () => {
+  it("lints component props exactly like the equivalent config", () => {
+    const props = {
+      data: [{ category: "Q1", AC: 6_300_000, PY: 5_100_000 }],
+      comparison: "PY",
+      variance: "abs",
+      title: "Operating expenses",
+    };
+    expect(checkIbcsProps("VarianceColumnChart", props)).toEqual(
+      checkIbcs({ type: "varianceColumn", ...props }),
+    );
+  });
+
+  it("makes the report's dashboard line lintable — and flags its missing title", () => {
+    // <VarianceColumnChart data={productLines} comparison="PY" variance="abs" />
+    const findings = checkIbcsProps("VarianceColumnChart", {
+      data: [{ category: "Q1", AC: 100, PY: 90 }],
+      comparison: "PY",
+      variance: "abs",
+    });
+    expect(rulesOf(findings)).toContain("structured-title");
+    expect(rulesOf(findings)).not.toContain("linear-chart-type");
+  });
+
+  it("flags a PieChart as non-linear — the component name says what it is", () => {
+    const findings = checkIbcsProps("PieChart", {
+      data: [{ label: "A", value: 40 }],
+      title: { who: "ACME", what: "Share (%)", when: "2026" },
+    });
+    const r = findings.find((f) => f.rule === "linear-chart-type");
+    expect(r).toBeDefined();
+    expect(r!.severity).toBe("error");
+  });
+
+  it("lints the specialised variance charts as their linear family", () => {
+    const findings = checkIbcsProps("RankingVarianceChart", {
+      data: [{ category: "North", AC: 10, PY: 12 }],
+      title: { who: "ACME", what: "Revenue (€k)", when: "2026" },
+    });
+    expect(findings).toEqual([]);
+  });
+
+  it("lints KpiCard props directly — they already are a KpiConfig", () => {
+    const findings = checkIbcsProps("KpiCard", {
+      label: "Cost of sales",
+      values: { AC: 1, PY: 1 },
+    });
+    expect(rulesOf(findings)).toContain("cost-favorability");
+  });
+
+  it("accepts lint-only declarations alongside render props", () => {
+    const findings = checkIbcsProps("VarianceColumnChart", {
+      data: [{ category: "Q1", AC: 1, PY: 1 }],
+      title: { who: "ACME", what: "Headcount churn", when: "2026" },
+      measureKind: "cost",
+      width: 620, // render-only props carry no rules and are ignored
+    });
+    expect(rulesOf(findings)).toContain("cost-favorability");
+  });
+
+  it("tells an unknown component which components are lintable", () => {
+    const findings = checkIbcsProps("Sparkline", { data: [1, 2, 3] });
+    expect(findings).toHaveLength(1);
+    expect(findings[0]!.rule).toBe("input-shape");
+    expect(findings[0]!.message).toContain("VarianceColumnChart");
+  });
+
+  it("the component name beats a stray `type` prop", () => {
+    const findings = checkIbcsProps("TrendChart", {
+      type: "pie",
+      data: [{ category: "Jan", AC: 1 }],
+      title: { who: "A", what: "B", when: "C" },
+    });
+    expect(rulesOf(findings)).not.toContain("linear-chart-type");
+  });
+});
+
+describe("checkIbcs — ratio KPIs", () => {
+  it('nudges a %-formatted KPI toward unit:"ratio"', () => {
+    const findings = checkIbcs({
+      label: "EBIT margin",
+      values: { AC: 18.4, PY: 17.1 },
+      format: { suffix: "%", decimals: 1 },
+    });
+    const r = findings.find((f) => f.rule === "ratio-units");
+    expect(r).toBeDefined();
+    expect(r!.severity).toBe("info");
+    expect(r!.path).toBe("unit");
+  });
+
+  it("is satisfied by the declaration", () => {
+    const findings = checkIbcs({
+      label: "EBIT margin",
+      values: { AC: 18.4, PY: 17.1 },
+      format: { suffix: "%", decimals: 1 },
+      unit: "ratio",
+    });
+    expect(rulesOf(findings)).not.toContain("ratio-units");
+  });
+
+  it("says nothing about ordinary KPIs", () => {
+    const findings = checkIbcs({ label: "Revenue", values: { AC: 30.1e6, PY: 25.6e6 } });
+    expect(rulesOf(findings)).not.toContain("ratio-units");
+  });
+});
+
 describe("checkIbcs — unrecognized input", () => {
   it("returns an input-shape info for a non-object", () => {
     expect(checkIbcs(42)[0]!.rule).toBe("input-shape");
@@ -399,6 +505,7 @@ describe("IBCS_RULES catalog", () => {
       "block-type",
       "cost-favorability",
       "shared-scale",
+      "ratio-units",
       "input-shape",
     ]) {
       expect(ids.has(id)).toBe(true);

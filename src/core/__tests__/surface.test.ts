@@ -41,6 +41,7 @@ describe("public export surface", () => {
         "cellRefOf",
         "cellVariance",
         "checkIbcs",
+        "checkIbcsProps",
         "computeBarVarianceWaterfall",
         "computeBridge",
         "computeColumnVarianceWaterfall",
@@ -196,6 +197,7 @@ describe("public export surface", () => {
         "useMountGrow",
         "usePrefersReducedMotion",
         "useStatement",
+        "useStatementBridge",
         "useVariance",
         "useVariances",
       ]

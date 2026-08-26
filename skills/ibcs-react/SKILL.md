@@ -167,7 +167,9 @@ const findings = checkIbcs(reportConfig); // ChartConfig | KpiConfig | ReportCon
 Rule ids live in `IBCS_RULES` — run the check in CI over stored configs.
 A chart/report with NO title is flagged (SAY requires Who/What/When); declare
 `measureKind: "cost" | "revenue"` on a config when the title's wording
-shouldn't drive the cost-favorability heuristic.
+shouldn't drive the cost-favorability heuristic. JSX-authored charts lint via
+`checkIbcsProps("VarianceColumnChart", props)` — the component name supplies
+the `type`, same rules, same findings.
 
 ## Rules of thumb
 

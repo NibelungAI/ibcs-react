@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { renderChartChild, type ChartChildren } from "./ChartBox";
 import { useElementSize } from "./hooks/useElementSize";
 
 /**
@@ -28,10 +29,11 @@ export interface ResponsiveChartProps {
   /** Styles merged over the wrapper's own sizing styles. */
   style?: React.CSSProperties;
   /**
-   * Render-prop called with integer pixel `width`/`height` once the container
-   * has been measured. Return the chart to render.
+   * The chart to render once the container has been measured: a single
+   * element (given the integer `width`/`height` automatically) or a
+   * render-prop `(w, h) => …`.
    */
-  children: (width: number, height: number) => React.ReactNode;
+  children: ChartChildren;
 }
 
 /**
@@ -107,7 +109,7 @@ export function ResponsiveChart({
 
   return (
     <div ref={ref} className={className} style={boxStyle}>
-      {ready ? children(width, height) : null}
+      {ready ? renderChartChild(children, width, height) : null}
     </div>
   );
 }

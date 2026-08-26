@@ -4,8 +4,10 @@ import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-libra
 import { useEffect } from "react";
 
 import { checkIbcs } from "../../core/conformance";
-import { ChartState, KpiCard, StatementTable, VarianceColumnChart } from "../index";
-import { useAnimatedValue } from "../hooks";
+import { ChartBox, ChartState, KpiCard, StatementTable, VarianceColumnChart } from "../index";
+import { useAnimatedValue, useStatementBridge } from "../hooks";
+import type { StatementLine } from "../../core/types";
+import { renderHook } from "@testing-library/react";
 
 const rulesOf = (findings: ReturnType<typeof checkIbcs>) => findings.map((f) => f.rule);
 
@@ -209,6 +211,26 @@ describe("KpiCard", () => {
     expect(screen.getByText("30.1M")).toBeTruthy();
   });
 
+  it('renders percentage-point deltas for unit:"ratio" and drops the relative delta', () => {
+    // Consumer report D3: a margin KPI showed "+0.6" and "+0.9%" — the second
+    // being the relative change OF a percentage, which reads as points and
+    // misleads. Declared a ratio, the delta is "+0.6pp" and nothing else.
+    render(
+      <KpiCard
+        label="EBIT margin"
+        values={{ AC: 67.8, PY: 67.2 }}
+        unit="ratio"
+        format={{ suffix: "%", compact: false, decimals: 1 }}
+        animate={false}
+      />,
+    );
+
+    expect(document.body.textContent).toContain("+0.6pp");
+    // The relative delta (+0.9%) must be gone; the % suffix on the headline stays.
+    expect(document.body.textContent).not.toContain("+0.9%");
+    expect(document.body.textContent).toContain("67.8");
+  });
+
   it("states the format's unit once, on either side of the headline", () => {
     render(
       <>
@@ -287,5 +309,71 @@ describe("checkIbcs report table blocks", () => {
 
     expect(rulesOf(findings)).not.toContain("block-type");
     expect(rulesOf(findings)).not.toContain("data-present");
+  });
+});
+
+describe("ChartBox single-child form", () => {
+  it("clones the resolved size onto a lone chart element — no render-prop needed", () => {
+    // `fit="fixed"` sizes from the intrinsic props alone, so jsdom's zero-size
+    // measurements don't matter and the child renders immediately.
+    const { container } = render(
+      <ChartBox width={400} height={260} fit="fixed">
+        <VarianceColumnChart data={[{ category: "Q1", AC: 10, PY: 8 }]} />
+      </ChartBox>,
+    );
+    const svg = container.querySelector("svg");
+    expect(svg).not.toBeNull();
+    expect(svg!.getAttribute("width")).toBe("400");
+    expect(svg!.getAttribute("height")).toBe("260");
+  });
+
+  it("still supports the render-prop form unchanged", () => {
+    const { container } = render(
+      <ChartBox width={320} height={200} fit="fixed">
+        {(w, h) => <VarianceColumnChart data={[{ category: "Q1", AC: 1 }]} width={w} height={h} />}
+      </ChartBox>,
+    );
+    expect(container.querySelector("svg")!.getAttribute("width")).toBe("320");
+  });
+});
+
+describe("useStatementBridge", () => {
+  const pnl: StatementLine[] = [
+    { id: "rev", label: "Revenue", flow: "add", values: { AC: 1200, PY: 1050 } },
+    {
+      id: "cogs",
+      label: "Cost of goods",
+      flow: "subtract",
+      values: { AC: 700, PY: 650 },
+      higherIsBetter: false,
+    },
+    { id: "gm", label: "Gross margin", flow: "result", values: {} },
+  ];
+
+  it("derives data + comparisonData from one statement, structurally parallel", () => {
+    const { result } = renderHook(() => useStatementBridge(pnl, "PY"));
+    expect(result.current.data.map((d) => d.category)).toEqual(
+      result.current.comparisonData!.map((d) => d.category),
+    );
+    expect(result.current.data[0]).toMatchObject({ category: "Revenue", value: 1200 });
+    expect(result.current.comparisonData![0]).toMatchObject({ category: "Revenue", value: 1050 });
+  });
+
+  it("omits comparisonData when no comparison is asked for", () => {
+    const { result } = renderHook(() => useStatementBridge(pnl));
+    expect(result.current.data).toHaveLength(3);
+    expect(result.current.comparisonData).toBeUndefined();
+  });
+
+  it("is referentially stable across re-renders with the same inputs", () => {
+    const { result, rerender } = renderHook(
+      ({ cmp }: { cmp: "PY" | "PL" }) => useStatementBridge(pnl, cmp, { expandGroups: true }),
+      { initialProps: { cmp: "PY" as "PY" | "PL" } },
+    );
+    const first = result.current;
+    rerender({ cmp: "PY" });
+    expect(result.current).toBe(first);
+    rerender({ cmp: "PL" });
+    expect(result.current).not.toBe(first);
   });
 });

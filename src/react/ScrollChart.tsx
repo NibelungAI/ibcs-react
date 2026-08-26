@@ -1,5 +1,5 @@
 import type React from "react";
-import { ChartBox } from "./ChartBox";
+import { ChartBox, type ChartChildren } from "./ChartBox";
 
 export interface ScrollChartProps {
   /** Fixed height; the width fills the container and scrolls below `minWidth`. */
@@ -14,8 +14,8 @@ export interface ScrollChartProps {
   maxHeight?: number;
   className?: string;
   style?: React.CSSProperties;
-  /** Render-prop called with the integer px size to draw at. */
-  children: (width: number, height: number) => React.ReactNode;
+  /** The chart: a single element (sized automatically) or a render-prop. */
+  children: ChartChildren;
 }
 
 /**
@@ -27,7 +27,7 @@ export interface ScrollChartProps {
  * @example
  * ```tsx
  * <ScrollChart height={300} minWidth={680}>
- *   {(w, h) => <TrendChart width={w} height={h} data={data} />}
+ *   <TrendChart data={data} />
  * </ScrollChart>
  * ```
  */

@@ -49,6 +49,7 @@ export function KpiCard({
   comparisons = ["PY"],
   higherIsBetter = true,
   format = { compact: true, decimals: 1 },
+  unit = "absolute",
   sparkline,
   sparklineType = "area",
   tokens: tokenOverride,
@@ -100,6 +101,11 @@ export function KpiCard({
     // is the signal. The marker scales gently with magnitude (Zebra-style).
     const arrow = flat ? "→" : v.abs > 0 ? "▲" : "▼";
     const tri = primary ? Math.max(7.5, Math.min(12, 7.5 + Math.abs(v.pct ?? 0) * 9)) : 8;
+    // Ratio measures (margins, rates) move in PERCENTAGE POINTS: the delta is
+    // `+0.6pp`, and the relative change of the ratio is dropped — "+0.9%"
+    // beside "18.4%" reads as points and misleads (ISO 24896 keeps the two
+    // apart for exactly this reason).
+    const ratio = unit === "ratio";
     return (
       <span
         key={d.base}
@@ -117,8 +123,11 @@ export function KpiCard({
         <span aria-hidden style={{ fontSize: tri, lineHeight: 1, alignSelf: "center" }}>
           {arrow}
         </span>
-        <strong style={{ fontWeight: 700 }}>{formatSigned(v.abs, numberFormat)}</strong>
-        <span style={{ fontWeight: 600, opacity: 0.85 }}>{formatPercent(v.pct)}</span>
+        <strong style={{ fontWeight: 700 }}>
+          {formatSigned(v.abs, numberFormat)}
+          {ratio && <span style={{ fontWeight: 600, fontSize: "0.85em", marginLeft: 1 }}>pp</span>}
+        </strong>
+        {!ratio && <span style={{ fontWeight: 600, opacity: 0.85 }}>{formatPercent(v.pct)}</span>}
         <span style={{ color: tokens.color.textMuted, fontWeight: 500, fontSize: "0.85em" }}>
           vs {d.base}
         </span>

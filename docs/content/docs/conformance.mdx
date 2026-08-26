@@ -45,6 +45,36 @@ The linter runs at build time, not as a house-style debate. A config either
 passes the IBCS notation rules the linter implements, or it lists exactly what
 to change — by rule id and JSON path.
 
+## Lint the JSX path
+
+Most apps author charts as JSX, not JSON configs — the props are the same
+shapes minus the `type` discriminator, which the component name carries.
+`checkIbcsProps` maps the name back and runs the same rules, so a dashboard
+written the way [getting started](/docs/getting-started) teaches is lintable
+in a unit test without restructuring:
+
+```ts
+import { checkIbcsProps } from "ibcs-react";
+
+// <VarianceColumnChart data={productLines} comparison="PY" variance="abs" />
+test("the revenue chart follows IBCS notation", () => {
+  expect(
+    checkIbcsProps("VarianceColumnChart", {
+      data: productLines,
+      comparison: "PY",
+      variance: "abs",
+      title: { who: "ACME", what: "Revenue (€k)", when: "2026" },
+    }),
+  ).toEqual([]);
+});
+```
+
+Render-only props (`width`, `tokens`, `onSelect`, …) carry no rules and are
+ignored; lint-only declarations (`measureKind`) can ride along. `KpiCard`
+props already are a `KpiConfig` and lint directly. The specialised variance
+charts lint as the linear family they render — and `checkIbcsProps("PieChart", …)`
+flags the pie, exactly as it should.
+
 ## Live playground
 
 The config below deliberately breaks three rules: a `pie` (a non-linear chart

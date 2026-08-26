@@ -199,6 +199,44 @@ function MyStatement({ lines }) {
 (running totals, a shared zero baseline, collapsible groups) without the stock
 table chrome.
 
+### useStatementBridge
+
+```ts
+useStatementBridge(
+  lines: StatementLine[],
+  comparison?: ScenarioKey,
+  options?: { scenario?: ScenarioKey; expandGroups?: boolean },
+): { data: WaterfallDatum[]; comparisonData?: WaterfallDatum[] }
+```
+
+Derives a `WaterfallChart`'s `data` **and** `comparisonData` from one
+statement, so the bridge takes part in the same `comparison` toggle as every
+other chart. The siblings accept a scenario _key_ (`comparison="PY"`) while a
+bridge needs the other scenario's contributions spelled out as a dataset —
+this hook absorbs that asymmetry:
+
+```tsx
+import { useStatementBridge, WaterfallChart, VarianceColumnChart } from "ibcs-react";
+
+function Dashboard({ pnl, regions, comparison }) {
+  return (
+    <>
+      {/* every other chart */}
+      <VarianceColumnChart data={regions} comparison={comparison} />
+      {/* the bridge — same toggle, no special-case branch */}
+      <WaterfallChart {...useStatementBridge(pnl, comparison)} />
+    </>
+  );
+}
+```
+
+Both datasets come from `statementToWaterfall` with the same options, so they
+stay structurally parallel. Pass no comparison for a bare bridge; the result
+is memoized on the inputs.
+
+**When to use:** a dashboard-wide "vs PY / vs PL" switch that includes a
+bridge chart.
+
 ### useFilters
 
 ```ts

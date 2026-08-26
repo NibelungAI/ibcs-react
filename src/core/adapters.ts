@@ -106,7 +106,8 @@ function ownScenarioValues(line: StatementLine): Partial<Record<ScenarioKey, num
  * @example
  * const bars = statementToWaterfall(lines);           // AC, groups collapsed
  * const py = statementToWaterfall(lines, "PY");       // the same bridge, PY
- * <WaterfallChart data={bars} comparison={py} />
+ * <WaterfallChart data={bars} comparisonData={py} />
+ * // …or let the `useStatementBridge` hook derive both from the statement.
  */
 export function statementToWaterfall(
   lines: StatementLine[],

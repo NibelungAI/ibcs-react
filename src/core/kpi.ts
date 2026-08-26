@@ -34,10 +34,19 @@ export interface KpiConfig {
    */
   measureKind?: "cost" | "revenue";
   /**
-   * Number formatting — and the KPI's unit: `currency` for a leading symbol
-   * ("€30.1M"), `suffix` for a trailing one ("18.4%").
+   * Number formatting — and the KPI's unit symbol: `currency` for a leading
+   * one ("€30.1M"), `suffix` for a trailing one ("18.4%").
    */
   format?: FormatOptions;
+  /**
+   * What KIND of number this is. `"ratio"` declares a percentage measure — a
+   * margin, a rate, a share — whose deltas are PERCENTAGE POINTS: the card
+   * renders the absolute delta as `+0.6pp` and drops the relative delta,
+   * because "the margin grew +0.9%" next to "18.4%" invites misreading a
+   * relative change as points. Default `"absolute"` — ordinary quantities,
+   * deltas shown as value and percent.
+   */
+  unit?: "absolute" | "ratio";
   /** Optional micro-series drawn under the number. */
   sparkline?: number[];
   /** How the sparkline is drawn. Default "area" (what `<KpiCard>` renders). */

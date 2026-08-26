@@ -82,6 +82,12 @@ export const IBCS_RULES: readonly IbcsRule[] = [
     doc: "Charts of the same unit should share a value scale (and a zero baseline) so bar lengths are comparable across the report.",
   },
   {
+    id: "ratio-units",
+    title: "Percentage-point deltas for ratio measures",
+    severity: "info",
+    doc: 'A percentage MEASURE (margin, rate, share) moves in percentage points, not percent-of-percent. A KPI formatted with suffix "%" should declare unit:"ratio" so its delta renders as +0.6pp instead of a misleading relative +0.9%.',
+  },
+  {
     id: "input-shape",
     title: "Recognizable config shape",
     severity: "info",
@@ -388,6 +394,23 @@ function checkKpi(c: Record<string, unknown>, base = ""): IbcsFinding[] {
 
   checkCostFavorability(c, typeof c.label === "string" ? c.label : "", p, out);
 
+  // A %-formatted KPI that has not been declared a ratio still shows the
+  // relative delta of a percentage — the "+0.9% next to a margin" smell.
+  if (
+    isObject(c.format) &&
+    typeof c.format.suffix === "string" &&
+    c.format.suffix.trim() === "%" &&
+    c.unit !== "ratio"
+  ) {
+    out.push({
+      rule: "ratio-units",
+      severity: "info",
+      message:
+        'KPI is formatted as a percentage but not declared unit:"ratio" — a ratio\'s delta should read as percentage points (+0.6pp), not as a relative change of the percentage.',
+      path: p("unit"),
+    });
+  }
+
   return out;
 }
 
@@ -486,6 +509,98 @@ function checkReport(r: Record<string, unknown>): IbcsFinding[] {
   }
 
   return out;
+}
+
+/* ------------------------------------------------------- component props */
+
+/**
+ * Chart components mapped to the `type` their props are linted as. Components
+ * with an exact config counterpart use it; the specialised variance charts
+ * lint as the linear family they render (their extra props simply carry no
+ * rules); `PieChart` maps to `"pie"` on purpose — linting a pie must say so.
+ */
+const COMPONENT_CHART_TYPES = {
+  VarianceColumnChart: "varianceColumn",
+  TrendChart: "trend",
+  StructureChart: "structure",
+  WaterfallChart: "waterfall",
+  StackedChart: "stacked",
+  LineChart: "line",
+  AreaChart: "area",
+  ScatterChart: "scatter",
+  BubbleChart: "bubble",
+  ComboChart: "combo",
+  TreeChart: "tree",
+  PieChart: "pie",
+  GroupedVarianceChart: "column",
+  IntegratedVarianceChart: "column",
+  RankingVarianceChart: "bar",
+  ColumnVarianceWaterfallChart: "waterfall",
+  BarVarianceWaterfallChart: "waterfall",
+  HorizontalWaterfallChart: "waterfall",
+  RatioTreeChart: "tree",
+} as const;
+
+/** Component names {@link checkIbcsProps} knows the notation rules for. */
+export type LintableComponentName = keyof typeof COMPONENT_CHART_TYPES | "KpiCard";
+
+const LINTABLE_LIST = [...Object.keys(COMPONENT_CHART_TYPES), "KpiCard"].join(", ");
+
+/**
+ * Lint COMPONENT PROPS — the JSX authoring path — against the same IBCS rules
+ * {@link checkIbcs} runs on configs.
+ *
+ * The prop shapes of the chart components are near-identical to their config
+ * shapes; the only thing missing is the `type` discriminator, which the
+ * component name carries. This maps the name back to a type and runs the
+ * config checks, so a dashboard written as JSX can be linted in a unit test
+ * without restructuring into configs:
+ *
+ * ```ts
+ * // <VarianceColumnChart data={productLines} comparison="PY" variance="abs" />
+ * const findings = checkIbcsProps("VarianceColumnChart", {
+ *   data: productLines,
+ *   comparison: "PY",
+ *   variance: "abs",
+ * });
+ * ```
+ *
+ * Extra, render-only props (`width`, `tokens`, `onSelect`, …) carry no rules
+ * and are ignored. Lint-only declarations (`measureKind`) may be added to the
+ * linted object even though the component does not render them. `KpiCard`
+ * props already ARE a `KpiConfig`, so they lint directly. Unknown component
+ * names return a single `input-shape` info naming the lintable components —
+ * pure logic, zero React, same contract as {@link checkIbcs}.
+ */
+export function checkIbcsProps(
+  component: LintableComponentName | (string & {}),
+  props: Record<string, unknown> | unknown,
+): IbcsFinding[] {
+  if (!isObject(props)) {
+    return [
+      {
+        rule: "input-shape",
+        severity: "info",
+        message: "props must be an object — nothing to check.",
+      },
+    ];
+  }
+
+  if (component === "KpiCard") return checkKpi(props);
+
+  const type = (COMPONENT_CHART_TYPES as Record<string, string>)[component];
+  if (type === undefined) {
+    return [
+      {
+        rule: "input-shape",
+        severity: "info",
+        message: `no notation rules for component "${component}" — lintable components: ${LINTABLE_LIST}.`,
+      },
+    ];
+  }
+
+  // The component name wins over any stray `type` prop — the JSX said what it is.
+  return checkChart({ ...props, type });
 }
 
 /* ----------------------------------------------------------------- public */

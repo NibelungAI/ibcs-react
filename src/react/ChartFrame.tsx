@@ -1,4 +1,5 @@
 import type React from "react";
+import { renderChartChild, type ChartChildren } from "./ChartBox";
 import { useElementSize } from "./hooks/useElementSize";
 
 /** How the chart fills its frame. `fill` stretches to the box; `contain` keeps
@@ -33,8 +34,8 @@ export interface ChartFrameProps {
   background?: string;
   className?: string;
   style?: React.CSSProperties;
-  /** Render-prop: given the integer px size to draw at, return the chart. */
-  children: (width: number, height: number) => React.ReactNode;
+  /** The chart: a single element (sized automatically) or a render-prop. */
+  children: ChartChildren;
 }
 
 const AX = { left: 0, center: 0.5, right: 1 } as const;
@@ -142,7 +143,7 @@ export function ChartFrame({
             height: h,
           }}
         >
-          {children(w, h)}
+          {renderChartChild(children, w, h)}
         </div>
       )}
     </div>

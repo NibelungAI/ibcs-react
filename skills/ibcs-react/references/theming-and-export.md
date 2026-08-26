@@ -89,8 +89,10 @@ measured, so a chart never gets `0` / `NaN`.
 
 ```tsx
 <ChartBox width={760} height={300} fit="scale" minWidth={680}>
-  {(w, h) => <TrendChart width={w} height={h} data={monthly} />}
+  <TrendChart data={monthly} />
 </ChartBox>
+// A single chart child gets the resolved width/height cloned onto it; the
+// render-prop form `{(w, h) => …}` remains when you need the numbers.
 ```
 
 - `ChartBox` — **the one to reach for**. `fit`: `"scale"` (default: fill the

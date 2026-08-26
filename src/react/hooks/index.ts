@@ -12,6 +12,9 @@ export type { Easing, AnimateOptions } from "./useAnimation";
 export { useStatement } from "./useStatement";
 export type { UseStatementOptions, UseStatementResult } from "./useStatement";
 
+export { useStatementBridge } from "./useStatementBridge";
+export type { StatementBridge, UseStatementBridgeOptions } from "./useStatementBridge";
+
 export { useFilters } from "./useFilters";
 export type { UseFiltersResult } from "./useFilters";
 

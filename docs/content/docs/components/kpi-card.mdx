@@ -125,6 +125,52 @@ Users with `prefers-reduced-motion` set never see the count-up either way:
 the default consults the OS preference and renders the final value
 immediately, and SSR always emits the finished figure.
 
+## Ratio measures: percentage-point deltas
+
+A percentage MEASURE — a margin, a rate, a share — moves in percentage
+points. Declare it with `unit="ratio"` and the delta renders as `+0.6pp`,
+while the relative delta is dropped: "+0.9%" beside "18.4%" invites reading
+a relative change as points, the exact confusion ISO 24896 separates the two
+notations to prevent.
+
+<Frame center>
+  <div
+    style={{
+      display: "grid",
+      gridTemplateColumns: "repeat(auto-fit, minmax(190px, 1fr))",
+      gap: 12,
+      width: "100%",
+      maxWidth: 460,
+    }}
+  >
+    <KpiCard
+      label="EBIT margin"
+      values={{ AC: 18.4, PY: 17.1 }}
+      unit="ratio"
+      format={{ suffix: "%", compact: false, decimals: 1 }}
+    />
+    <KpiCard
+      label="Churn rate"
+      values={{ AC: 3.1, PY: 3.4 }}
+      unit="ratio"
+      higherIsBetter={false}
+      format={{ suffix: "%", compact: false, decimals: 1 }}
+    />
+  </div>
+</Frame>
+
+```tsx
+<KpiCard
+  label="EBIT margin"
+  values={{ AC: 18.4, PY: 17.1 }}
+  unit="ratio" // deltas in percentage points: +1.3pp, no relative %
+  format={{ suffix: "%", compact: false, decimals: 1 }}
+/>
+```
+
+The linter pairs with it: `checkIbcs` emits a `ratio-units` info for a KPI
+formatted with `suffix: "%"` that has not been declared a ratio.
+
 ## Props
 
 <AutoTypeTable path="../src/react/KpiCard.tsx" name="KpiCardProps" />

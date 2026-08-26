@@ -193,8 +193,8 @@ export type {
 } from "./comparisonTable";
 
 /* ./conformance — the IBCS / ISO 24896 rule set and linter */
-export { checkIbcs, IBCS_RULES } from "./conformance";
-export type { IbcsFinding, IbcsRule } from "./conformance";
+export { checkIbcs, checkIbcsProps, IBCS_RULES } from "./conformance";
+export type { IbcsFinding, IbcsRule, LintableComponentName } from "./conformance";
 
 /* ./stacked — stacked column layout */
 export { computeStacked } from "./stacked";

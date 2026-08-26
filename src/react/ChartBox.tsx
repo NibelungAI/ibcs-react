@@ -1,5 +1,35 @@
 import type React from "react";
+import { cloneElement } from "react";
 import { useElementSize } from "./hooks/useElementSize";
+
+/**
+ * What the sizing wrappers accept as their child: a render-prop called with
+ * the resolved integer px size, or — the common case — a SINGLE chart element
+ * that gets `width`/`height` cloned onto it:
+ *
+ * ```tsx
+ * <ChartBox width={620} height={340}>
+ *   <VarianceColumnChart data={data} />
+ * </ChartBox>
+ * ```
+ *
+ * The render-prop form remains for charts whose size props are named
+ * differently or that need the numbers for something else.
+ */
+export type ChartChildren =
+  | ((width: number, height: number) => React.ReactNode)
+  | React.ReactElement<{ width?: number; height?: number }>;
+
+/** Resolve {@link ChartChildren} at a size: call the render-prop, or clone the element. */
+export function renderChartChild(
+  children: ChartChildren,
+  width: number,
+  height: number,
+): React.ReactNode {
+  return typeof children === "function"
+    ? children(width, height)
+    : cloneElement(children, { width, height });
+}
 
 /**
  * How a chart maps to the space it's given — the chart equivalent of an
@@ -42,8 +72,11 @@ export interface ChartBoxProps {
   background?: string;
   className?: string;
   style?: React.CSSProperties;
-  /** Render-prop: draw the chart at exactly this integer px size. */
-  children: (width: number, height: number) => React.ReactNode;
+  /**
+   * The chart to size: a single element (given `width`/`height` automatically)
+   * or a render-prop `(w, h) => …` — see {@link ChartChildren}.
+   */
+  children: ChartChildren;
 }
 
 const JX = { left: "flex-start", center: "center", right: "flex-end" } as const;
@@ -66,6 +99,11 @@ function sides(p: ChartBoxProps["padding"]) {
  * ```tsx
  * // Scale with the space, but hold a readable 680px and scroll on a phone.
  * <ChartBox width={760} height={300} fit="scale" minWidth={680}>
+ *   <TrendChart data={data} />
+ * </ChartBox>
+ *
+ * // Render-prop form, when the numbers are needed directly:
+ * <ChartBox width={760} height={300}>
  *   {(w, h) => <TrendChart width={w} height={h} data={data} />}
  * </ChartBox>
  * ```
@@ -158,7 +196,11 @@ export function ChartBox({
 
   return (
     <div ref={ref} className={className} style={outer}>
-      {ready && <div style={{ flex: "0 0 auto", width: w, height: h }}>{children(w, h)}</div>}
+      {ready && (
+        <div style={{ flex: "0 0 auto", width: w, height: h }}>
+          {renderChartChild(children, w, h)}
+        </div>
+      )}
     </div>
   );
 }

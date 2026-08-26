@@ -294,13 +294,20 @@ Switch the mode and resize the window to feel each:
 import { ChartBox, TrendChart } from "ibcs-react";
 
 // fit works like an image's object-fit: "scale" | "contain" | "fixed" | "fill"
+// A single chart child gets the resolved width/height cloned onto it:
 <ChartBox width={760} height={300} fit="scale" minWidth={680} align="center">
+  <TrendChart data={trend} />
+</ChartBox>;
+
+// The render-prop form remains for when you need the numbers yourself:
+<ChartBox width={760} height={300}>
   {(w, h) => <TrendChart width={w} height={h} data={trend} />}
 </ChartBox>;
 ```
 
 `align`, `verticalAlign`, `padding`, `background` and `scroll` place the chart
-inside the box; the render-prop child receives whole pixels, never `0` or `NaN`.
+inside the box; the child receives whole pixels, never `0` or `NaN`. The same
+two child forms work in `ScrollChart`, `ResponsiveChart` and `ChartFrame`.
 
 ### ScrollChart, ResponsiveChart and ChartFrame
 
