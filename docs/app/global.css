@@ -2,13 +2,52 @@
 @import "fumadocs-ui/css/neutral.css";
 @import "fumadocs-ui/css/preset.css";
 
+/* IBM Plex everywhere — the next/font variables are set on <html> in
+   app/layout.tsx; map them onto Tailwind's font tokens so every font-sans /
+   font-mono utility (fumadocs included) resolves to Plex. */
+@theme {
+  --font-sans: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, "SFMono-Regular", monospace;
+}
+
+body {
+  font-family: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
 /* iOS hardening (salvaged from the original site): keep text at its intended
    size on orientation change, kill the grey tap flash, and reserve the
    scrollbar gutter so overlays never shift the centered layout sideways. */
 html {
   -webkit-text-size-adjust: 100%;
   scrollbar-gutter: stable;
+  /* Full-bleed sections use w-screen (100vw includes the scrollbar gutter);
+     clip the few overflowing pixels instead of growing a horizontal scrollbar. */
+  overflow-x: clip;
 }
 * {
   -webkit-tap-highlight-color: transparent;
+}
+
+/* "Get it" ledger (components/get-it.tsx) — IBCS ink palette, light + dark.
+   Lives here (not an inline <style>) so browser dark-mode extensions cannot
+   create hydration mismatches by touching a rendered style element. */
+.gi {
+  --ink: #2b2b29;
+  --dim: #6b6a64;
+  --ac: #54534e;
+  --py: #bdbcb6;
+  --onac: #fff;
+  --axis: #c9c8c2;
+  --good: #3f8f4f;
+  --bad: #cf3a3a;
+}
+.dark .gi {
+  --ink: #e8e8e4;
+  --dim: #a0a09a;
+  --ac: #d7d7d2;
+  --py: #7e7e78;
+  --onac: #1c1c1a;
+  --axis: #55554f;
+  --good: #4cc66a;
+  --bad: #f25555;
 }

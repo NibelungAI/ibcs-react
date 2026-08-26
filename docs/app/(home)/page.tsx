@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { HeroChart } from "@/components/demos/hero-chart";
-import { InstallTabs } from "@/components/install-tabs";
+import { GetIt } from "@/components/get-it";
 
 export const metadata: Metadata = {
   description:
@@ -36,9 +36,7 @@ export default function HomePage() {
       <div className="mt-12 w-full overflow-x-auto rounded-xl border bg-white p-6">
         <HeroChart />
       </div>
-      <div className="mt-8 w-full text-left">
-        <InstallTabs />
-      </div>
+      <GetIt />
     </main>
   );
 }

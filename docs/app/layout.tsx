@@ -1,7 +1,21 @@
 import "./global.css";
 import { RootProvider } from "fumadocs-ui/provider/next";
+import { IBM_Plex_Mono, IBM_Plex_Sans } from "next/font/google";
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
+
+// IBM Plex — the business-reporting voice of the site. Loaded as CSS variables
+// and mapped to Tailwind's font-sans / font-mono in global.css.
+const plexSans = IBM_Plex_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-plex-sans",
+});
+const plexMono = IBM_Plex_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  variable: "--font-plex-mono",
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://ibcs-react.com"),
@@ -29,7 +43,11 @@ const HASH_REDIRECT = `(function(){var h=location.hash;if(!h||h.charAt(1)!=="/")
 
 export default function Layout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${plexSans.variable} ${plexMono.variable}`}
+    >
       <head>
         <script dangerouslySetInnerHTML={{ __html: HASH_REDIRECT }} />
       </head>
