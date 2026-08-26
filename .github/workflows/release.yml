@@ -55,9 +55,14 @@ jobs:
           # token exchange against the registry.
           registry-url: "https://registry.npmjs.org"
 
-      # Trusted publishing needs npm >= 11.5.1; Node 22 bundles npm 10.
+      # Trusted publishing needs npm >= 11.5.1; Node 22 bundles npm 10. Pinned
+      # to major 11 — NOT @latest: npm 12 changed `npm info --json` to emit an
+      # array, which breaks changesets' published-version check (it reads
+      # `.versions` off an object, gets undefined, concludes the current
+      # version is unpublished and re-publishes it — the registry then rejects
+      # with "cannot publish over previously published versions").
       - name: Update npm (OIDC publish support)
-        run: npm install -g npm@latest
+        run: npm install -g npm@11
 
       - run: npm ci
 
