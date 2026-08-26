@@ -19,11 +19,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # 20 / 22 / 24. Node 18 is EOL and cannot run the toolchain anyway
-        # (jsdom and oxfmt both declare `engines.node >= 20.19`), so an 18 leg
-        # is a false green. setup-node resolves the latest minor of each major,
-        # which satisfies >= 20.19.
-        node: [20, 22, 24]
+        # 22 / 24 — the maintained LTS lines. Node 20 went EOL in April 2026
+        # and the build toolchain (tsdown/rolldown) requires >= 22.18 — on 20
+        # it cannot even load its config (the native TS loader is missing and
+        # the `unrun` fallback isn't installed). The PACKAGE still declares
+        # `engines.node >= 18`: dist is plain transpiled JS — the matrix here
+        # gates the toolchain, not consumers. setup-node resolves the latest
+        # minor of each major, which satisfies tsdown's ^22.18.
+        node: [22, 24]
     name: verify (node ${{ matrix.node }})
     steps:
       - uses: actions/checkout@v4

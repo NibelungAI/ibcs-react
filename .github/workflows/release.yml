@@ -77,8 +77,11 @@ jobs:
         uses: changesets/action@v1
         with:
           # Bump versions + regenerate CHANGELOG.md, and keep the lockfile in
-          # sync with the new version so `npm ci` stays reproducible.
-          version: npx changeset version && npm install --package-lock-only
+          # sync with the new version so `npm ci` stays reproducible. MUST be a
+          # single command: the action execs this input without a shell, so a
+          # compound `a && b` here passes "&&" as an argument to changesets
+          # ("Too many arguments") — the shell lives inside the npm script.
+          version: npm run version-packages
           publish: npx changeset publish
           commit: "chore: version packages"
           title: "chore: version packages"

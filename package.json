@@ -91,6 +91,7 @@
     "build": "tsdown && node scripts/postbuild.mjs",
     "verify-dist": "node scripts/verify-dist.mjs",
     "verify-treeshake": "node scripts/verify-treeshake.mjs",
+    "version-packages": "changeset version && npm install --package-lock-only",
     "dev": "tsdown --watch --on-success \"node scripts/postbuild.mjs\"",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
