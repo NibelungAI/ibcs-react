@@ -26,6 +26,11 @@ name: Release
 on:
   push:
     branches: [main]
+  # Manual re-fire. A squash-merge of the bot-created "Version Packages" PR
+  # through the merge API can land on main WITHOUT emitting a workflow push
+  # event (observed on PR #1: commit on main, zero runs) — this gives the
+  # release a button for that case instead of an empty commit.
+  workflow_dispatch:
 
 concurrency:
   group: release-${{ github.ref }}
