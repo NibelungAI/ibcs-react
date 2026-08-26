@@ -7,7 +7,9 @@ import { TrendChart } from "ibcs-react";
 
 Actuals as solid columns, forecast periods hatched, prior year and plan drawn
 as reference lines over them, and a variance panel underneath. A `summary` row
-is set off as a total.
+is set off as a total — on its own terms: summaries stay out of the period
+scale, so a full-year total is drawn capped with a marked scale break and its
+value label instead of crushing the months into slivers.
 
 ## When to use
 
@@ -87,6 +89,52 @@ carry through to the percent variance panel.
 
 Reference lines follow IBCS notation: PY solid with dots, PL dashed. Drop one
 by narrowing `referenceLines`, e.g. `referenceLines={["PY"]}`.
+
+### A year plus its total
+
+Mark the total with `summary: true`. It is set off by a divider, drawn in the
+emphasis colour — and kept OFF the period scale: the total is ~12× any month,
+so on a shared axis the months would collapse to slivers. Instead the summary
+column (and its variance bar) is capped with a marked scale break, its real
+value printed above; the PY line stops at December, because a total is not a
+point in the time series. A summary in the same range as the periods (a
+monthly average, say) shares the scale and gets no break.
+
+<Frame center>
+  <TrendChart
+    data={[
+      { category: "Jan", AC: 2.1e6, PY: 1.95e6 },
+      { category: "Feb", AC: 2.16e6, PY: 2.0e6 },
+      { category: "Mar", AC: 2.22e6, PY: 2.06e6 },
+      { category: "Apr", AC: 2.28e6, PY: 2.11e6 },
+      { category: "May", AC: 2.34e6, PY: 2.17e6 },
+      { category: "Jun", AC: 2.4e6, PY: 2.22e6 },
+      { category: "Jul", AC: 2.46e6, PY: 2.28e6 },
+      { category: "Aug", AC: 2.52e6, PY: 2.33e6 },
+      { category: "Sep", AC: 2.58e6, PY: 2.39e6 },
+      { category: "Oct", AC: 2.64e6, PY: 2.44e6 },
+      { category: "Nov", FC: 2.7e6, PY: 2.5e6 },
+      { category: "Dec", FC: 2.76e6, PY: 2.55e6 },
+      { category: "FY", AC: 29.2e6, PY: 27.0e6, summary: true },
+    ]}
+    comparison="PY"
+    referenceLines={["PY"]}
+    width={680}
+    height={320}
+    format={{ compact: true, decimals: 1 }}
+  />
+</Frame>
+
+```tsx
+<TrendChart
+  data={[
+    { category: "Jan", AC: 2.1e6, PY: 1.95e6 },
+    // … through Dec (FC for the forecast tail) …
+    { category: "FY", AC: 29.2e6, PY: 27.0e6, summary: true },
+  ]}
+  comparison="PY"
+/>
+```
 
 ## Props
 

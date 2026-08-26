@@ -101,7 +101,11 @@ function segments(
  *
  * Forecast periods are hatched and a `summary` period (e.g. the full-year
  * total) is set off with a divider and the emphasis color — the canonical
- * "actual ▸ forecast ▸ total" trend layout.
+ * "actual ▸ forecast ▸ total" trend layout. Summaries do not participate in
+ * the period scale: a total that dwarfs the months is drawn capped with a
+ * MARKED scale break (and its value label) instead of crushing every other
+ * column, and the PY/PL reference lines stop before it — a total is not a
+ * point in the time series.
  *
  * A forwarded `ref` lands on the chart `<svg>` — the useful handle for export /
  * serialization — even though the component also renders a screen-reader table
@@ -192,8 +196,56 @@ export const TrendChart = forwardRef<SVGSVGElement, TrendChartProps>(function Tr
   const sumColW = Math.min(band * 0.62, 38);
 
   // Reference-line point sets (null where the period lacks the scenario).
-  const pyPts = cells.map((c, i) => (c.PY != null ? { x: cxOf(i), y: yA(c.PY) } : null));
-  const plPts = cells.map((c, i) => (c.PL != null ? { x: cxOf(i), y: yA(c.PL) } : null));
+  // Summary periods are excluded: the lines trace the run of periods, and a
+  // total is not one — connecting December to "FY" would draw a spike into a
+  // column that may not even share the scale.
+  const pyPts = cells.map((c, i) =>
+    c.PY != null && !c.summary ? { x: cxOf(i), y: yA(c.PY) } : null,
+  );
+  const plPts = cells.map((c, i) =>
+    c.PL != null && !c.summary ? { x: cxOf(i), y: yA(c.PL) } : null,
+  );
+
+  /**
+   * The classic axis-break glyph: a slanted blank band cut across a mark,
+   * edged by two thin diagonals — the IBCS-legible way to say "drawn shorter
+   * than its value; read the label". Rendered near the capped end of a column
+   * (or variance bar) whose summary value exceeds the period scale.
+   */
+  const scaleBreak = (cx: number, w: number, yMid: number, tight = false) => {
+    const x1 = cx - w / 2 - 3;
+    const x2 = cx + w / 2 + 3;
+    const slope = tight ? 2.5 : 3.5;
+    const off = tight ? 2 : 2.5;
+    return (
+      <g data-scale-break="" opacity={grow}>
+        <line
+          x1={x1}
+          y1={yMid + slope}
+          x2={x2}
+          y2={yMid - slope}
+          stroke={tokens.color.surface}
+          strokeWidth={tight ? 4 : 5}
+        />
+        <line
+          x1={x1}
+          y1={yMid + slope + off}
+          x2={x2}
+          y2={yMid - slope + off}
+          stroke={tokens.color.axis}
+          strokeWidth={1}
+        />
+        <line
+          x1={x1}
+          y1={yMid + slope - off}
+          x2={x2}
+          y2={yMid - slope - off}
+          stroke={tokens.color.axis}
+          strokeWidth={1}
+        />
+      </g>
+    );
+  };
   const toPath = (pts: Array<{ x: number; y: number }>) =>
     pts.map((p, i) => `${i === 0 ? "M" : "L"}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" ");
 
@@ -357,7 +409,11 @@ export const TrendChart = forwardRef<SVGSVGElement, TrendChartProps>(function Tr
           if (c.current == null || !datum) return null;
           const cx = cxOf(i);
           const w = c.summary ? sumColW : colW;
-          const top = yA(c.current);
+          // Off-scale summaries cap at the plot edge — the break glyph and the
+          // value label carry the magnitude; everything else follows the
+          // shared period scale.
+          const targetTop = c.offScale ? (c.current >= 0 ? plotTop : plotBottom) : y(c.current);
+          const top = zeroY + (targetTop - zeroY) * grow;
           const h = Math.abs(top - zeroY);
           const colY = c.current >= 0 ? top : zeroY;
           const fill = c.summary
@@ -374,7 +430,7 @@ export const TrendChart = forwardRef<SVGSVGElement, TrendChartProps>(function Tr
           // The visible marks of this period, in FINAL (un-animated) geometry:
           // the current-series column plus, when the panel is on, its variance
           // lane strip. The reference LINES (PY/PL) are not this period's marks.
-          const yCur = y(c.current);
+          const yCur = targetTop;
           const markRects: MarkRect[] = [
             {
               x: cx - w / 2,
@@ -417,6 +473,10 @@ export const TrendChart = forwardRef<SVGSVGElement, TrendChartProps>(function Tr
                 />
               )}
               <rect x={cx - w / 2} y={colY} width={w} height={Math.max(h, 0.5)} fill={fill} />
+              {/* Off-scale summary: the marked break, near the capped end */}
+              {c.offScale &&
+                h > 26 &&
+                scaleBreak(cx, w, c.current >= 0 ? colY + 12 : colY + h - 12)}
               {/* Forecast columns get a thin outline so the hatch reads as a bar */}
               {c.isForecast && !c.summary && (
                 <rect
@@ -519,7 +579,11 @@ export const TrendChart = forwardRef<SVGSVGElement, TrendChartProps>(function Tr
               if (!v) return null;
               const cx = cxOf(i);
               const val = variance === "pct" ? (v.pct ?? 0) : v.abs;
-              const h = (Math.abs(val) / varMax) * (varH / 2) * grow;
+              // A summary's Δ is excluded from the panel scale for the same
+              // reason its value is excluded from the period scale — cap it
+              // and mark the break; the label still states the real figure.
+              const overVar = c.summary && Math.abs(val) > varMax;
+              const h = (overVar ? 1 : Math.abs(val) / varMax) * (varH / 2) * grow;
               const color =
                 val === 0 ? tokens.color.zero : v.favorable ? tokens.color.good : tokens.color.bad;
               const up = val >= 0;
@@ -534,6 +598,9 @@ export const TrendChart = forwardRef<SVGSVGElement, TrendChartProps>(function Tr
                     height={Math.max(h, 1)}
                     fill={color}
                   />
+                  {overVar &&
+                    h > 14 &&
+                    scaleBreak(cx, w, up ? varMid - h + 8 : varMid + h - 8, true)}
                   {estTextW(label, 9) <= band - 1 && (
                     <text
                       x={clampTo(

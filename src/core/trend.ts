@@ -13,8 +13,13 @@ export interface TrendDatum extends ScenarioDatum {
   category: string;
   /**
    * Render this period as a visually separated summary (e.g. a full-year
-   * total): a small gap + a divider + the emphasis color, set off from the
-   * running months to its left.
+   * total): a divider + the emphasis color, set off from the running months
+   * to its left. Summary values are EXCLUDED from the period scale — a total
+   * ~12× the months would crush them to slivers — so a summary that exceeds
+   * the period domain is drawn capped, with a marked scale break and its
+   * value label; a same-magnitude summary (an average, say) shares the scale
+   * unchanged. Summaries are also left out of the PY/PL reference lines: a
+   * total is not a point in the time series.
    */
   summary?: boolean;
 }
@@ -31,15 +36,25 @@ export interface TrendCell extends TrendDatum {
   isForecast: boolean;
   /** `current` vs the comparison scenario (respects `higherIsBetter`). */
   variance: Variance | null;
+  /**
+   * True when this is a `summary` period whose value lies outside the period
+   * domain — the renderer draws it capped with a marked scale break instead
+   * of letting it flatten every other column.
+   */
+  offScale: boolean;
 }
 
 export interface TrendLayout {
   cells: TrendCell[];
-  /** Most negative point across all scenarios (≤ 0). Maps to the bottom region. */
+  /** Most negative point across the PERIOD scenarios (≤ 0; summaries excluded). */
   domainMin: number;
-  /** Most positive point across all scenarios (≥ 0). Maps to the top. */
+  /** Most positive point across the PERIOD scenarios (≥ 0; summaries excluded). */
   domainMax: number;
-  /** Largest |variance| in the active mode — the variance-panel half-scale. */
+  /**
+   * Largest |variance| in the active mode across the PERIOD cells — the
+   * variance-panel half-scale. Summary variances are excluded for the same
+   * reason summary values are: a full-year Δ would crush the monthly Δs.
+   */
   varMax: number;
   comparison: ScenarioKey;
   varianceMode: "abs" | "pct";
@@ -64,6 +79,13 @@ export interface ComputeTrendOptions {
  * all-negative series keeps `domainMax === 0` rather than padding the plot with
  * an unused positive half. Non-finite scenario values are treated as MISSING:
  * they never widen the domain and never produce a variance.
+ *
+ * `summary` periods (a full-year total, say) contribute to NEITHER the value
+ * domain NOR `varMax`: a total is typically an order of magnitude above the
+ * periods, and one shared linear scale would render every month a sliver —
+ * the exact failure the first consumer integration report demonstrated with
+ * twelve ~2.5M months against a 30M total. A summary outside the resulting
+ * domain is flagged `offScale`; the renderer caps it and marks the break.
  */
 export function computeTrend(data: TrendDatum[], opts: ComputeTrendOptions = {}): TrendLayout {
   const comparison = opts.comparison ?? "PY";
@@ -84,26 +106,50 @@ export function computeTrend(data: TrendDatum[], opts: ComputeTrendOptions = {})
     const current = AC ?? FC;
     const base = { AC, PY, PL, FC }[comparison];
 
-    for (const v of [AC, PY, PL, FC]) {
-      if (v != null) {
-        domainMin = Math.min(domainMin, v);
-        domainMax = Math.max(domainMax, v);
+    // Summary periods are set off visually AND scale-wise — they must not
+    // define the domain the running periods are read against.
+    if (!d.summary) {
+      for (const v of [AC, PY, PL, FC]) {
+        if (v != null) {
+          domainMin = Math.min(domainMin, v);
+          domainMax = Math.max(domainMax, v);
+        }
       }
     }
 
     const variance =
       current != null && base != null ? computeVariance(current, base, higherIsBetter) : null;
-    if (variance) {
+    if (variance && !d.summary) {
       const mag = Math.abs(varianceMode === "pct" ? (variance.pct ?? 0) : variance.abs);
       if (isFiniteNumber(mag)) varMax = Math.max(varMax, mag);
     }
 
-    return { ...d, AC, PY, PL, FC, current, isForecast: AC == null && FC != null, variance };
+    return {
+      ...d,
+      AC,
+      PY,
+      PL,
+      FC,
+      current,
+      isForecast: AC == null && FC != null,
+      variance,
+      offScale: false,
+    };
   });
+
+  const domain = normalizeDomain(domainMin, domainMax);
+
+  // Second pass, once the period domain is known: flag the summaries that
+  // fall outside it, so the renderer caps them behind a marked scale break.
+  for (const c of cells) {
+    if (c.summary && c.current != null) {
+      c.offScale = c.current > domain.domainMax || c.current < domain.domainMin;
+    }
+  }
 
   return {
     cells,
-    ...normalizeDomain(domainMin, domainMax),
+    ...domain,
     varMax: varMax || 1,
     comparison,
     varianceMode,

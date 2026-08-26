@@ -195,7 +195,10 @@ const quarterly: ColumnDatum[] = [
 // TrendChart periods. Actual periods carry AC; the forecast tail carries FC
 // (drawn hatched). PY / PL ride along as reference lines.
 interface TrendDatum extends ScenarioDatum {
-  summary?: boolean; // set off as a total, e.g. a full-year column
+  // Set off as a total (e.g. a full-year column): divider, emphasis colour,
+  // and its OWN scale treatment — a total that dwarfs the periods is drawn
+  // capped with a marked scale break instead of crushing the months.
+  summary?: boolean;
 }
 
 // StructureChart components — same `category` key as every other datum
