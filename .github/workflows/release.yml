@@ -1,16 +1,19 @@
 name: Release
 
-# Changesets release automation.
+# Changesets release automation — publishes via npm TRUSTED PUBLISHING (OIDC).
+# There is deliberately NO NPM_TOKEN secret: npm accepts publishes coming from
+# exactly this workflow file in this repo (verified via GitHub's OIDC identity)
+# and attaches provenance attestations automatically.
 #
 # SETUP (one-time, by a maintainer):
-#   1. Create an npm **automation** token with publish rights on `ibcs-react`
-#      (npmjs.com → Access Tokens → Generate → "Automation") and add it to the
-#      repo as Settings → Secrets and variables → Actions → `NPM_TOKEN`.
-#      Without that secret this workflow opens the version PR but the publish
-#      step fails with ENEEDAUTH.
+#   1. npmjs.com → package `ibcs-react` → Settings → Trusted Publisher →
+#      GitHub Actions: org `NibelungAI`, repository `ibcs-react`, workflow
+#      filename `release.yml`, no environment; allowed actions: npm publish.
+#      Recommended afterwards: Publishing access → "Require two-factor
+#      authentication and disallow tokens" — OIDC publishes keep working.
 #   2. Settings → Actions → General → Workflow permissions: allow GitHub Actions
 #      to **create and approve pull requests** (the action opens the "Version
-#      Packages" PR on your behalf).
+#      Packages" PR on your behalf; the org-level setting gates the repo one).
 #
 # HOW IT WORKS:
 #   - Every user-facing PR adds a changeset (`npx changeset`) describing the
@@ -31,6 +34,7 @@ concurrency:
 permissions:
   contents: write # commit the version bump, push tags, create the release
   pull-requests: write # open / update the "Version Packages" PR
+  id-token: write # mint the OIDC token npm exchanges for a publish credential
 
 jobs:
   release:
@@ -47,6 +51,13 @@ jobs:
         with:
           node-version: 22
           cache: npm
+          # Required for OIDC publishing — without it npm never attempts the
+          # token exchange against the registry.
+          registry-url: "https://registry.npmjs.org"
+
+      # Trusted publishing needs npm >= 11.5.1; Node 22 bundles npm 10.
+      - name: Update npm (OIDC publish support)
+        run: npm install -g npm@latest
 
       - run: npm ci
 
@@ -68,4 +79,3 @@ jobs:
           title: "chore: version packages"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
