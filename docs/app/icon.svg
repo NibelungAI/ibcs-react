@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="react-ibcs">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="ibcs-react">
   <!-- Rounded dark tile (Ocean / IBCS dark) -->
   <rect width="32" height="32" rx="7" fill="#233549"/>
   <!-- Ascending IBCS scenario columns: faded → light → solid (PY → AC) -->
