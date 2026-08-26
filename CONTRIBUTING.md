@@ -27,31 +27,37 @@ tests run, but the published package does not bundle them.
 The fastest way to work on a component is the demo app, which aliases
 `ibcs-react` straight at `src/` so edits hot-reload with no build step.
 
-| Command                | What it does                                                  |
-| ---------------------- | ------------------------------------------------------------- |
-| `npm run demo`         | Vite demo & docs app on **http://localhost:5180**             |
-| `npm run storybook`    | Storybook on :6006 for isolated component states              |
-| `npm run typecheck`    | `tsc --noEmit` — must be clean                                |
-| `npm test`             | Vitest run over the core logic                                |
-| `npm run test:watch`   | Vitest in watch mode                                          |
-| `npm run build`        | `tsup` bundle (ESM + CJS + types) + the `"use client"` stamp  |
-| `npm run verify-dist`  | Smoke-tests `dist/` the way a consumer loads it               |
-| `npm run format`       | Formats the files you changed (tracked **and** untracked)     |
-| `npm run check-format` | `oxfmt --check .` — what CI runs                              |
-| `npm run ci`           | The whole gate: typecheck → lint → test → build → verify-dist |
+| Command                    | What it does                                                                     |
+| -------------------------- | -------------------------------------------------------------------------------- |
+| `npm run demo`             | Vite demo & docs app on **http://localhost:5180**                                |
+| `npm run storybook`        | Storybook on :6006 for isolated component states                                 |
+| `npm run typecheck`        | `tsc --noEmit` — must be clean                                                   |
+| `npm test`                 | Vitest run over the core logic                                                   |
+| `npm run test:watch`       | Vitest in watch mode                                                             |
+| `npm run build`            | `tsdown` per-module build (ESM + CJS + types) + the `"use client"` stamp         |
+| `npm run verify-dist`      | Smoke-tests `dist/` the way a consumer loads it                                  |
+| `npm run verify-treeshake` | Bundles a KpiCard-only fixture against `dist/` and enforces the size budget      |
+| `npm run format`           | Formats the files you changed (tracked **and** untracked)                        |
+| `npm run check-format`     | `oxfmt --check .` — what CI runs                                                 |
+| `npm run ci`               | The whole gate: typecheck → lint → test → build → verify-dist → verify-treeshake |
 
 Before opening a PR, make sure **`npm run ci` and `npm run check-format` pass**.
 
 ### About the build output
 
-`npm run build` is `tsup` followed by `scripts/postbuild.mjs`, which prepends
-`"use client"` to the root entries (`dist/index.js`, `dist/index.cjs`) so the
-components work in a Next.js App Router server component. `dist/core/*` is left
-directive-free on purpose — `ibcs-react/core` is pure maths and must stay
-importable from a React Server Component. `scripts/verify-dist.mjs` enforces
-both halves of that rule, plus that the root and core entries still share one
-module instance (no dual-package hazard). If you touch `tsup.config.ts`, run
-`npm run build && npm run verify-dist`.
+`npm run build` is `tsdown` in **unbundle mode** — `dist/` mirrors `src/`, one
+file per module, with the barrels as pure re-exports. That per-module layout is
+what makes the library tree-shake in consumers (one imported `KpiCard` costs
+~4 KB gzip, not the whole library); `scripts/verify-treeshake.mjs` fails the
+build if that regresses. `scripts/postbuild.mjs` then prepends `"use client"`
+to the root barrels (`dist/index.js`, `dist/index.cjs`) and every module under
+`dist/react/` so the components work in a Next.js App Router server component.
+`dist/core/*` is left directive-free on purpose — `ibcs-react/core` is pure
+maths and must stay importable from a React Server Component.
+`scripts/verify-dist.mjs` enforces both halves of that rule, plus that the root
+and core entries still share one module instance (no dual-package hazard). If
+you touch `tsdown.config.ts`, run
+`npm run build && npm run verify-dist && npm run verify-treeshake`.
 
 ## Code conventions
 

@@ -49,10 +49,17 @@ jobs:
         run: npm run build
 
       # Smoke-tests the artifact consumers actually install: both formats load,
-      # the entries share one instance (no dual-package hazard) and "use client"
-      # is stamped on the root entries only.
+      # the entries share one instance (no dual-package hazard), the dist is
+      # per-module, and "use client" is stamped on the react modules only.
       - name: Verify dist
         run: npm run verify-dist
+
+      # Bundles a KpiCard-only fixture against dist the way a consumer's
+      # bundler would and fails if tree-shaking regresses (size budget +
+      # foreign-component markers). One KpiCard must cost ~4 KB gzip, not the
+      # whole library.
+      - name: Verify tree-shaking
+        run: npm run verify-treeshake
 
       # Packaging lint: exports map, file extensions, types resolution. Node
       # version independent, so one leg is enough.

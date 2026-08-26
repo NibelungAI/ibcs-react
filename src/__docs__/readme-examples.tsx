@@ -16,7 +16,7 @@
  *  - **edit this file and the README in the same commit** — if you change one,
  *    change the other;
  *  - no runtime side effects: nothing here is imported by the library, nothing
- *    is ever rendered, and it is not part of any build entry (`tsup.config.ts`
+ *    is ever rendered, and it is not part of any build entry (`tsdown.config.ts`
  *    names its entries explicitly).
  */
 

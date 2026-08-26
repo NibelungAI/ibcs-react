@@ -15,8 +15,10 @@ zero-baseline axes — with no chart wiring.
 npm install ibcs-react
 ```
 
-`ibcs-react` ships ESM + CJS with bundled types. Everything is tree-shakeable,
-so importing a single `KpiCard` pulls in only what it needs.
+`ibcs-react` ships ESM + CJS with types, built one file per module so your
+bundler drops what you don't import. The claim is enforced, not aspirational:
+CI bundles a `KpiCard`-only fixture against the published output and fails if
+it exceeds ~4 KB gzip or drags another component along.
 
 ## Peer dependencies
 

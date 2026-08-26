@@ -6,20 +6,26 @@
  * root, CJS core) and asserts the properties that silently regress:
  *
  * 1. **No dual-package hazard.** `require("ibcs-react").defaultTokens` must be
- *    the *same object* as `require("ibcs-react/core").defaultTokens`. If tsup's
- *    (experimental) CJS code splitting stops working, each entry inlines its own
- *    copy, identity checks break and the bundle doubles — this catches it.
+ *    the *same object* as `require("ibcs-react/core").defaultTokens`. Both
+ *    entries must resolve to the same per-module files; if the build ever
+ *    regresses to bundling each entry privately, identity checks break and
+ *    the bytes double — this catches it.
  * 2. **Public API is reachable** from every entry/format combination.
- * 3. **`"use client"` is stamped on the root entries only** (see
- *    `scripts/postbuild.mjs`) — `ibcs-react/core` must stay usable from React
- *    Server Components.
+ * 3. **The dist is per-module** (tsdown `unbundle`) — one file per source
+ *    module, barrels as pure re-exports. This is what makes the library
+ *    tree-shake in consumers; a regression to a single bundle would silently
+ *    re-inflate every consumer (55 KB gzip for one KpiCard, measured).
+ *    `scripts/verify-treeshake.mjs` asserts the resulting bundle size.
+ * 4. **`"use client"` is stamped on the root barrels and every react module,
+ *    and nowhere in core** (see `scripts/postbuild.mjs`) — `ibcs-react/core`
+ *    must stay usable from React Server Components.
  *
  * Exits non-zero with a list of every failure (not just the first one).
  */
 import { createRequire } from "node:module";
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync, statSync, existsSync } from "node:fs";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { dirname, join, resolve } from "node:path";
+import { dirname, join, relative, resolve } from "node:path";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const require = createRequire(join(root, "package.json"));
@@ -38,16 +44,6 @@ let passed = 0;
 function check(condition, message) {
   if (condition) passed += 1;
   else failures.push(message);
-}
-
-/** Reads a built file as UTF-8, or records a failure and returns `null`. */
-function readDist(relPath) {
-  try {
-    return readFileSync(join(root, relPath), "utf8");
-  } catch {
-    failures.push(`${relPath}: missing — did \`npm run build\` run?`);
-    return null;
-  }
 }
 
 /** Loads a CJS entry, or records a failure and returns `null`. */
@@ -92,7 +88,7 @@ checkExports("dist/core/index.cjs", cjsCore, CORE_EXPORTS);
 if (cjsRoot && cjsCore) {
   check(
     cjsRoot.defaultTokens === cjsCore.defaultTokens,
-    'dual-package hazard: require("ibcs-react").defaultTokens !== require("ibcs-react/core").defaultTokens — the CJS entries do not share a chunk (check `splitting` in tsup.config.ts)',
+    'dual-package hazard: require("ibcs-react").defaultTokens !== require("ibcs-react/core").defaultTokens — the CJS entries do not share module files (check `unbundle` in tsdown.config.ts)',
   );
 }
 
@@ -106,32 +102,77 @@ checkExports("dist/core/index.js", esmCore, CORE_EXPORTS);
 if (esmRoot && esmCore) {
   check(
     esmRoot.defaultTokens === esmCore.defaultTokens,
-    'dual-package hazard: import("ibcs-react").defaultTokens !== import("ibcs-react/core").defaultTokens — the ESM entries do not share a chunk',
+    'dual-package hazard: import("ibcs-react").defaultTokens !== import("ibcs-react/core").defaultTokens — the ESM entries do not share module files',
   );
+}
+
+// -------------------------------------------------- per-module dist structure
+// A representative module per layer must exist as its OWN file. If these turn
+// up missing, the build has regressed to a single bundle — which loads fine
+// (everything above still passes) but destroys consumer tree-shaking.
+for (const file of [
+  "dist/react/KpiCard.js",
+  "dist/react/KpiCard.cjs",
+  "dist/core/tokens.js",
+  "dist/core/tokens.cjs",
+]) {
+  check(
+    existsSync(join(root, file)),
+    `${file}: missing — the dist is no longer per-module (tsdown \`unbundle\`); consumer tree-shaking is broken`,
+  );
+}
+
+/** Recursively collect .js/.cjs files under a dist subdirectory. */
+function jsFilesUnder(dir) {
+  if (!existsSync(dir)) return [];
+  const out = [];
+  for (const name of readdirSync(dir)) {
+    const file = join(dir, name);
+    if (statSync(file).isDirectory()) out.push(...jsFilesUnder(file));
+    else if (/\.(js|cjs)$/.test(name)) out.push(file);
+  }
+  return out;
 }
 
 // ------------------------------------------------------- "use client" stamping
 const directive = /^\s*(["'])use client\1\s*;?/;
 
-for (const entry of ["dist/index.js", "dist/index.cjs"]) {
-  const source = readDist(entry);
-  if (source !== null) {
-    check(
-      directive.test(source),
-      `${entry}: must start with "use client" (see scripts/postbuild.mjs) — without it the package throws in a Next.js server component`,
-    );
-  }
-}
+const clientModules = [
+  join(root, "dist/index.js"),
+  join(root, "dist/index.cjs"),
+  ...jsFilesUnder(join(root, "dist/react")),
+];
+const unstamped = clientModules
+  .filter((file) => {
+    try {
+      return !directive.test(readFileSync(file, "utf8"));
+    } catch {
+      return true;
+    }
+  })
+  .map((file) => relative(root, file));
+check(
+  unstamped.length === 0,
+  `react modules missing a leading "use client" (see scripts/postbuild.mjs) — they throw in a Next.js server component: ${unstamped.join(", ")}`,
+);
 
-for (const entry of ["dist/core/index.js", "dist/core/index.cjs"]) {
-  const source = readDist(entry);
-  if (source !== null) {
-    check(
-      !source.includes("use client"),
-      `${entry}: must NOT contain "use client" — ibcs-react/core is pure maths and has to stay importable from a React Server Component`,
-    );
-  }
-}
+const serverModules = [
+  ...jsFilesUnder(join(root, "dist/core")),
+  ...jsFilesUnder(join(root, "dist/_virtual")),
+];
+const poisoned = serverModules
+  .filter((file) => {
+    try {
+      return readFileSync(file, "utf8").includes("use client");
+    } catch {
+      return true;
+    }
+  })
+  .map((file) => relative(root, file));
+check(
+  poisoned.length === 0,
+  `core/_virtual modules must NOT contain "use client" — ibcs-react/core is pure maths and has to stay importable from a React Server Component: ${poisoned.join(", ")}`,
+);
 
 // ------------------------------------------------------------------- report
 if (failures.length > 0) {
@@ -145,4 +186,5 @@ console.log(`verify-dist: ${passed} checks passed`);
 console.log("  - ESM + CJS, root + core entries all load");
 console.log("  - public API reachable from every entry");
 console.log("  - root and core share one instance (no dual-package hazard)");
-console.log('  - "use client" on the root entries only');
+console.log("  - dist is per-module (tree-shakeable)");
+console.log('  - "use client" on root barrels + react modules; core clean');

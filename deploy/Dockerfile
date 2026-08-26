@@ -11,7 +11,7 @@ WORKDIR /repo
 ENV NEXT_TELEMETRY_DISABLED=1
 
 # Library: install + build dist/ (what the docs app imports).
-COPY package.json package-lock.json tsconfig.json tsup.config.ts ./
+COPY package.json package-lock.json tsconfig.json tsdown.config.ts ./
 COPY scripts/ scripts/
 RUN npm ci --ignore-scripts
 COPY src/ src/

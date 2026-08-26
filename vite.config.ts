@@ -9,7 +9,7 @@ import { fileURLToPath } from "node:url";
  */
 export default defineConfig({
   plugins: [react()],
-  // The library build (tsup) owns `dist/`. Keep the demo bundle out of it so
+  // The library build (tsdown) owns `dist/`. Keep the demo bundle out of it so
   // `npm run demo:build` never clobbers the publishable package.
   build: {
     outDir: "demo-dist",
