@@ -537,12 +537,14 @@ export function validateChartConfig(value: unknown): ConfigValidation {
     if (c.sort != null && c.sort !== "desc" && c.sort !== "asc" && c.sort !== "none") {
       return { ok: false, error: 'sort must be "desc", "asc", or "none".' };
     }
-    // Rows are labelled components carrying optional scenarios; at least one
-    // scenario value must be present.
+    // Rows are named components carrying optional scenarios; at least one
+    // scenario value must be present. The name key is `category`, with the
+    // pre-1.1 `label` kept as a permanent alias — `category` wins when both
+    // are present, the same resolution the chart itself applies.
     for (let i = 0; i < c.data.length; i++) {
       const d = c.data[i] as Record<string, unknown>;
-      if (typeof d?.label !== "string") {
-        return { ok: false, error: `data[${i}].label must be a string.` };
+      if (typeof (d?.category ?? d?.label) !== "string") {
+        return { ok: false, error: `data[${i}].category must be a string.` };
       }
       const present = SCENARIOS.filter((s) => d?.[s] != null);
       for (const s of present) {
