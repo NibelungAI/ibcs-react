@@ -8,7 +8,7 @@ import {
   type EndTotalInput,
 } from "../core/columnVarianceWaterfall";
 import { formatValue, formatSigned, formatPercent, type FormatOptions } from "../core/format";
-import { useMountGrow, useChartHover } from "./hooks";
+import { useMountGrow, useDataTween, useChartHover } from "./hooks";
 import type { ChartHover } from "./hooks";
 import { markInteraction, type MarkRect } from "./internal/hover";
 import { ChartTooltip, type ChartTooltipRow } from "./ChartTooltip";
@@ -101,7 +101,7 @@ export const ColumnVarianceWaterfallChart = forwardRef<
   ColumnVarianceWaterfallChartProps
 >(function ColumnVarianceWaterfallChart(
   {
-    data,
+    data: dataProp,
     higherIsBetter = true,
     showPctPanel = true,
     clampPct = 100,
@@ -125,6 +125,7 @@ export const ColumnVarianceWaterfallChart = forwardRef<
   const hatchFc = svgSafeId(useId());
   const hatchGood = svgSafeId(useId());
   const hatchBad = svgSafeId(useId());
+  const data = useDataTween(dataProp);
   const grow = useMountGrow(700, 0, data);
   const hover = useChartHover<ColumnVarianceDatum>();
   const marks = markInteraction(hover, tooltip, onHover);

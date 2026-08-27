@@ -8,7 +8,7 @@ import {
 } from "../core/groupedVariance";
 import { bandScale, resolveBandPadding, type BandPadding } from "../core/bandScale";
 import { formatValue, formatSigned, formatPercent, type FormatOptions } from "../core/format";
-import { useMountGrow, useChartHover } from "./hooks";
+import { useMountGrow, useDataTween, useChartHover } from "./hooks";
 import type { ChartHover } from "./hooks";
 import { markInteraction, type MarkRect } from "./internal/hover";
 import { ChartTooltip, type ChartTooltipRow } from "./ChartTooltip";
@@ -106,7 +106,7 @@ export interface GroupedVarianceChartProps {
 export const GroupedVarianceChart = forwardRef<SVGSVGElement, GroupedVarianceChartProps>(
   function GroupedVarianceChart(
     {
-      data,
+      data: dataProp,
       orientation = "column",
       comparison = "PL",
       higherIsBetter = true,
@@ -133,6 +133,7 @@ export const GroupedVarianceChart = forwardRef<SVGSVGElement, GroupedVarianceCha
     const hatchCmp = svgSafeId(useId());
     const hatchGood = svgSafeId(useId());
     const hatchBad = svgSafeId(useId());
+    const data = useDataTween(dataProp);
     const grow = useMountGrow(700, 0, data);
     const hover = useChartHover<GroupedDatum>();
     const marks = markInteraction(hover, tooltip, onHover);

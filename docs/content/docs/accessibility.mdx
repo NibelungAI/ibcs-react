@@ -63,7 +63,8 @@ locked out of information.
   Variance is additionally always encoded by signed labels and IBCS
   fill/frame/hatch shapes, never by color alone.
 - Entrance animations respect `prefers-reduced-motion` and render the final
-  state immediately, with no flash.
+  state immediately, with no flash. Live data updates tween between values;
+  under reduced motion they jump straight to the new state instead.
 
 ## What remains your job
 

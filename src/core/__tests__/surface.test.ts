@@ -190,6 +190,7 @@ describe("public export surface", () => {
         "useChartHover",
         "useChartSelection",
         "useCountUp",
+        "useDataTween",
         "useElementSize",
         "useFilters",
         "useIbcsTokens",

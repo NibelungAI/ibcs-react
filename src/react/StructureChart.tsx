@@ -4,7 +4,7 @@ import type { IbcsTokensOverride } from "../core/tokens";
 import { computeStructure, type StructureDatum } from "../core/structure";
 import { bandScale, resolveBandPadding, type BandPadding } from "../core/bandScale";
 import { formatValue, formatSigned, formatPercent, type FormatOptions } from "../core/format";
-import { useMountGrow, useChartHover } from "./hooks";
+import { useMountGrow, useDataTween, useChartHover } from "./hooks";
 import type { ChartSelection, ChartHover } from "./hooks";
 import { markInteraction, type MarkRect } from "./internal/hover";
 import { ChartTooltip, type ChartTooltipRow } from "./ChartTooltip";
@@ -89,7 +89,7 @@ export interface StructureChartProps {
 export const StructureChart = forwardRef<SVGSVGElement, StructureChartProps>(
   function StructureChart(
     {
-      data,
+      data: dataProp,
       comparison = "PY",
       sort = "desc",
       higherIsBetter = true,
@@ -115,6 +115,7 @@ export const StructureChart = forwardRef<SVGSVGElement, StructureChartProps>(
     // the gutter maths and the markup below stay exactly as they were.
     const showVariance = variance !== "none";
     const tokens = useIbcsTokens(tokenOverride);
+    const data = useDataTween(dataProp);
     const grow = useMountGrow(700, 0, data);
     const hover = useChartHover<StructureDatum>();
     const marks = markInteraction(hover, tooltip, onHover);

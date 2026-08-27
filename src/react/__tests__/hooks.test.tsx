@@ -2,7 +2,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { act, cleanup, render } from "@testing-library/react";
 
-import { useMountGrow } from "../hooks/useAnimation";
+import { useDataTween, useMountGrow } from "../hooks/useAnimation";
+import { VarianceColumnChart } from "../VarianceColumnChart";
 import { useAsyncData } from "../hooks/useAsyncData";
 import { useElementSize } from "../hooks/useElementSize";
 import {
@@ -144,7 +145,7 @@ describe("useMountGrow", () => {
     expect(last(seen)).toBe(1);
   });
 
-  it("replays on a data change but not on a re-render with equal data", () => {
+  it("replays on a shape change but not on re-renders or value-only ticks", () => {
     mockMatchMedia(false);
     const seen: number[] = [];
     const Probe = makeProbe(seen);
@@ -163,10 +164,217 @@ describe("useMountGrow", () => {
     expect(seen.every((p) => p === 1)).toBe(true);
     expect(frames.size).toBe(0);
 
-    // Real data change → the entrance replays from 0.
+    // A value-only change — a live tick. Values are useDataTween's business;
+    // the entrance stays finished instead of re-growing from the baseline.
     seen.length = 0;
     rerender(<Probe data={[1, 2, 4]} tick={2} />);
+    expect(seen.every((p) => p === 1)).toBe(true);
+    expect(frames.size).toBe(0);
+
+    // A shape change — a row appended → this IS a new dataset; replay from 0.
+    seen.length = 0;
+    rerender(<Probe data={[1, 2, 4, 8]} tick={3} />);
     expect(last(seen)).toBe(0);
+  });
+});
+
+describe("useDataTween", () => {
+  type Row = { category: string; AC: number };
+
+  function makeProbe(seen: Row[][]) {
+    return function Probe({ data }: { data: Row[] }) {
+      seen.push(useDataTween(data, { duration: 1000 }));
+      return null;
+    };
+  }
+
+  it("renders the target on mount and schedules nothing", () => {
+    mockMatchMedia(false);
+    const seen: Row[][] = [];
+    const Probe = makeProbe(seen);
+    const data = [{ category: "Q1", AC: 100 }];
+
+    render(<Probe data={data} />);
+
+    expect(seen[0]).toBe(data);
+    act(() => {
+      vi.runOnlyPendingTimers();
+    });
+    expect(frames.size).toBe(0);
+  });
+
+  it("tweens numeric leaves from the previous frame to the new target", () => {
+    mockMatchMedia(false);
+    const seen: Row[][] = [];
+    const Probe = makeProbe(seen);
+
+    const { rerender } = render(<Probe data={[{ category: "Q1", AC: 100 }]} />);
+    const next = [{ category: "Q1", AC: 200 }];
+    rerender(<Probe data={next} />);
+
+    act(() => {
+      vi.runOnlyPendingTimers();
+      flushFrame(100); // t = 0 — the origin frame: exactly where the value sat
+    });
+    expect(last(seen)[0]!.AC).toBe(100);
+
+    act(() => {
+      flushFrame(600); // t = 0.5, easeOutCubic → 0.875 of the way
+    });
+    const mid = last(seen)[0]!.AC;
+    expect(mid).toBeGreaterThan(100);
+    expect(mid).toBeLessThan(200);
+
+    act(() => {
+      flushFrame(1100); // t = 1 — lands on the target identity, not a copy
+    });
+    expect(last(seen)).toBe(next);
+  });
+
+  it("retargets mid-flight from the currently displayed frame", () => {
+    mockMatchMedia(false);
+    const seen: Row[][] = [];
+    const Probe = makeProbe(seen);
+
+    const { rerender } = render(<Probe data={[{ category: "Q1", AC: 0 }]} />);
+    rerender(<Probe data={[{ category: "Q1", AC: 100 }]} />);
+    act(() => {
+      vi.runOnlyPendingTimers();
+      flushFrame(100);
+      flushFrame(600); // halfway (eased): well above 0
+    });
+    const displayed = last(seen)[0]!.AC;
+    expect(displayed).toBeGreaterThan(50);
+
+    // New target arrives mid-tween: the value walks back from where it IS —
+    // never snapping, never restarting from the old origin.
+    rerender(<Probe data={[{ category: "Q1", AC: 0 }]} />);
+    act(() => {
+      vi.runOnlyPendingTimers();
+      flushFrame(700); // t = 0 of the second tween → the frozen origin frame
+    });
+    expect(last(seen)[0]!.AC).toBeCloseTo(displayed, 10);
+
+    act(() => {
+      flushFrame(1800);
+    });
+    expect(last(seen)[0]!.AC).toBe(0);
+  });
+
+  it("jumps on a shape change — that is the entrance's job, not a morph", () => {
+    mockMatchMedia(false);
+    const seen: Row[][] = [];
+    const Probe = makeProbe(seen);
+
+    const { rerender } = render(<Probe data={[{ category: "Q1", AC: 100 }]} />);
+    const next = [
+      { category: "Q1", AC: 100 },
+      { category: "Q2", AC: 50 },
+    ];
+    rerender(<Probe data={next} />);
+    act(() => {
+      vi.runOnlyPendingTimers();
+    });
+    expect(last(seen)).toBe(next);
+    expect(frames.size).toBe(0);
+
+    // Same length but a renamed category — still a different dataset.
+    const renamed = [
+      { category: "Q1", AC: 100 },
+      { category: "Q3", AC: 50 },
+    ];
+    rerender(<Probe data={renamed} />);
+    act(() => {
+      vi.runOnlyPendingTimers();
+    });
+    expect(last(seen)).toBe(renamed);
+    expect(frames.size).toBe(0);
+  });
+
+  it("treats an equal-content new identity as nothing to do", () => {
+    mockMatchMedia(false);
+    const seen: Row[][] = [];
+    const Probe = makeProbe(seen);
+
+    const { rerender } = render(<Probe data={[{ category: "Q1", AC: 100 }]} />);
+    rerender(<Probe data={[{ category: "Q1", AC: 100 }]} />);
+    act(() => {
+      vi.runOnlyPendingTimers();
+    });
+    expect(frames.size).toBe(0);
+  });
+
+  it("jumps straight to the target under reduced motion", () => {
+    mockMatchMedia(true);
+    const seen: Row[][] = [];
+    const Probe = makeProbe(seen);
+
+    const { rerender } = render(<Probe data={[{ category: "Q1", AC: 100 }]} />);
+    const next = [{ category: "Q1", AC: 200 }];
+    rerender(<Probe data={next} />);
+    act(() => {
+      vi.runOnlyPendingTimers();
+    });
+    expect(last(seen)).toBe(next);
+    expect(frames.size).toBe(0);
+  });
+});
+
+describe("charts on a live feed", () => {
+  it("glides between ticks instead of re-entering from zero", () => {
+    mockMatchMedia(false);
+    const heights = (el: HTMLElement): number[] =>
+      [...el.querySelectorAll("rect")]
+        .map((r) => Number.parseFloat(r.getAttribute("height") ?? "0"))
+        .filter((h) => Number.isFinite(h) && h > 0);
+
+    const { container, rerender } = render(
+      <VarianceColumnChart
+        data={[
+          { category: "Q1", AC: 100, PY: 90 },
+          { category: "Q2", AC: 120, PY: 110 },
+        ]}
+        comparison="PY"
+        width={400}
+        height={260}
+      />,
+    );
+    act(() => {
+      vi.runOnlyPendingTimers();
+      flushFrame(100);
+      flushFrame(2000); // entrance done
+    });
+    const settled = Math.max(...heights(container));
+
+    // A live tick: same quarters, new values.
+    rerender(
+      <VarianceColumnChart
+        data={[
+          { category: "Q1", AC: 110, PY: 90 },
+          { category: "Q2", AC: 130, PY: 110 },
+        ]}
+        comparison="PY"
+        width={400}
+        height={260}
+      />,
+    );
+    act(() => {
+      vi.runOnlyPendingTimers();
+      flushFrame(2100); // t = 0 of the tween — the continuity frame
+    });
+    // The tallest column still stands at (essentially) its previous height and
+    // the old figures are still the ones on screen — an entrance replay would
+    // have collapsed every rect toward 0.
+    const firstFrame = Math.max(...heights(container));
+    expect(firstFrame).toBeGreaterThan(settled * 0.9);
+    expect(container.textContent).toContain("120");
+
+    act(() => {
+      flushFrame(3200); // tween finished — the new values are on screen
+    });
+    expect(container.textContent).toContain("130");
+    // The scale absorbs the growth: the tallest column ends where it began.
+    expect(Math.max(...heights(container))).toBeCloseTo(settled, 0);
   });
 });
 

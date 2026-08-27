@@ -4,7 +4,7 @@ import type { IbcsTokensOverride } from "../core/tokens";
 import { computeTrend, type TrendDatum } from "../core/trend";
 import { bandScale, resolveBandPadding, type BandPadding } from "../core/bandScale";
 import { formatValue, formatSigned, formatPercent, type FormatOptions } from "../core/format";
-import { useMountGrow, useChartHover } from "./hooks";
+import { useMountGrow, useDataTween, useChartHover } from "./hooks";
 import type { ChartSelection, ChartHover } from "./hooks";
 import { markInteraction, type MarkRect } from "./internal/hover";
 import { ChartTooltip, type ChartTooltipRow } from "./ChartTooltip";
@@ -113,7 +113,7 @@ function segments(
  */
 export const TrendChart = forwardRef<SVGSVGElement, TrendChartProps>(function TrendChart(
   {
-    data,
+    data: dataProp,
     comparison = "PY",
     higherIsBetter = true,
     variance = "abs",
@@ -135,6 +135,7 @@ export const TrendChart = forwardRef<SVGSVGElement, TrendChartProps>(function Tr
 ) {
   const tokens = useIbcsTokens(tokenOverride);
   const hatchId = svgSafeId(useId());
+  const data = useDataTween(dataProp);
   const grow = useMountGrow(700, 0, data);
   const hover = useChartHover<TrendDatum>();
   const marks = markInteraction(hover, tooltip, onHover);

@@ -3,7 +3,7 @@ import type { ScenarioKey } from "../core/types";
 import type { IbcsTokensOverride } from "../core/tokens";
 import { computeBridge, rowBands, type WaterfallDatum } from "../core/horizontalWaterfall";
 import { formatValue, formatSigned, type FormatOptions } from "../core/format";
-import { useMountGrow, useChartHover } from "./hooks";
+import { useMountGrow, useDataTween, useChartHover } from "./hooks";
 import type { ChartHover } from "./hooks";
 import { markInteraction, type MarkRect } from "./internal/hover";
 import { ChartTooltip, type ChartTooltipRow } from "./ChartTooltip";
@@ -94,9 +94,9 @@ const SCENARIO_LABEL: Record<ScenarioKey, string> = {
 export const HorizontalWaterfallChart = forwardRef<SVGSVGElement, HorizontalWaterfallChartProps>(
   function HorizontalWaterfallChart(
     {
-      data,
+      data: dataProp,
       scenario = "AC",
-      comparisonData,
+      comparisonData: comparisonDataProp,
       higherIsBetter = true,
       showValueLabels = true,
       mark = "bar",
@@ -114,6 +114,8 @@ export const HorizontalWaterfallChart = forwardRef<SVGSVGElement, HorizontalWate
     ref,
   ) {
     const tokens = useIbcsTokens(tokenOverride);
+    const data = useDataTween(dataProp);
+    const comparisonData = useDataTween(comparisonDataProp);
     const grow = useMountGrow(700, 0, data);
     const hover = useChartHover<WaterfallDatum>();
     const marks = markInteraction(hover, tooltip, onHover);

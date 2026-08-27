@@ -8,7 +8,7 @@ import {
 } from "../core/ratioTree";
 import { computeVariance } from "../core/variance";
 import { formatValue, formatSigned, formatPercent, type FormatOptions } from "../core/format";
-import { useMountGrow, useChartHover } from "./hooks";
+import { useMountGrow, useDataTween, useChartHover } from "./hooks";
 import type { ChartHover } from "./hooks";
 import { markInteraction } from "./internal/hover";
 import { ChartTooltip, type ChartTooltipRow } from "./ChartTooltip";
@@ -118,7 +118,7 @@ export interface RatioTreeChartProps {
 export const RatioTreeChart = forwardRef<SVGSVGElement, RatioTreeChartProps>(
   function RatioTreeChart(
     {
-      root,
+      root: rootProp,
       orientation = "horizontal",
       miniChart = "column",
       width = 880,
@@ -140,7 +140,8 @@ export const RatioTreeChart = forwardRef<SVGSVGElement, RatioTreeChartProps>(
     const hover = useChartHover<RatioLayoutNode>();
     const marks = markInteraction(hover, tooltip, onHover);
     const hoverEnabled = marks.enabled;
-    // Columns/lines grow on mount and replay on a data change.
+    // Value ticks tween; the entrance replays only on a shape change.
+    const root = useDataTween(rootProp);
     const grow = useMountGrow(550, 0, root);
 
     const layout = useMemo(() => computeRatioTree(root, { orientation }), [root, orientation]);

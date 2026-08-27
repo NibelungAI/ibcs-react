@@ -4,7 +4,7 @@ import type { IbcsTokensOverride } from "../core/tokens";
 import { computeLines, type LineDatum, type LinePoint } from "../core/lineArea";
 import { bandScale, resolveBandPadding, type BandPadding } from "../core/bandScale";
 import { formatValue, type FormatOptions } from "../core/format";
-import { useMountGrow } from "./hooks";
+import { useMountGrow, useDataTween } from "./hooks";
 import { MARKER_DENSITY_THRESHOLD } from "./LineChart";
 import { ChartDataTable, type ChartDataRow } from "./a11y";
 import { useIbcsTokens } from "./theme";
@@ -133,7 +133,7 @@ function fitText(s: string, maxPx: number, fontSize: number): string {
  */
 export const AreaChart = forwardRef<SVGSVGElement, AreaChartProps>(function AreaChart(
   {
-    data,
+    data: dataProp,
     scenario = "AC",
     baseline = "PY",
     showMarkers,
@@ -149,6 +149,7 @@ export const AreaChart = forwardRef<SVGSVGElement, AreaChartProps>(function Area
   ref,
 ) {
   const tokens = useIbcsTokens(tokenOverride);
+  const data = useDataTween(dataProp);
   const grow = useMountGrow(700, 0, data);
 
   // Draw just the area scenario and (optionally) the baseline reference.

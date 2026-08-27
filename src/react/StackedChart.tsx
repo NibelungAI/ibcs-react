@@ -3,7 +3,7 @@ import type { IbcsTokens, IbcsTokensOverride } from "../core/tokens";
 import { computeStacked, type StackedDatum, type StackedSeries } from "../core/stacked";
 import { bandScale, resolveBandPadding, type BandPadding } from "../core/bandScale";
 import { formatValue, type FormatOptions } from "../core/format";
-import { useMountGrow, useChartHover } from "./hooks";
+import { useMountGrow, useDataTween, useChartHover } from "./hooks";
 import type { ChartSelection, ChartHover } from "./hooks";
 import { markInteraction, type MarkRect } from "./internal/hover";
 import { ChartTooltip, type ChartTooltipRow } from "./ChartTooltip";
@@ -178,7 +178,7 @@ function fitText(s: string, maxPx: number, fontSize: number): string {
  */
 export const StackedChart = forwardRef<SVGSVGElement, StackedChartProps>(function StackedChart(
   {
-    data,
+    data: dataProp,
     series,
     orientation = "column",
     width = 640,
@@ -198,6 +198,7 @@ export const StackedChart = forwardRef<SVGSVGElement, StackedChartProps>(functio
   ref,
 ) {
   const tokens = useIbcsTokens(tokenOverride);
+  const data = useDataTween(dataProp);
   const grow = useMountGrow(700, 0, data);
   const hover = useChartHover<StackedDatum>();
   const marks = markInteraction(hover, tooltip, onHover);

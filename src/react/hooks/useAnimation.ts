@@ -102,6 +102,13 @@ const cap = (s: string): string =>
  * would replay the entrance on every parent render whenever the caller passes
  * an inline literal (`data={[{...}]}`), which is the common case.
  *
+ * Numbers are erased from the fingerprint: a live feed re-emitting the same
+ * rows with jittered values is the SAME dataset — those updates tween via
+ * {@link useDataTween}, they don't re-enter from the baseline. What replays
+ * the entrance is a change of *shape*: rows added or removed, categories
+ * renamed, keys appearing. (A primitive key passed directly is kept verbatim —
+ * whoever keys an entrance on a number wants changes to replay it.)
+ *
  * Arrays are fingerprinted by `length | first | last` — O(1) regardless of size.
  * A change buried in the middle of a same-length array therefore does *not*
  * replay the entrance; that is the deliberate trade for not stringifying every
@@ -125,17 +132,26 @@ function signatureOf(key: unknown): string {
 // to state, and the reason layout modules return fresh objects.
 const signatureCache = new WeakMap<object, string>();
 
+/** JSON replacer that flattens every number to 0 — see {@link signatureOf}. */
+const eraseNumbers = (_key: string, value: unknown): unknown =>
+  typeof value === "number" ? 0 : value;
+
 function fingerprint(key: object): string {
   if (Array.isArray(key)) {
     try {
-      return cap(`${key.length}|${JSON.stringify(key[0])}|${JSON.stringify(key[key.length - 1])}`);
+      return cap(
+        `${key.length}|${JSON.stringify(key[0], eraseNumbers)}|${JSON.stringify(
+          key[key.length - 1],
+          eraseNumbers,
+        )}`,
+      );
     } catch {
       // Cyclic or non-serializable entries — fall back to the cheapest signal.
       return `${key.length}`;
     }
   }
   try {
-    const json = JSON.stringify(key);
+    const json = JSON.stringify(key, eraseNumbers);
     return json === undefined ? "obj" : cap(json);
   } catch {
     return "obj";
@@ -154,10 +170,12 @@ function fingerprint(key: object): string {
  * user) simply keeps the finished frame.
  *
  * Pass `key` as the value that identifies the data. The entrance replays on a
- * real **data change** but no longer on mere re-renders with equal data — the
- * key is reduced to a cheap structural signature (see {@link signatureOf}), so
- * an inline `data={[…]}` literal no longer restarts the animation every time
- * the parent renders.
+ * **shape change** — rows added or removed, categories renamed — but not on
+ * mere re-renders with equal data and not on value-only updates: the key is
+ * reduced to a cheap structural signature with numbers erased (see
+ * {@link signatureOf}), so an inline `data={[…]}` literal never restarts the
+ * animation and a live feed's jittered values tween (via {@link useDataTween})
+ * instead of re-growing from the baseline.
  *
  * Reduced motion, `duration <= 0`, or an environment without
  * `requestAnimationFrame` → stays at 1, with no frame loop at all.
@@ -281,4 +299,147 @@ export function useAnimatedValue(target: number, opts: AnimateOptions = {}): num
  */
 export function useCountUp(target: number, opts?: AnimateOptions): number {
   return useAnimatedValue(target, opts);
+}
+
+/** How two data snapshots relate for {@link useDataTween}. */
+type TweenRelation = "equal" | "tween" | "jump";
+
+const isRecord = (v: unknown): v is Record<string, unknown> =>
+  typeof v === "object" && v !== null && !Array.isArray(v);
+
+/**
+ * Walk two snapshots in lockstep. "equal" — nothing moved; "tween" — same
+ * shape, only finite numbers differ (interpolable); "jump" — different shape
+ * (length, keys, or any non-numeric leaf), or a non-finite number appeared or
+ * vanished, which in this library's vocabulary means data went missing.
+ */
+function relate(a: unknown, b: unknown): TweenRelation {
+  if (a === b) return "equal";
+  if (typeof a === "number" && typeof b === "number") {
+    return Number.isFinite(a) && Number.isFinite(b) ? "tween" : "jump";
+  }
+  if (Array.isArray(a) && Array.isArray(b)) {
+    if (a.length !== b.length) return "jump";
+    let out: TweenRelation = "equal";
+    for (let i = 0; i < a.length; i++) {
+      const r = relate(a[i], b[i]);
+      if (r === "jump") return "jump";
+      if (r === "tween") out = "tween";
+    }
+    return out;
+  }
+  if (isRecord(a) && isRecord(b)) {
+    const keys = Object.keys(a);
+    if (keys.length !== Object.keys(b).length) return "jump";
+    let out: TweenRelation = "equal";
+    for (const k of keys) {
+      if (!Object.prototype.hasOwnProperty.call(b, k)) return "jump";
+      const r = relate(a[k], b[k]);
+      if (r === "jump") return "jump";
+      if (r === "tween") out = "tween";
+    }
+    return out;
+  }
+  return "jump";
+}
+
+/** Interpolate every numeric leaf `a → b` at eased progress `t`; everything else is `b`'s. */
+function interpolateSnapshot(a: unknown, b: unknown, t: number): unknown {
+  if (typeof a === "number" && typeof b === "number") return a + (b - a) * t;
+  if (Array.isArray(a) && Array.isArray(b)) {
+    return b.map((bv, i) => interpolateSnapshot(a[i], bv, t));
+  }
+  if (isRecord(a) && isRecord(b)) {
+    const out: Record<string, unknown> = {};
+    for (const k of Object.keys(b)) out[k] = interpolateSnapshot(a[k], b[k], t);
+    return out;
+  }
+  return b;
+}
+
+/**
+ * Tween a whole data structure toward `target`: every numeric leaf animates
+ * from where it currently sits to its new value, everything else switches
+ * instantly. This is what makes a chart fed by a live feed glide — the layout
+ * is recomputed from the interpolated rows each frame, so bars move from their
+ * previous height, scales stretch smoothly, and variance pins slide.
+ *
+ * Semantics, in the order they apply:
+ * - **First render (and SSR)** shows `target` — markup is always finished
+ *   geometry; the mount entrance belongs to {@link useMountGrow}.
+ * - **Same shape, different numbers** → interpolate over `duration`.
+ *   Retargeting mid-flight continues from the currently displayed frame.
+ * - **Different shape** (rows added/removed, categories renamed, values
+ *   appearing/disappearing) → jump: that is a NEW dataset, and the entrance
+ *   replays for it (its skeleton signature changed too).
+ * - **Reduced motion, `duration <= 0`, or no `requestAnimationFrame`** → jump.
+ *
+ * ```tsx
+ * const live = useDataTween(data);
+ * const layout = useMemo(() => computeStructure(live, opts), [live, opts]);
+ * ```
+ */
+export function useDataTween<T>(target: T, opts: Omit<AnimateOptions, "from"> = {}): T {
+  const { duration = 600, easing = easeOutCubic, delay = 0 } = opts;
+  const reduced = usePrefersReducedMotion();
+  const [value, setValue] = useState(target);
+  const valueRef = useRef(target);
+  const mountedRef = useRef(false);
+  const easingRef = useRef(easing);
+
+  // Latest easing without restarting the tween on inline-arrow identities —
+  // same pattern (and reasoning) as useAnimatedValue above.
+  useIsoLayoutEffect(() => {
+    easingRef.current = easing;
+  });
+
+  const show = (next: T) => {
+    valueRef.current = next;
+    setValue(next);
+  };
+
+  useIsoLayoutEffect(() => {
+    if (!mountedRef.current) {
+      // Mount shows the target as-is; StrictMode's second invoke falls through
+      // to the relation check and finds "equal", so nothing is disturbed.
+      mountedRef.current = true;
+      valueRef.current = target;
+      return;
+    }
+    if (reduced || duration <= 0 || typeof requestAnimationFrame === "undefined") {
+      if (valueRef.current !== target) show(target);
+      return;
+    }
+    const origin = valueRef.current;
+    const relation = relate(origin, target);
+    if (relation === "equal") {
+      // Same content in a new identity (the inline-literal case): adopt the new
+      // reference for future comparisons, render nothing, schedule nothing.
+      valueRef.current = target;
+      return;
+    }
+    if (relation === "jump") {
+      show(target);
+      return;
+    }
+    let raf = 0;
+    let start = 0;
+    let cancelled = false;
+    const loop = (ts: number) => {
+      if (!start) start = ts;
+      const t = Math.min(1, (ts - start) / duration);
+      show(t >= 1 ? target : (interpolateSnapshot(origin, target, easingRef.current(t)) as T));
+      if (t < 1 && !cancelled) raf = requestAnimationFrame(loop);
+    };
+    const timer = setTimeout(() => {
+      raf = requestAnimationFrame(loop);
+    }, delay);
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+      cancelAnimationFrame(raf);
+    };
+  }, [target, reduced, duration, delay]);
+
+  return value;
 }

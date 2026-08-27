@@ -6,7 +6,7 @@ import {
   type BarVarianceRow,
 } from "../core/barVarianceWaterfall";
 import { formatValue, formatSigned, formatPercent, type FormatOptions } from "../core/format";
-import { useMountGrow, useChartHover } from "./hooks";
+import { useMountGrow, useDataTween, useChartHover } from "./hooks";
 import type { ChartHover } from "./hooks";
 import { markInteraction, type MarkRect } from "./internal/hover";
 import { ChartTooltip, type ChartTooltipRow } from "./ChartTooltip";
@@ -95,7 +95,7 @@ export interface BarVarianceWaterfallChartProps {
 export const BarVarianceWaterfallChart = forwardRef<SVGSVGElement, BarVarianceWaterfallChartProps>(
   function BarVarianceWaterfallChart(
     {
-      data,
+      data: dataProp,
       pyTotal,
       sortBy = "variance",
       pctBase = "PY",
@@ -117,6 +117,7 @@ export const BarVarianceWaterfallChart = forwardRef<SVGSVGElement, BarVarianceWa
     const marks = markInteraction(hover, tooltip, onHover);
     const hoverEnabled = marks.enabled;
 
+    const data = useDataTween(dataProp);
     const layout = useMemo(
       () => computeBarVarianceWaterfall(data, { sortBy, pctBase, clampPct, pyTotal }),
       [data, sortBy, pctBase, clampPct, pyTotal],
@@ -131,7 +132,7 @@ export const BarVarianceWaterfallChart = forwardRef<SVGSVGElement, BarVarianceWa
       domainMax,
       pctMax,
     } = layout;
-    const grow = useMountGrow(700, 0, layout);
+    const grow = useMountGrow(700, 0, data);
 
     // The reference overlay's IBCS scenario style (PY → grey solid, PL → frame).
     const refStyle = usesPy ? tokens.scenario.PY : tokens.scenario.PL;

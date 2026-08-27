@@ -4,7 +4,7 @@ import type { IbcsTokensOverride } from "../core/tokens";
 import { computeVariance } from "../core/variance";
 import { bandScale, resolveBandPadding, type BandPadding } from "../core/bandScale";
 import { formatValue, formatSigned, formatPercent, type FormatOptions } from "../core/format";
-import { useMountGrow, useChartHover } from "./hooks";
+import { useMountGrow, useDataTween, useChartHover } from "./hooks";
 import type { ChartSelection, ChartHover } from "./hooks";
 import { markInteraction, type MarkRect } from "./internal/hover";
 import { ChartTooltip, type ChartTooltipRow } from "./ChartTooltip";
@@ -85,7 +85,7 @@ export interface VarianceColumnChartProps {
 export const VarianceColumnChart = forwardRef<SVGSVGElement, VarianceColumnChartProps>(
   function VarianceColumnChart(
     {
-      data,
+      data: dataProp,
       comparison = "PY",
       higherIsBetter = true,
       variance = "abs",
@@ -118,6 +118,7 @@ export const VarianceColumnChart = forwardRef<SVGSVGElement, VarianceColumnChart
     const marks = markInteraction(hover, tooltip, onHover);
     const hoverEnabled = marks.enabled;
     // Columns grow up from the baseline on mount and replay on a data change.
+    const data = useDataTween(dataProp);
     const grow = useMountGrow(650, 0, data);
 
     const padL = 12;

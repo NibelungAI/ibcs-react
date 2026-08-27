@@ -8,7 +8,7 @@ import {
 } from "../core/integratedVariance";
 import { formatValue, formatSigned, formatPercent, type FormatOptions } from "../core/format";
 import { bandScale, resolveBandPadding, type BandPadding } from "../core/bandScale";
-import { useMountGrow, useChartHover } from "./hooks";
+import { useMountGrow, useDataTween, useChartHover } from "./hooks";
 import type { ChartHover } from "./hooks";
 import { markInteraction, type MarkRect } from "./internal/hover";
 import { ChartTooltip, type ChartTooltipRow } from "./ChartTooltip";
@@ -88,7 +88,7 @@ export interface IntegratedVarianceChartProps {
 export const IntegratedVarianceChart = forwardRef<SVGSVGElement, IntegratedVarianceChartProps>(
   function IntegratedVarianceChart(
     {
-      data,
+      data: dataProp,
       comparison = "PY",
       higherIsBetter = true,
       showPctPanel = true,
@@ -112,6 +112,7 @@ export const IntegratedVarianceChart = forwardRef<SVGSVGElement, IntegratedVaria
     const hatchAC = svgSafeId(useId());
     const hatchGood = svgSafeId(useId());
     const hatchBad = svgSafeId(useId());
+    const data = useDataTween(dataProp);
     const grow = useMountGrow(700, 0, data);
     const hover = useChartHover<IntegratedDatum>();
     const marks = markInteraction(hover, tooltip, onHover);

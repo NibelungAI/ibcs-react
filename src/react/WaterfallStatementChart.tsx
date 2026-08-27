@@ -8,7 +8,7 @@ import {
   type WsLaneBar,
 } from "../core/waterfallStatement";
 import { formatValue, formatSigned, formatPercentPlain, type FormatOptions } from "../core/format";
-import { useMountGrow, useChartHover } from "./hooks";
+import { useMountGrow, useDataTween, useChartHover } from "./hooks";
 import type { ChartHover } from "./hooks";
 import { markInteraction, type MarkRect } from "./internal/hover";
 import { ChartTooltip, type ChartTooltipRow } from "./ChartTooltip";
@@ -105,7 +105,7 @@ const SCENARIO_LABEL: Record<ScenarioKey, string> = { AC: "AC", PY: "PY", PL: "P
 export const WaterfallStatementChart = forwardRef<SVGSVGElement, WaterfallStatementChartProps>(
   function WaterfallStatementChart(
     {
-      lines,
+      lines: linesProp,
       comparison = "PY",
       higherIsBetter = true,
       showPctPanel = true,
@@ -125,6 +125,7 @@ export const WaterfallStatementChart = forwardRef<SVGSVGElement, WaterfallStatem
     ref,
   ) {
     const tokens = useIbcsTokens(tokenOverride);
+    const lines = useDataTween(linesProp);
     const grow = useMountGrow(700, 0, lines);
     const hover = useChartHover<WaterfallStatementRow>();
     const marks = markInteraction(hover, tooltip, onHover);

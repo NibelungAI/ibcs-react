@@ -10,7 +10,7 @@ import {
   formatPercentPlain,
   type FormatOptions,
 } from "../core/format";
-import { useMountGrow } from "./hooks";
+import { useMountGrow, useDataTween } from "./hooks";
 import { useStatement } from "./hooks/useStatement";
 import { useHoverDismissal } from "./internal/dismiss";
 import { srOnly } from "./a11y";
@@ -170,7 +170,7 @@ const ROW_HOVER_CSS = `
 `;
 
 export function StatementTable({
-  lines,
+  lines: linesProp,
   mode = "flow",
   scenario = "AC",
   varianceColumns = DEFAULT_VARIANCE_COLUMNS,
@@ -196,6 +196,9 @@ export function StatementTable({
 }: StatementTableProps) {
   const tokens = useIbcsTokens(tokenOverride);
   const [scrollTop, setScrollTop] = useState(0);
+  // Live ticks tween the figures (the layout recomputes from the interpolated
+  // lines); the row entrance replays only when the statement changes shape.
+  const lines = useDataTween(linesProp);
 
   // Collapse/expand state + the waterfall (or stock levels) layout come from the
   // hook, so the table and `useStatement` can never drift: controlled vs

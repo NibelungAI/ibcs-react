@@ -3,6 +3,7 @@ export {
   useMountGrow,
   useAnimatedValue,
   useCountUp,
+  useDataTween,
   easeOutCubic,
   easeOutQuart,
   easeInOutCubic,

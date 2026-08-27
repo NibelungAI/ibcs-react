@@ -9,7 +9,7 @@ import {
 } from "../core/rankingVariance";
 import { formatValue, formatSigned, formatPercent, type FormatOptions } from "../core/format";
 import { bandScale, resolveBandPadding, type BandPadding } from "../core/bandScale";
-import { useMountGrow, useChartHover } from "./hooks";
+import { useMountGrow, useDataTween, useChartHover } from "./hooks";
 import type { ChartHover } from "./hooks";
 import { markInteraction, type MarkRect } from "./internal/hover";
 import { ChartTooltip, type ChartTooltipRow } from "./ChartTooltip";
@@ -103,7 +103,7 @@ export interface RankingVarianceChartProps {
 export const RankingVarianceChart = forwardRef<SVGSVGElement, RankingVarianceChartProps>(
   function RankingVarianceChart(
     {
-      data,
+      data: dataProp,
       baseLabel = "PL",
       sortBy = "variance",
       clampPct = 100,
@@ -128,12 +128,13 @@ export const RankingVarianceChart = forwardRef<SVGSVGElement, RankingVarianceCha
     const marks = markInteraction(hover, tooltip, onHover);
     const hoverEnabled = marks.enabled;
 
+    const data = useDataTween(dataProp);
     const layout = useMemo(
       () => computeRankingVariance(data, { sortBy, clampPct }),
       [data, sortBy, clampPct],
     );
     const { rows, total, acMax, absMax, pctMax } = layout;
-    const grow = useMountGrow(700, 0, layout);
+    const grow = useMountGrow(700, 0, data);
 
     // The plan / reference overlay's IBCS notation, derived from baseLabel.
     const baseKey: ScenarioKey = SCENARIO_KEYS.find((k) => k === baseLabel) ?? "PL";

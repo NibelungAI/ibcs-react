@@ -4,7 +4,7 @@ import type { IbcsTokensOverride } from "../core/tokens";
 import { computeBridge, type WaterfallDatum } from "../core/waterfall";
 import { formatValue, formatSigned, type FormatOptions } from "../core/format";
 import { bandScale, resolveBandPadding, type BandPadding } from "../core/bandScale";
-import { useMountGrow, useChartHover } from "./hooks";
+import { useMountGrow, useDataTween, useChartHover } from "./hooks";
 import type { ChartHover } from "./hooks";
 import { markInteraction, type MarkRect } from "./internal/hover";
 import { ChartTooltip, type ChartTooltipRow } from "./ChartTooltip";
@@ -99,9 +99,9 @@ const SCENARIO_LABEL: Record<ScenarioKey, string> = {
 export const WaterfallChart = forwardRef<SVGSVGElement, WaterfallChartProps>(
   function WaterfallChart(
     {
-      data,
+      data: dataProp,
       scenario = "AC",
-      comparisonData,
+      comparisonData: comparisonDataProp,
       higherIsBetter = true,
       showValueLabels = true,
       mark = "bar",
@@ -121,6 +121,8 @@ export const WaterfallChart = forwardRef<SVGSVGElement, WaterfallChartProps>(
   ) {
     const conn = { style: "solid" as const, width: 1.25, align: "step" as const, ...connector };
     const tokens = useIbcsTokens(tokenOverride);
+    const data = useDataTween(dataProp);
+    const comparisonData = useDataTween(comparisonDataProp);
     const grow = useMountGrow(700, 0, data);
     const hover = useChartHover<WaterfallDatum>();
     const marks = markInteraction(hover, tooltip, onHover);

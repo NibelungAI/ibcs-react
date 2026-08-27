@@ -5,7 +5,7 @@ import { computeVariance } from "../core/variance";
 import { bandScale, resolveBandPadding, type BandPadding } from "../core/bandScale";
 import { formatValue, formatSigned, formatPercent, type FormatOptions } from "../core/format";
 import { computeVarianceArea, type VarianceAreaDatum, type XY } from "../core/varianceArea";
-import { useMountGrow, useChartHover } from "./hooks";
+import { useMountGrow, useDataTween, useChartHover } from "./hooks";
 import type { ChartHover } from "./hooks";
 import { markInteraction, type MarkRect } from "./internal/hover";
 import { ChartTooltip, type ChartTooltipRow } from "./ChartTooltip";
@@ -90,7 +90,7 @@ export interface VarianceAreaChartProps {
 export const VarianceAreaChart = forwardRef<SVGSVGElement, VarianceAreaChartProps>(
   function VarianceAreaChart(
     {
-      data,
+      data: dataProp,
       forecastFrom,
       referenceLabel = "Ø",
       higherIsBetter = true,
@@ -114,7 +114,9 @@ export const VarianceAreaChart = forwardRef<SVGSVGElement, VarianceAreaChartProp
     const hover = useChartHover<VarianceAreaDatum>();
     const marks = markInteraction(hover, tooltip, onHover);
     const hoverEnabled = marks.enabled;
-    // Grow on mount, replaying when the data identity changes.
+    // Ticks tween through useDataTween; the entrance replays only when the
+    // data changes shape (rows added/removed, categories renamed).
+    const data = useDataTween(dataProp);
     const grow = useMountGrow(650, 0, data);
 
     const padL = 10;

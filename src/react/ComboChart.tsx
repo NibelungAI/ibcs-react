@@ -5,7 +5,7 @@ import { computeCombo, type ComboDatum, type ComboSecondaryDatum } from "../core
 import { computeTicks } from "../core/xy";
 import { bandScale, resolveBandPadding, type BandPadding } from "../core/bandScale";
 import { formatValue, formatSigned, type FormatOptions } from "../core/format";
-import { useMountGrow } from "./hooks";
+import { useMountGrow, useDataTween } from "./hooks";
 import { ChartDataTable, type ChartDataRow } from "./a11y";
 import { svgSafeId } from "./internal/text";
 import { useIbcsTokens } from "./theme";
@@ -124,8 +124,8 @@ function segments(
  */
 export const ComboChart = forwardRef<SVGSVGElement, ComboChartProps>(function ComboChart(
   {
-    data,
-    secondary,
+    data: dataProp,
+    secondary: secondaryProp,
     secondaryKey,
     primaryLabel,
     secondaryLabel,
@@ -153,6 +153,8 @@ export const ComboChart = forwardRef<SVGSVGElement, ComboChartProps>(function Co
   // Comparison column drawn in its own IBCS notation: PY solid, PL hollow white
   // frame, FC hatched — not always solid grey.
   const cmpStyle = tokens.scenario[comparison];
+  const data = useDataTween(dataProp);
+  const secondary = useDataTween(secondaryProp);
   const grow = useMountGrow(650, 0, data);
 
   // Resolve the secondary series into an array aligned by index with `data`.

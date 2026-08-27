@@ -9,7 +9,7 @@ import {
   assignGroupColors,
   type BubbleDatum,
 } from "../core/xy";
-import { useMountGrow } from "./hooks";
+import { useMountGrow, useDataTween } from "./hooks";
 import { ChartDataTable, type ChartDataRow } from "./a11y";
 import { useIbcsTokens } from "./theme";
 
@@ -94,7 +94,7 @@ export interface BubbleChartProps {
  */
 export const BubbleChart = forwardRef<SVGSVGElement, BubbleChartProps>(function BubbleChart(
   {
-    data,
+    data: dataProp,
     xLabel,
     yLabel,
     sizeLabel,
@@ -112,6 +112,7 @@ export const BubbleChart = forwardRef<SVGSVGElement, BubbleChartProps>(function 
   ref,
 ) {
   const tokens = useIbcsTokens(tokenOverride);
+  const data = useDataTween(dataProp);
   const grow = useMountGrow(650, 0, data);
 
   // Plot only bubbles with finite coordinates; sanitize each size to a finite,

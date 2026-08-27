@@ -12,7 +12,7 @@ import {
   circlesPath,
   type ScatterDatum,
 } from "../core/xy";
-import { useMountGrow } from "./hooks";
+import { useMountGrow, useDataTween } from "./hooks";
 import { ChartDataTable, type ChartDataRow } from "./a11y";
 import { clampTo } from "./internal/text";
 import { useIbcsTokens } from "./theme";
@@ -134,7 +134,7 @@ export interface ScatterChartProps {
  */
 export const ScatterChart = forwardRef<SVGSVGElement, ScatterChartProps>(function ScatterChart(
   {
-    data,
+    data: dataProp,
     xLabel,
     yLabel,
     isoLines,
@@ -153,6 +153,7 @@ export const ScatterChart = forwardRef<SVGSVGElement, ScatterChartProps>(functio
   ref,
 ) {
   const tokens = useIbcsTokens(tokenOverride);
+  const data = useDataTween(dataProp);
   const grow = useMountGrow(600, 0, data);
 
   // Plot only points with finite coordinates so no pixel can become NaN/±Inf.

@@ -11,7 +11,7 @@ import {
 import { resolveReferences, type ReferenceLine, type ReferenceBand } from "../core/reference";
 import { bandScale, resolveBandPadding, type BandPadding } from "../core/bandScale";
 import { formatValue, formatSigned, formatPercent, type FormatOptions } from "../core/format";
-import { useMountGrow } from "./hooks";
+import { useMountGrow, useDataTween } from "./hooks";
 import { ChartDataTable, type ChartDataRow } from "./a11y";
 import { useIbcsTokens } from "./theme";
 
@@ -185,7 +185,7 @@ function fitText(s: string, maxPx: number, fontSize: number): string {
  */
 export const LineChart = forwardRef<SVGSVGElement, LineChartProps>(function LineChart(
   {
-    data,
+    data: dataProp,
     series,
     comparison = "PY",
     higherIsBetter = true,
@@ -205,6 +205,7 @@ export const LineChart = forwardRef<SVGSVGElement, LineChartProps>(function Line
   ref,
 ) {
   const tokens = useIbcsTokens(tokenOverride);
+  const data = useDataTween(dataProp);
   const grow = useMountGrow(700, 0, data);
 
   // `variance` doubles as the panel's on/off switch — resolve it to the plain

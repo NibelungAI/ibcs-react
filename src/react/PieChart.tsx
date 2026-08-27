@@ -3,7 +3,7 @@ import type { IbcsTokensOverride } from "../core/tokens";
 import { computeVariance } from "../core/variance";
 import { formatValue, formatSigned, formatPercent, type FormatOptions } from "../core/format";
 import { computePieSlices, arcPath, pointOnCircle, type PieSlice } from "../core/pie";
-import { useMountGrow, useChartHover } from "./hooks";
+import { useMountGrow, useDataTween, useChartHover } from "./hooks";
 import type { ChartSelection, ChartHover } from "./hooks";
 import { markInteraction } from "./internal/hover";
 import { ChartTooltip, type ChartTooltipRow } from "./ChartTooltip";
@@ -146,8 +146,8 @@ interface RenderSlice {
  */
 export const PieChart = forwardRef<SVGSVGElement, PieChartProps>(function PieChart(
   {
-    data,
-    share,
+    data: dataProp,
+    share: shareProp,
     donut = false,
     size = 160,
     width,
@@ -169,6 +169,8 @@ export const PieChart = forwardRef<SVGSVGElement, PieChartProps>(function PieCha
   const tokens = useIbcsTokens(tokenOverride);
   const hover = useChartHover<PieDatum>();
   const marks = markInteraction(hover, tooltip, onHover);
+  const data = useDataTween(dataProp);
+  const share = useDataTween(shareProp);
   const grow = useMountGrow(650, 0, share ?? data);
 
   const W = width ?? size;

@@ -18,7 +18,7 @@ import {
 } from "../core/smallMultiples";
 import { formatSigned, formatValue, type FormatOptions } from "../core/format";
 import type { ScenarioKey } from "../core/types";
-import { useMountGrow } from "./hooks";
+import { useMountGrow, useDataTween } from "./hooks";
 import { ChartDataTable, type ChartDataRow } from "./a11y";
 import { useIbcsTokens } from "./theme";
 import { svgSafeId } from "./internal/text";
@@ -323,7 +323,7 @@ export interface MiniVarianceMultiplesProps {
 export const MiniVarianceMultiples = forwardRef<HTMLDivElement, MiniVarianceMultiplesProps>(
   function MiniVarianceMultiples(
     {
-      groups,
+      groups: groupsProp,
       comparison = "PY",
       higherIsBetter = true,
       columns = 3,
@@ -340,6 +340,7 @@ export const MiniVarianceMultiples = forwardRef<HTMLDivElement, MiniVarianceMult
     ref,
   ) {
     const tokens = useIbcsTokens(tokenOverride);
+    const groups = useDataTween(groupsProp);
     const grow = useMountGrow(700, 0, groups);
 
     const layout = useMemo(

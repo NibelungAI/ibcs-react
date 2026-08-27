@@ -57,29 +57,33 @@ respects the same accessibility preference as the built-ins.
 useMountGrow(duration = 600, delay = 0, key?: unknown): number
 ```
 
-Eased progress from `0` to `1`, played once on mount and replayed whenever
-`key` changes. Multiply a bar height or a path length by it to drive an
+Eased progress from `0` to `1`, played once on mount and replayed when `key`
+changes **shape**. Multiply a bar height or a path length by it to drive an
 entrance. The hook starts _finished_ (`1`) and rewinds in a layout effect, so
 the server, the first paint and any client whose effects never run all show the
 final frame. Reduced motion, `duration <= 0` or a missing
 `requestAnimationFrame` keep it at `1` with no frame loop at all.
 
 `key` is reduced to a cheap structural signature rather than compared by
-identity, so an inline `data={[…]}` literal does not restart the entrance on
-every parent render.
+identity, and numbers are erased from that signature. An inline `data={[…]}`
+literal therefore does not restart the entrance on every parent render, and a
+live feed re-emitting the same rows with new values does not re-grow the chart
+from its baseline — value updates glide via [`useDataTween`](#usedatatween).
+What replays the entrance is a genuinely new dataset: rows added or removed,
+categories renamed.
 
 ```tsx
 import { useMountGrow } from "ibcs-react";
 
 function GrowingBar({ data, fullHeight, base }) {
-  // Replays on a real data change, not on every render.
+  // Replays when the data changes shape — not on value ticks or re-renders.
   const p = useMountGrow(600, 0, data);
   return <rect height={fullHeight * p} y={base - fullHeight * p} />;
 }
 ```
 
-**When to use:** a one-shot entrance for a chart you draw yourself, or a replay
-tied to a genuine data change.
+**When to use:** a one-shot entrance for a chart you draw yourself, replayed
+only when a genuinely different dataset arrives.
 
 ### useAnimatedValue
 
@@ -134,6 +138,39 @@ function Figure({ amount }) {
 ```
 
 **When to use:** a headline KPI or metric that should count up to its value.
+
+### useDataTween
+
+```ts
+useDataTween<T>(target: T, opts?: Omit<AnimateOptions, "from">): T
+```
+
+`useAnimatedValue` for a whole data structure: every numeric leaf glides from
+where it currently sits to its new value, everything else switches instantly.
+This is the hook behind live charts — every chart runs its `data` through it
+and recomputes layout from the interpolated rows each frame, so a feed's tick
+moves bars from their previous heights, stretches scales smoothly and slides
+variance pins, instead of replaying the entrance from zero.
+
+A **shape** change does not morph: rows added or removed, categories renamed,
+or a value appearing where none was is a new dataset — it shows immediately,
+and the entrance replays for it. Retargeting mid-flight continues from the
+frame currently on screen. Reduced motion (or `duration <= 0`) jumps straight
+to the target, and the first render (server included) is always the target
+itself.
+
+```tsx
+import { useDataTween } from "ibcs-react";
+
+function CustomChart({ data }) {
+  const live = useDataTween(data); // glides between live ticks
+  const layout = useMemo(() => myLayout(live), [live]);
+  // …
+}
+```
+
+**When to use:** a custom chart or figure on a live source that should glide
+between updates the way the built-in charts do.
 
 ## Data
 
@@ -315,8 +352,9 @@ const shown = useCountUp(feed.data.reduce((s, d) => s + d.AC, 0), { duration: 60
 ```
 
 **When to use:** demos, monitoring walls or anything that refreshes on a timer.
-Pair it with the animation hooks so figures tween to each tick rather than
-jumping.
+Charts glide between ticks on their own (every chart tweens its rows through
+[`useDataTween`](#usedatatween)); pair your own figures with `useCountUp` so
+they tween too.
 
 ### useVariance and useVariances
 

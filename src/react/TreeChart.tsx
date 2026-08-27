@@ -2,7 +2,7 @@ import { forwardRef, useMemo, type CSSProperties } from "react";
 import type { IbcsTokensOverride } from "../core/tokens";
 import { computeTree, type TreeNode } from "../core/tree";
 import { formatValue, formatSigned, type FormatOptions } from "../core/format";
-import { useMountGrow } from "./hooks";
+import { useMountGrow, useDataTween } from "./hooks";
 import { ChartDataTable, type ChartDataRow } from "./a11y";
 import { useIbcsTokens } from "./theme";
 
@@ -77,7 +77,7 @@ const OP_GLYPH: Record<string, string> = { "+": "+", "-": "−", "*": "×", "/":
  */
 export const TreeChart = forwardRef<SVGSVGElement, TreeChartProps>(function TreeChart(
   {
-    root,
+    root: rootProp,
     higherIsBetter = true,
     orientation = "horizontal",
     showVariance = true,
@@ -92,6 +92,7 @@ export const TreeChart = forwardRef<SVGSVGElement, TreeChartProps>(function Tree
   ref,
 ) {
   const tokens = useIbcsTokens(tokenOverride);
+  const root = useDataTween(rootProp);
   const grow = useMountGrow(500, 0, root);
 
   const layout = useMemo(
