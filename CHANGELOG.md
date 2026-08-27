@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.3.0
+
+### Minor Changes
+
+- 1085752: Charts glide between live-data ticks instead of re-entering from zero. The entrance animation used to replay on every data change, so a chart on a `useLiveData` feed (or any polling source) collapsed to the baseline and re-grew on each tick. Value-only updates now tween: every chart runs its rows through the new `useDataTween` hook — exported for custom charts — which interpolates numeric leaves from the currently displayed frame to the new values while the layout recomputes each frame, so bars move from their previous heights, scales stretch smoothly and variance pins slide. Retargeting mid-flight continues from what is on screen, reduced motion jumps straight to the target, and SSR still renders finished geometry. The entrance now replays only when the data genuinely changes shape — rows added or removed, categories renamed — which is also the new meaning of `useMountGrow`'s replay key: its structural signature ignores numbers.
+
+### Patch Changes
+
+- 03d6a9e: Config-driven structure charts accept `category`-keyed rows. `StructureDatum` made `category` the preferred name key (with `label` as a permanent alias), and the chart resolves it — but `validateChartConfig` still demanded `label`, so the same data a mounted `<StructureChart>` rendered fine failed inside `ConfiguredChart` and `Report` with "data[0].label must be a string." The validator now applies the datum contract (`category` preferred, `label` accepted, `category` wins when both are present) and its error speaks the preferred vocabulary: `data[0].category must be a string.`
+
 ## 1.2.0
 
 ### Minor Changes
