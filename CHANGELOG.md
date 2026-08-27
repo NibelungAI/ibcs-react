@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.2.0
+
+### Minor Changes
+
+- 2671b10: `ChartBox`, `ScrollChart`, `ResponsiveChart` and `ChartFrame` accept a single chart element as their child — the resolved integer `width`/`height` are cloned onto it — so the everyday case reads `<ChartBox width={620} height={340}><VarianceColumnChart data={data} /></ChartBox>`. The render-prop form `{(w, h) => …}` keeps working unchanged for charts whose size props are named differently or that need the numbers directly (`ChartChildren` type exported).
+- 2671b10: New `checkIbcsProps(component, props)` lints the JSX authoring path — the way most apps actually write charts — against the same IBCS rules as `checkIbcs`. Component props are the config shapes minus the `type` discriminator, which the component name carries; the function maps the name back and runs the config checks, so `<VarianceColumnChart data={…} comparison="PY" />` is lintable in a unit test without restructuring into configs. Render-only props are ignored, lint-only declarations (`measureKind`) ride along, `KpiCard` props lint directly as a `KpiConfig`, the specialised variance charts lint as their linear family, and `checkIbcsProps("PieChart", …)` flags the pie. Unknown component names return an `input-shape` info naming the lintable components (`LintableComponentName` type exported).
+- 2671b10: Ratio KPIs speak percentage points. New `unit: "ratio"` on `KpiConfig`/`KpiCard` declares a percentage measure (margin, rate, share): the delta renders as `+0.6pp` and the relative delta is dropped — "+0.9%" beside "18.4%" invites reading a relative change as points, which ISO 24896 keeps apart for exactly this reason. Default (`"absolute"`) is unchanged. A new `ratio-units` lint rule (info) nudges KPIs formatted with `suffix: "%"` toward the declaration.
+- 2671b10: New `useStatementBridge(lines, comparison?, options?)` hook derives a `WaterfallChart`'s `data` + `comparisonData` from one statement, so the bridge joins the same `comparison` toggle as every other chart: `<WaterfallChart {...useStatementBridge(pnl, comparison)} />`. Every sibling chart takes a scenario key while the bridge needs the other scenario's contributions spelled out as a dataset — the hook absorbs that asymmetry, keeps both datasets structurally parallel (same lines, same skipping rules) and memoizes on the inputs. Also fixes the `statementToWaterfall` doc example, which showed a `comparison` prop the chart does not have (it is `comparisonData`).
+
 ## 1.1.0
 
 ### Minor Changes
