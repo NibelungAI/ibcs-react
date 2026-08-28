@@ -50,6 +50,15 @@ export default function Layout({ children }: { children: ReactNode }) {
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: HASH_REDIRECT }} />
+        {/* Cookieless analytics (Umami). Production only; inert outside ibcs-react.com. */}
+        {process.env.NODE_ENV === "production" && (
+          <script
+            defer
+            src="/a/script.js"
+            data-website-id="ed0cd864-ab6d-4cc2-af98-caa82bcdbd36"
+            data-domains="ibcs-react.com"
+          />
+        )}
       </head>
       <body className="flex min-h-screen flex-col">
         <RootProvider>{children}</RootProvider>
