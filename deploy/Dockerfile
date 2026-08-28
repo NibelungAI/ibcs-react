@@ -21,6 +21,9 @@ RUN npm run build
 COPY docs/package.json docs/package-lock.json docs/
 RUN cd docs && npm ci --ignore-scripts
 COPY docs/ docs/
+# The /skills raw-file routes serve ../skills at request time; it must exist
+# at build so outputFileTracingIncludes carries it into the standalone bundle.
+COPY skills/ skills/
 RUN cd docs && npm run build
 
 FROM node:22-alpine
