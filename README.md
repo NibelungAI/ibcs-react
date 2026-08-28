@@ -51,12 +51,15 @@ npm i ibcs-react
 
 ## AI agents
 
-Building with a coding agent? Install the **ibcs-react skill** — IBCS notation
-rules plus component recipes, packaged in the open `SKILL.md` format for Claude
-Code, Cursor, Codex and 70+ other agents:
+Building with a coding agent? Install the **ibcs-react skills** — IBCS notation
+rules, component recipes, and `ibcs-report`, which turns a financial workbook
+(a P&L, a balance sheet, a whole management pack) into a print-ready A4
+board-report PDF drawn with ibcs-react components — packaged in the open
+`SKILL.md` format for Claude Code, Cursor, Codex and 70+ other agents:
 
 ```bash
-npx skills add NibelungAI/ibcs-react
+npx skills add NibelungAI/ibcs-react              # pick from all three
+npx skills add NibelungAI/ibcs-react@ibcs-report  # statements → board pack PDF
 ```
 
 Agents can also read the docs directly: [`ibcs-react.com/llms.txt`](https://ibcs-react.com/llms.txt)
