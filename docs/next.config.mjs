@@ -11,6 +11,11 @@ const config = {
   // AutoTypeTable runs the TypeScript compiler at build time; keep it out of
   // the bundle.
   serverExternalPackages: ["typescript"],
+  // The raw skill-file routes read ../skills at request time; trace the folder
+  // into the standalone server bundle.
+  outputFileTracingIncludes: {
+    "/skills/[skill]/[[...file]]": ["../skills/**/*"],
+  },
   // Raw-Markdown twin of every docs page for AI agents: /docs/foo.mdx → the
   // llms.mdx route handler (see app/llms.mdx/docs/[[...slug]]/route.ts).
   async rewrites() {

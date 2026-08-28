@@ -18,6 +18,7 @@ export function baseOptions(): BaseLayoutProps {
       { text: "Gallery", url: "/gallery" },
       { text: "Playground", url: "/playground" },
       { text: "Example report", url: "/report" },
+      { text: "Skills", url: "/skills" },
       {
         type: "icon",
         label: "npm package",

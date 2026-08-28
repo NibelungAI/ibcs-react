@@ -62,6 +62,11 @@ npx skills add NibelungAI/ibcs-react              # pick from all three
 npx skills add NibelungAI/ibcs-react@ibcs-report  # statements → board pack PDF
 ```
 
+No install needed either — the skills are served raw from the docs site
+([overview](https://ibcs-react.com/skills)), so telling an agent to *“read
+[ibcs.at/skills/ibcs-report/SKILL.md](https://ibcs.at/skills/ibcs-report/SKILL.md)
+and follow it”* is enough.
+
 Agents can also read the docs directly: [`ibcs-react.com/llms.txt`](https://ibcs-react.com/llms.txt)
 (index), [`llms-full.txt`](https://ibcs-react.com/llms-full.txt) (whole corpus, one file),
 or any docs page as raw Markdown by appending `.mdx` to its URL — e.g.

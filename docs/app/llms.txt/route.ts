@@ -37,10 +37,16 @@ export function GET() {
   compared charts. \`checkIbcs(config)\` is the built-in notation linter.
 - Every docs page below is also served as raw Markdown: append \`.mdx\` to its URL.
   Full corpus in one file: ${SITE_URL}/llms-full.txt
-- Agent skills (installable via \`npx skills add NibelungAI/ibcs-react\`): \`ibcs-react\`
-  (library recipes), \`ibcs-notation\` (the notation rules, tool-agnostic), and
-  \`ibcs-report\` (financial statements → print-ready A4 board-report PDF; add just it
-  with \`npx skills add NibelungAI/ibcs-react@ibcs-report\`).
+- Agent skills (installable via \`npx skills add NibelungAI/ibcs-react\`), each also served
+  raw from this site:
+  - [ibcs-report](${SITE_URL}/skills/ibcs-report/SKILL.md): financial statements → print-ready
+    A4 board-report PDF drawn with ibcs-react components. To use without installing, read that
+    SKILL.md and follow it (references and scripts resolve relative to it). Install just it:
+    \`npx skills add NibelungAI/ibcs-react@ibcs-report\`.
+  - [ibcs-react](${SITE_URL}/skills/ibcs-react/SKILL.md): using the library correctly — data
+    model, component recipes, theming, export.
+  - [ibcs-notation](${SITE_URL}/skills/ibcs-notation/SKILL.md): the notation rules alone,
+    useful with any charting tool.
 - Source: https://github.com/NibelungAI/ibcs-react · npm: https://www.npmjs.com/package/ibcs-react
 
 ## Documentation

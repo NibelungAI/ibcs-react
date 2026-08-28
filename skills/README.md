@@ -14,7 +14,11 @@ npx skills add NibelungAI/ibcs-react@ibcs-report  # or install just one
 
 Works with Claude Code, Cursor, Codex, Copilot, Gemini CLI and ~77 other
 agents. Or copy a skill folder into your agent's skills directory
-(`.claude/skills/`, `.opencode/skills/`, …).
+(`.claude/skills/`, `.opencode/skills/`, …). Every skill is also served raw
+from the docs site — <https://ibcs-react.com/skills> (short:
+[ibcs.at/skills](https://ibcs.at/skills)) — so “read
+`ibcs.at/skills/ibcs-report/SKILL.md` and follow it” works with no install at
+all; `/skills/<name>.skill` downloads an archive for claude.ai.
 
 ## The skills
 
