@@ -16,11 +16,23 @@ async function launchBrowser() {
   const args = ["--no-sandbox", "--font-render-hinting=none"];
   if (process.env.PLAYWRIGHT_CHROMIUM)
     return chromium.launch({ args, executablePath: process.env.PLAYWRIGHT_CHROMIUM });
-  try { return await chromium.launch({ args }); } catch (err) {
-    const found = ["/opt/pw-browsers/chromium", "/usr/bin/chromium", "/usr/bin/chromium-browser",
-      "/usr/bin/google-chrome", "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
-      "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"]
-      .find((p) => { try { return fs.existsSync(p); } catch { return false; } });
+  try {
+    return await chromium.launch({ args });
+  } catch (err) {
+    const found = [
+      "/opt/pw-browsers/chromium",
+      "/usr/bin/chromium",
+      "/usr/bin/chromium-browser",
+      "/usr/bin/google-chrome",
+      "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+      "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+    ].find((p) => {
+      try {
+        return fs.existsSync(p);
+      } catch {
+        return false;
+      }
+    });
     if (found) return chromium.launch({ args, executablePath: found });
     console.error("No Chromium available. Try: npx playwright install chromium\n" + err.message);
     process.exit(1);
@@ -32,7 +44,12 @@ const page = await browser.newPage();
 await page.goto(IN, { waitUntil: "load" });
 await page.evaluate(() => document.fonts.ready);
 await page.waitForTimeout(400);
-await page.pdf({ path: OUT, format: "A4", printBackground: true,
-  margin: { top: 0, right: 0, bottom: 0, left: 0 }, preferCSSPageSize: true });
+await page.pdf({
+  path: OUT,
+  format: "A4",
+  printBackground: true,
+  margin: { top: 0, right: 0, bottom: 0, left: 0 },
+  preferCSSPageSize: true,
+});
 await browser.close();
 console.log("wrote " + OUT);

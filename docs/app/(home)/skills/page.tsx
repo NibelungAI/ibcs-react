@@ -11,21 +11,18 @@ const SKILLS = [
   {
     name: "ibcs-report",
     tagline: "Statements in, board pack out",
-    body:
-      "Hand an agent a P&L, a balance sheet or a whole management pack (XLSX, CSV…) and get back a print-ready A4 PDF report — cover, contents, commentary, and every chart and table drawn with ibcs-react in IBCS notation. Page count follows the data, not a template.",
+    body: "Hand an agent a P&L, a balance sheet or a whole management pack (XLSX, CSV…) and get back a print-ready A4 PDF report — cover, contents, commentary, and every chart and table drawn with ibcs-react in IBCS notation. Page count follows the data, not a template.",
     detail: "/skills/ibcs-report",
   },
   {
     name: "ibcs-react",
     tagline: "Use the library correctly",
-    body:
-      "Install and RSC/SSR setup, the scenario data model (AC / PY / PL / FC), canonical snippets for variance charts, waterfalls, statement tables, theming and export — plus reference sheets for every chart and table.",
+    body: "Install and RSC/SSR setup, the scenario data model (AC / PY / PL / FC), canonical snippets for variance charts, waterfalls, statement tables, theming and export — plus reference sheets for every chart and table.",
   },
   {
     name: "ibcs-notation",
     tagline: "The notation itself, tool-agnostic",
-    body:
-      "Scenario fills, impact-based variance colouring, bars vs pins, zero-baseline and uniform scales, Who/What/When titles, templates C01–C13 / T01–T04. Useful with D3, Vega, Excel or PowerPoint too.",
+    body: "Scenario fills, impact-based variance colouring, bars vs pins, zero-baseline and uniform scales, Who/What/When titles, templates C01–C13 / T01–T04. Useful with D3, Vega, Excel or PowerPoint too.",
   },
 ];
 
@@ -47,8 +44,8 @@ export default function SkillsPage() {
           </code>
         </pre>
         <p className="mt-3 text-sm text-fd-muted-foreground">
-          No install needed either: every skill is served raw from this site, so you can simply
-          tell your agent{" "}
+          No install needed either: every skill is served raw from this site, so you can simply tell
+          your agent{" "}
           <em>
             “read{" "}
             <Link href="/skills/ibcs-report/SKILL.md" className="underline underline-offset-4">

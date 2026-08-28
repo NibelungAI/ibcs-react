@@ -7,16 +7,16 @@ silently cut, which is why `fit.mjs` exists.
 
 ## Geometry
 
-| Region | Size |
-|---|---|
-| Page | 210 × 297 mm |
-| Side margins | 12 mm |
-| Running header | 16 mm, hairline rule under it |
-| Body | top 16 mm, bottom 11 mm, 8 mm padding under the header |
-| Usable body height | ~1020 px at 96 dpi (the cover has no header, so ~1123 px) |
-| **Content width for charts** | **642 px** |
-| Widest fitting statement | label + base values + **two** variance columns |
-| Folio | bottom right, bold page number + muted total |
+| Region                       | Size                                                      |
+| ---------------------------- | --------------------------------------------------------- |
+| Page                         | 210 × 297 mm                                              |
+| Side margins                 | 12 mm                                                     |
+| Running header               | 16 mm, hairline rule under it                             |
+| Body                         | top 16 mm, bottom 11 mm, 8 mm padding under the header    |
+| Usable body height           | ~1020 px at 96 dpi (the cover has no header, so ~1123 px) |
+| **Content width for charts** | **642 px**                                                |
+| Widest fitting statement     | label + base values + **two** variance columns            |
+| Folio                        | bottom right, bold page number + muted total              |
 
 ## Cover
 
@@ -74,19 +74,19 @@ fighting.
 Include a page when the data supports it, and drop it when it does not. A report
 padded with a page built from three numbers is worse than a shorter one.
 
-| Page | Needs |
-|---|---|
-| Cover | always |
-| Contents + notation key | when the report runs past ~4 pages |
-| The company at a glance | a profile and governance; ask before crawling for it |
-| Financial highlights | key figures with a prior year; monthly series is a bonus |
-| Results of operations | a P&L with at least two scenarios |
-| Earnings bridge | a P&L with any one comparison — a PY→AC bridge is often the best chart in a two-scenario pack |
-| …with a plan-variance panel | additionally PL, passed as `comparisonData` |
-| Segments and regions | a segment or region split |
-| Financial position | a balance sheet |
-| Cash flow and liquidity | a cash flow statement |
-| Outlook | a forecast or an order book |
+| Page                        | Needs                                                                                         |
+| --------------------------- | --------------------------------------------------------------------------------------------- |
+| Cover                       | always                                                                                        |
+| Contents + notation key     | when the report runs past ~4 pages                                                            |
+| The company at a glance     | a profile and governance; ask before crawling for it                                          |
+| Financial highlights        | key figures with a prior year; monthly series is a bonus                                      |
+| Results of operations       | a P&L with at least two scenarios                                                             |
+| Earnings bridge             | a P&L with any one comparison — a PY→AC bridge is often the best chart in a two-scenario pack |
+| …with a plan-variance panel | additionally PL, passed as `comparisonData`                                                   |
+| Segments and regions        | a segment or region split                                                                     |
+| Financial position          | a balance sheet                                                                               |
+| Cash flow and liquidity     | a cash flow statement                                                                         |
+| Outlook                     | a forecast or an order book                                                                   |
 
 Two scenarios and a single statement is a 4–5 page report. A full pack with
 segments, monthly detail, budget and forecast supports 8–10. Say what you decided

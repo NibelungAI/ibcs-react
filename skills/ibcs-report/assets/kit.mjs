@@ -16,12 +16,21 @@ export const R = (el) => renderToStaticMarkup(el);
 
 /* ------------------------------------------------------------------ type */
 /** Inline Inter as base64 woff2 so the PDF never falls back silently. */
-export function fontFaces(dir = "node_modules/@fontsource/inter/files", weights = [400, 500, 600, 700, 800]) {
-  return weights.map((w) => {
-    const b64 = fs.readFileSync(path.join(dir, `inter-latin-${w}-normal.woff2`)).toString("base64");
-    return `@font-face{font-family:Inter;font-style:normal;font-weight:${w};font-display:block;` +
-           `src:url(data:font/woff2;base64,${b64}) format("woff2")}`;
-  }).join("\n");
+export function fontFaces(
+  dir = "node_modules/@fontsource/inter/files",
+  weights = [400, 500, 600, 700, 800],
+) {
+  return weights
+    .map((w) => {
+      const b64 = fs
+        .readFileSync(path.join(dir, `inter-latin-${w}-normal.woff2`))
+        .toString("base64");
+      return (
+        `@font-face{font-family:Inter;font-style:normal;font-weight:${w};font-display:block;` +
+        `src:url(data:font/woff2;base64,${b64}) format("woff2")}`
+      );
+    })
+    .join("\n");
 }
 
 /* ---------------------------------------------------------------- colour */
@@ -31,21 +40,31 @@ export function fontFaces(dir = "node_modules/@fontsource/inter/files", weights 
  * deviation that is better or worse than its reference. That contrast is what
  * makes a variance readable at a glance.
  */
-export const TOKENS = mergeTokens({
-  font: { family: "Inter, system-ui, sans-serif" },
-  color: {
-    neutral: "#3C4248", total: "#171B1F",
-    good: "#178236", bad: "#C41616", zero: "#9AA0A6",
-    axis: "#B7BDC3", gridline: "#E9ECEE", rowBorder: "#E2E5E8",
-    text: "#171B1F", textMuted: "#6E757C", onFill: "#FFFFFF",
+export const TOKENS = mergeTokens(
+  {
+    font: { family: "Inter, system-ui, sans-serif" },
+    color: {
+      neutral: "#3C4248",
+      total: "#171B1F",
+      good: "#178236",
+      bad: "#C41616",
+      zero: "#9AA0A6",
+      axis: "#B7BDC3",
+      gridline: "#E9ECEE",
+      rowBorder: "#E2E5E8",
+      text: "#171B1F",
+      textMuted: "#6E757C",
+      onFill: "#FFFFFF",
+    },
+    scenario: {
+      AC: { fill: "#1D2226", stroke: "#1D2226", variant: "solid" }, // actual: solid black
+      PY: { fill: "#B0B6BC", stroke: "#B0B6BC", variant: "solid" }, // prior year: solid grey
+      PL: { fill: "transparent", stroke: "#1D2226", variant: "frame" }, // budget: hollow
+      FC: { fill: "transparent", stroke: "#1D2226", variant: "hatch" }, // forecast: hatched
+    },
   },
-  scenario: {
-    AC: { fill: "#1D2226", stroke: "#1D2226", variant: "solid" },  // actual: solid black
-    PY: { fill: "#B0B6BC", stroke: "#B0B6BC", variant: "solid" },  // prior year: solid grey
-    PL: { fill: "transparent", stroke: "#1D2226", variant: "frame" }, // budget: hollow
-    FC: { fill: "transparent", stroke: "#1D2226", variant: "hatch" }, // forecast: hatched
-  },
-}, greenRedTokens);
+  greenRedTokens,
+);
 
 /**
  * Compact formatting. Feed components REAL currency units and let the library
@@ -54,8 +73,12 @@ export const TOKENS = mergeTokens({
  * Compact mode trims trailing zeros, so 59,000,000 prints "59M" beside
  * "65.8M"; that is the library's behaviour, not a bug to chase.
  */
-export const fmt = (currency, decimals = 1) => ({ compact: true, decimals, locale: "en-US",
-  ...(currency ? { currency } : {}) });
+export const fmt = (currency, decimals = 1) => ({
+  compact: true,
+  decimals,
+  locale: "en-US",
+  ...(currency ? { currency } : {}),
+});
 export const FMT = fmt();
 
 /* -------------------------------------------------------------- identity */
@@ -64,7 +87,12 @@ export const FMT = fmt();
  * than a template. Chamfer one corner and set the initial inside — legible at
  * 20px in the running header and at 40px on the cover.
  */
-export function mark({ size = 26, fg = "#fff", bg = "#171B1F", glyph = "M8.6 8 L16 22.6 L23.4 8" } = {}) {
+export function mark({
+  size = 26,
+  fg = "#fff",
+  bg = "#171B1F",
+  glyph = "M8.6 8 L16 22.6 L23.4 8",
+} = {}) {
   return `<svg width="${size}" height="${size}" viewBox="0 0 32 32" aria-hidden="true">
   <path d="M4 0h24a4 4 0 0 1 4 4v20l-8 8H4a4 4 0 0 1-4-4V4a4 4 0 0 1 4-4z" fill="${bg}"/>
   <path d="${glyph}" fill="none" stroke="${fg}" stroke-width="3.6"/>
@@ -137,16 +165,20 @@ export function contents(rows) {
  * that fills half the page reads as padding.
  */
 export function notationKey({ scenarios = ["AC", "PY", "PL", "FC"], marks = true } = {}) {
-  const sw = (inner) => `<svg width="38" height="28" viewBox="0 0 38 28" style="flex:none">${inner}</svg>`;
+  const sw = (inner) =>
+    `<svg width="38" height="28" viewBox="0 0 38 28" style="flex:none">${inner}</svg>`;
   const has = (k) => scenarios.includes(k);
   const rows = [];
-  if (has("AC") || has("PY")) rows.push(`<div>${sw('<rect x="0" y="4" width="16" height="20" fill="#1D2226"/><rect x="20" y="8" width="16" height="16" fill="#B0B6BC"/>')}
+  if (has("AC") || has("PY"))
+    rows.push(`<div>${sw('<rect x="0" y="4" width="16" height="20" fill="#1D2226"/><rect x="20" y="8" width="16" height="16" fill="#B0B6BC"/>')}
       <span><b>AC · PY</b> actual solid black, prior year solid grey</span></div>`);
-  if (has("PL") || has("FC")) rows.push(`<div>${sw('<defs><pattern id="hx" width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="2" height="4" fill="#1D2226"/></pattern></defs><rect x="0" y="4" width="16" height="20" fill="#fff" stroke="#1D2226" stroke-width="1.4"/><rect x="20" y="4" width="16" height="20" fill="url(#hx)"/>')}
+  if (has("PL") || has("FC"))
+    rows.push(`<div>${sw('<defs><pattern id="hx" width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="2" height="4" fill="#1D2226"/></pattern></defs><rect x="0" y="4" width="16" height="20" fill="#fff" stroke="#1D2226" stroke-width="1.4"/><rect x="20" y="4" width="16" height="20" fill="url(#hx)"/>')}
       <span><b>PL · FC</b> budget hollow, forecast hatched</span></div>`);
   rows.push(`<div>${sw('<rect x="0" y="10" width="18" height="9" fill="#178236"/><rect x="22" y="10" width="14" height="9" fill="#C41616"/>')}
       <span><b>Deviation</b> green favourable, red unfavourable</span></div>`);
-  if (marks) rows.push(`<div>${sw('<rect x="0" y="5" width="14" height="7" fill="#1D2226"/><line x1="0" y1="21" x2="28" y2="21" stroke="#1D2226" stroke-width="1.4"/><circle cx="31" cy="21" r="4" fill="#1D2226"/>')}
+  if (marks)
+    rows.push(`<div>${sw('<rect x="0" y="5" width="14" height="7" fill="#1D2226"/><line x1="0" y1="21" x2="28" y2="21" stroke="#1D2226" stroke-width="1.4"/><circle cx="31" cy="21" r="4" fill="#1D2226"/>')}
       <span><b>Bars · pins</b> absolute values, relative values</span></div>`);
   // Only document notation the report actually uses — a legend entry for a
   // scenario that appears nowhere makes the reader hunt for something absent.
@@ -163,18 +195,35 @@ export function notationKey({ scenarios = ["AC", "PY", "PL", "FC"], marks = true
  * that opens the report needs the same probe `render.mjs` and `fit.mjs` use.
  */
 export function launchOptions(extraArgs = []) {
-  const paths = [process.env.PLAYWRIGHT_CHROMIUM, "/opt/pw-browsers/chromium", "/usr/bin/chromium",
-    "/usr/bin/chromium-browser", "/usr/bin/google-chrome",
+  const paths = [
+    process.env.PLAYWRIGHT_CHROMIUM,
+    "/opt/pw-browsers/chromium",
+    "/usr/bin/chromium",
+    "/usr/bin/chromium-browser",
+    "/usr/bin/google-chrome",
     "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
-    "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"]
-    .filter(Boolean).filter((p) => { try { return fs.existsSync(p); } catch { return false; } });
+    "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+  ]
+    .filter(Boolean)
+    .filter((p) => {
+      try {
+        return fs.existsSync(p);
+      } catch {
+        return false;
+      }
+    });
   const o = { args: ["--no-sandbox", "--font-render-hinting=none", ...extraArgs] };
   if (paths.length) o.executablePath = paths[0];
   return o;
 }
 
 /* -------------------------------------------------------------- document */
-export function css({ ink = "#171B1F", rule = "#D8DCE0", mute = "#6E757C", fonts = fontFaces() } = {}) {
+export function css({
+  ink = "#171B1F",
+  rule = "#D8DCE0",
+  mute = "#6E757C",
+  fonts = fontFaces(),
+} = {}) {
   return `
 ${fonts}
 *{box-sizing:border-box}
@@ -276,7 +325,9 @@ table.plain td.r{text-align:right;font-weight:600;color:${ink}}
 /* fitting aids — zoom changes layout height, transform does not, so zoom is
    the one that actually buys a page back. Classes exist for every 2% from
    .z98 down to .z70; a class outside that range silently does nothing. */
-${Array.from({ length: 15 }, (_, i) => 98 - i * 2).map((z) => `.z${z}{zoom:.${z}}`).join("")}
+${Array.from({ length: 15 }, (_, i) => 98 - i * 2)
+  .map((z) => `.z${z}{zoom:.${z}}`)
+  .join("")}
 `;
 }
 

@@ -3,7 +3,7 @@
 IBCS (the basis of ISO 24896) is a notation standard for business reporting: the
 point is that a shape means the same thing in every report, so a reader who has
 learned it once reads any conforming report faster. Most of it the library
-handles. These are the places where *your* choices decide whether the report
+handles. These are the places where _your_ choices decide whether the report
 conforms.
 
 ## Colour is spent on meaning, never on decoration
@@ -48,14 +48,14 @@ unit in the page subtitle once rather than repeating it on every axis.
 ## Deviations
 
 Absolute deviations are bars, relative deviations (%) are pins (a line and a
-dot). Show both when the reader needs magnitude *and* proportion: a €200k miss
+dot). Show both when the reader needs magnitude _and_ proportion: a €200k miss
 matters differently on a €2m line than on a €200m one. When one relative
 deviation is an order of magnitude larger than the rest, clamp it so it draws as
 an off-scale arrow rather than flattening every other pin.
 
 ## What to write next to the numbers
 
-The notation shows *what* moved. The prose has to say *why*, and it is the part a
+The notation shows _what_ moved. The prose has to say _why_, and it is the part a
 reader remembers. Lead each commentary block with the finding, not the
 restatement: "materials cost €7.0m more than budgeted, which is on its own the
 reason EBIT missed plan" beats "cost of goods sold increased by 12.4%". If a

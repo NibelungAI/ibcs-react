@@ -76,8 +76,8 @@ export default function IbcsReportSkillPage() {
       <h1 className="mt-2 text-4xl font-semibold tracking-tight">Statements in, board pack out</h1>
       <p className="mt-4 max-w-2xl text-lg text-fd-muted-foreground">
         <code>ibcs-report</code> teaches a coding agent to turn financial statements — a P&L, a
-        balance sheet, a whole management pack — into a print-ready A4 PDF report: a designed
-        cover, contents, commentary that says what happened, and every chart and table drawn with{" "}
+        balance sheet, a whole management pack — into a print-ready A4 PDF report: a designed cover,
+        contents, commentary that says what happened, and every chart and table drawn with{" "}
         <code>ibcs-react</code> in IBCS® notation.
       </p>
 
@@ -115,8 +115,8 @@ export default function IbcsReportSkillPage() {
 
       <h2 className="mt-12 text-xl font-semibold tracking-tight">What comes out</h2>
       <p className="mt-2 max-w-2xl text-sm text-fd-muted-foreground">
-        Real runs, not mockups. B and C come from the same one-sentence instruction — ten pages
-        and five — because the page plan follows the data, not a template.
+        Real runs, not mockups. B and C come from the same one-sentence instruction — ten pages and
+        five — because the page plan follows the data, not a template.
       </p>
       <div className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-4">
         {PREVIEWS.map((p) => (
@@ -147,14 +147,17 @@ export default function IbcsReportSkillPage() {
         balance sheet balances. Download, attach, and use prompts like{" "}
         <em>“Here’s our FY2025 management pack — turn it into a proper board report PDF”</em> or{" "}
         <em>
-          “Can you make a management report out of this P&L? It’s all I have — no balance sheet
-          and we don’t run a budget.”
+          “Can you make a management report out of this P&L? It’s all I have — no balance sheet and
+          we don’t run a budget.”
         </em>
       </p>
       <ul className="mt-4 grid gap-2 text-sm">
         {DEMO_FILES.map((d) => (
           <li key={d.file} className="flex flex-wrap items-baseline gap-x-3 rounded-lg border p-3">
-            <a href={`${DEMO}/${d.file}`} className="font-mono text-[13px] underline underline-offset-4">
+            <a
+              href={`${DEMO}/${d.file}`}
+              className="font-mono text-[13px] underline underline-offset-4"
+            >
               {d.file}
             </a>
             <span className="text-fd-muted-foreground">
@@ -208,8 +211,8 @@ export default function IbcsReportSkillPage() {
       </ul>
 
       <p className="mt-12 text-xs leading-relaxed text-fd-muted-foreground">
-        Vantera Industrial Group and Northbridge Logistics are fictional companies; the figures
-        are internally consistent demo data and no real entity is depicted. Reports contain no
+        Vantera Industrial Group and Northbridge Logistics are fictional companies; the figures are
+        internally consistent demo data and no real entity is depicted. Reports contain no
         ibcs-react branding — they are documents a company would publish.
       </p>
     </main>

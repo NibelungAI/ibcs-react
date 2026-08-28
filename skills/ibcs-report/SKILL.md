@@ -86,50 +86,93 @@ Tell the person what you included and what you left out for want of data.
 import { renderToStaticMarkup } from "react-dom/server";
 import React from "react";
 import { StatementTable, WaterfallChart, TrendChart, DataTable } from "ibcs-react";
-import { R, TOKENS, FMT, makePage, coverBody, contents, notationKey,
-         lockup, css, documentHtml, scaleUnits, H2, H3, P, CAP } from "./kit.mjs";
+import {
+  R,
+  TOKENS,
+  FMT,
+  makePage,
+  coverBody,
+  contents,
+  notationKey,
+  lockup,
+  css,
+  documentHtml,
+  scaleUnits,
+  H2,
+  H3,
+  P,
+  CAP,
+} from "./kit.mjs";
 import fs from "node:fs";
 
 const h = React.createElement;
-const INK = "#171B1F";                     // brand ink; one colour, used sparingly
+const INK = "#171B1F"; // brand ink; one colour, used sparingly
 const TOTAL = 8;
-const page = makePage({ entity: "Acme Group AG", total: TOTAL,
-                        fallbackSection: "Annual Management Report 2025", ink: INK });
+const page = makePage({
+  entity: "Acme Group AG",
+  total: TOTAL,
+  fallbackSection: "Annual Management Report 2025",
+  ink: INK,
+});
 
 // Source workbook is in thousands — charts format compactly, so feed real units.
 const pnl = scaleUnits(rawPnlLines);
 
-const p1 = page(coverBody({
-  lockupHtml: lockup({ name: "ACME", sub: "Group", scale: 1.25, light: true, ink: INK }),
-  eyebrow: "Annual Management Report",
-  title: "Growth on borrowed margin",       // an editorial line about the year
-  year: "2025",
-  facts: [["Reporting period", "1 January – 31 December 2025"],
-          ["Reporting entity", "Acme Group AG, Vienna"],
-          ["Presentation currency", "Euro (€), compact notation"],
-          ["Status", "Unaudited management accounts"]],
-}), { cover: true });
+const p1 = page(
+  coverBody({
+    lockupHtml: lockup({ name: "ACME", sub: "Group", scale: 1.25, light: true, ink: INK }),
+    eyebrow: "Annual Management Report",
+    title: "Growth on borrowed margin", // an editorial line about the year
+    year: "2025",
+    facts: [
+      ["Reporting period", "1 January – 31 December 2025"],
+      ["Reporting entity", "Acme Group AG, Vienna"],
+      ["Presentation currency", "Euro (€), compact notation"],
+      ["Status", "Unaudited management accounts"],
+    ],
+  }),
+  { cover: true },
+);
 
-const p2 = page(`${H2("Contents")}
-  ${contents([["Financial highlights", "Key figures and the revenue year", 3], /* … */])}
+const p2 = page(
+  `${H2("Contents")}
+  ${contents([["Financial highlights", "Key figures and the revenue year", 3] /* … */])}
   ${notationKey()}
   <p class="basisline">Unaudited management accounts for the twelve months ended
   31 December 2025. <b>AC</b> actual · <b>PY</b> prior year · <b>PL</b> budget ·
-  <b>FC</b> forecast. Amounts in euro, shown compactly.</p>`, { section: "Contents" });
+  <b>FC</b> forecast. Amounts in euro, shown compactly.</p>`,
+  { section: "Contents" },
+);
 
-const p3 = page(`${H2("Results of operations", "Consolidated income statement 2025 · amounts in euro")}
-  <div class="table-wrap z90">${R(h(StatementTable, {
-    lines: pnl, tokens: TOKENS, format: FMT, animate: false, tooltip: false,
-    waterfallWidth: 250, labelMaxWidth: 212,
-    varianceColumns: [{ base: "PY", mode: "abs", mark: "bar" },
-                      { base: "PY", mode: "pct", mark: "pin" }],
-  }))}</div>
-  ${P(`Revenue grew €38.8 million (+10.4%) … `)}`, { section: "Results of operations" });
+const p3 = page(
+  `${H2("Results of operations", "Consolidated income statement 2025 · amounts in euro")}
+  <div class="table-wrap z90">${R(
+    h(StatementTable, {
+      lines: pnl,
+      tokens: TOKENS,
+      format: FMT,
+      animate: false,
+      tooltip: false,
+      waterfallWidth: 250,
+      labelMaxWidth: 212,
+      varianceColumns: [
+        { base: "PY", mode: "abs", mark: "bar" },
+        { base: "PY", mode: "pct", mark: "pin" },
+      ],
+    }),
+  )}</div>
+  ${P(`Revenue grew €38.8 million (+10.4%) … `)}`,
+  { section: "Results of operations" },
+);
 
-fs.writeFileSync("report.html", documentHtml({
-  title: "Acme Group AG — Annual Management Report 2025",
-  css: css({ ink: INK }), pages: [p1, p2, p3 /* … */],
-}));
+fs.writeFileSync(
+  "report.html",
+  documentHtml({
+    title: "Acme Group AG — Annual Management Report 2025",
+    css: css({ ink: INK }),
+    pages: [p1, p2, p3 /* … */],
+  }),
+);
 ```
 
 Charts are `renderToStaticMarkup` of a component with an explicit pixel size —
@@ -208,7 +251,7 @@ Watch the cover and the commentary in particular — they are where a plausible
 flourish slips in unnoticed. "A record year", "the third consecutive year of
 growth", "unaudited management accounts", a year-end date: each of those is a
 factual claim, and a two-year comparative does not support any of them. The
-example cover below is a *shape*, not content to copy; fill it only with what the
+example cover below is a _shape_, not content to copy; fill it only with what the
 source states. Re-read the rendered pages for this specifically — invented detail
 tends to survive drafting and die on the proofread.
 

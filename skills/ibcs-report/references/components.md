@@ -20,21 +20,21 @@ Full docs: <https://ibcs-react.com/llms-full.txt>. The package also ships
 
 ## Choosing
 
-| The question the page answers | Component |
-|---|---|
-| What did the P&L do, line by line? | `StatementTable` (flow) |
-| What does the balance sheet look like? | `StatementTable` with `mode="stock"` |
-| What moved a total from A to B? | `WaterfallChart` (+ `comparisonData`) |
-| How did a measure run over 12–13 periods? | `TrendChart` |
-| How do a few categories compare to a reference? | `VarianceColumnChart` |
-| What is the composition of a whole? | `StructureChart` |
-| Which entities beat or missed plan, ranked? | `RankingVarianceChart` |
-| A grid of measures across entities | `DataTable` |
-| One measure, month vs YTD column groups | `ComparisonTable` |
-| A period tree crossed with a P&L tree | `MatrixTable` |
-| Same chart repeated by a dimension | `SmallMultiples` / `MiniVarianceMultiples` |
-| A calculation or DuPont tree | `TreeChart` / `RatioTreeChart` |
-| Part-to-whole as a pie | Don't — see `notation.md` |
+| The question the page answers                   | Component                                  |
+| ----------------------------------------------- | ------------------------------------------ |
+| What did the P&L do, line by line?              | `StatementTable` (flow)                    |
+| What does the balance sheet look like?          | `StatementTable` with `mode="stock"`       |
+| What moved a total from A to B?                 | `WaterfallChart` (+ `comparisonData`)      |
+| How did a measure run over 12–13 periods?       | `TrendChart`                               |
+| How do a few categories compare to a reference? | `VarianceColumnChart`                      |
+| What is the composition of a whole?             | `StructureChart`                           |
+| Which entities beat or missed plan, ranked?     | `RankingVarianceChart`                     |
+| A grid of measures across entities              | `DataTable`                                |
+| One measure, month vs YTD column groups         | `ComparisonTable`                          |
+| A period tree crossed with a P&L tree           | `MatrixTable`                              |
+| Same chart repeated by a dimension              | `SmallMultiples` / `MiniVarianceMultiples` |
+| A calculation or DuPont tree                    | `TreeChart` / `RatioTreeChart`             |
+| Part-to-whole as a pie                          | Don't — see `notation.md`                  |
 
 ## The data model
 
@@ -69,7 +69,7 @@ is `category` everywhere, so one array can feed several charts unchanged.
 **`StatementTable`** — `lines`, `mode` (`"flow"` | `"stock"`), `varianceColumns`
 (`[{base,mode:"abs"|"pct",mark:"bar"|"pin",label,clampPct}]` — there is no `width`
 here, the panels size themselves), `showBaseValues`
-(a value column appears for each variance *base*, so two ΔPY columns still give
+(a value column appears for each variance _base_, so two ΔPY columns still give
 one PY column), `waterfallWidth`, `labelMaxWidth`, `showWaterfall: false` for the
 plain T04 grid, `defaultCollapsed`, `maxHeight` + `virtualize` for long statements.
 
@@ -79,7 +79,7 @@ so `"Subcontracted haulage"` renders `"Subcontra…"` however tall you make the
 chart. Abbreviate at the data level: `"EBIT '24"`, `"Materials"`, `"Overhead"`.
 
 `data: [{category, value, flow}]`, plus `comparisonData`:
-the *same columns as budgeted*, which draws a variance panel under the bridge.
+the _same columns as budgeted_, which draws a variance panel under the bridge.
 The panel compares the **running level** against the comparison bridge at each
 step — a cumulative position-vs-plan walk that ends on the total miss — not the
 per-step deltas; write the caption and commentary to that reading. This is the
@@ -134,7 +134,7 @@ not mistakes in your code:
   comparisons and keep `RankingVarianceChart` for long lists where the top value
   is not the point.
 - **Percent variance pins clip on the negative side.** The pin axis sits at 40%
-  of the column width, so a label to the *left* of it has much less room than one
+  of the column width, so a label to the _left_ of it has much less room than one
   to the right, and a large negative percentage is drawn partly outside its own
   SVG. On a `DataTable` you can widen the column, or set `clampPct` below the
   outlier so it becomes an off-scale arrow — but clamping only promotes the next
