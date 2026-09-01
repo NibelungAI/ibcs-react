@@ -2,7 +2,7 @@ import type React from "react";
 import type { IbcsTokens } from "../core/tokens";
 
 /* ------------------------------------------------------------------ *
- * Shared "card surface" appearance — one flexible API for every
+ * Shared "card surface" appearance - one flexible API for every
  * container-like component (KPI cards today; report blocks etc. later)
  * so callers control border, background, corner rounding, the left
  * accent bar and shadow, instead of being forced into one look. Nothing
@@ -23,7 +23,7 @@ export interface CardAppearance {
   /** Border width in px when `border` is on. Default 1. */
   borderWidth?: number;
   /**
-   * Left favorability accent bar. `false` (default) draws none — a calm, neutral
+   * Left favorability accent bar. `false` (default) draws none - a calm, neutral
    * card. `true` draws a 3px bar in the status colour; a number sets its width in
    * px. (Off by default: a coloured corner bar reads as a dashboard-template
    * cliché; the variance text already carries the favorability colour.)
@@ -31,7 +31,7 @@ export interface CardAppearance {
   accent?: boolean | number;
   /** Lift the card off the background with a soft drop shadow. Default false. */
   shadow?: boolean;
-  /** Padding — a px number or any CSS padding string. Default "15px 17px". */
+  /** Padding - a px number or any CSS padding string. Default "15px 17px". */
   padding?: number | string;
 }
 

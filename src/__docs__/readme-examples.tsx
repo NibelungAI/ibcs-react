@@ -5,15 +5,15 @@
  * The README used to drift: it showed a `comparisons` prop `StatementTable`
  * never had, and object literals whose `flow` / `kind` fields widened to
  * `string`. Nothing caught it because Markdown doesn't compile. This file is
- * that missing compiler — **the snippets live here first**, so a prop rename or
+ * that missing compiler - **the snippets live here first**, so a prop rename or
  * a signature change breaks the build instead of the reader's copy-paste.
  *
  * House rules:
  *  - one exported symbol per README snippet, in README order, each tagged with
  *    the section it belongs to;
  *  - keep the code CHARACTER-IDENTICAL to the README wherever practical (the
- *    surrounding data/imports may differ — the README elides them);
- *  - **edit this file and the README in the same commit** — if you change one,
+ *    surrounding data/imports may differ - the README elides them);
+ *  - **edit this file and the README in the same commit** - if you change one,
  *    change the other;
  *  - no runtime side effects: nothing here is imported by the library, nothing
  *    is ever rendered, and it is not part of any build entry (`tsdown.config.ts`
@@ -40,8 +40,8 @@ import { computeVariance, formatValue, statementToCSV, checkIbcs, defaultTokens 
  * README § Quick start
  * ------------------------------------------------------------------ */
 
-// ONE data model — values keyed by scenario (AC actual / PY previous year /
-// PL plan / FC forecast) — feeds every component.
+// ONE data model - values keyed by scenario (AC actual / PY previous year /
+// PL plan / FC forecast) - feeds every component.
 export const statement: StatementLine[] = [
   { id: "rev-product", label: "Product revenue", flow: "add", values: { AC: 17.2e6, PY: 16.1e6 } },
   { id: "rev-service", label: "Service revenue", flow: "add", values: { AC: 12.9e6, PY: 9.5e6 } },
@@ -78,7 +78,7 @@ export function Dashboard() {
   );
 }
 
-/** README § Quick start — "hand a `ReportConfig` to `<Report />`". */
+/** README § Quick start - "hand a `ReportConfig` to `<Report />`". */
 export function ReportFromConfig() {
   return (
     <Report
@@ -141,7 +141,7 @@ const quarterlyRevenue: VarianceColumnChartConfig["data"] = [
 ];
 
 export function ValidatedChart() {
-  // Whatever the JSON editor / API / database hands you — hence `unknown`.
+  // Whatever the JSON editor / API / database hands you - hence `unknown`.
   const raw: unknown = { type: "varianceColumn", data: quarterlyRevenue, comparison: "PY" };
 
   const result = validateChartConfig(raw); // { ok: true, config } | { ok: false, error }
@@ -149,7 +149,7 @@ export function ValidatedChart() {
   return null;
 }
 
-/** README § One model, JSON config — the `validateReportConfig` sentence. */
+/** README § One model, JSON config - the `validateReportConfig` sentence. */
 export function validatedReport(raw: unknown): ReportConfig | null {
   const result = validateReportConfig(raw);
   return result.ok ? result.config : null;
@@ -183,14 +183,14 @@ export function ThemedSubtree() {
     <IbcsThemeProvider tokens={tokenPresets.cvd}>
       <KpiCard label="Revenue" values={{ AC: 30.1e6, PY: 25.6e6 }} />
       <StatementTable lines={statement} />
-      {/* nearest wins — this one chart departs from the theme */}
+      {/* nearest wins - this one chart departs from the theme */}
       <TrendChart data={monthly} tokens={{ color: { bad: "#c62828" } }} />
     </IbcsThemeProvider>
   );
 }
 
 /* ------------------------------------------------------------------ *
- * README § `ibcs-react/core` — framework-agnostic
+ * README § `ibcs-react/core` - framework-agnostic
  * ------------------------------------------------------------------ *
  * The README imports these from "ibcs-react/core"; in-repo that entry is
  * `../core`, so the import list above is the same names from the same module.

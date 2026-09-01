@@ -34,7 +34,7 @@ export function CustomTooltipDemo() {
         onHover={(h) => (h ? hover.onMove(h, { clientX: h.x, clientY: h.y }) : hover.onLeave())}
       />
       <div style={{ fontSize: 12, color: "#6b6a64", marginTop: 6 }}>
-        Hover, tab to a column or tap it — the panel is this page&apos;s own, not the built-in one.
+        Hover, tab to a column or tap it - the panel is this page&apos;s own, not the built-in one.
         Escape dismisses it.
       </div>
 

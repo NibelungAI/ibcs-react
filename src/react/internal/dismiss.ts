@@ -2,7 +2,7 @@
  * Escape / outside-tap dismissal for hover- and tap-triggered tooltips.
  *
  * WCAG 1.4.13 requires content that appears on hover/focus to be dismissible
- * without moving the pointer or focus — that is the Escape listener. The
+ * without moving the pointer or focus - that is the Escape listener. The
  * capture-phase pointerdown listener dismisses a tap-anchored (touch) tooltip
  * when the user taps anywhere else; capture runs before the next mark's own
  * tap handler, so tapping another mark dismisses the old tooltip and shows

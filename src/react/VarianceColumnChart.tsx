@@ -18,7 +18,7 @@ import { useIbcsTokens } from "./theme";
 import { clampTo, estTextW, fitLabel, svgSafeId } from "./internal/text";
 
 /**
- * One category column: the canonical {@link ScenarioDatum} with `AC` required —
+ * One category column: the canonical {@link ScenarioDatum} with `AC` required -
  * this chart draws the actual in front of the comparison, so there is always an
  * actual to draw.
  */
@@ -41,7 +41,7 @@ export interface VarianceColumnChartProps {
   width?: number;
   height?: number;
   /**
-   * Horizontal band layout — the gap between columns and the lead-in/out gutter.
+   * Horizontal band layout - the gap between columns and the lead-in/out gutter.
    * Omit for the centred default; pass `{ outer: 0 }` to trim the side whitespace
    * so the first/last columns sit flush to the plot edges (fill edge-to-edge).
    */
@@ -54,13 +54,13 @@ export interface VarianceColumnChartProps {
   /** Inline style merged OVER the chart `<svg>`'s own layout style. */
   style?: CSSProperties;
   /**
-   * Fired when a category column is clicked — for click-to-filter / drill-down.
+   * Fired when a category column is clicked - for click-to-filter / drill-down.
    * Pairs naturally with `useChartSelection`. Omit for a non-interactive chart
    * (no behavior or visual change). The clickable area spans the whole column.
    */
   onSelect?: (selection: ChartSelection<ColumnDatum>) => void;
   /**
-   * Fired as the pointer moves over / leaves a column (`null` on leave) — for a
+   * Fired as the pointer moves over / leaves a column (`null` on leave) - for a
    * custom tooltip. Pairs naturally with `useChartHover`. Default undefined.
    */
   onHover?: (hover: ChartHover<ColumnDatum> | null) => void;
@@ -78,8 +78,8 @@ export interface VarianceColumnChartProps {
  * side-by-side), PL/FC as an outline frame. A variance panel beneath shows
  * AC vs the comparison, colored by favorability.
  *
- * A forwarded `ref` lands on the chart `<svg>` — the useful handle for export /
- * serialization — even though the component also renders a screen-reader table
+ * A forwarded `ref` lands on the chart `<svg>` - the useful handle for export /
+ * serialization - even though the component also renders a screen-reader table
  * beside it.
  */
 export const VarianceColumnChart = forwardRef<SVGSVGElement, VarianceColumnChartProps>(
@@ -107,7 +107,7 @@ export const VarianceColumnChart = forwardRef<SVGSVGElement, VarianceColumnChart
     // IBCS rule: ABSOLUTE deviations are bars (they share the value scale);
     // RELATIVE (%) deviations are pins (line + dot) on their own scale. So when
     // `mark` is not set, follow the variance mode rather than always defaulting to
-    // a bar — a percent bar would wrongly imply value-scale comparability.
+    // a bar - a percent bar would wrongly imply value-scale comparability.
     const mark = markProp ?? (variance === "pct" ? "pin" : "bar");
     // The panel is drawn unless it is switched off; `variance` doubles as its
     // on/off switch, so every geometry branch below reads this one flag.
@@ -127,7 +127,7 @@ export const VarianceColumnChart = forwardRef<SVGSVGElement, VarianceColumnChart
     const labelH = 22;
     const gap = 14;
     // Headroom above the tallest column for its value label, and below the
-    // variance panel for a downward variance label — so neither is clipped.
+    // variance panel for a downward variance label - so neither is clipped.
     const labelTopH = 14;
     const varLabelH = showVariancePanel ? 13 : 0;
     const innerW = width - padL - padR;
@@ -318,7 +318,7 @@ export const VarianceColumnChart = forwardRef<SVGSVGElement, VarianceColumnChart
             const pl = d.PL;
             const info = { category: d.category, scenario: "AC" as const, value: d.AC, datum: d };
             // The visible marks of this category, in final (un-animated)
-            // geometry: the tooltip fires only near these — the full-height
+            // geometry: the tooltip fires only near these - the full-height
             // band rect below stays as the generous click/focus target.
             const yAC = yOf(d.AC);
             const markRects: MarkRect[] = [
@@ -372,7 +372,7 @@ export const VarianceColumnChart = forwardRef<SVGSVGElement, VarianceColumnChart
                     fill="transparent"
                   />
                 )}
-                {/* Comparison column behind (wider) — drawn in the COMPARISON
+                {/* Comparison column behind (wider) - drawn in the COMPARISON
                 scenario's own IBCS notation, not always solid grey: PY solid,
                 PL a hollow white frame ("the plan hasn't happened"), FC hatched.
                 This is what makes an AC-vs-Plan chart show plan as a white/empty
@@ -419,7 +419,7 @@ export const VarianceColumnChart = forwardRef<SVGSVGElement, VarianceColumnChart
                     fill={tokens.scenario.AC.fill}
                   />
                 )}
-                {/* Plan/budget reference frame — shown when AC is compared to some
+                {/* Plan/budget reference frame - shown when AC is compared to some
                 OTHER scenario (e.g. PY) but plan data exists, so the plan is
                 still on the chart as a hollow outline. When comparison==="PL"
                 the comparison column above already renders it as a frame, so we
@@ -435,7 +435,7 @@ export const VarianceColumnChart = forwardRef<SVGSVGElement, VarianceColumnChart
                     strokeWidth={1}
                   />
                 )}
-                {/* AC value label — drawn only when it fits its band (no overlap),
+                {/* AC value label - drawn only when it fits its band (no overlap),
                 and nudged inward at the edges so it never spills past the SVG. */}
                 {(() => {
                   const s = formatValue(d.AC, format);
@@ -537,7 +537,7 @@ export const VarianceColumnChart = forwardRef<SVGSVGElement, VarianceColumnChart
           )}
         </svg>
         <ChartDataTable
-          caption={title ? `${title} — data table` : `AC versus ${comparison} — data table`}
+          caption={title ? `${title} - data table` : `AC versus ${comparison} - data table`}
           columns={a11yColumns}
           rows={a11yRows}
         />

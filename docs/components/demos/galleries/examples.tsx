@@ -112,7 +112,7 @@ const acTrend = sampleMonthlyTrend.filter((d) => d.AC != null).map((d) => d.AC a
 const executiveConfig: ReportConfig = {
   title: {
     who: "Contoso Group",
-    what: "Performance summary — € thousands",
+    what: "Performance summary - € thousands",
     when: "FY 2026 · Actual vs Previous year",
   },
   message: "Revenue +17.5% on PY; margin expansion lifts net income to €8.9M.",
@@ -172,7 +172,7 @@ const executiveConfig: ReportConfig = {
       span: 7,
       title: {
         who: "Contoso Group",
-        what: "Operating income bridge — € thousands",
+        what: "Operating income bridge - € thousands",
         when: "FY 2026",
       },
       config: {
@@ -195,7 +195,7 @@ const executiveConfig: ReportConfig = {
       span: 5,
       title: {
         who: "Contoso Group",
-        what: "Revenue by region — € thousands",
+        what: "Revenue by region - € thousands",
         when: "FY 2026 vs PY",
       },
       config: {
@@ -212,7 +212,7 @@ const executiveConfig: ReportConfig = {
       span: 12,
       title: {
         who: "Contoso Group",
-        what: "Revenue — € thousands",
+        what: "Revenue - € thousands",
         when: "13 periods, AC/FC vs PY",
       },
       config: {
@@ -328,7 +328,7 @@ export function SalesDashboard() {
     <Dashboard>
       <ReportHeader
         who="Contoso Group · Sales"
-        what="Revenue by region — € thousands"
+        what="Revenue by region - € thousands"
         when="FY 2026 · Actual vs Previous year"
         message="Asia Pacific +33% leads growth; every region beats prior year."
       />
@@ -404,7 +404,7 @@ export function FinancialsDashboard() {
     <Dashboard>
       <ReportHeader
         who="Contoso Group · Finance"
-        what="Financial statements — € thousands"
+        what="Financial statements - € thousands"
         when="FY 2026 · Actual vs Previous year and Plan"
         message="Net income €8.9M, +10% on PY; balance sheet grows to €37.0M."
       />

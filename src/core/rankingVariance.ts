@@ -1,5 +1,5 @@
 /**
- * Layout model for a RANKING VARIANCE chart — IBCS reference #66
+ * Layout model for a RANKING VARIANCE chart - IBCS reference #66
  * ("18 States make up 88% of net sales"): a ranked list of entities, each
  * compared against a plan / prior reference, with three aligned panels:
  *   1. the actual value (AC),
@@ -11,7 +11,7 @@
  * derives the SHARED scales the three panels render against, and rolls up a
  * TOTAL row. The React component maps these value-space numbers to pixels.
  *
- * SSR-safe: no DOM, no clock, no randomness — a deterministic transform.
+ * SSR-safe: no DOM, no clock, no randomness - a deterministic transform.
  */
 
 import { computeVariance } from "./variance";
@@ -66,7 +66,7 @@ export interface RankingTotalRow {
 export interface RankingVarianceLayout {
   rows: RankingRow[];
   total: RankingTotalRow;
-  /** Max |AC| (and |base|) across the rows — the left AC-bar scale. */
+  /** Max |AC| (and |base|) across the rows - the left AC-bar scale. */
   acMax: number;
   /** Shared absolute-variance scale: max |abs| across the rows (never the total). */
   absMax: number;
@@ -95,7 +95,7 @@ const finite = (n: number): number => (Number.isFinite(n) ? n : 0);
  * Build the ranking-variance layout from raw entities.
  *
  * The per-row scales (`acMax`, `absMax`, `pctMax`) are derived from the data
- * rows only — never the total — so the TOTAL row's variance, which is the SUM
+ * rows only - never the total - so the TOTAL row's variance, which is the SUM
  * of the rows, naturally renders as an off-scale arrow rather than dwarfing
  * every individual bar. Empty input yields empty rows, a zero total, and unit
  * scales (so the renderer never divides by zero).

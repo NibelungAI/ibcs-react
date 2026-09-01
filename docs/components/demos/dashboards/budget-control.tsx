@@ -9,7 +9,7 @@ import {
 } from "ibcs-react";
 import { Dashboard, DashGrid, KpiStrip, Panel, series } from "./dashboard-layout";
 
-/** Actual, budget, and a ΔBudget pair — cost columns, so higher reads red. */
+/** Actual, budget, and a ΔBudget pair - cost columns, so higher reads red. */
 const costCenterColumns: DataTableColumn[] = [
   { key: "spend", label: "Actual", kind: "value" },
   { key: "spend_pl", label: "Budget", kind: "value", measure: "spend", scenario: "PL" },
@@ -36,7 +36,7 @@ const costCenterColumns: DataTableColumn[] = [
 ];
 
 /**
- * 3 · Budget vs actual — Helios Manufacturing.
+ * 3 · Budget vs actual - Helios Manufacturing.
  * A monthly revenue build-up with a forecast tail and FY landing bar, cost
  * centres against budget and the ranked variance drivers.
  */
@@ -143,7 +143,7 @@ export function BudgetControl() {
         </Panel>
         <Panel title="Variance drivers · ΔBudget by line (cost: higher is worse)">
           <RankingVarianceChart
-            title="Spend vs budget — ΔPlan"
+            title="Spend vs budget - ΔPlan"
             baseLabel="PL"
             width={560}
             rowHeight={26}

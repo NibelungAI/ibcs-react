@@ -4,7 +4,7 @@ import { IBM_Plex_Mono, IBM_Plex_Sans } from "next/font/google";
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 
-// IBM Plex — the business-reporting voice of the site. Loaded as CSS variables
+// IBM Plex - the business-reporting voice of the site. Loaded as CSS variables
 // and mapped to Tailwind's font-sans / font-mono in global.css.
 const plexSans = IBM_Plex_Sans({
   subsets: ["latin"],
@@ -20,11 +20,11 @@ const plexMono = IBM_Plex_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL("https://ibcs-react.com"),
   title: {
-    default: "ibcs-react — IBCS · ISO 24896 React components",
+    default: "ibcs-react - IBCS · ISO 24896 React components",
     template: "%s | ibcs-react",
   },
   description:
-    "Zero-dependency React components for IBCS® business communication — variance charts, waterfalls, statement tables, dashboards and reports following the IBCS notation, the basis of ISO 24896.",
+    "Zero-dependency React components for IBCS® business communication - variance charts, waterfalls, statement tables, dashboards and reports following the IBCS notation, the basis of ISO 24896.",
   formatDetection: { telephone: false },
 };
 

@@ -11,7 +11,7 @@ export const SITE_URL = "https://ibcs-react.com";
 export async function getLLMText(page: InferPageType<typeof source>) {
   const processed = await page.data.getText("processed");
   // The MDX → Markdown serializer entity-escapes JSX attribute strings; decode
-  // the common ones so code examples read as written (&amp; last — no double
+  // the common ones so code examples read as written (&amp; last - no double
   // decoding).
   const readable = processed
     .replaceAll("&#x22;", '"')

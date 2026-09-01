@@ -36,7 +36,7 @@ const LINES = [
   },
 ];
 
-/** The Dark preset applied through a provider — chrome, ink and bars included. */
+/** The Dark preset applied through a provider - chrome, ink and bars included. */
 export function ThemeDarkDemo() {
   return (
     <IbcsThemeProvider tokens={darkTokens}>

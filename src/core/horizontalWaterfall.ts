@@ -2,7 +2,7 @@
  * Horizontal-bridge layout helpers.
  *
  * The bridge MATH is orientation-agnostic, so this module re-exports
- * {@link computeBridge} (and its types) unchanged — a horizontal waterfall is
+ * {@link computeBridge} (and its types) unchanged - a horizontal waterfall is
  * the very same accumulation as the vertical one, only the renderer maps the
  * value axis to X and the categories to stacked rows instead of side-by-side
  * columns. The one horizontal-specific concern is splitting the plot height
@@ -42,7 +42,7 @@ export interface RowBandLayout {
 }
 
 /**
- * Split a plot height into `count` equal category bands stacked top-to-bottom —
+ * Split a plot height into `count` equal category bands stacked top-to-bottom -
  * the horizontal analogue of the vertical bridge's per-column `band` width.
  * Pure and SSR-safe; degenerate inputs (`count <= 0`) yield a single full-height
  * band so callers never divide by zero or read an empty array.

@@ -21,21 +21,21 @@ export interface StructureComponentValues {
  * up to four scenario values. The "current" series is the actual (`AC`) when
  * present, otherwise the forecast (`FC`).
  *
- * The name key is `category` — the SAME key every other datum in the library
- * uses — so one array can feed a `VarianceColumnChart` and a `StructureChart`
+ * The name key is `category` - the SAME key every other datum in the library
+ * uses - so one array can feed a `VarianceColumnChart` and a `StructureChart`
  * without renaming anything. `label` (the only key before v1.1) is accepted as
  * an alias forever; when both are present, `category` wins.
  */
 export type StructureDatum = StructureComponentValues &
   (
     | {
-        /** Component name ("COGS", "EMEA"). Preferred — matches every other datum type. */
+        /** Component name ("COGS", "EMEA"). Preferred - matches every other datum type. */
         category: string;
         /** @deprecated Use `category`. Kept as an alias so v1.0 data keeps working. */
         label?: string;
       }
     | {
-        /** @deprecated Use `category` — the key every other datum type uses. */
+        /** @deprecated Use `category` - the key every other datum type uses. */
         label: string;
         category?: string;
       }
@@ -47,7 +47,7 @@ export type StructureDatum = StructureComponentValues &
  * missing data, so it reads as `undefined` here and never reaches the geometry.
  */
 export interface StructureSegment extends StructureComponentValues {
-  /** Resolved display name — `category`, falling back to the legacy `label`. */
+  /** Resolved display name - `category`, falling back to the legacy `label`. */
   label: string;
   /** Echo of the input `category`, when the datum carried one. */
   category?: string;
@@ -55,9 +55,9 @@ export interface StructureSegment extends StructureComponentValues {
   current: number;
   /** The comparison-scenario value, if present. */
   base: number | undefined;
-  /** `current` / total — the component's share of the whole (0..1). */
+  /** `current` / total - the component's share of the whole (0..1). */
   share: number;
-  /** `base` / baseTotal — the comparison share, or null when unavailable. */
+  /** `base` / baseTotal - the comparison share, or null when unavailable. */
   baseShare: number | null;
   /** `current` vs `base` (respects `higherIsBetter`). */
   variance: Variance | null;
@@ -74,7 +74,7 @@ export interface StructureLayout {
   total: number;
   /** Sum of `base` across components that have one. */
   baseTotal: number;
-  /** Largest |value| across current and base — the bar-length scale. */
+  /** Largest |value| across current and base - the bar-length scale. */
   maxAbs: number;
   comparison: ScenarioKey;
 }
@@ -92,7 +92,7 @@ export interface ComputeStructureOptions {
  * Pure composition layout: resolve each component's current value, its share of
  * the total, and its variance against the comparison scenario; rank the
  * components; and report the totals and the bar-length scale. Framework
- * agnostic — the React `StructureChart` is just a renderer over this.
+ * agnostic - the React `StructureChart` is just a renderer over this.
  *
  * Non-finite scenario values are MISSING: they contribute nothing to the totals
  * (a single `NaN` can never wipe out the whole composition) and yield no

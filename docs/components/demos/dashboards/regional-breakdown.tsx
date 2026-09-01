@@ -60,7 +60,7 @@ const regionMatrixValues: MatrixValues = {
 };
 
 /**
- * 5 · Regional breakdown — Global Retail Co.
+ * 5 · Regional breakdown - Global Retail Co.
  * The same four markets read three ways: stacked by quarter, as a share of
  * the group with ΔPY, and as a market x quarter matrix with a variance column.
  */

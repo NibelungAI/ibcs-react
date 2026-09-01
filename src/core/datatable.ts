@@ -15,7 +15,7 @@
  *
  * `buildDataTableModel` resolves everything the renderer needs: flattened
  * visible rows (honouring a collapsed set), per-column variance scales, a
- * summed totals row, and optional sorting — so the React layer stays thin.
+ * summed totals row, and optional sorting - so the React layer stays thin.
  */
 
 import { SCENARIO_KEYS, type ScenarioKey } from "./types";
@@ -24,17 +24,17 @@ import type { FormatOptions } from "./format";
 
 /**
  * One measure's value inside a row. Either:
- *  - a plain `number` — shorthand for the AC scenario, or
+ *  - a plain `number` - shorthand for the AC scenario, or
  *  - a scenario object, e.g. `{ AC: 120, PY: 100 }` (missing keys = undefined),
- *  - `undefined` — no data (renders blank, excluded from totals).
+ *  - `undefined` - no data (renders blank, excluded from totals).
  */
 export type DataTableCell = number | Partial<Record<ScenarioKey, number>> | undefined;
 
 /**
  * A column. `kind` decides how the addressed measure is rendered:
- *  - "value"     — the scenario number (right-aligned, tabular).
- *  - "variance"  — an embedded AC-vs-`base` bar (abs) or pin (pct).
- *  - "sparkline" — a micro-chart from `row.spark[measure]`.
+ *  - "value"     - the scenario number (right-aligned, tabular).
+ *  - "variance"  - an embedded AC-vs-`base` bar (abs) or pin (pct).
+ *  - "sparkline" - a micro-chart from `row.spark[measure]`.
  */
 export interface DataTableColumn {
   /** Unique column id (also the React key and the default `measure`). */
@@ -58,7 +58,7 @@ export interface DataTableColumn {
   mode?: "abs" | "pct";
   /**
    * variance: filled "bar" or "pin" (dot), or "none" for a plain signed,
-   * impact-coloured number (no embedded mark — the IBCS T01 "numeric variance"
+   * impact-coloured number (no embedded mark - the IBCS T01 "numeric variance"
    * treatment). Default bar for abs, pin for pct.
    */
   mark?: "bar" | "pin" | "none";
@@ -96,7 +96,7 @@ export interface DataTableColumn {
    */
   borderLeft?: boolean;
   /**
-   * Add extra whitespace (an IBCS "group gap") before this column — used to set
+   * Add extra whitespace (an IBCS "group gap") before this column - used to set
    * value blocks apart from variance blocks without a vertical rule. Consumed by
    * {@link ComparisonTable}; ignored by the plain `DataTable` header logic.
    */
@@ -136,11 +136,11 @@ export interface DataTableRow {
    * marker glyph is drawn before the label: `"add"` → `+`, `"subtract"` → `−`,
    * `"result"` → `=`. A `"result"` row is emphasised (bold) with a 1px top rule,
    * mirroring `StatementLine.flow`. Absent → a plain entity row (unchanged).
-   * Purely presentational — it does not affect totals or value resolution.
+   * Purely presentational - it does not affect totals or value resolution.
    */
   flow?: "add" | "subtract" | "result";
   /**
-   * Draw a double top rule above this row — the IBCS grand-total convention for
+   * Draw a double top rule above this row - the IBCS grand-total convention for
    * a final line (e.g. "Net income"). Implies result-style bold emphasis.
    */
   doubleRule?: boolean;
@@ -176,7 +176,7 @@ export interface VarianceCellData {
   value: number;
   /** Good for the business (respects the column's `higherIsBetter`). */
   favorable: boolean;
-  /** pct mode: at/over `clampPct` — draw as an off-scale arrow. */
+  /** pct mode: at/over `clampPct` - draw as an off-scale arrow. */
   outlier: boolean;
 }
 
@@ -185,14 +185,14 @@ export interface ColumnModel {
   column: DataTableColumn;
   kind: "value" | "variance" | "sparkline";
   /**
-   * variance: shared axis domain — max |Δ| over the DETAIL (leaf) rows of the
+   * variance: shared axis domain - max |Δ| over the DETAIL (leaf) rows of the
    * whole tree, outliers excluded. Parent aggregates are deliberately left out
    * (they would dominate the scale) and the collapsed set is ignored, so
    * expanding or collapsing a group never moves the bars.
    */
   domain: number;
   /**
-   * Draw a subtle left divider before this column — true at the start of a new
+   * Draw a subtle left divider before this column - true at the start of a new
    * column group (or when the column forces `borderLeft`). Always false when no
    * column declares a `group`, so ungrouped tables look identical to before.
    */
@@ -227,7 +227,7 @@ export interface DataTableModel {
   totals: DataTableViewRow | null;
   /**
    * Top header-group row (group labels + spans, aligned 1:1 with the columns it
-   * covers), or null when no column declares a `group` — in which case the
+   * covers), or null when no column declares a `group` - in which case the
    * renderer draws the usual single-row header.
    */
   headerGroups: DataTableHeaderGroup[] | null;
@@ -235,7 +235,7 @@ export interface DataTableModel {
 
 /**
  * Own-property test that survives measure names colliding with
- * `Object.prototype` members (`"constructor"`, `"toString"`, …) — a plain
+ * `Object.prototype` members (`"constructor"`, `"toString"`, …) - a plain
  * `key in obj` / truthiness check reports those as present on any object.
  */
 function hasOwn(obj: object, key: string): boolean {
@@ -388,7 +388,7 @@ export function flattenRows(rows: DataTableRow[], collapsed: Set<string>): FlatD
 }
 
 /**
- * Every DETAIL (leaf) row of a tree, in order — the rows a variance scale is
+ * Every DETAIL (leaf) row of a tree, in order - the rows a variance scale is
  * built from. Parents are skipped: their aggregate would set a scale the detail
  * bars can never reach.
  */
@@ -489,7 +489,7 @@ export function buildDataTableModel(
   // 3. Per-column variance domains and group dividers (auto-drawn at the start
   //    of each new column group).
   //
-  //    The domain spans the DETAIL (leaf) rows of the WHOLE tree — not the
+  //    The domain spans the DETAIL (leaf) rows of the WHOLE tree - not the
   //    currently visible rows. Including parent aggregates let a group total
   //    dominate the scale, and because the visible set changes with the
   //    collapsed set, expanding a group silently rescaled every bar in the

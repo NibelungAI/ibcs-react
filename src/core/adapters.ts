@@ -3,9 +3,9 @@
  *
  * The library's model is a tree of {@link StatementLine}s (one value per
  * scenario, `add`/`subtract`/`result` flow, optional breakdown children). Every
- * chart view has its OWN flat input shape — {@link WaterfallDatum} for the
+ * chart view has its OWN flat input shape - {@link WaterfallDatum} for the
  * bridge, {@link StructureDatum} for a composition, {@link DataTableRow} for
- * the general table — because those views are also usable without a statement.
+ * the general table - because those views are also usable without a statement.
  *
  * These adapters are the missing bridge between the two: pure, allocation-only
  * projections from the statement model onto each view's shape, so a caller
@@ -18,7 +18,7 @@
  *   <StructureChart data={statementToStructure(lines)} />
  *   <DataTable columns={cols} rows={statementToDataTableRows(lines)} />
  *
- * POLICY — shared with the layout modules (see `./domain`): a non-finite value
+ * POLICY - shared with the layout modules (see `./domain`): a non-finite value
  * (`NaN`, `±Infinity`) is MISSING data, never zero. Values are resolved through
  * {@link resolveValue}, so a group without an own value reports the sum of its
  * children and a group whose children are all missing stays missing. Every
@@ -46,7 +46,7 @@ export interface StatementToWaterfallOptions {
 /** Options for {@link statementToStructure}. */
 export interface StatementToStructureOptions {
   /**
-   * Drop `flow: "result"` lines (subtotals). Default TRUE — a composition shows
+   * Drop `flow: "result"` lines (subtotals). Default TRUE - a composition shows
    * the PARTS of a whole, and a subtotal is not a part: including "Gross margin"
    * next to the costs it already contains double-counts the total and shrinks
    * every real component's share. Set false to keep them (e.g. to chart a
@@ -59,7 +59,7 @@ export interface StatementToStructureOptions {
 export interface StatementToDataTableRowsOptions {
   /**
    * Measure name the scenario values are filed under in `row.values`.
-   * Default `"value"` — a column addresses it via `key: "value"` (a column's
+   * Default `"value"` - a column addresses it via `key: "value"` (a column's
    * `measure` defaults to its `key`) or an explicit `measure: "value"`.
    */
   measure?: string;
@@ -83,24 +83,24 @@ function ownScenarioValues(line: StatementLine): Partial<Record<ScenarioKey, num
  * bridge tells the same story as the statement's own waterfall column.
  *
  * WHICH LINES ARE EMITTED (exact rule):
- *  - `expandGroups: false` (default) — the TOP-LEVEL lines only. A group's
+ *  - `expandGroups: false` (default) - the TOP-LEVEL lines only. A group's
  *    value is resolved through {@link resolveValue}, so a parent without an own
  *    value reports the sum of its children: collapsed groups still carry their
  *    full weight.
- *  - `expandGroups: true` — a line is replaced by its children (recursively)
+ *  - `expandGroups: true` - a line is replaced by its children (recursively)
  *    when it has children, is NOT `defaultCollapsed`, and is not a `"result"`.
  *    That mirrors what the statement table shows on first paint: a
  *    `defaultCollapsed` group stays one aggregated bar, an expanded-by-default
  *    group hands the flow to its children (which must sum to the parent for the
- *    running total to agree). `"result"` lines are never expanded — a result is
+ *    running total to agree). `"result"` lines are never expanded - a result is
  *    a checkpoint drawn to the running total, not a container of contributions.
  *
  * MISSING VALUES: an `add`/`subtract` line whose value for `scenario` resolves
  * to nothing is SKIPPED, not emitted as 0. Zero is a statement ("this cost was
  * nil"); no data is not, and a 0-valued column would still occupy a slot and a
  * label on the axis while drawing an invisible bar. `"result"` lines are always
- * emitted — {@link computeBridge} ignores a result's `value` and draws it to the
- * current running total — with the resolved value echoed (0 when missing) so
+ * emitted - {@link computeBridge} ignores a result's `value` and draws it to the
+ * current running total - with the resolved value echoed (0 when missing) so
  * the datum stays comparable to the statement.
  *
  * @example
@@ -155,7 +155,7 @@ export function statementToWaterfall(
  * the legacy `label` alias, so the same array can also feed the category
  * charts), every scenario the line has data for (resolved through
  * {@link resolveValue}, so a group reports the sum of its children) and the
- * line's `higherIsBetter` — {@link StructureDatum}'s polarity field, so cost
+ * line's `higherIsBetter` - {@link StructureDatum}'s polarity field, so cost
  * parts keep reading unfavorable when they grow.
  *
  * `"result"` lines are EXCLUDED by default (`skipResults: true`): they are
@@ -163,7 +163,7 @@ export function statementToWaterfall(
  * the whole. Pass `{ skipResults: false }` when the subtotals themselves are the
  * composition you want.
  *
- * Scenario keys with no finite value are omitted entirely rather than set to 0 —
+ * Scenario keys with no finite value are omitted entirely rather than set to 0 -
  * `computeStructure` reads an absent key as missing and leaves it out of the
  * totals and the variance.
  *
@@ -196,7 +196,7 @@ export function statementToStructure(
  *
  * Every line becomes a {@link DataTableRow} filing its OWN scenario values under
  * one measure (default `"value"`), with `children` recursed in place. Own values
- * are used deliberately — `measureValue` already sums the children of a row that
+ * are used deliberately - `measureValue` already sums the children of a row that
  * has no own value, so the table aggregates exactly like the statement does and
  * a collapsed group still totals. Non-finite values are dropped, so a `NaN` cell
  * renders blank instead of poisoning the column's variance scale.

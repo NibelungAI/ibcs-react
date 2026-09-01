@@ -3,7 +3,7 @@
  *
  * These helpers return logical, sign-prefixed strings (the minus/plus is the
  * leftmost glyph). RTL layouts are the caller's concern: set `dir="rtl"` on the
- * container so the UA reorders the sign/currency/digits for display — we do not
+ * container so the UA reorders the sign/currency/digits for display - we do not
  * inject bidi control characters here.
  */
 
@@ -22,7 +22,7 @@ export interface FormatOptions {
   /** Currency symbol placed before the number (sign stays leftmost). */
   currency?: string;
   /**
-   * Unit appended AFTER the number and its compact scale suffix — "18.4%",
+   * Unit appended AFTER the number and its compact scale suffix - "18.4%",
    * "1.2M€", "32 d". The counterpart of `currency`: use whichever side the
    * unit belongs on (a leading "€" is `currency`, a trailing "%" is `suffix`).
    */
@@ -42,7 +42,7 @@ const UNITS: Array<[number, keyof CompactSuffixes]> = [
 ];
 
 /**
- * "30.1M", "-111K", "1,234" — magnitude only, caller decides the sign prefix.
+ * "30.1M", "-111K", "1,234" - magnitude only, caller decides the sign prefix.
  *
  * Non-finite input (NaN / ±Infinity from a division by zero or a gap in the
  * source data) formats as "n/a", matching {@link formatPercent}: it must never
@@ -84,7 +84,7 @@ export function formatValue(n: number, opts: FormatOptions = {}): string {
 }
 
 /**
- * "+1.1M", "-306K" — always shows the sign, magnitude formatted compactly.
+ * "+1.1M", "-306K" - always shows the sign, magnitude formatted compactly.
  * Non-finite input formats as an UNSIGNED "n/a" (never "+n/a"): there is no
  * direction to report when the number is missing.
  */
@@ -95,7 +95,7 @@ export function formatSigned(n: number, opts: FormatOptions = {}): string {
   return `${prefix}${currency}${formatValue(Math.abs(n), { ...opts, currency: "", suffix: "" })}${suffix}`;
 }
 
-/** "+17.5%", "-100.0%", "n/a" — fraction in, percent out. */
+/** "+17.5%", "-100.0%", "n/a" - fraction in, percent out. */
 export function formatPercent(fraction: number | null, decimals = 1): string {
   if (fraction == null || !isFinite(fraction)) return "n/a";
   const pct = fraction * 100;
@@ -104,7 +104,7 @@ export function formatPercent(fraction: number | null, decimals = 1): string {
 }
 
 /**
- * Like formatPercent but with thousands grouping and no "%" suffix — the
+ * Like formatPercent but with thousands grouping and no "%" suffix - the
  * IBCS ΔPY% column style: "+6.9", "-100.0", "+1,727.9". The column header
  * carries the "%", so the cells stay terse.
  */

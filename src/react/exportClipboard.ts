@@ -113,7 +113,7 @@ export async function copyPngToClipboard(
 
   let item: ClipboardItem;
   try {
-    // Still inside the click's gesture window — no `await` has happened yet.
+    // Still inside the click's gesture window - no `await` has happened yet.
     item = new ClipboardItem({ "image/png": png });
   } catch {
     item = new ClipboardItem({ "image/png": await png });

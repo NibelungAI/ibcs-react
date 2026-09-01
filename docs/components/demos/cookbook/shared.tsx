@@ -3,7 +3,7 @@
 import React from "react";
 import { KpiCard, Sparkline } from "ibcs-react";
 
-/** A row of KPI cards that wraps — the header strip of most cookbook recipes. */
+/** A row of KPI cards that wraps - the header strip of most cookbook recipes. */
 export function KpiStrip({ items }: { items: React.ComponentProps<typeof KpiCard>[] }) {
   return (
     <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>

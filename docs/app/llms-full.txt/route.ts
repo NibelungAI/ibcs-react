@@ -5,7 +5,7 @@ import { getLLMText } from "@/lib/get-llm-text";
 export const revalidate = false;
 
 /**
- * /llms-full.txt — every docs page compiled to plain Markdown in one file,
+ * /llms-full.txt - every docs page compiled to plain Markdown in one file,
  * for agents and RAG pipelines that prefer a single ingest.
  */
 export async function GET() {

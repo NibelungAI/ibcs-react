@@ -4,7 +4,7 @@ import { renderToString } from "react-dom/server";
 import { cases } from "./fixtures";
 
 /**
- * Deterministic markup snapshots — the always-on half of the visual regression
+ * Deterministic markup snapshots - the always-on half of the visual regression
  * story (the pixel half lives in `tests/visual/`, see CONTRIBUTING.md).
  *
  * Every fixture from the shared catalogue is server-rendered and its markup is
@@ -20,7 +20,7 @@ import { cases } from "./fixtures";
 /**
  * Where generated ids surface in the markup. `useId()` output is stable for a
  * given tree, but it shifts whenever an unrelated component is added above a
- * chart — normalizing keeps those churn-only diffs out of the snapshots.
+ * chart - normalizing keeps those churn-only diffs out of the snapshots.
  */
 const ID_PATTERNS: RegExp[] = [
   // Fragment definitions and aria targets: id="…".

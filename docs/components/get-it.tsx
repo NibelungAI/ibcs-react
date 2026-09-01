@@ -3,10 +3,10 @@
 import { useEffect, useRef, useState } from "react";
 
 /**
- * "The install IS a chart" — the landing page's get-it section as a
+ * "The install IS a chart" - the landing page's get-it section as a
  * frameless IBCS horizontal bar chart hanging off a hard 2px category axis.
  * The two commands ARE the bars: Install is a solid AC bar with the command
- * reversed out; the agents command is an FC bar (outlined + 45° hatch) —
+ * reversed out; the agents command is an FC bar (outlined + 45° hatch) -
  * the agent channel is literally the forecast. Bar length is real data
  * (character count in `ch`). Switching a package manager re-plots the AC
  * bar; copying grows a green good-variance underline from the axis. Each
@@ -129,7 +129,7 @@ export function GetIt() {
           className="absolute inset-y-[-10px] left-[10rem] hidden w-[2px] bg-[var(--ac)] sm:block"
         />
 
-        {/* Row 1 — AC: the actual. */}
+        {/* Row 1 - AC: the actual. */}
         <div className="items-start gap-0 py-2.5 sm:grid sm:grid-cols-[10rem_1fr]">
           <div className={LABEL}>Install</div>
           <div className="min-w-0">
@@ -153,7 +153,7 @@ export function GetIt() {
           </div>
         </div>
 
-        {/* Row 2 — FC: the forecast (agents). */}
+        {/* Row 2 - FC: the forecast (agents). */}
         <div className="items-start gap-0 py-2.5 sm:grid sm:grid-cols-[10rem_1fr]">
           <div className={LABEL}>For AI agents</div>
           <div className="min-w-0">

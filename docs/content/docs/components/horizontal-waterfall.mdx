@@ -1,6 +1,6 @@
 ---
 title: HorizontalWaterfallChart
-description: An IBCS horizontal bridge (chart template C05) — categories run top-to-bottom, contributions float left-to-right.
+description: The IBCS horizontal waterfall chart (template C05) - categories run top-to-bottom, contributions float left-to-right.
 ---
 
 import { HorizontalWaterfallChart } from "ibcs-react";
@@ -11,7 +11,7 @@ adds a row-aligned variance panel on the right.
 
 ## When to use
 
-A P&L / driver bridge where the line labels are long — laying the waterfall on
+A P&L / driver bridge where the line labels are long - laying the waterfall on
 its side gives each step a full-width label, unlike the vertical
 `WaterfallChart`. Add `comparisonData` for a row-aligned variance panel.
 
@@ -19,7 +19,7 @@ its side gives each step a full-width label, unlike the vertical
 
 <Frame center>
   <HorizontalWaterfallChart
-    title="P&L bridge — AC vs PY"
+    title="P&L bridge - AC vs PY"
     width={680}
     height={320}
     format={{ compact: true }}
@@ -44,7 +44,7 @@ its side gives each step a full-width label, unlike the vertical
 import { HorizontalWaterfallChart } from "ibcs-react";
 
 <HorizontalWaterfallChart
-  title="P&L bridge — AC vs PY"
+  title="P&L bridge - AC vs PY"
   data={[
     { category: "Revenue", value: 1200, flow: "add" },
     { category: "Cost of sales", value: 540, flow: "subtract", higherIsBetter: false },
@@ -56,7 +56,7 @@ import { HorizontalWaterfallChart } from "ibcs-react";
 />;
 ```
 
-`comparisonData` must carry the same categories in the same order — the
+`comparisonData` must carry the same categories in the same order - the
 variance panel aligns row by row. `mark="pin"` draws those deviations as pins
 instead of bars, which keeps small lines readable next to large ones.
 

@@ -1,6 +1,6 @@
 ---
 title: WaterfallChart
-description: A standalone add / subtract / result bridge — how contributions move a running total from start to end.
+description: The IBCS vertical waterfall chart (template C12) - a standalone add / subtract / result bridge moving a running total from start to end.
 ---
 
 import { WaterfallChart } from "ibcs-react";
@@ -11,7 +11,7 @@ reads as unfavorable in the variance panel.
 
 ## When to use
 
-Variance contribution / bridge — explain how a total got from A to B (e.g.
+Variance contribution / bridge - explain how a total got from A to B (e.g.
 revenue → costs → operating income), as a chart rather than a table.
 
 ## Example
@@ -55,7 +55,7 @@ import { WaterfallChart } from "ibcs-react";
 />;
 ```
 
-A `result` row needs no value — the component computes the running total. Pass
+A `result` row needs no value - the component computes the running total. Pass
 `comparisonData` (the same categories for another scenario) to get a variance
 panel; `mark` decides whether those deviations draw as bars or pins.
 

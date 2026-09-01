@@ -3,7 +3,7 @@
  *
  * The dist is built per-module (tsdown `unbundle`) precisely so that a
  * consumer importing one component pays for one component. That property is
- * invisible to unit tests and easy to destroy silently — one build-config
+ * invisible to unit tests and easy to destroy silently - one build-config
  * change and every consumer bundle re-inflates to the whole library (55 KB
  * gzip for a single KpiCard, as the first consumer integration report
  * measured against v1.0.0). This script bundles two real fixtures against
@@ -11,13 +11,13 @@
  * externalized, package.json `sideEffects` honoured) and fails the build
  * when the property regresses:
  *
- * 1. A KpiCard-only bundle must stay under BUDGET_GZIP — generous headroom
+ * 1. A KpiCard-only bundle must stay under BUDGET_GZIP - generous headroom
  *    over the measured ~4.2 KB, but an order of magnitude below the broken
  *    state, so drift is caught long before it hurts.
  * 2. It must not contain other components' aria-caption markers ("Bridge
  *    of" = WaterfallChart, "Composition of" = StructureChart, "Trend of" =
- *    TrendChart) — the exact leak the integration report demonstrated.
- * 3. A six-component bundle must still contain those markers — proving the
+ *    TrendChart) - the exact leak the integration report demonstrated.
+ * 3. A six-component bundle must still contain those markers - proving the
  *    check itself works and nothing was over-shaken away.
  *
  * Run after `npm run build`; part of `npm run ci` and the CI workflow.
@@ -79,20 +79,20 @@ try {
 
   check(
     kpi.length > 2_000,
-    `KpiCard-only bundle is implausibly small (${kpi.length} B) — the fixture no longer bundles the component`,
+    `KpiCard-only bundle is implausibly small (${kpi.length} B) - the fixture no longer bundles the component`,
   );
   check(
     kpiGzip <= BUDGET_GZIP,
-    `KpiCard-only bundle is ${kpiGzip.toLocaleString()} B gzip — over the ${BUDGET_GZIP.toLocaleString()} B budget. Tree-shaking has regressed (single-bundle dist? side effects at module top level?)`,
+    `KpiCard-only bundle is ${kpiGzip.toLocaleString()} B gzip - over the ${BUDGET_GZIP.toLocaleString()} B budget. Tree-shaking has regressed (single-bundle dist? side effects at module top level?)`,
   );
   for (const marker of MARKERS) {
     check(
       !kpi.includes(marker),
-      `KpiCard-only bundle contains "${marker}" — another component rode along; tree-shaking has regressed`,
+      `KpiCard-only bundle contains "${marker}" - another component rode along; tree-shaking has regressed`,
     );
     check(
       many.includes(marker),
-      `six-component bundle is missing "${marker}" — the marker check is stale or the build over-shakes`,
+      `six-component bundle is missing "${marker}" - the marker check is stale or the build over-shakes`,
     );
   }
 

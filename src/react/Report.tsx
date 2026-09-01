@@ -19,7 +19,7 @@ export interface ReportProps {
    * common domain is published on each block's wrapper as `data-shared-scale-group`
    * and `data-shared-scale-domain` (JSON). Default false.
    *
-   * NOTE: this is advisory — `ConfiguredChart` doesn't yet take an external
+   * NOTE: this is advisory - `ConfiguredChart` doesn't yet take an external
    * domain, so the resolved scale is exposed (in the DOM and via
    * {@link resolveSharedScales}) rather than forced onto each chart's axis.
    */
@@ -142,7 +142,7 @@ function BlockBody({
 }: {
   block: ReportBlock;
   tokens?: IbcsTokensOverride;
-  /** Resolved theme — for the bits this component paints itself (text prose). */
+  /** Resolved theme - for the bits this component paints itself (text prose). */
   theme: IbcsTokens;
 }) {
   switch (block.type) {
@@ -155,7 +155,7 @@ function BlockBody({
         />
       );
     case "chart":
-      // Fill the cell's remaining height and centre the chart in it — sibling
+      // Fill the cell's remaining height and centre the chart in it - sibling
       // blocks in the same grid row stretch to the tallest (often a statement),
       // and a top-aligned chart would otherwise leave a large empty gap beneath.
       return (

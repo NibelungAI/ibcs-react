@@ -17,7 +17,7 @@ const SEVERITY_COLOR: Record<string, string> = {
 
 /**
  * Edit a chart config as JSON and watch `checkIbcs` re-lint it on every
- * keystroke — the same component the docs describe, driven live.
+ * keystroke - the same component the docs describe, driven live.
  */
 export function ConformancePlayground() {
   const [text, setText] = useState(DEFAULT_JSON);

@@ -11,7 +11,7 @@ const meta: Meta<typeof VarianceColumnChart> = {
     width: 560,
     height: 320,
     variance: "abs",
-    title: "Revenue — AC vs PY",
+    title: "Revenue - AC vs PY",
   },
   argTypes: {
     comparison: { control: "select", options: ["PY", "PL", "FC"] },

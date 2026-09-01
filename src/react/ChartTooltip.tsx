@@ -22,7 +22,7 @@ export interface ChartTooltipRow {
   /** Right-hand value, pre-formatted, e.g. "30.1M", "+1.1M". */
   value: string;
   /**
-   * Value color — pass an impact color (`tokens.color.good` / `.bad`) for a
+   * Value color - pass an impact color (`tokens.color.good` / `.bad`) for a
    * signed delta. Defaults to the theme's `color.surface` (white on the default
    * theme's dark panel; the pair inverts with the theme).
    */
@@ -36,13 +36,13 @@ export interface ChartTooltipProps {
   x: number;
   /** Pointer y in viewport coordinates (the panel sits at `y + 16`). */
   y: number;
-  /** Bold heading — usually the hovered category. */
+  /** Bold heading - usually the hovered category. */
   title: string;
   /** Body rows, label + value. */
   rows: ChartTooltipRow[];
   /**
    * Deep-partial token override, merged onto the enclosing
-   * {@link IbcsThemeProvider}'s theme (or the defaults) — same contract as
+   * {@link IbcsThemeProvider}'s theme (or the defaults) - same contract as
    * every other component's `tokens` prop. The panel is `color.text` filled,
    * inked with `color.surface`.
    */
@@ -50,7 +50,7 @@ export interface ChartTooltipProps {
 }
 
 /**
- * A reusable floating tooltip for charts — the same dark, white-on-`text`
+ * A reusable floating tooltip for charts - the same dark, white-on-`text`
  * panel `StatementTable` shows on row hover, generalized to any title + rows.
  * `position: fixed` at the pointer (`x + 16`, `y + 16`), flipped to the other
  * side of the pointer at the right/bottom viewport edges, `pointerEvents:
@@ -61,7 +61,7 @@ export interface ChartTooltipProps {
  * neither re-anchor nor clip it.
  *
  * Render it only when something is hovered (it draws unconditionally), so on
- * the server / at rest nothing is emitted. SSR-safe — without a DOM it renders
+ * the server / at rest nothing is emitted. SSR-safe - without a DOM it renders
  * inline with no portal and no measuring; the `color.surface` ink on the
  * `tokens.color.text` panel matches the table tooltip's contrast, and inverts
  * with the theme.
@@ -132,6 +132,6 @@ export const ChartTooltip = forwardRef<HTMLDivElement, ChartTooltipProps>(functi
   );
 
   // Client: escape transformed/clipping ancestors via a body portal. Server:
-  // no DOM — render inline (hover state never exists there anyway).
+  // no DOM - render inline (hover state never exists there anyway).
   return typeof document !== "undefined" ? createPortal(panel, document.body) : panel;
 });

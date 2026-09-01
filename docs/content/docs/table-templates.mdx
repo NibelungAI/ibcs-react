@@ -1,6 +1,6 @@
 ---
 title: Table templates
-description: The ibcs.com table templates T01–T04 built live — the flanking comparison layout, a multi-year P&L and the integrated statement.
+description: The ibcs.com table templates T01-T04 built live - the flanking comparison layout, a multi-year P&L and the integrated statement.
 ---
 
 import {
@@ -10,7 +10,7 @@ import {
   TemplateT04,
 } from "@/components/demos/galleries/table-templates";
 
-The **ibcs.com table templates** — `T01`…`T04`, part of the catalogue behind
+The **ibcs.com table templates** - `T01`…`T04`, part of the catalogue behind
 ISO 24896:2026, "Notation for business reporting". Each one is built live below
 from library components on one palette: scenario-keyed values (AC / PY / PL /
 FC), impact-coloured variances, grouped headers, build-up subtotals and
@@ -24,12 +24,12 @@ is a multi-year profit and loss statement
 ([DataTable](/docs/components/data-table) with flow markers); `T04` is the
 integrated [StatementTable](/docs/components/statement-table).
 
-For the chart codes `C01`–`C13`, see [IBCS templates](/docs/templates).
+For the chart codes `C01`-`C13`, see [IBCS templates](/docs/templates).
 
-## T01 · Hierarchical table, numeric variances
+## T01 · Table with hierarchical rows and variance columns
 
-Row labels sit in the **centre**, flanked by two column groups — November (the
-current month) on the left, January–November (year to date) on the right. Each
+Row labels sit in the **centre**, flanked by two column groups - November (the
+current month) on the left, January-November (year to date) on the right. Each
 group lists PY · PL · AC, then **numeric** AC-PY and AC-PL variances, absolute
 and percentage, impact-coloured. Countries build up to bold Europe / Americas /
 Rest of world subtotals and a World grand total under a double rule.
@@ -40,7 +40,7 @@ Rest of world subtotals and a World grand total under a double rule.
 
 Component: [ComparisonTable](/docs/components/comparison-table)
 
-## T02 · Hierarchical table, embedded variances
+## T02 · Table with hierarchical rows and integrated bar charts
 
 The same flanking hierarchy, but the variance is **embedded**: PY and AC stay
 as figures, then ΔPY becomes a signed green/red magnitude **bar** and ΔPY% a
@@ -53,12 +53,13 @@ rather than from the digits.
 
 Component: [ComparisonTable](/docs/components/comparison-table)
 
-## T03 · Profit and loss statement, year columns
+## T03 · Table with measure rows (a multi-year P&L)
 
 A P&L build-up: every line carries a `+` / `−` / `=` flow marker. The `=` lines
-— Revenue, Gross profit and the other results — are bold with a top rule, and
-Net income closes with a double rule. Columns span four years (2012–2014 PL and
-AC, then the current 2015 PL and FC).
+
+- Revenue, Gross profit and the other results - are bold with a top rule, and
+  Net income closes with a double rule. Columns span four years (2012-2014 PL and
+  AC, then the current 2015 PL and FC).
 
 <Frame>
   <TemplateT03 />
@@ -66,7 +67,7 @@ AC, then the current 2015 PL and FC).
 
 Component: [DataTable](/docs/components/data-table)
 
-## T04 · Profit and loss statement, embedded variance
+## T04 · Table with measure rows and integrated variances
 
 The integrated statement: PY · AC figures, then ΔPY as a green/red bar and
 ΔPY% as a pin. This is the dedicated `StatementTable` with `showWaterfall`
@@ -88,7 +89,7 @@ import { StatementTable } from "ibcs-react";
 
 ## Where to next
 
-- [IBCS templates](/docs/templates) — the chart codes `C01`–`C13`.
-- [Examples](/docs/examples) — the tables inside complete dashboards.
-- [The data model](/docs/data-model) — the row, column and line shapes these
+- [IBCS templates](/docs/templates) - the chart codes `C01`-`C13`.
+- [Examples](/docs/examples) - the tables inside complete dashboards.
+- [The data model](/docs/data-model) - the row, column and line shapes these
   tables consume.

@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Report cookbook — Product & SaaS. One component per recipe; each renders the
+ * Report cookbook - Product & SaaS. One component per recipe; each renders the
  * exact snippet printed next to it in `content/docs/cookbook.mdx`.
  */
 import {
@@ -31,7 +31,7 @@ import {
 } from "@/lib/demo-data/cookbook";
 import { KpiStrip } from "./shared";
 
-/** MRR trend — Vector Software · € k · 13 periods, AC + forecast */
+/** MRR trend - Vector Software · € k · 13 periods, AC + forecast */
 export function MRRTrend() {
   return (
     <TrendChart
@@ -49,7 +49,7 @@ export function MRRTrend() {
   );
 }
 
-/** ARR bridge — Vector Software · € k · beginning → ending ARR */
+/** ARR bridge - Vector Software · € k · beginning → ending ARR */
 export function ARRBridge() {
   return (
     <WaterfallChart
@@ -69,7 +69,7 @@ export function ARRBridge() {
   );
 }
 
-/** Net revenue retention — Vector Software · % · AC vs PY */
+/** Net revenue retention - Vector Software · % · AC vs PY */
 export function NetRevenueRetention() {
   return (
     <KpiStrip
@@ -97,7 +97,7 @@ export function NetRevenueRetention() {
   );
 }
 
-/** Monthly churn rate — Vector Software · % · lower is better */
+/** Monthly churn rate - Vector Software · % · lower is better */
 export function MonthlyChurnRate() {
   return (
     <LineChart
@@ -114,7 +114,7 @@ export function MonthlyChurnRate() {
   );
 }
 
-/** Cohort retention — Vector Software · % retained by month (matrix) */
+/** Cohort retention - Vector Software · % retained by month (matrix) */
 export function CohortRetention() {
   return (
     <MatrixTable
@@ -129,7 +129,7 @@ export function CohortRetention() {
   );
 }
 
-/** DAU & stickiness — Vector Software · k users / DAU-MAU % */
+/** DAU & stickiness - Vector Software · k users / DAU-MAU % */
 export function DAUAndStickiness() {
   return (
     <ComboChart
@@ -161,7 +161,7 @@ export function DAUAndStickiness() {
   );
 }
 
-/** NPS trend — Vector Software · score · quarterly (with PY) */
+/** NPS trend - Vector Software · score · quarterly (with PY) */
 export function NPSTrend() {
   return (
     <VarianceColumnChart
@@ -174,7 +174,7 @@ export function NPSTrend() {
   );
 }
 
-/** Feature adoption — Vector Software · % of accounts using feature */
+/** Feature adoption - Vector Software · % of accounts using feature */
 export function FeatureAdoption() {
   return (
     <StructureChart
@@ -194,7 +194,7 @@ export function FeatureAdoption() {
   );
 }
 
-/** Active users by plan — Vector Software · k · plan mix over time */
+/** Active users by plan - Vector Software · k · plan mix over time */
 export function ActiveUsersByPlan() {
   return (
     <StackedChart
@@ -218,7 +218,7 @@ export function ActiveUsersByPlan() {
   );
 }
 
-/** Expansion vs contraction — Vector Software · € k · net by month */
+/** Expansion vs contraction - Vector Software · € k · net by month */
 export function ExpansionVsContraction() {
   return (
     <VarianceColumnChart
@@ -238,7 +238,7 @@ export function ExpansionVsContraction() {
   );
 }
 
-/** Trial conversion funnel — Vector Software · count · signup → paid */
+/** Trial conversion funnel - Vector Software · count · signup → paid */
 export function TrialConversionFunnel() {
   return (
     <StructureChart
@@ -260,7 +260,7 @@ export function TrialConversionFunnel() {
   );
 }
 
-/** Support volume & CSAT — Vector Software · tickets / CSAT % */
+/** Support volume & CSAT - Vector Software · tickets / CSAT % */
 export function SupportVolumeAndCSAT() {
   return (
     <ComboChart
@@ -283,7 +283,7 @@ export function SupportVolumeAndCSAT() {
   );
 }
 
-/** Time-to-value vs account size — Vector Software · onboarded accounts */
+/** Time-to-value vs account size - Vector Software · onboarded accounts */
 export function TimeToValueVsAccountSize() {
   return (
     <BubbleChart
@@ -305,7 +305,7 @@ export function TimeToValueVsAccountSize() {
   );
 }
 
-/** ARPU by segment — Vector Software · € / month · AC vs PY */
+/** ARPU by segment - Vector Software · € / month · AC vs PY */
 export function ARPUBySegment() {
   return (
     <StructureChart

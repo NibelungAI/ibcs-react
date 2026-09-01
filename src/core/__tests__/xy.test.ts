@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { computeTicks, assignGroupColors, distinctGroups, computeXyScale } from "../xy";
 
-describe("computeTicks — tick count", () => {
+describe("computeTicks - tick count", () => {
   it("returns about the requested number of ticks (D3 error-based step)", () => {
     // Regression: rounding the raw step DOWN turned this into 9 ticks
     // (step 10 instead of 20).
@@ -42,7 +42,7 @@ describe("computeTicks — tick count", () => {
   });
 });
 
-describe("computeTicks — floating point", () => {
+describe("computeTicks - floating point", () => {
   it("emits clean decimals instead of accumulated drift", () => {
     const ticks = computeTicks(0, 1, 5);
     expect(ticks).toEqual([0, 0.2, 0.4, 0.6, 0.8, 1]);
@@ -61,7 +61,7 @@ describe("computeTicks — floating point", () => {
   });
 });
 
-describe("computeTicks — degenerate input", () => {
+describe("computeTicks - degenerate input", () => {
   it("returns no ticks for non-finite ends (never [NaN])", () => {
     expect(computeTicks(NaN, 10)).toEqual([]);
     expect(computeTicks(0, NaN)).toEqual([]);

@@ -39,7 +39,7 @@ export function CommentableMatrix() {
           setLast(
             <>
               <b>{c.rowLabel}</b> · {c.periodLabel} · {c.scenario} ={" "}
-              {c.value == null ? "—" : c.value.toLocaleString()}{" "}
+              {c.value == null ? "-" : c.value.toLocaleString()}{" "}
               <span style={{ color: "#9a9992", fontFamily: "ui-monospace, Menlo, monospace" }}>
                 ({ref})
               </span>

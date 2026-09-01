@@ -44,7 +44,7 @@ export function SizingDemo() {
         ))}
       </div>
       <div style={{ fontSize: 12, color: "#9a9992", marginBottom: 10 }}>
-        fit=&quot;{active.value}&quot; — {active.hint}
+        fit=&quot;{active.value}&quot; - {active.hint}
       </div>
       <div style={{ border: "1px dashed #e0ded7", borderRadius: 8 }}>
         <ChartBox width={760} height={300} fit={fit} minWidth={520} maxHeight={300}>

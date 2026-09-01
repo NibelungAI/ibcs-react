@@ -32,10 +32,10 @@ export interface TrendChartProps {
    */
   variance?: "abs" | "pct" | "none";
   /**
-   * Scenarios drawn as reference lines riding along the columns — PY solid grey
+   * Scenarios drawn as reference lines riding along the columns - PY solid grey
    * with dots ("the past"), PL dashed ("not real yet"). Default `["PY","PL"]`;
    * pass `["PY"]` for prior year only, `[]` for bare columns. Only "PY" and
-   * "PL" are honored today (FC support may come later) — any other scenario is
+   * "PL" are honored today (FC support may come later) - any other scenario is
    * ignored, since the forecast already rides in the column series.
    */
   referenceLines?: ScenarioKey[];
@@ -44,7 +44,7 @@ export interface TrendChartProps {
   width?: number;
   height?: number;
   /**
-   * Horizontal band layout — the gap between columns and the lead-in/out gutter.
+   * Horizontal band layout - the gap between columns and the lead-in/out gutter.
    * Omit for the centred default; pass `{ outer: 0 }` to trim the side whitespace
    * so the first/last columns sit flush to the plot edges (fill edge-to-edge).
    */
@@ -57,13 +57,13 @@ export interface TrendChartProps {
   /** Inline style merged OVER the chart `<svg>`'s own layout style. */
   style?: CSSProperties;
   /**
-   * Fired when a period column is clicked — for click-to-filter / drill-down.
+   * Fired when a period column is clicked - for click-to-filter / drill-down.
    * Pairs naturally with `useChartSelection`. Omit for a non-interactive chart.
    * `scenario` is "FC" on forecast periods, otherwise "AC".
    */
   onSelect?: (selection: ChartSelection<TrendDatum>) => void;
   /**
-   * Fired as the pointer moves over / leaves a period column (`null` on leave) —
+   * Fired as the pointer moves over / leaves a period column (`null` on leave) -
    * for a custom tooltip. Pairs naturally with `useChartHover`. Default undefined.
    */
   onHover?: (hover: ChartHover<TrendDatum> | null) => void;
@@ -94,21 +94,21 @@ function segments(
 }
 
 /**
- * IBCS trend chart over a run of periods (typically 13 — a year plus its
+ * IBCS trend chart over a run of periods (typically 13 - a year plus its
  * total). The current series (AC, or FC where actuals run out) is drawn as
  * columns; previous year and plan ride along as reference lines ("bands"),
  * and a variance panel beneath shows AC/FC vs the comparison scenario.
  *
  * Forecast periods are hatched and a `summary` period (e.g. the full-year
- * total) is set off with a divider and the emphasis color — the canonical
+ * total) is set off with a divider and the emphasis color - the canonical
  * "actual ▸ forecast ▸ total" trend layout. Summaries do not participate in
  * the period scale: a total that dwarfs the months is drawn capped with a
  * MARKED scale break (and its value label) instead of crushing every other
- * column, and the PY/PL reference lines stop before it — a total is not a
+ * column, and the PY/PL reference lines stop before it - a total is not a
  * point in the time series.
  *
- * A forwarded `ref` lands on the chart `<svg>` — the useful handle for export /
- * serialization — even though the component also renders a screen-reader table
+ * A forwarded `ref` lands on the chart `<svg>` - the useful handle for export /
+ * serialization - even though the component also renders a screen-reader table
  * beside it.
  */
 export const TrendChart = forwardRef<SVGSVGElement, TrendChartProps>(function TrendChart(
@@ -142,7 +142,7 @@ export const TrendChart = forwardRef<SVGSVGElement, TrendChartProps>(function Tr
   const hoverEnabled = marks.enabled;
 
   // `variance` doubles as the panel's on/off switch, and only PY/PL are drawn
-  // as reference lines — resolve both to plain flags once, so the geometry and
+  // as reference lines - resolve both to plain flags once, so the geometry and
   // markup below stay exactly as they were.
   const showVariancePanel = variance !== "none";
   const showPyLine = referenceLines.includes("PY");
@@ -198,7 +198,7 @@ export const TrendChart = forwardRef<SVGSVGElement, TrendChartProps>(function Tr
 
   // Reference-line point sets (null where the period lacks the scenario).
   // Summary periods are excluded: the lines trace the run of periods, and a
-  // total is not one — connecting December to "FY" would draw a spike into a
+  // total is not one - connecting December to "FY" would draw a spike into a
   // column that may not even share the scale.
   const pyPts = cells.map((c, i) =>
     c.PY != null && !c.summary ? { x: cxOf(i), y: yA(c.PY) } : null,
@@ -209,7 +209,7 @@ export const TrendChart = forwardRef<SVGSVGElement, TrendChartProps>(function Tr
 
   /**
    * The classic axis-break glyph: a slanted blank band cut across a mark,
-   * edged by two thin diagonals — the IBCS-legible way to say "drawn shorter
+   * edged by two thin diagonals - the IBCS-legible way to say "drawn shorter
    * than its value; read the label". Rendered near the capped end of a column
    * (or variance bar) whose summary value exceeds the period scale.
    */
@@ -410,7 +410,7 @@ export const TrendChart = forwardRef<SVGSVGElement, TrendChartProps>(function Tr
           if (c.current == null || !datum) return null;
           const cx = cxOf(i);
           const w = c.summary ? sumColW : colW;
-          // Off-scale summaries cap at the plot edge — the break glyph and the
+          // Off-scale summaries cap at the plot edge - the break glyph and the
           // value label carry the magnitude; everything else follows the
           // shared period scale.
           const targetTop = c.offScale ? (c.current >= 0 ? plotTop : plotBottom) : y(c.current);
@@ -516,7 +516,7 @@ export const TrendChart = forwardRef<SVGSVGElement, TrendChartProps>(function Tr
           );
         })}
 
-        {/* PL (plan) reference line — dashed, "not real yet" */}
+        {/* PL (plan) reference line - dashed, "not real yet" */}
         {showPlLine &&
           segments(plPts).map((seg, si) => (
             <path
@@ -530,7 +530,7 @@ export const TrendChart = forwardRef<SVGSVGElement, TrendChartProps>(function Tr
             />
           ))}
 
-        {/* PY reference line + dots — "the past" */}
+        {/* PY reference line + dots - "the past" */}
         {showPyLine && (
           <>
             {segments(pyPts).map((seg, si) => (
@@ -581,7 +581,7 @@ export const TrendChart = forwardRef<SVGSVGElement, TrendChartProps>(function Tr
               const cx = cxOf(i);
               const val = variance === "pct" ? (v.pct ?? 0) : v.abs;
               // A summary's Δ is excluded from the panel scale for the same
-              // reason its value is excluded from the period scale — cap it
+              // reason its value is excluded from the period scale - cap it
               // and mark the break; the label still states the real figure.
               const overVar = c.summary && Math.abs(val) > varMax;
               const h = (overVar ? 1 : Math.abs(val) / varMax) * (varH / 2) * grow;
@@ -624,7 +624,7 @@ export const TrendChart = forwardRef<SVGSVGElement, TrendChartProps>(function Tr
         )}
       </svg>
       <ChartDataTable
-        caption={title ? `${title} — data table` : `Trend versus ${comparison} — data table`}
+        caption={title ? `${title} - data table` : `Trend versus ${comparison} - data table`}
         columns={a11yColumns}
         rows={a11yRows}
       />

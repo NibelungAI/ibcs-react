@@ -3,7 +3,7 @@ import type { CSSProperties, ReactNode } from "react";
 /**
  * A live-example frame for chart embeds in MDX. Charts are printable
  * light-surface artifacts by design, so the frame pins a white card even in
- * the site's dark mode — except when demonstrating a dark token preset, where
+ * the site's dark mode - except when demonstrating a dark token preset, where
  * `dark` paints the card with the Dark theme's surface instead.
  */
 export function Frame({

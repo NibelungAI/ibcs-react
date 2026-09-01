@@ -1,5 +1,5 @@
 /**
- * Browser download helpers. Kept out of `core` because they touch the DOM —
+ * Browser download helpers. Kept out of `core` because they touch the DOM -
  * core stays framework- and environment-agnostic. Pair with `statementToCSV`
  * (from the core) to let a user save the resolved model.
  */

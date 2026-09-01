@@ -7,7 +7,7 @@ import type { CSSProperties, ReactNode } from "react";
  *
  * The chrome is deliberately plain: a KPI strip, a responsive panel grid and a
  * bordered panel with a small caps title. Media queries need real CSS, so the
- * rules ship in one hoisted `<style href>` block — React dedupes it across the
+ * rules ship in one hoisted `<style href>` block - React dedupes it across the
  * dashboards on the page.
  */
 const DASH_CSS = `

@@ -4,7 +4,7 @@ import { Gallery } from "@/components/demos/gallery";
 export const metadata: Metadata = {
   title: "Gallery",
   description:
-    "Every ibcs-react view on one page: income statements, budget comparisons, a balance sheet, a virtualized consolidation, variance columns, trends and structures — retheme or switch the comparison base live.",
+    "Every ibcs-react view on one page: income statements, budget comparisons, a balance sheet, a virtualized consolidation, variance columns, trends and structures - retheme or switch the comparison base live.",
 };
 
 export default function GalleryPage() {

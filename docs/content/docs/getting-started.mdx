@@ -6,8 +6,8 @@ description: Install ibcs-react, render your first IBCS chart, and learn how siz
 import { KpiCard, StatementTable } from "ibcs-react";
 
 Install the package, hand a component your numbers, and you get output drawn
-in the IBCS notation — scenario fills, impact-coloured variances and
-zero-baseline axes — with no chart wiring.
+in the IBCS notation - scenario fills, impact-coloured variances and
+zero-baseline axes - with no chart wiring.
 
 ## Install
 
@@ -22,7 +22,7 @@ it exceeds ~4 KB gzip or drags another component along.
 
 ## Peer dependencies
 
-React and React DOM are **peer** dependencies — the library uses your app's
+React and React DOM are **peer** dependencies - the library uses your app's
 copy rather than bundling its own. Any React **18 or newer** works (18 and 19
 are both fine).
 
@@ -35,11 +35,11 @@ there is no D3, no charting engine and nothing to configure.
 
 ## The one-data-model idea
 
-The whole library is built on a single model: **values keyed by scenario** —
+The whole library is built on a single model: **values keyed by scenario** -
 `AC` (actual), `PY` (previous year), `PL` (plan) and `FC` (forecast). A
 `StatementTable`, a `VarianceColumnChart` and a `KpiCard` are just different
 _views_ over that same shape. Compute your figures once and reuse them
-everywhere — you never reshape data per component.
+everywhere - you never reshape data per component.
 
 Components never fetch. You bring the numbers (from your ERP, an API, static
 JSON); the library handles the notation.
@@ -104,7 +104,7 @@ values:
 ```tsx
 import { KpiCard, StatementTable } from "ibcs-react";
 
-// ONE data model — values keyed by scenario (AC/PY/PL/FC) — feeds every
+// ONE data model - values keyed by scenario (AC/PY/PL/FC) - feeds every
 // component. Nothing here fetches; you bring the data.
 const statement = [
   { id: "rev-product", label: "Product revenue", flow: "add", values: { AC: 17.2e6, PY: 16.1e6 } },
@@ -138,7 +138,7 @@ export function Dashboard() {
 ## Sizing
 
 Charts draw an SVG at an explicit pixel size: pass `width` and `height` (every
-chart has a sensible default — `VarianceColumnChart` is 560 × 320,
+chart has a sensible default - `VarianceColumnChart` is 560 × 320,
 `WaterfallChart` 640 × 360, `TrendChart` 720 × 360). Labels, ticks and bar
 widths are laid out for exactly that box, which is what keeps a chart readable
 in print.
@@ -147,7 +147,7 @@ in print.
 <VarianceColumnChart data={data} width={620} height={320} />
 ```
 
-For a chart that follows its container, wrap it in `ChartBox` — one sizing
+For a chart that follows its container, wrap it in `ChartBox` - one sizing
 primitive with `fit` modes (`"scale"`, `"fixed"`, `"contain"`, `"fill"`),
 alignment, padding and scroll behaviour. It re-renders the chart at the
 resolved pixel size instead of scaling a bitmap, so text and strokes stay
@@ -163,17 +163,17 @@ import { ChartBox, TrendChart } from "ibcs-react";
 ```
 
 See [Interaction & data](/docs/interaction) for the full fit/align/scroll
-options. (`ChartFrame` still exists but is deprecated — `ChartBox` covers it.)
+options. (`ChartFrame` still exists but is deprecated - `ChartBox` covers it.)
 
 ## "use client" and server components
 
 The package entry ships its own `"use client"` directive, so a React Server
-Component can import and render a chart directly — you do not need to add a
+Component can import and render a chart directly - you do not need to add a
 `"use client"` file of your own just to place a `VarianceColumnChart` on a
 server-rendered page:
 
 ```tsx
-// app/page.tsx — a server component
+// app/page.tsx - a server component
 import { VarianceColumnChart } from "ibcs-react";
 
 export default function Page() {
@@ -182,27 +182,27 @@ export default function Page() {
 ```
 
 You do need your own `"use client"` component when _your_ code holds state or
-handlers around the chart — a scenario toggle, an `onSelect` drill-down, a
+handlers around the chart - a scenario toggle, an `onSelect` drill-down, a
 theme switcher. Rendering itself is SSR-safe: the markup is plain SVG, and the
 optional tooltip only appears on the client.
 
 ## Where to next
 
-- [Data model](/docs/data-model) — the exact shape of `StatementLine`,
+- [Data model](/docs/data-model) - the exact shape of `StatementLine`,
   `TrendDatum` and friends, plus the statement adapters.
-- [IBCS & ISO 24896](/docs/ibcs) — what the notation means and why a variance
+- [IBCS & ISO 24896](/docs/ibcs) - what the notation means and why a variance
   is red when it grows.
-- [Theming](/docs/theming) — token presets, `IbcsThemeProvider` and per-component
+- [Theming](/docs/theming) - token presets, `IbcsThemeProvider` and per-component
   overrides.
-- [Conformance](/docs/conformance) — lint a config against the IBCS notation
+- [Conformance](/docs/conformance) - lint a config against the IBCS notation
   rules the library implements.
-- [Components](/docs/components) — a page each, with live examples, code and a
+- [Components](/docs/components) - a page each, with live examples, code and a
   props table generated from the source types.
-- [Playground](/playground) — configure charts live in the browser.
+- [Playground](/playground) - configure charts live in the browser.
 
 ## Project status
 
 ibcs-react is in active development. It is an independent implementation of
-the IBCS notation described by ISO 24896 — not certified by, affiliated with or
+the IBCS notation described by ISO 24896 - not certified by, affiliated with or
 endorsed by IBCS or ISO. Open gaps and feedback are tracked on
 [GitHub](https://github.com/NibelungAI/ibcs-react).

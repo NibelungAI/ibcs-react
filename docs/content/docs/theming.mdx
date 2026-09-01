@@ -1,6 +1,6 @@
 ---
 title: Theming
-description: Token presets, the IbcsThemeProvider context and per-component overrides — every colour and scenario fill in ibcs-react is a token.
+description: Token presets, the IbcsThemeProvider context and per-component overrides - every colour and scenario fill in ibcs-react is a token.
 ---
 
 import { ThemePresetGallery } from "@/components/demos/theme-preset-gallery";
@@ -9,7 +9,7 @@ import { ThemeDarkDemo } from "@/components/demos/theme-dark-demo";
 
 Every colour, font stack and scenario fill is a token. Pass a ready-made
 preset, set one for a whole subtree with a provider, or override just the few
-values you care about — overrides are deep-merged onto the theme underneath.
+values you care about - overrides are deep-merged onto the theme underneath.
 
 ## How a component resolves its tokens
 
@@ -39,7 +39,7 @@ import { IbcsThemeProvider, KpiCard, StatementTable, tokenPresets } from "ibcs-r
 ```
 
 `tokens` accepts a full theme (a `tokenPresets` entry) or a partial
-`IbcsTokensOverride` — either way it is deep-merged onto the parent theme.
+`IbcsTokensOverride` - either way it is deep-merged onto the parent theme.
 
 Below, one provider (the Ocean preset) themes all three components; the middle
 card additionally passes its own `tokens` prop, which wins over the provider
@@ -53,7 +53,7 @@ for that one leaf.
 <IbcsThemeProvider tokens={tokenPresets.ocean}>
   <KpiCard label="Revenue" values={{ AC: 30.1e6, PY: 25.6e6 }} />
 
-  {/* Provider theme + this card's own override — the prop wins. */}
+  {/* Provider theme + this card's own override - the prop wins. */}
   <KpiCard
     label="Revenue"
     values={{ AC: 30.1e6, PY: 25.6e6 }}
@@ -86,7 +86,7 @@ import { StatementTable } from "ibcs-react";
 ```
 
 Prefer the strict black/red "good = neutral" convention? Override `color.good`
-to your neutral ink and keep `color.bad` red — the deep merge makes that a
+to your neutral ink and keep `color.bad` red - the deep merge makes that a
 one-line change.
 
 ## useIbcsTokens
@@ -111,27 +111,27 @@ a component works standalone as well as inside a theme.
 
 The library ships eight full token sets plus a named registry:
 
-- `defaultTokens` — neutral greys for actuals, muted green/red variance. Tuned
+- `defaultTokens` - neutral greys for actuals, muted green/red variance. Tuned
   for a light surface.
-- `oceanTokens` — a cool blue-grey set: dark navy actuals, light blue-grey
+- `oceanTokens` - a cool blue-grey set: dark navy actuals, light blue-grey
   previous year, IBCS semantic green/red.
-- `azureTokens` — a monochromatic bright-blue alternative: navy actuals, azure
+- `azureTokens` - a monochromatic bright-blue alternative: navy actuals, azure
   previous year.
-- `greenRedTokens` — the strict "good stands out, bad stands out" business
+- `greenRedTokens` - the strict "good stands out, bad stands out" business
   look: darker actuals, vivid green/red.
-- `vividTokens` — teal/blue actual bars with vivid variance, for a more
+- `vividTokens` - teal/blue actual bars with vivid variance, for a more
   colourful deck.
-- `cvdTokens` — colour-vision-deficiency safe: favorable teal, unfavorable
+- `cvdTokens` - colour-vision-deficiency safe: favorable teal, unfavorable
   orange. Only the impact colours change; scenario fills stay greyscale,
   because IBCS distinguishes scenarios by fill, not hue.
-- `monoTokens` — greyscale for black-and-white printing: favorable reads as a
+- `monoTokens` - greyscale for black-and-white printing: favorable reads as a
   darker grey, unfavorable as a lighter one, with the signed labels and the
   hatched/framed fills carrying the rest.
-- `darkTokens` — a dark-surface ink set (including `color.surface` and
+- `darkTokens` - a dark-surface ink set (including `color.surface` and
   `color.onFill`, so cards, tooltips and in-bar labels come along).
-- `tokenPresets` — all eight under stable, autocompleting ids (`default`,
-  `ocean`, `azure`, `greenRed`, `vivid`, `cvd`, `mono`, `dark` — the
-  `TokenPresetId` type), with matching display names in `tokenPresetLabels` —
+- `tokenPresets` - all eight under stable, autocompleting ids (`default`,
+  `ocean`, `azure`, `greenRed`, `vivid`, `cvd`, `mono`, `dark` - the
+  `TokenPresetId` type), with matching display names in `tokenPresetLabels` -
   ready to drive a theme switcher:
 
   ```tsx
@@ -144,7 +144,7 @@ The library ships eight full token sets plus a named registry:
   }
   ```
 
-Same data, same props — only `tokens` changes. Each card is painted with its
+Same data, same props - only `tokens` changes. Each card is painted with its
 preset's own `color.surface`:
 
 <Frame>
@@ -188,7 +188,7 @@ import { IbcsThemeProvider, KpiCard, StatementTable, darkTokens } from "ibcs-rea
 | Token                                 | Type                | What it drives                                                                                      |
 | ------------------------------------- | ------------------- | --------------------------------------------------------------------------------------------------- |
 | `color.neutral`                       | `string`            | Actual step bars (add / subtract waterfall steps).                                                  |
-| `color.total`                         | `string`            | Emphasised actual bars — subtotals and results.                                                     |
+| `color.total`                         | `string`            | Emphasised actual bars - subtotals and results.                                                     |
 | `color.good`                          | `string`            | Favorable variance (impact, not sign).                                                              |
 | `color.bad`                           | `string`            | Unfavorable variance.                                                                               |
 | `color.zero`                          | `string`            | Zero / no-change marks.                                                                             |
@@ -196,13 +196,13 @@ import { IbcsThemeProvider, KpiCard, StatementTable, darkTokens } from "ibcs-rea
 | `color.text`, `color.textMuted`       | `string`            | Labels and secondary text.                                                                          |
 | `color.rowBorder`                     | `string`            | Table row rules and hairlines.                                                                      |
 | `color.surface`, `color.surfaceMuted` | `string`            | Opaque component background (cards, tooltips, sticky cells, hollow plan fills) and its subtle tint. |
-| `color.onFill`                        | `string`            | Ink drawn on a solid scenario bar — in-bar value labels.                                            |
+| `color.onFill`                        | `string`            | Ink drawn on a solid scenario bar - in-bar value labels.                                            |
 | `scenario.AC` / `PY` / `PL` / `FC`    | `IbcsScenarioStyle` | Per-scenario `fill`, `stroke` and `variant` (`"solid"`, `"frame"`, `"hatch"`).                      |
 | `font.family`                         | `string`            | Font stack for component chrome and SVG text.                                                       |
 
 ## Where to next
 
-- [IBCS & ISO 24896](/docs/ibcs) — why the fills and colours mean what they
+- [IBCS & ISO 24896](/docs/ibcs) - why the fills and colours mean what they
   mean before you change them.
-- [Components](/docs/components) — every component takes the same `tokens`
+- [Components](/docs/components) - every component takes the same `tokens`
   prop.

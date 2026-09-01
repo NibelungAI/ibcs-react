@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { computeWindow } from "../virtualize";
 
-describe("computeWindow — coverage", () => {
+describe("computeWindow - coverage", () => {
   it("covers the whole viewport with overscan 0 at the top", () => {
     const w = computeWindow({
       scrollTop: 0,
@@ -58,7 +58,7 @@ describe("computeWindow — coverage", () => {
   });
 });
 
-describe("computeWindow — clamping", () => {
+describe("computeWindow - clamping", () => {
   it("clamps to [0, count] at the ends", () => {
     const top = computeWindow({
       scrollTop: 0,
@@ -117,7 +117,7 @@ describe("computeWindow — clamping", () => {
   });
 });
 
-describe("computeWindow — non-finite scroll state", () => {
+describe("computeWindow - non-finite scroll state", () => {
   it("coerces a NaN scrollTop to 0 instead of emitting NaN indices", () => {
     const w = computeWindow({
       scrollTop: NaN,

@@ -1,12 +1,12 @@
 /**
  * Pure layout for IBCS stacked charts (templates C01 / C02).
  *
- * C01 — stacked COLUMNS over time: each period is a column whose series stack
+ * C01 - stacked COLUMNS over time: each period is a column whose series stack
  * vertically from a zero baseline; the period TOTAL is printed above.
- * C02 — stacked BARS over a structure: each category is a horizontal bar whose
+ * C02 - stacked BARS over a structure: each category is a horizontal bar whose
  * series stack left-to-right from a zero baseline; the total sits to the right.
  *
- * This module is framework-agnostic and JSON-serializable — no React, no DOM,
+ * This module is framework-agnostic and JSON-serializable - no React, no DOM,
  * no colors. The React `StackedChart` is just a renderer over this layout.
  * Series identity/order is defined by the caller-supplied `series` list; each
  * datum carries its values keyed by series key.
@@ -63,9 +63,9 @@ export interface StackedLayout {
   columns: StackedColumn[];
   /** The series, in stack order, echoed back for the renderer. */
   series: StackedSeries[];
-  /** Most negative stack extent across all columns (≤ 0) — the lower domain. */
+  /** Most negative stack extent across all columns (≤ 0) - the lower domain. */
   domainMin: number;
-  /** Most positive stack extent across all columns (≥ 0) — the upper domain. */
+  /** Most positive stack extent across all columns (≥ 0) - the upper domain. */
   domainMax: number;
 }
 
@@ -79,7 +79,7 @@ export interface ComputeStackedOptions {
  * stacking values up from a zero baseline (positives upward, negatives below),
  * the running cumulative offsets, the category total, and the shared value
  * domain. The same layout drives both the vertical (C01) and horizontal (C02)
- * renderers — orientation is purely a rendering concern.
+ * renderers - orientation is purely a rendering concern.
  *
  * Per ISO 24896 the baseline is always zero. Negative contributions stack
  * downward from zero (kept distinct from the positive stack) so a column with

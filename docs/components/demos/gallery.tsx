@@ -57,7 +57,7 @@ const STATEMENT_SETS = [
     label: "Drill-down",
     lines: sampleStatement,
     subtitle:
-      "Same model, nested: Revenue and Operating expenses are groups — click the chevron to expand.",
+      "Same model, nested: Revenue and Operating expenses are groups - click the chevron to expand.",
   },
   {
     value: "loss",
@@ -75,7 +75,7 @@ const STATEMENT_SETS = [
  *
  * The whole page sits inside an `IbcsThemeProvider` and paints its own chrome
  * from the active tokens (`surface` / `surfaceMuted` / `text` / `textMuted`),
- * so switching to the Dark preset actually darkens the page — not just the
+ * so switching to the Dark preset actually darkens the page - not just the
  * marks inside the charts.
  */
 export function Gallery() {
@@ -119,7 +119,7 @@ export function Gallery() {
               IBCS reporting components
             </h1>
             <p style={{ fontSize: 13, color: tokens.color.textMuted, margin: "6px 0 0" }}>
-              One model, many views. Switch the comparison base or retheme — every table and chart
+              One model, many views. Switch the comparison base or retheme - every table and chart
               re-renders from the same data.
             </p>
           </header>
@@ -142,7 +142,7 @@ export function Gallery() {
           <StatementExplorer comparison={comparison} replay={replay} tokens={tokens} />
 
           <BudgetSection
-            title="Budget vs actual — income statement"
+            title="Budget vs actual - income statement"
             subtitle="Actual against plan (PL / budget): the PL column is the budget, ΔBudget (bar) and ΔBudget% (pin) show the gap. Over-budget costs read red regardless of the comparison toggle above."
             lines={sampleStatementFlat}
             replay={replay}
@@ -150,7 +150,7 @@ export function Gallery() {
           />
 
           <BudgetSection
-            title="Budget vs actual — by quarter"
+            title="Budget vs actual - by quarter"
             subtitle="The same comparison on the quarterly build-up to full-year revenue. Q4 beat budget by the most; the full-year total lands 1.6M over plan."
             lines={sampleQuarterlyStatement}
             replay={replay}
@@ -158,7 +158,7 @@ export function Gallery() {
           />
 
           <StatementSection
-            title="Balance sheet — stock view"
+            title="Balance sheet - stock view"
             subtitle="A stock statement: each line is an ending balance (a level), not a period movement. Assets balance against liabilities + equity at 37.0M. Expand Non-current assets."
             lines={sampleBalanceSheet}
             mode="stock"
@@ -168,7 +168,7 @@ export function Gallery() {
           />
 
           <StatementSection
-            title="Consolidation — virtualized"
+            title="Consolidation - virtualized"
             subtitle="~250 rows (10 divisions × 24 accounts). The body scrolls with a sticky header and only the rows in view are mounted, so big consolidations and transaction drill-downs stay smooth. Scroll inside the table."
             lines={sampleConsolidation}
             maxHeight={440}
@@ -422,7 +422,7 @@ function CsvButton({ onClick, tokens }: { onClick: () => void; tokens: IbcsToken
   );
 }
 
-/** Two Δ columns (bar + pin) for a comparison base — the IBCS reference pair. */
+/** Two Δ columns (bar + pin) for a comparison base - the IBCS reference pair. */
 function comparisonColumns(base: Comparison) {
   return [
     { base, mode: "abs" as const, mark: "bar" as const },
@@ -601,7 +601,7 @@ function RevenueCard({
   const [mark, setMark] = useState<"bar" | "pin">("bar");
   return (
     <Section
-      title={`Revenue by quarter — AC vs ${comparison}`}
+      title={`Revenue by quarter - AC vs ${comparison}`}
       subtitle="AC columns with the comparison overlapped behind and an impact-coloured variance panel beneath. Switch the mark to pin for the lollipop variant."
       tokens={tokens}
       action={<MarkToggle mark={mark} onChange={setMark} tokens={tokens} />}
@@ -634,8 +634,8 @@ function TrendSection({
   const [mode, setMode] = useState<"abs" | "pct">("abs");
   return (
     <Section
-      title="Revenue trend — 13 periods"
-      subtitle="P1–P9 actual, P10–P13 forecast (hatched). PY/PL ride along as reference lines; the panel beneath shows AC/FC vs the comparison."
+      title="Revenue trend - 13 periods"
+      subtitle="P1-P9 actual, P10-P13 forecast (hatched). PY/PL ride along as reference lines; the panel beneath shows AC/FC vs the comparison."
       tokens={tokens}
       action={
         <Segmented
@@ -676,7 +676,7 @@ function StructureSection({
 }) {
   return (
     <Section
-      title="Revenue by region — composition"
+      title="Revenue by region - composition"
       subtitle="The structure of the revenue total: each region's bar, share of the whole, and Δ vs the comparison. Ranked largest-first; AC solid, comparison faded behind."
       tokens={tokens}
     >

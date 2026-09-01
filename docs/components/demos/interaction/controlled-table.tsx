@@ -30,7 +30,7 @@ const same = (a: DataTableSort | null, b: DataTableSort | null) =>
 /**
  * A fully controlled `DataTable` sort: the parent owns the state, the table
  * only reports the next sort through `onSortChange`. Header clicks and the
- * buttons drive the same one value — which is what makes URL sync, persistence
+ * buttons drive the same one value - which is what makes URL sync, persistence
  * or two tables kept in step possible.
  */
 export function ControlledTableDemo() {
@@ -51,7 +51,7 @@ export function ControlledTableDemo() {
         ))}
       </div>
       <div style={{ fontSize: 12, color: "#9a9992", marginBottom: 10 }}>
-        sort = {sort ? `{ key: "${sort.key}", dir: "${sort.dir}" }` : "null"} — click a column
+        sort = {sort ? `{ key: "${sort.key}", dir: "${sort.dir}" }` : "null"} - click a column
         header too; the state still lives here.
       </div>
       <DataTable

@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Report cookbook — Operations & supply chain. One component per recipe; each renders the
+ * Report cookbook - Operations & supply chain. One component per recipe; each renders the
  * exact snippet printed next to it in `content/docs/cookbook.mdx`.
  */
 import {
@@ -18,7 +18,7 @@ import {
 import { CARD_W, fM, fK, fN, fN1, C, L, S, W, varCols } from "@/lib/demo-data/cookbook";
 import { KpiStrip } from "./shared";
 
-/** Inventory by warehouse — Northwind Materials · € m · AC vs PY */
+/** Inventory by warehouse - Northwind Materials · € m · AC vs PY */
 export function InventoryByWarehouse() {
   return (
     <StructureChart
@@ -39,7 +39,7 @@ export function InventoryByWarehouse() {
   );
 }
 
-/** OTIF performance — Northwind Materials · % · AC vs target (PL=95) */
+/** OTIF performance - Northwind Materials · % · AC vs target (PL=95) */
 export function OTIFPerformance() {
   return (
     <VarianceColumnChart
@@ -59,7 +59,7 @@ export function OTIFPerformance() {
   );
 }
 
-/** Capacity utilization — Cobalt Devices · % · 13 periods, AC vs PL */
+/** Capacity utilization - Cobalt Devices · % · 13 periods, AC vs PL */
 export function CapacityUtilization() {
   return (
     <TrendChart
@@ -74,7 +74,7 @@ export function CapacityUtilization() {
   );
 }
 
-/** Demand vs production — Cobalt Devices · k units · plan vs actual */
+/** Demand vs production - Cobalt Devices · k units · plan vs actual */
 export function DemandVsProduction() {
   return (
     <LineChart
@@ -91,7 +91,7 @@ export function DemandVsProduction() {
   );
 }
 
-/** Supplier risk map — Northwind Materials · spend vs risk score */
+/** Supplier risk map - Northwind Materials · spend vs risk score */
 export function SupplierRiskMap() {
   return (
     <BubbleChart
@@ -113,7 +113,7 @@ export function SupplierRiskMap() {
   );
 }
 
-/** Inventory & service KPIs — Northwind Materials · AC vs PY */
+/** Inventory & service KPIs - Northwind Materials · AC vs PY */
 export function InventoryAndServiceKPIs() {
   return (
     <KpiStrip
@@ -142,7 +142,7 @@ export function InventoryAndServiceKPIs() {
   );
 }
 
-/** On-time delivery trend — Northwind Materials · % · weekly, AC vs PY */
+/** On-time delivery trend - Northwind Materials · % · weekly, AC vs PY */
 export function OnTimeDeliveryTrend() {
   return (
     <AreaChart
@@ -158,7 +158,7 @@ export function OnTimeDeliveryTrend() {
   );
 }
 
-/** Defect rate (PPM) — Cobalt Devices · ppm · lower is better */
+/** Defect rate (PPM) - Cobalt Devices · ppm · lower is better */
 export function DefectRatePPM() {
   return (
     <LineChart
@@ -174,7 +174,7 @@ export function DefectRatePPM() {
   );
 }
 
-/** Order backlog — Cobalt Devices · € m · monthly with PY */
+/** Order backlog - Cobalt Devices · € m · monthly with PY */
 export function OrderBacklog() {
   return (
     <AreaChart
@@ -190,7 +190,7 @@ export function OrderBacklog() {
   );
 }
 
-/** Lead time by supplier — Northwind Materials · days · AC vs PY */
+/** Lead time by supplier - Northwind Materials · days · AC vs PY */
 export function LeadTimeBySupplier() {
   return (
     <DataTable
@@ -211,7 +211,7 @@ export function LeadTimeBySupplier() {
   );
 }
 
-/** Production yield — small multiples — Cobalt Devices · % · AC vs PY by line */
+/** Production yield - small multiples - Cobalt Devices · % · AC vs PY by line */
 export function ProductionYieldSmallMultiples() {
   return (
     <div style={{ width: CARD_W }}>
@@ -242,7 +242,7 @@ export function ProductionYieldSmallMultiples() {
   );
 }
 
-/** Freight cost bridge — Northwind Materials · € k · PY → AC */
+/** Freight cost bridge - Northwind Materials · € k · PY → AC */
 export function FreightCostBridge() {
   return (
     <WaterfallChart
@@ -262,7 +262,7 @@ export function FreightCostBridge() {
   );
 }
 
-/** Scrap & rework cost — Cobalt Devices · € k · PY → AC */
+/** Scrap & rework cost - Cobalt Devices · € k · PY → AC */
 export function ScrapAndReworkCost() {
   return (
     <WaterfallChart

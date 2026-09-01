@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Report cookbook — Executive & KPI scorecards. One component per recipe; each renders the
+ * Report cookbook - Executive & KPI scorecards. One component per recipe; each renders the
  * exact snippet printed next to it in `content/docs/cookbook.mdx`.
  */
 import {
@@ -23,7 +23,7 @@ import {
 import { CARD_W, fM, fK, fN, fN1, C, L, S, W, varCols } from "@/lib/demo-data/cookbook";
 import { KpiStrip, SparkTile } from "./shared";
 
-/** Company scorecard — Northwind Materials · group KPIs · AC vs PY */
+/** Company scorecard - Northwind Materials · group KPIs · AC vs PY */
 export function CompanyScorecard() {
   return (
     <KpiStrip
@@ -57,7 +57,7 @@ export function CompanyScorecard() {
   );
 }
 
-/** Revenue vs plan — Group · € m · 13 periods, AC + FC vs PL */
+/** Revenue vs plan - Group · € m · 13 periods, AC + FC vs PL */
 export function RevenueVsPlan() {
   return (
     <TrendChart
@@ -71,7 +71,7 @@ export function RevenueVsPlan() {
   );
 }
 
-/** Profit waterfall — Group · € m · revenue → net income */
+/** Profit waterfall - Group · € m · revenue → net income */
 export function ProfitWaterfall() {
   return (
     <WaterfallChart
@@ -90,7 +90,7 @@ export function ProfitWaterfall() {
   );
 }
 
-/** Regional performance — Group · € m · AC vs PY (small multiples) */
+/** Regional performance - Group · € m · AC vs PY (small multiples) */
 export function RegionalPerformance() {
   return (
     <div style={{ width: CARD_W }}>
@@ -121,7 +121,7 @@ export function RegionalPerformance() {
   );
 }
 
-/** Strategic initiatives — Group · status & impact · current quarter */
+/** Strategic initiatives - Group · status & impact · current quarter */
 export function StrategicInitiatives() {
   return (
     <DataTable
@@ -161,7 +161,7 @@ export function StrategicInitiatives() {
   );
 }
 
-/** Market share — Group · % · AC vs PY by category */
+/** Market share - Group · % · AC vs PY by category */
 export function MarketShare() {
   return (
     <StructureChart
@@ -180,7 +180,7 @@ export function MarketShare() {
   );
 }
 
-/** Customer satisfaction — Group · CSAT · sparkline tiles */
+/** Customer satisfaction - Group · CSAT · sparkline tiles */
 export function CustomerSatisfaction() {
   return (
     <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
@@ -196,7 +196,7 @@ export function CustomerSatisfaction() {
   );
 }
 
-/** Cash position — Group · € m · 12-month area, AC vs PY */
+/** Cash position - Group · € m · 12-month area, AC vs PY */
 export function CashPosition() {
   return (
     <AreaChart
@@ -228,7 +228,7 @@ export function CashPosition() {
   );
 }
 
-/** Top & bottom movers — Group · € k · biggest ΔPY swings */
+/** Top & bottom movers - Group · € k · biggest ΔPY swings */
 export function TopAndBottomMovers() {
   return (
     <DataTable
@@ -261,7 +261,7 @@ export function TopAndBottomMovers() {
   );
 }
 
-/** Balanced scorecard — Group · perspectives × quarters (AC vs PL) */
+/** Balanced scorecard - Group · perspectives × quarters (AC vs PL) */
 export function BalancedScorecard() {
   return (
     <MatrixTable
@@ -311,7 +311,7 @@ export function BalancedScorecard() {
   );
 }
 
-/** ESG metrics — Group · sustainability KPIs · AC vs PY */
+/** ESG metrics - Group · sustainability KPIs · AC vs PY */
 export function ESGMetrics() {
   return (
     <KpiStrip
@@ -341,7 +341,7 @@ export function ESGMetrics() {
   );
 }
 
-/** Flanking comparison table — Electronic Inc. · kEUR · month vs YTD */
+/** Flanking comparison table - Electronic Inc. · kEUR · month vs YTD */
 export function FlankingComparisonTable() {
   return (
     <div style={{ minWidth: 560 }}>

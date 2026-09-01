@@ -5,7 +5,7 @@ import { useElementSize } from "./hooks/useElementSize";
 /** How the chart fills its frame. `fill` stretches to the box; `contain` keeps
  *  the chart's aspect ratio and letterboxes the remainder.
  *
- * @deprecated Use `ChartBox`'s `fit` union instead — it covers both of these
+ * @deprecated Use `ChartBox`'s `fit` union instead - it covers both of these
  * modes (`"fill"` / `"contain"`) plus `"scale"` and `"fixed"`.
  */
 export type ChartFitMode = "fill" | "contain";
@@ -48,7 +48,7 @@ function sides(p: ChartFrameProps["padding"]) {
 }
 
 /**
- * Place a chart inside a box with image-style **fit, alignment and padding** —
+ * Place a chart inside a box with image-style **fit, alignment and padding** -
  * the same controls you reach for when fitting a picture into a frame.
  *
  * - `fit="fill"` (default) draws the chart at the full inner box; `fit="contain"`
@@ -62,7 +62,7 @@ function sides(p: ChartFrameProps["padding"]) {
  * Unlike scaling an image, the chart is re-rendered at the resolved pixel size,
  * so text and strokes stay crisp at any fit. Zero-dependency.
  *
- * @deprecated Use `ChartBox` — its `fit` union covers both of this component's
+ * @deprecated Use `ChartBox` - its `fit` union covers both of this component's
  * modes and adds `"scale"` / `"fixed"`, with the same `align` / `verticalAlign`,
  * `padding` and `background` controls. `ChartFrame` stays exported (it is not
  * going anywhere in this release line) but new code should reach for `ChartBox`:

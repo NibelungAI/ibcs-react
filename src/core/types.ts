@@ -3,7 +3,7 @@
  *
  * The whole library is built on ONE model: a tree of `StatementLine`s carrying
  * one value per scenario. Tables and charts are just different views over the
- * same model — the data source (Navision report engine, static JSON, an API)
+ * same model - the data source (Navision report engine, static JSON, an API)
  * is the caller's concern. Components never fetch.
  */
 
@@ -15,8 +15,8 @@ export type ScenarioKey = (typeof SCENARIO_KEYS)[number];
 
 /**
  * THE standard category-row shape: one label plus one optional value per
- * scenario. Every category/period chart in the library speaks this — trend
- * periods, line points, combo columns, variance columns — so a single array of
+ * scenario. Every category/period chart in the library speaks this - trend
+ * periods, line points, combo columns, variance columns - so a single array of
  * rows feeds them all, and `CategoryDatum`, `ColumnDatum`, `TrendDatum`,
  * `LineDatum` and `ComboDatum` are all this type (or a narrow extension of it).
  *
@@ -69,7 +69,7 @@ export interface StatementLine {
 /**
  * One variance column in a statement: compare the scenario against `base`,
  * show it as an absolute delta or a percent, drawn as a bar or a pin (dot).
- * A list of these drives the right-hand panels — the reference layout is
+ * A list of these drives the right-hand panels - the reference layout is
  * `[{base:"PY",mode:"abs",mark:"bar"}, {base:"PY",mode:"pct",mark:"pin"}]`.
  */
 export interface VarianceColumnSpec {
@@ -113,7 +113,7 @@ export type WaterfallBar =
   | { kind: "full"; from: number; to: number }
   /**
    * A step that moves the running total from `from` to `to`.
-   * `outline: true` marks an expanded group's bracket — it spans the whole
+   * `outline: true` marks an expanded group's bracket - it spans the whole
    * group (which the children fill in) and is drawn hollow, not filled.
    */
   | { kind: "delta"; from: number; to: number; direction: "add" | "subtract"; outline?: boolean };

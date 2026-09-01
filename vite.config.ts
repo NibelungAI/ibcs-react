@@ -24,7 +24,7 @@ export default defineConfig({
     host: true,
     port: 5180,
     open: false,
-    // Demo is shared over tunnels / netbird / LAN IPs — allow any Host header.
+    // Demo is shared over tunnels / netbird / LAN IPs - allow any Host header.
     // (Vite blocks unknown hosts by default; `true` disables that check.)
     allowedHosts: true,
   },

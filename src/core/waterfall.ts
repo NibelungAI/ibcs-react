@@ -12,12 +12,12 @@ import { computeVariance } from "./variance";
  *
  *  - "add":      moves the running total up by `value` (revenue, inflow)
  *  - "subtract": moves the running total down by `value` (cost, outflow)
- *  - "result":   a checkpoint column — a full bar from zero to the running
+ *  - "result":   a checkpoint column - a full bar from zero to the running
  *                total, which it does NOT advance (Gross margin, EBIT, …)
  *
  * `value` is always given as a magnitude for add/subtract (the sign is implied
  * by `flow`), but a negative `value` is honoured too (an "add" of -10 moves the
- * total down). For "result" columns `value` is ignored — the column draws to
+ * total down). For "result" columns `value` is ignored - the column draws to
  * the current running total.
  */
 export interface WaterfallDatum {
@@ -47,7 +47,7 @@ export interface BridgeBar extends WaterfallDatum {
   cumBefore: number;
   /** Running total leaving this column. */
   cumAfter: number;
-  /** True for "result" columns — drawn as a full, emphasised bar from zero. */
+  /** True for "result" columns - drawn as a full, emphasised bar from zero. */
   isTotal: boolean;
   /** Visual travel of the bar: "up" when `to >= from`, else "down". */
   direction: "up" | "down";
@@ -91,7 +91,7 @@ interface BridgeStep {
 }
 
 /**
- * THE bridge accumulation — the single place a running total is advanced.
+ * THE bridge accumulation - the single place a running total is advanced.
  *
  * Both lanes run through this helper (the drawn series in {@link computeBridge}
  * and the optional comparison series), so the comparison levels can never drift
@@ -117,7 +117,7 @@ function accumulate(items: WaterfallDatum[]): BridgeStep[] {
 
 /**
  * Pure bridge layout: turn labelled contributions into positioned floating
- * bars with running totals and a zero-based value domain. Framework agnostic —
+ * bars with running totals and a zero-based value domain. Framework agnostic -
  * the React `WaterfallChart` is just a renderer over this.
  *
  * The domain always includes 0 so the zero baseline sits inside the plot even

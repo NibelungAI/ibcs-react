@@ -56,28 +56,28 @@ export interface BarVarianceWaterfallChartProps {
    */
   tooltip?: boolean;
   /**
-   * Fired as the pointer moves over / leaves an entity row (`null` on leave) —
+   * Fired as the pointer moves over / leaves an entity row (`null` on leave) -
    * for a custom tooltip. Pairs naturally with `useChartHover`. Default undefined.
    */
   onHover?: (hover: ChartHover<BarVarianceRow> | null) => void;
 }
 
 /**
- * **BarVarianceWaterfallChart** — IBCS chart-template **C06**. A grouped
+ * **BarVarianceWaterfallChart** - IBCS chart-template **C06**. A grouped
  * AC/PL/PY *structure* chart fused with a vertically-running *variance bridge*,
  * all on one shared value axis:
  *
- *  - TOP   — a hollow-frame **PL** total bar and a faded-grey **PY** total bar.
- *  - BODY  — one row per entity: a solid dark **AC** bar from the left axis with
+ *  - TOP   - a hollow-frame **PL** total bar and a faded-grey **PY** total bar.
+ *  - BODY  - one row per entity: a solid dark **AC** bar from the left axis with
  *            the **PY** reference behind it (visible where PY > AC), plus, far to
  *            the right around the PY total, that entity's Δ = AC − PY as a
  *            floating step of a waterfall that bridges the PY total down to AC
  *            (green favorable / red unfavorable, sorted so the run reads cleanly,
  *            tied together by thin step connectors). A vertical line marks the PL
  *            reference the whole bridge is measured against.
- *  - END   — a solid dark **AC** total bar, then the bridge's result bars: the
+ *  - END   - a solid dark **AC** total bar, then the bridge's result bars: the
  *            headline AC − PY and (when PY is in use) the secondary AC − PL.
- *  - RIGHT — a Δ% tier (vs PY by default): impact-coloured bars with off-scale
+ *  - RIGHT - a Δ% tier (vs PY by default): impact-coloured bars with off-scale
  *            edge arrows beyond the shared half-scale and signed % labels.
  *
  * Robust to empty / single / negative / zero / huge data and very long entity
@@ -87,7 +87,7 @@ export interface BarVarianceWaterfallChartProps {
  * hover/focus tooltip are client-only). Reuses the pure
  * {@link computeBarVarianceWaterfall} layout.
  *
- * The svg is the chart's root element — it takes `className` / `style` and the
+ * The svg is the chart's root element - it takes `className` / `style` and the
  * forwarded ref, and carries the accessible name (`role="img"` + `aria-label`);
  * the built-in tooltip portals to `document.body` and flips at the viewport
  * edges.
@@ -399,8 +399,8 @@ export const BarVarianceWaterfallChart = forwardRef<SVGSVGElement, BarVarianceWa
     const bridgeBottom = resPlTop >= 0 ? resPlTop + resultH : resMainTop + resultH;
 
     // Screen-reader data table: every entity's AC, the waterfall reference it is
-    // bridged from, the absolute step and the Δ% tier value — plus the totals row
-    // the chart draws at the bottom — as real numbers, not the decorative svg.
+    // bridged from, the absolute step and the Δ% tier value - plus the totals row
+    // the chart draws at the bottom - as real numbers, not the decorative svg.
     const a11yColumns = ["AC", reference, `Δ${reference}`, `Δ${pctRef}%`];
     const a11yRows: ChartDataRow[] = rows.map((r) => ({
       label: r.label,
@@ -556,7 +556,7 @@ export const BarVarianceWaterfallChart = forwardRef<SVGSVGElement, BarVarianceWa
             const showRefLbl = usesPy && refTip > acTip + estTextW(acStr, valFont) + 8;
 
             const info = { category: r.label, scenario: "AC" as const, value: r.ac, datum: r };
-            // This row's visible marks in FINAL (un-animated) geometry — xOf,
+            // This row's visible marks in FINAL (un-animated) geometry - xOf,
             // not xA: the AC bar (focus/tap anchor), the PY/PL reference
             // overlay, the waterfall step, and the Δ% tier as its lane strip at
             // the mark's thickness. The full-row rect stays the hit band.
@@ -714,7 +714,7 @@ export const BarVarianceWaterfallChart = forwardRef<SVGSVGElement, BarVarianceWa
             )}
         </svg>
         <ChartDataTable
-          caption={title ? `${title} — data table` : `AC versus ${reference} bridge — data table`}
+          caption={title ? `${title} - data table` : `AC versus ${reference} bridge - data table`}
           columns={a11yColumns}
           rows={a11yRows}
         />

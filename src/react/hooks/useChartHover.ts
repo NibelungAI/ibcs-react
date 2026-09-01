@@ -29,7 +29,7 @@ export interface ChartHover<D = unknown> {
 /** Just the data fields of {@link ChartHover}, without the pointer position. */
 export type ChartHoverInfo<D = unknown> = Omit<ChartHover<D>, "x" | "y">;
 
-/** A minimal mouse-event shape — satisfied by React's `MouseEvent`. */
+/** A minimal mouse-event shape - satisfied by React's `MouseEvent`. */
 export interface PointerLike {
   clientX: number;
   clientY: number;
@@ -53,7 +53,7 @@ export interface UseChartHoverResult<D = unknown> {
  * A tiny, framework-free hover model for charts: pair it with a chart's
  * `onHover` (or your own per-mark `onMouseMove`) to drive a floating
  * {@link ChartTooltip}. Holds the hovered datum plus the pointer's viewport
- * coordinates. SSR-safe — pure `useState`, no DOM access at module or render
+ * coordinates. SSR-safe - pure `useState`, no DOM access at module or render
  * time (coordinates come from the event you pass in).
  *
  * ```tsx
@@ -82,7 +82,7 @@ export function useChartHover<D = unknown>(): UseChartHoverResult<D> {
       rafRef.current = 0;
       const node = tooltipRef.current;
       if (!node) return;
-      // Shared placement (pointer + offset, viewport-edge flip) — must agree
+      // Shared placement (pointer + offset, viewport-edge flip) - must agree
       // with ChartTooltip's own mount-time positioning.
       applyTooltipPosition(node, posRef.current.x, posRef.current.y);
     });

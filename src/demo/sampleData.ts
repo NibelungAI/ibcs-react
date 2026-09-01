@@ -234,7 +234,7 @@ export const sampleStatementFlat: StatementLine[] = [
  * running total stays negative through net income. Used to exercise the
  * negative-aware waterfall (steps run left, the total crosses the zero axis).
  * Every result equals the running total of the steps above it, and children
- * sum to their parent — so the waterfall is internally consistent.
+ * sum to their parent - so the waterfall is internally consistent.
  */
 export const sampleLossStatement: StatementLine[] = [
   {
@@ -343,14 +343,14 @@ export const sampleLossStatement: StatementLine[] = [
 ];
 
 /**
- * A large consolidation — 10 divisions × 24 accounts (~250 rows once expanded),
+ * A large consolidation - 10 divisions × 24 accounts (~250 rows once expanded),
  * generated deterministically. Used to demo virtualization: render
  * `<StatementTable maxHeight={…} />` and only the rows in view are mounted.
  * Each division is an "add" group; the result is the exact running total.
  */
 function buildConsolidation(): StatementLine[] {
   // Deliberately VARIED divisions so the consolidation tells a story: big
-  // growers, flat units, and decliners (red) of different sizes — not ten
+  // growers, flat units, and decliners (red) of different sizes - not ten
   // near-identical +6% rows. Each division's 24 accounts are distributed
   // deterministically to its AC target, with a per-account wobble so individual
   // accounts can buck the division's trend. (ac = 2025 actual, growth vs PY.)
@@ -451,8 +451,8 @@ export const sampleQuarterlyStatement: StatementLine[] = [
 ];
 
 /**
- * A 13-period revenue trend (the IBCS "13-period" view — thirteen four-week
- * retail periods spanning a 52-week year). P1–P9 are actual (AC); P10–P13 are
+ * A 13-period revenue trend (the IBCS "13-period" view - thirteen four-week
+ * retail periods spanning a 52-week year). P1-P9 are actual (AC); P10-P13 are
  * forecast (FC, drawn hatched where actuals run out). Previous year (PY) and
  * plan (PL) ride along as reference lines. All periods are of comparable
  * magnitude, so the trend reads cleanly on one value axis.
@@ -474,7 +474,7 @@ export const sampleMonthlyTrend: TrendDatum[] = [
 ];
 
 /**
- * A balance sheet — a STOCK statement (ending balances at a point in time, not
+ * A balance sheet - a STOCK statement (ending balances at a point in time, not
  * period movements). Rendered with `<StatementTable mode="stock" />`: each line
  * is an absolute level, not a waterfall step. Assets balance against
  * liabilities + equity (both total 37.0M AC / 34.0M PY). Liability lines carry
@@ -627,7 +627,7 @@ export const sampleBalanceSheet: StatementLine[] = [
 ];
 
 /**
- * Composition of revenue by region — the parts of the 30.1M total. AC vs PY
+ * Composition of revenue by region - the parts of the 30.1M total. AC vs PY
  * (last year), with each region's share of the whole. Ranked largest-first by
  * the structure chart. The components sum to the P&L revenue line.
  */
@@ -640,7 +640,7 @@ export const sampleRevenueStructure = [
 ] satisfies StructureDatum[];
 
 /* ============================================================================ *
- * IBCS TABLE TEMPLATES (T01 / T02 / T03) — data for the general DataTable.
+ * IBCS TABLE TEMPLATES (T01 / T02 / T03) - data for the general DataTable.
  *
  * T01 + T02 share one hierarchical region/country dataset with two measures:
  *   `sales` (the current month) and `ytd` (year to date), each scenario-keyed
@@ -651,9 +651,9 @@ export const sampleRevenueStructure = [
 
 /**
  * Hierarchical region → country rows for the IBCS T01/T02 templates, with the
- * exact figures of the ibcs.com reference ("Electronic Inc. — Profit after tax
+ * exact figures of the ibcs.com reference ("Electronic Inc. - Profit after tax
  * in kEUR"). Each country carries two scenario-keyed measures: `m` (the current
- * month, November) and `y` (year to date, January–November). Region rows are
+ * month, November) and `y` (year to date, January-November). Region rows are
  * bold subtotals that auto-sum their children; the "World" grand total is added
  * by `showTotals`. Shared by {@link sampleTableT01} and {@link sampleTableT02}.
  *
@@ -767,14 +767,14 @@ export const sampleTableRegions: DataTableRow[] = [
   },
 ];
 
-/** T01 rows — the hierarchical region table (numeric variance columns). */
+/** T01 rows - the hierarchical region table (numeric variance columns). */
 export const sampleTableT01: DataTableRow[] = sampleTableRegions;
 
-/** T02 rows — the same hierarchy, rendered with embedded bars + pins. */
+/** T02 rows - the same hierarchy, rendered with embedded bars + pins. */
 export const sampleTableT02: DataTableRow[] = sampleTableRegions;
 
 /**
- * T01 — the LEFT (current month, "November") column group for the flanking
+ * T01 - the LEFT (current month, "November") column group for the flanking
  * {@link ComparisonTable}: PY · PL · AC value columns, then NUMERIC AC-PY and
  * AC-PL variances (each an absolute + a % column, `mark:"none"`, impact
  * coloured). `subgroup` centres the "AC-PY" / "AC-PL" header over its pair;
@@ -878,7 +878,7 @@ export const tableT01Right: DataTableColumn[] = [
 ];
 
 /**
- * T02 — the same flanking layout, but the variance is EMBEDDED: PY + AC figures,
+ * T02 - the same flanking layout, but the variance is EMBEDDED: PY + AC figures,
  * then ΔPY as a signed magnitude bar and ΔPY% as a pin (with off-scale arrows).
  */
 export const tableT02Left: DataTableColumn[] = [
@@ -932,7 +932,7 @@ export const tableT02Right: DataTableColumn[] = [
 ];
 
 /**
- * T03 rows — a multi-year P&L statement. Each line carries a `flow` marker
+ * T03 rows - a multi-year P&L statement. Each line carries a `flow` marker
  * (+ / − / =) and a measure per year (`y2012` … `y2015`), each scenario-keyed.
  * Result lines are bold with a top rule; the final "Net income" gets a double
  * rule. Every result equals the running total of the steps above it, per year
@@ -1119,7 +1119,7 @@ export const sampleTableT03: DataTableRow[] = [
 ];
 
 /**
- * T03 columns — one group per year (2012 … 2015). 2012-2014 show PL and AC; the
+ * T03 columns - one group per year (2012 … 2015). 2012-2014 show PL and AC; the
  * current year 2015 shows PL and FC (forecast). Plain numeric value columns.
  */
 export const tableT03Columns: DataTableColumn[] = [

@@ -93,7 +93,7 @@ if (bad.length) {
         })),
       r.page,
     );
-    console.log(`\npage ${r.page} — over by ${r.used - r.avail}px:`);
+    console.log(`\npage ${r.page} - over by ${r.used - r.avail}px:`);
     console.table(parts);
   }
   await b2.close();

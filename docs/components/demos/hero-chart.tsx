@@ -15,7 +15,7 @@ const DATA = [
 export function HeroChart() {
   return (
     <VarianceColumnChart
-      title="Net sales — AC vs PY, mEUR"
+      title="Net sales - AC vs PY, mEUR"
       data={DATA}
       width={720}
       height={340}

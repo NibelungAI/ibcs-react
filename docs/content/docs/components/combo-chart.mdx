@@ -1,16 +1,16 @@
 ---
 title: ComboChart
-description: Primary scenario columns plus a secondary measure on a right-hand axis (IBCS C05 family).
+description: A combined column + line chart - primary scenario columns plus a secondary measure line on a right-hand axis.
 ---
 
 import { ComboChart } from "ibcs-react";
 
 Scenario columns on the left axis with a second, differently-scaled measure
-drawn against a right-hand axis — and the column variance underneath.
+drawn against a right-hand axis - and the column variance underneath.
 
 ## When to use
 
-Two related measures with different units on one chart — e.g. revenue (€,
+Two related measures with different units on one chart - e.g. revenue (€,
 columns) and margin (%, line).
 
 ## Example
@@ -50,7 +50,7 @@ import { ComboChart } from "ibcs-react";
 ```
 
 Two axes only earn their keep when the two measures are genuinely related and
-carry different units — always label both, and format the secondary series in
+carry different units - always label both, and format the secondary series in
 its own unit via `secondaryFormat`. If the units match, one axis is the honest
 choice.
 

@@ -1,6 +1,6 @@
 ---
 title: Conformance
-description: checkIbcs is the library's own IBCS-notation linter — lint a chart, KPI or report config in CI and get findings by rule id and JSON path.
+description: checkIbcs is the library's own IBCS-notation linter - lint a chart, KPI or report config in CI and get findings by rule id and JSON path.
 ---
 
 import { ConformancePlayground } from "@/components/demos/conformance-playground";
@@ -8,7 +8,7 @@ import { IbcsRulesTable } from "@/components/demos/ibcs-rules-table";
 
 Most chart libraries only let you draw. This one can also **check** a config
 against the IBCS notation rules it implements and tell you where the config
-departs from them — before it ships.
+departs from them - before it ships.
 
 ## A notation linter
 
@@ -16,8 +16,8 @@ The same JSON config that _renders_ a chart, KPI or report can also be
 _linted_. Call `checkIbcs(config)` and you get back an array of `IbcsFinding`
 objects: non-linear chart types, unstructured titles, missing data, wrong
 favorability for cost measures, and so on. An empty array means the config
-passes every rule the linter implements. It is pure logic — zero React, zero
-dependencies, JSON in and JSON out — so it runs in a unit test, a CI gate or an
+passes every rule the linter implements. It is pure logic - zero React, zero
+dependencies, JSON in and JSON out - so it runs in a unit test, a CI gate or an
 authoring tool.
 
 ```tsx
@@ -35,7 +35,7 @@ const findings = checkIbcs(config);
 //   ]
 // An empty array means no rule was violated.
 
-// Or render the findings — pass a target to lint on the fly…
+// Or render the findings - pass a target to lint on the fly…
 <ConformanceReport target={config} />
 // …or hand it findings you computed yourself:
 <ConformanceReport findings={findings} />
@@ -43,11 +43,11 @@ const findings = checkIbcs(config);
 
 The linter runs at build time, not as a house-style debate. A config either
 passes the IBCS notation rules the linter implements, or it lists exactly what
-to change — by rule id and JSON path.
+to change - by rule id and JSON path.
 
 ## Lint the JSX path
 
-Most apps author charts as JSX, not JSON configs — the props are the same
+Most apps author charts as JSX, not JSON configs - the props are the same
 shapes minus the `type` discriminator, which the component name carries.
 `checkIbcsProps` maps the name back and runs the same rules, so a dashboard
 written the way [getting started](/docs/getting-started) teaches is lintable
@@ -72,14 +72,14 @@ test("the revenue chart follows IBCS notation", () => {
 Render-only props (`width`, `tokens`, `onSelect`, …) carry no rules and are
 ignored; lint-only declarations (`measureKind`) can ride along. `KpiCard`
 props already are a `KpiConfig` and lint directly. The specialised variance
-charts lint as the linear family they render — and `checkIbcsProps("PieChart", …)`
+charts lint as the linear family they render - and `checkIbcsProps("PieChart", …)`
 flags the pie, exactly as it should.
 
 ## Live playground
 
 The config below deliberately breaks three rules: a `pie` (a non-linear chart
 type), a bare string `title` instead of a structured Who/What/When, and an
-empty `data` array. Edit the JSON and watch the findings update live — the same
+empty `data` array. Edit the JSON and watch the findings update live - the same
 `ConformanceReport` component renders the result.
 
 <Frame>
@@ -89,7 +89,7 @@ empty `data` array. Edit the JSON and watch the findings update live — the sam
 Out of the box this example produces **two errors** (non-linear chart type, no
 data) and **one warning** (bare-string title). Switch `"pie"` to a linear type
 such as `"varianceColumn"`, give it a data row and replace the title with a
-structured `{ who, what, when }` object — the list empties and the report says
+structured `{ who, what, when }` object - the list empties and the report says
 so. Deleting the title is not a way out: a chart or report with **no** title
 is flagged at the same severity (ISO 24896 SAY requires one), and an unknown
 `type` string gets a did-you-mean plus the list of valid values.
@@ -107,18 +107,18 @@ encodes:
 ```tsx
 import { IBCS_RULES } from "ibcs-react";
 
-IBCS_RULES.map((rule) => `${rule.id} (${rule.severity}) — ${rule.title}`);
+IBCS_RULES.map((rule) => `${rule.id} (${rule.severity}) - ${rule.title}`);
 ```
 
 ## Declare what the measure is
 
 The `cost-favorability` rule normally detects cost measures from the title or
-KPI label ("Operating expenses", "Tax", …) — structured titles included. When
+KPI label ("Operating expenses", "Tax", …) - structured titles included. When
 the wording doesn't give it away, declare it: `measureKind: "cost"` on a chart
 or KPI config makes the linter insist on `higherIsBetter: false` no matter
 what the title says, and `measureKind: "revenue"` silences the heuristic for
 measures that merely sound like costs ("Cost recovery revenue"). The
-declaration is linter-only — rendering still follows `higherIsBetter`.
+declaration is linter-only - rendering still follows `higherIsBetter`.
 
 ```ts
 checkIbcs({ type: "varianceColumn", measureKind: "cost", data, title });
@@ -133,7 +133,7 @@ offending value (for example `blocks[2].config.type`).
 
 | Field      | Type                             | Meaning                                                       |
 | ---------- | -------------------------------- | ------------------------------------------------------------- |
-| `rule`     | `string`                         | Rule id — matches an entry in `IBCS_RULES`.                   |
+| `rule`     | `string`                         | Rule id - matches an entry in `IBCS_RULES`.                   |
 | `severity` | `"error" \| "warning" \| "info"` | Errors mark a broken rule; warnings and info are advisory.    |
 | `message`  | `string`                         | Human-readable description of the departure.                  |
 | `path`     | `string?`                        | JSON-ish path to the offending value, e.g. `blocks[2].title`. |
@@ -144,7 +144,7 @@ offending value (for example `blocks[2].config.type`).
 above, implemented from the publicly described notation. It is not a
 certification, an audit or an assessment by IBCS or ISO, and a clean run says
 nothing beyond "none of these rules were violated". Rules the linter does not
-implement — and anything about the correctness of your numbers — remain your
+implement - and anything about the correctness of your numbers - remain your
 call.
 
 ## Pair it with rendering
@@ -163,5 +163,5 @@ test("dashboard configs break no notation rule", () => {
 });
 ```
 
-- [IBCS & ISO 24896](/docs/ibcs) — what the rules mean.
-- [Components](/docs/components) — the config shapes the linter understands.
+- [IBCS & ISO 24896](/docs/ibcs) - what the rules mean.
+- [Components](/docs/components) - the config shapes the linter understands.

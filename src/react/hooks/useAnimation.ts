@@ -2,13 +2,13 @@ import { useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } fr
 
 /**
  * Zero-dependency animation primitives. Everything is requestAnimationFrame +
- * an easing function — no motion library — and everything collapses to its
+ * an easing function - no motion library - and everything collapses to its
  * final value instantly when the user prefers reduced motion.
  *
  * Every hook here is **SSR-safe in the strong sense**: the value rendered on the
  * server (and on the first client render, before hydration) is the *finished*
  * one. Animations are started from a layout effect, which only ever runs in the
- * browser — so server markup carries real geometry instead of a collapsed
+ * browser - so server markup carries real geometry instead of a collapsed
  * `height="0"` frame, and a reduced-motion user never sees a flash.
  */
 
@@ -28,7 +28,7 @@ export interface AnimateOptions {
   /** Start delay in ms (useful for staggering). Default 0. */
   delay?: number;
   /**
-   * Start value for the **first** animation only — e.g. `0` for a real mount
+   * Start value for the **first** animation only - e.g. `0` for a real mount
    * count-up. Later target changes still tween from wherever the value
    * currently sits (retargeting). Ignored under reduced motion or `duration <= 0`,
    * where the target is shown immediately. Omit to start at the target (no
@@ -38,7 +38,7 @@ export interface AnimateOptions {
 }
 
 /**
- * `useLayoutEffect` in the browser, `useEffect` on the server — React warns
+ * `useLayoutEffect` in the browser, `useEffect` on the server - React warns
  * about layout effects during SSR, and there is nothing to lay out there.
  * Animations need the layout-effect timing: the "start" frame must be committed
  * before the browser paints, otherwise the finished state flashes for a frame.
@@ -47,7 +47,7 @@ const useIsoLayoutEffect = typeof window === "undefined" ? useEffect : useLayout
 
 const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
 
-// The MediaQueryList is created lazily (never at module load — that would touch
+// The MediaQueryList is created lazily (never at module load - that would touch
 // `window` on the server) and cached, so every component shares one listener
 // target. The cache is keyed on the `matchMedia` function identity so a test
 // harness (or a re-created window) that swaps `window.matchMedia` is picked up
@@ -85,14 +85,14 @@ const getServerReducedMotion = (): boolean => false;
  * True when the OS asks for reduced motion. Kept live via `matchMedia` and read
  * through `useSyncExternalStore`, so the very first client render already
  * reflects the real preference (a `useState` + `useEffect` version reports
- * `false` for one render — long enough to flash an animation at exactly the
+ * `false` for one render - long enough to flash an animation at exactly the
  * users who asked not to see one).
  */
 export function usePrefersReducedMotion(): boolean {
   return useSyncExternalStore(subscribeReducedMotion, getReducedMotion, getServerReducedMotion);
 }
 
-/** Cap for object signatures — enough to be distinctive, cheap to compute. */
+/** Cap for object signatures - enough to be distinctive, cheap to compute. */
 const MAX_SIGNATURE_CHARS = 200;
 const cap = (s: string): string =>
   s.length > MAX_SIGNATURE_CHARS ? s.slice(0, MAX_SIGNATURE_CHARS) : s;
@@ -103,13 +103,13 @@ const cap = (s: string): string =>
  * an inline literal (`data={[{...}]}`), which is the common case.
  *
  * Numbers are erased from the fingerprint: a live feed re-emitting the same
- * rows with jittered values is the SAME dataset — those updates tween via
+ * rows with jittered values is the SAME dataset - those updates tween via
  * {@link useDataTween}, they don't re-enter from the baseline. What replays
  * the entrance is a change of *shape*: rows added or removed, categories
- * renamed, keys appearing. (A primitive key passed directly is kept verbatim —
+ * renamed, keys appearing. (A primitive key passed directly is kept verbatim -
  * whoever keys an entrance on a number wants changes to replay it.)
  *
- * Arrays are fingerprinted by `length | first | last` — O(1) regardless of size.
+ * Arrays are fingerprinted by `length | first | last` - O(1) regardless of size.
  * A change buried in the middle of a same-length array therefore does *not*
  * replay the entrance; that is the deliberate trade for not stringifying every
  * point on every render.
@@ -128,11 +128,11 @@ function signatureOf(key: unknown): string {
 
 // Charts usually pass a memoized layout/data object, so caching by identity
 // means the fingerprint is computed once per distinct key rather than on every
-// render. Mutating a key in place is not detected — the same rule React applies
+// render. Mutating a key in place is not detected - the same rule React applies
 // to state, and the reason layout modules return fresh objects.
 const signatureCache = new WeakMap<object, string>();
 
-/** JSON replacer that flattens every number to 0 — see {@link signatureOf}. */
+/** JSON replacer that flattens every number to 0 - see {@link signatureOf}. */
 const eraseNumbers = (_key: string, value: unknown): unknown =>
   typeof value === "number" ? 0 : value;
 
@@ -146,7 +146,7 @@ function fingerprint(key: object): string {
         )}`,
       );
     } catch {
-      // Cyclic or non-serializable entries — fall back to the cheapest signal.
+      // Cyclic or non-serializable entries - fall back to the cheapest signal.
       return `${key.length}`;
     }
   }
@@ -162,7 +162,7 @@ function fingerprint(key: object): string {
  * Eased progress 0 → 1 for an entrance animation (bars growing out of the
  * baseline, arcs sweeping in, …).
  *
- * The hook renders **1** — the finished state — on the server and on the first
+ * The hook renders **1** - the finished state - on the server and on the first
  * client render, then plays the entrance from a layout effect (browser only,
  * before paint, so there is no full-size flash). That ordering is what keeps
  * server markup renderable: an SSR chart ships real geometry rather than
@@ -170,7 +170,7 @@ function fingerprint(key: object): string {
  * user) simply keeps the finished frame.
  *
  * Pass `key` as the value that identifies the data. The entrance replays on a
- * **shape change** — rows added or removed, categories renamed — but not on
+ * **shape change** - rows added or removed, categories renamed - but not on
  * mere re-renders with equal data and not on value-only updates: the key is
  * reduced to a cheap structural signature with numbers erased (see
  * {@link signatureOf}), so an inline `data={[…]}` literal never restarts the
@@ -219,13 +219,13 @@ export function useMountGrow(duration = 600, delay = 0, key?: unknown): number {
 }
 
 /**
- * Smoothly tween a number toward `target` whenever it changes — the value
+ * Smoothly tween a number toward `target` whenever it changes - the value
  * animates from where it was to the new target (retargeting mid-flight is
  * supported: it continues from the currently displayed value). Reduced motion,
  * or `duration <= 0`, → jumps straight to the target with no frame loop.
  *
  * The first render (server included) shows `target`, so SSR markup and static
- * renders are always correct. Pass `from` to opt into a mount animation — the
+ * renders are always correct. Pass `from` to opt into a mount animation - the
  * first tween then runs `from → target` (a real count-up), started before the
  * browser paints so the target is not flashed first.
  *
@@ -241,7 +241,7 @@ export function useAnimatedValue(target: number, opts: AnimateOptions = {}): num
 
   // Keep the latest easing without restarting the tween when the caller passes
   // an inline arrow (a new identity every render). Synced in an effect rather
-  // than during render — render must stay pure — and declared *before* the
+  // than during render - render must stay pure - and declared *before* the
   // animation effect so it is already fresh when a tween starts.
   useIsoLayoutEffect(() => {
     easingRef.current = easing;
@@ -308,8 +308,8 @@ const isRecord = (v: unknown): v is Record<string, unknown> =>
   typeof v === "object" && v !== null && !Array.isArray(v);
 
 /**
- * Walk two snapshots in lockstep. "equal" — nothing moved; "tween" — same
- * shape, only finite numbers differ (interpolable); "jump" — different shape
+ * Walk two snapshots in lockstep. "equal" - nothing moved; "tween" - same
+ * shape, only finite numbers differ (interpolable); "jump" - different shape
  * (length, keys, or any non-numeric leaf), or a non-finite number appeared or
  * vanished, which in this library's vocabulary means data went missing.
  */
@@ -360,12 +360,12 @@ function interpolateSnapshot(a: unknown, b: unknown, t: number): unknown {
 /**
  * Tween a whole data structure toward `target`: every numeric leaf animates
  * from where it currently sits to its new value, everything else switches
- * instantly. This is what makes a chart fed by a live feed glide — the layout
+ * instantly. This is what makes a chart fed by a live feed glide - the layout
  * is recomputed from the interpolated rows each frame, so bars move from their
  * previous height, scales stretch smoothly, and variance pins slide.
  *
  * Semantics, in the order they apply:
- * - **First render (and SSR)** shows `target` — markup is always finished
+ * - **First render (and SSR)** shows `target` - markup is always finished
  *   geometry; the mount entrance belongs to {@link useMountGrow}.
  * - **Same shape, different numbers** → interpolate over `duration`.
  *   Retargeting mid-flight continues from the currently displayed frame.
@@ -387,7 +387,7 @@ export function useDataTween<T>(target: T, opts: Omit<AnimateOptions, "from"> = 
   const mountedRef = useRef(false);
   const easingRef = useRef(easing);
 
-  // Latest easing without restarting the tween on inline-arrow identities —
+  // Latest easing without restarting the tween on inline-arrow identities -
   // same pattern (and reasoning) as useAnimatedValue above.
   useIsoLayoutEffect(() => {
     easingRef.current = easing;

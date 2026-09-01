@@ -1,9 +1,9 @@
-# Charts — quick reference
+# Charts - quick reference
 
 Every chart: pixel `width`/`height`, `format?: FormatOptions`, `tokens?`,
 `title?`, `className`/`style`, `ref` → the `<svg>`, and (where interactive)
 `onHover`, `tooltip` (default `true`), some `onSelect`. Categorical charts also
-take `bandPadding?: { inner?, outer? }` — `{ outer: 0 }` for flush-to-edge.
+take `bandPadding?: { inner?, outer? }` - `{ outer: 0 }` for flush-to-edge.
 
 Shared vocabulary: `comparison?: ScenarioKey` (the base scenario),
 `variance?: "abs" | "pct" | "none"`, `mark?: "bar" | "pin"`,
@@ -15,19 +15,19 @@ Shared vocabulary: `comparison?: ScenarioKey` (the base scenario),
 | Component             | Data                                                                                                                                                   | Key props                                                                                                                                                                 |
 | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `VarianceColumnChart` | `ColumnDatum[]` = `ScenarioDatum & { AC: number }`                                                                                                     | `comparison="PY"`, `variance="abs"`, `mark`, `higherIsBetter`, `onSelect` (560×320)                                                                                       |
-| `TrendChart`          | `TrendDatum[]` (`ScenarioDatum & { summary? }`; a `summary` total stays off the period scale — capped + marked scale break when it dwarfs the months)  | `comparison`, `variance`, `referenceLines={["PY","PL"]}`, `showValueLabels`, `onSelect` (720×360)                                                                         |
-| `StructureChart`      | `StructureDatum[]` = `{ category, AC?, PY?, PL?, FC?, higherIsBetter? }` — same `category` key as every other chart (`label` accepted as legacy alias) | `sort="desc"\|"asc"\|"none"`, `showComparison`, `showShare`, `variance`, `labelWidth` (600×320)                                                                           |
+| `TrendChart`          | `TrendDatum[]` (`ScenarioDatum & { summary? }`; a `summary` total stays off the period scale - capped + marked scale break when it dwarfs the months)  | `comparison`, `variance`, `referenceLines={["PY","PL"]}`, `showValueLabels`, `onSelect` (720×360)                                                                         |
+| `StructureChart`      | `StructureDatum[]` = `{ category, AC?, PY?, PL?, FC?, higherIsBetter? }` - same `category` key as every other chart (`label` accepted as legacy alias) | `sort="desc"\|"asc"\|"none"`, `showComparison`, `showShare`, `variance`, `labelWidth` (600×320)                                                                           |
 | `KpiCard`             | `KpiConfig` props: `label`, `values`, `comparisons=["PY"]`                                                                                             | `higherIsBetter`, `format`, `unit="ratio"` (percentage measure → deltas as `+0.6pp`, relative % dropped), `sparkline: number[]`, `sparklineType`, `appearance`, `animate` |
 | `Sparkline`           | `data: number[]`                                                                                                                                       | `type="line"\|"area"\|"bar"`, `showLast`, `fluid`, `color`                                                                                                                |
-| `VarianceBar`         | —                                                                                                                                                      | `value`, `max`, `favorable`, `mark` (the primitive used in tables)                                                                                                        |
+| `VarianceBar`         | -                                                                                                                                                      | `value`, `max`, `favorable`, `mark` (the primitive used in tables)                                                                                                        |
 
-## IBCS chart templates C01–C13
+## IBCS chart templates C01-C13
 
 | Template                               | Component                      | Data / notes                                                                                                                                                                                                                |
 | -------------------------------------- | ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | C01 stacked columns · C02 stacked bars | `StackedChart`                 | `data: StackedDatum[]` (`{ category, values: Record<string, number> }`) + `series: StackedSeries[]` (`{ key, label, color? }`), `orientation="column"\|"bar"`, `showTotals`, `highlight`                                    |
 | C03/C04 multi-tier grouped             | `GroupedVarianceChart`         | `data: GroupedDatum[]` (`{ category, AC, comparisonValue, isForecast? }`), `comparison: "PY"\|"PL"\|"FC"`, `orientation`, `showAbsPanel`, `showPctPanel`, `clampPct`                                                        |
-| C05 columns + horizontal waterfall     | `ColumnVarianceWaterfallChart` | `data: ColumnVarianceDatum[]` (`{ category, ac, pl, isForecast? }` — lowercase), `priorTotals`, `endTotal`, `showPctPanel`, `clampPct`                                                                                      |
+| C05 columns + horizontal waterfall     | `ColumnVarianceWaterfallChart` | `data: ColumnVarianceDatum[]` (`{ category, ac, pl, isForecast? }` - lowercase), `priorTotals`, `endTotal`, `showPctPanel`, `clampPct`                                                                                      |
 | C05 horizontal bridge                  | `HorizontalWaterfallChart`     | `data: WaterfallDatum[]`, `comparisonData`, `scenario`, `rowHeight`, `showValueLabels`                                                                                                                                      |
 | C06 bars + vertical waterfall          | `BarVarianceWaterfallChart`    | `data: BarVarianceDatum[]` (`{ label, ac, base, py? }`), `pyTotal`, `sortBy="variance"\|"value"\|"none"`, `pctBase="PY"\|"PL"`, `rowHeight`                                                                                 |
 | C07 line                               | `LineChart`                    | `data: LineDatum[]` (= `ScenarioDatum`), `series?: ScenarioKey[]`, `comparison`, `variance`, `showMarkers`, `forecastFrom` (index where the hatched/forecast tail starts), `references: (ReferenceLine \| ReferenceBand)[]` |
@@ -38,7 +38,7 @@ Shared vocabulary: `comparison?: ScenarioKey` (the base scenario),
 | C11 ratio / DuPont tree                | `RatioTreeChart`               | `root: RatioNode` (`{ id, label, series: number[], py?: number[], op?, children? }`), `miniChart="column"\|"line"`, `nodeWidth`, `nodeHeight`                                                                               |
 | C12 vertical waterfall                 | `WaterfallChart`               | `data: WaterfallDatum[]` (`{ category, value, flow?, higherIsBetter? }`), `comparisonData`, `scenario="AC"`, `mark`, `showValueLabels`, `connector: { style, width, align }` (640×360)                                      |
 | C12 two bridges + variance tiers       | `WaterfallStatementChart`      | `lines: WaterfallStatementLine[]` (`{ label, ac, base, flow? }`), `comparison`, `showPctPanel`, `clampPct`, `clampAbs`, `rowHeight`                                                                                         |
-| C13 small multiples                    | `SmallMultiples`               | `items`, `renderItem: (item, scale, index) => ReactNode`, `valuesOf`, `columns`, `nice`, `symmetric`, `clampPercentile`, `keyOf` — the shared scale is the IBCS CHECK rule                                                  |
+| C13 small multiples                    | `SmallMultiples`               | `items`, `renderItem: (item, scale, index) => ReactNode`, `valuesOf`, `columns`, `nice`, `symmetric`, `clampPercentile`, `keyOf` - the shared scale is the IBCS CHECK rule                                                  |
 | C13 variance multiples                 | `MiniVarianceMultiples`        | `groups: MiniGroupInput[]` (`{ label, data }`), `comparison`, `columns`, `panelHeight`, `sharedScale`, `clampPercentile`, `showScaleHint`                                                                                   |
 
 ## Extras
@@ -46,10 +46,10 @@ Shared vocabulary: `comparison?: ScenarioKey` (the base scenario),
 | Component                 | Data                                                                              | Key props                                                                                                                                  |
 | ------------------------- | --------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
 | `ComboChart`              | `data: ComboDatum[]` + `secondary: ComboSecondaryDatum[]` (`{ category, value }`) | `secondaryKey`, `primaryLabel`, `secondaryLabel`, `secondaryFormat`, `comparison`, `showComparison`, `showVariance`, `showSecondaryLabels` |
-| `IntegratedVarianceChart` | `data: IntegratedDatum[]` (`{ category, AC, PY?, PL?, isForecast? }`)             | `comparison: "PY"\|"PL"`, `showAbsPanel`, `showPctPanel`, `fyTotal` — the signature 3-tier Δ% pins / Δ bars / AC columns                   |
+| `IntegratedVarianceChart` | `data: IntegratedDatum[]` (`{ category, AC, PY?, PL?, isForecast? }`)             | `comparison: "PY"\|"PL"`, `showAbsPanel`, `showPctPanel`, `fyTotal` - the signature 3-tier Δ% pins / Δ bars / AC columns                   |
 | `RankingVarianceChart`    | `data: RankingDatum[]` (`{ label, AC, base, higherIsBetter? }`)                   | `baseLabel`, `sortBy`, `clampPct`, `rowHeight`, `showTotals`                                                                               |
 | `VarianceAreaChart`       | `data: VarianceAreaDatum[]` (`{ category, AC, reference, FC? }`)                  | `forecastFrom`, `referenceLabel`, `mark`, `higherIsBetter`                                                                                 |
-| `PieChart`                | `data: PieDatum[]` (`{ label, value, color? }`) or `share`                        | `donut`, `size`, `emphasisIndex`, `growth` — **IBCS discourages pies; `checkIbcs` flags them**                                             |
+| `PieChart`                | `data: PieDatum[]` (`{ label, value, color? }`) or `share`                        | `donut`, `size`, `emphasisIndex`, `growth` - **IBCS discourages pies; `checkIbcs` flags them**                                             |
 
 ## Config-driven charts
 
@@ -71,11 +71,11 @@ if (result.ok) return <ConfiguredChart config={result.config} />;
 
 ## Loading / empty states, a11y
 
-- `ChartState` — `loading` / `error` / `empty` / children in one wrapper, with
+- `ChartState` - `loading` / `error` / `empty` / children in one wrapper, with
   `renderLoading`/`renderError`/`renderEmpty`, `onRetry`; pairs with
   `useAsyncData` (`{ data, loading, error, refetch }`).
-- `Skeleton` — `variant`, `rows`, `bars`, `label`.
-- `ChartDataTable` — the visually-hidden numeric table charts already render.
+- `Skeleton` - `variant`, `rows`, `bars`, `label`.
+- `ChartDataTable` - the visually-hidden numeric table charts already render.
 - Hooks: `useStatement`, `useVariance`/`useVariances`, `useFilters`,
   `useLiveData`, `useAsyncData`, `useChartSelection`, `useChartHover`,
   `useElementSize`, `usePrefersReducedMotion`, `useMountGrow`,

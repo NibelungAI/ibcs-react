@@ -9,15 +9,15 @@
  *    the *same object* as `require("ibcs-react/core").defaultTokens`. Both
  *    entries must resolve to the same per-module files; if the build ever
  *    regresses to bundling each entry privately, identity checks break and
- *    the bytes double — this catches it.
+ *    the bytes double - this catches it.
  * 2. **Public API is reachable** from every entry/format combination.
- * 3. **The dist is per-module** (tsdown `unbundle`) — one file per source
+ * 3. **The dist is per-module** (tsdown `unbundle`) - one file per source
  *    module, barrels as pure re-exports. This is what makes the library
  *    tree-shake in consumers; a regression to a single bundle would silently
  *    re-inflate every consumer (55 KB gzip for one KpiCard, measured).
  *    `scripts/verify-treeshake.mjs` asserts the resulting bundle size.
  * 4. **`"use client"` is stamped on the root barrels and every react module,
- *    and nowhere in core** (see `scripts/postbuild.mjs`) — `ibcs-react/core`
+ *    and nowhere in core** (see `scripts/postbuild.mjs`) - `ibcs-react/core`
  *    must stay usable from React Server Components.
  *
  * Exits non-zero with a list of every failure (not just the first one).
@@ -51,7 +51,7 @@ function requireDist(relPath) {
   try {
     return require(join(root, relPath));
   } catch (error) {
-    failures.push(`${relPath}: require() threw — ${error?.message ?? error}`);
+    failures.push(`${relPath}: require() threw - ${error?.message ?? error}`);
     return null;
   }
 }
@@ -61,7 +61,7 @@ async function importDist(relPath) {
   try {
     return await import(pathToFileURL(join(root, relPath)).href);
   } catch (error) {
-    failures.push(`${relPath}: import() threw — ${error?.message ?? error}`);
+    failures.push(`${relPath}: import() threw - ${error?.message ?? error}`);
     return null;
   }
 }
@@ -88,7 +88,7 @@ checkExports("dist/core/index.cjs", cjsCore, CORE_EXPORTS);
 if (cjsRoot && cjsCore) {
   check(
     cjsRoot.defaultTokens === cjsCore.defaultTokens,
-    'dual-package hazard: require("ibcs-react").defaultTokens !== require("ibcs-react/core").defaultTokens — the CJS entries do not share module files (check `unbundle` in tsdown.config.ts)',
+    'dual-package hazard: require("ibcs-react").defaultTokens !== require("ibcs-react/core").defaultTokens - the CJS entries do not share module files (check `unbundle` in tsdown.config.ts)',
   );
 }
 
@@ -102,13 +102,13 @@ checkExports("dist/core/index.js", esmCore, CORE_EXPORTS);
 if (esmRoot && esmCore) {
   check(
     esmRoot.defaultTokens === esmCore.defaultTokens,
-    'dual-package hazard: import("ibcs-react").defaultTokens !== import("ibcs-react/core").defaultTokens — the ESM entries do not share module files',
+    'dual-package hazard: import("ibcs-react").defaultTokens !== import("ibcs-react/core").defaultTokens - the ESM entries do not share module files',
   );
 }
 
 // -------------------------------------------------- per-module dist structure
 // A representative module per layer must exist as its OWN file. If these turn
-// up missing, the build has regressed to a single bundle — which loads fine
+// up missing, the build has regressed to a single bundle - which loads fine
 // (everything above still passes) but destroys consumer tree-shaking.
 for (const file of [
   "dist/react/KpiCard.js",
@@ -118,7 +118,7 @@ for (const file of [
 ]) {
   check(
     existsSync(join(root, file)),
-    `${file}: missing — the dist is no longer per-module (tsdown \`unbundle\`); consumer tree-shaking is broken`,
+    `${file}: missing - the dist is no longer per-module (tsdown \`unbundle\`); consumer tree-shaking is broken`,
   );
 }
 
@@ -153,7 +153,7 @@ const unstamped = clientModules
   .map((file) => relative(root, file));
 check(
   unstamped.length === 0,
-  `react modules missing a leading "use client" (see scripts/postbuild.mjs) — they throw in a Next.js server component: ${unstamped.join(", ")}`,
+  `react modules missing a leading "use client" (see scripts/postbuild.mjs) - they throw in a Next.js server component: ${unstamped.join(", ")}`,
 );
 
 const serverModules = [
@@ -171,7 +171,7 @@ const poisoned = serverModules
   .map((file) => relative(root, file));
 check(
   poisoned.length === 0,
-  `core/_virtual modules must NOT contain "use client" — ibcs-react/core is pure maths and has to stay importable from a React Server Component: ${poisoned.join(", ")}`,
+  `core/_virtual modules must NOT contain "use client" - ibcs-react/core is pure maths and has to stay importable from a React Server Component: ${poisoned.join(", ")}`,
 );
 
 // ------------------------------------------------------------------- report

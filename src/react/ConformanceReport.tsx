@@ -24,7 +24,7 @@ export interface ConformanceReportProps {
 export function ConformanceReport({
   findings,
   target,
-  emptyLabel = "Conforms to IBCS / ISO 24896 — no findings.",
+  emptyLabel = "Conforms to IBCS / ISO 24896 - no findings.",
   tokens: tokenOverride,
   className,
   style,

@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
 export const metadata = {
-  title: "ibcs-react — Next.js example",
+  title: "ibcs-react - Next.js example",
   description:
     "Instant-try Next.js (App Router) starter for ibcs-react: IBCS / ISO 24896 charts and KPI cards.",
 };

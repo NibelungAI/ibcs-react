@@ -1,6 +1,6 @@
 ---
 title: StructureChart
-description: Ranked horizontal bars showing composition / contribution, with AC vs PY overlap and % share.
+description: A ranked horizontal bar chart showing composition / contribution, with AC vs PY overlap and % share.
 ---
 
 import { StructureChart } from "ibcs-react";
@@ -10,7 +10,7 @@ its comparison scenario, with the share of the total and a variance beside it.
 
 ## When to use
 
-Structure / composition — revenue by region, cost by category. Ranked, with a
+Structure / composition - revenue by region, cost by category. Ranked, with a
 total row.
 
 ## Example
@@ -37,7 +37,7 @@ import { StructureChart } from "ibcs-react";
 <StructureChart data={[{ category: "EMEA", AC: 12e6, PY: 10e6 } /* … */]} comparison="PY" />;
 ```
 
-The name key is `category` — the same key every other chart's data uses — so
+The name key is `category` - the same key every other chart's data uses - so
 one array can feed a `VarianceColumnChart` and a `StructureChart` unchanged.
 (`label`, the only key before v1.1, still works as an alias.)
 
@@ -45,7 +45,7 @@ one array can feed a `VarianceColumnChart` and a `StructureChart` unchanged.
 
 ### Composition vs plan
 
-Rank the same regions but measure each against plan — Middle East & Africa,
+Rank the same regions but measure each against plan - Middle East & Africa,
 ahead of a small plan, stands out.
 
 <Frame center>

@@ -1,6 +1,6 @@
 ---
 title: StatementTable
-description: The IBCS integrated waterfall — a P&L or balance sheet with embedded variance bars and pins.
+description: The IBCS table with measure rows and integrated waterfalls (templates T03/T04) - a P&L or balance sheet with embedded variance bars and pins.
 ---
 
 import { StatementTable } from "ibcs-react";
@@ -13,7 +13,7 @@ pass, without leaving the table.
 
 ## When to use
 
-An income statement, a balance sheet, or any build-up of figures to subtotals —
+An income statement, a balance sheet, or any build-up of figures to subtotals -
 lines that add, subtract and resolve into results. For a cross-entity
 comparison (revenue by region, headcount by team) where rows do not build up to
 a total, use [DataTable](/docs/components/data-table) instead.
@@ -44,7 +44,7 @@ import { StatementTable } from "ibcs-react";
 
 ## Pin mark and relative variance
 
-Draw the waterfall lane as pins and add a percent (ΔPY%) panel — pins keep
+Draw the waterfall lane as pins and add a percent (ΔPY%) panel - pins keep
 small bases honest against the absolute bars.
 
 <Frame>
@@ -72,7 +72,7 @@ small bases honest against the absolute bars.
 />
 ```
 
-## Stock mode — a balance sheet
+## Stock mode - a balance sheet
 
 The same component renders point-in-time levels instead of a flow waterfall:
 each line is an absolute bar, with no running total. Liability lines carry
@@ -101,13 +101,13 @@ each line is an absolute bar, with no running total. Liability lines carry
 Grouped statements track a **collapsed** set of group ids. Both modes are
 supported, and mixing them is the usual mistake:
 
-- **Uncontrolled** — pass `defaultCollapsed` (a seed applied on mount, which
+- **Uncontrolled** - pass `defaultCollapsed` (a seed applied on mount, which
   overrides each line's own `defaultCollapsed` flag) and let the table own the
   state. `onCollapsedChange` still fires, as a plain observer.
-- **Controlled** — pass `collapsed` (a `ReadonlySet<string>` or a string array).
+- **Controlled** - pass `collapsed` (a `ReadonlySet<string>` or a string array).
   The table then renders exactly that set and never mutates it; every toggle,
   and the Expand all / Collapse all buttons, report the next ids through
-  `onCollapsedChange` for you to apply — useful for URL sync, persistence, or
+  `onCollapsedChange` for you to apply - useful for URL sync, persistence, or
   keeping two tables in step.
 
 ```tsx

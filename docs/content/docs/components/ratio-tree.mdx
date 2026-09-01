@@ -1,25 +1,25 @@
 ---
 title: RatioTreeChart
-description: IBCS C11 — a DuPont-style calculation tree where each node is a mini time-series chart.
+description: IBCS C11 - a DuPont-style ratio tree chart where each node is a mini time-series chart.
 ---
 
 import { RatioTreeChart } from "ibcs-react";
 
 Every node in the calculation tree carries a small time series instead of a
-single figure, with the operators (÷ − + ×) sitting on the branches — so both
+single figure, with the operators (÷ − + ×) sitting on the branches - so both
 the arithmetic and the movement of each driver are on the page.
 
 ## When to use
 
 Decompose a ratio/KPI into its drivers and show each as a small trend, with the
-operators on the branches — how a headline metric is built and how each driver
+operators on the branches - how a headline metric is built and how each driver
 moves.
 
 ## Example
 
 <Frame center>
   <RatioTreeChart
-    title="Return on assets — 2021…2025"
+    title="Return on assets - 2021…2025"
     format={{ decimals: 1 }}
     width={760}
     root={{
@@ -50,7 +50,7 @@ moves.
 import { RatioTreeChart } from "ibcs-react";
 
 <RatioTreeChart
-  title="Return on assets — 2021…2025"
+  title="Return on assets - 2021…2025"
   root={{
     id: "roa",
     label: "Return on assets %",
@@ -64,7 +64,7 @@ import { RatioTreeChart } from "ibcs-react";
 />;
 ```
 
-Put the unit in each node's label — a tree mixing percent and currency nodes is
+Put the unit in each node's label - a tree mixing percent and currency nodes is
 otherwise ambiguous. `miniChart="line"` draws the node series as lines instead
 of columns, which reads better for long series.
 

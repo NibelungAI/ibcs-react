@@ -87,7 +87,7 @@ export interface ColumnVarianceLayout {
   domainMin: number;
   /** Most positive point across every column/segment/bridge level (≥ 0). */
   domainMax: number;
-  /** Largest in-scale |Δ%| as a fraction — half-scale of the percent tier. */
+  /** Largest in-scale |Δ%| as a fraction - half-scale of the percent tier. */
   pctMax: number;
   /** A |Δ%| at or beyond this fraction is drawn off-scale (arrow tip). */
   pctClamp: number;
@@ -119,7 +119,7 @@ export interface ComputeColumnVarianceOptions {
  *
  * The middle tier is a value-unit BRIDGE: it starts at ΣPL (the left anchor),
  * adds each period's absolute variance `ac − pl`, and lands exactly on ΣAC
- * (the right anchor) — so the running path is self-closing regardless of the
+ * (the right anchor) - so the running path is self-closing regardless of the
  * caller-supplied set-apart columns. Because the bridge, the grouped columns,
  * and the start/end total columns are all expressed in the SAME value units,
  * the renderer can map every one of them through a single value→pixel scale
@@ -127,7 +127,7 @@ export interface ComputeColumnVarianceOptions {
  *
  * Off-scale percents (|Δ%| ≥ `pctClamp`, e.g. when a plan is near 0) are
  * excluded from `pctMax` so one runaway period can't flatten the pin tier; the
- * renderer pins them to the edge with an arrow. Framework agnostic — the React
+ * renderer pins them to the edge with an arrow. Framework agnostic - the React
  * component is just a renderer over this. SSR-safe and NaN-hardened: non-finite
  * inputs are MISSING (they contribute 0 and never widen the domain), and an
  * all-negative bridge keeps `domainMax === 0` instead of reserving an unused

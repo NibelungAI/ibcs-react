@@ -107,7 +107,7 @@ export const CostTable: Story = {
 };
 
 /* -------------------------------------------------------------------------- *
- * T01 — "Table with hierarchical rows and variance columns".
+ * T01 - "Table with hierarchical rows and variance columns".
  * Two column GROUPS ("Current month" / "Year to date"), each with AC plus an
  * absolute (ΔPY bar) and a relative (ΔPY% pin) variance. Regions are
  * hierarchical rows; a divider separates the two groups; totals are summed.

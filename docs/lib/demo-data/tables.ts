@@ -111,7 +111,7 @@ export const statementLines: StatementLine[] = [
 ];
 
 /**
- * A balance sheet — a STOCK statement (ending balances, not period movements).
+ * A balance sheet - a STOCK statement (ending balances, not period movements).
  * Assets balance against liabilities plus equity. Liability lines carry
  * `higherIsBetter: false`, so a rise in debt reads as unfavorable.
  */
@@ -388,7 +388,7 @@ export const comparisonRows: DataTableRow[] = [
   },
 ];
 
-/** Left group — the current month: PY / PL / AC, then a numeric AC-PY pair. */
+/** Left group - the current month: PY / PL / AC, then a numeric AC-PY pair. */
 export const comparisonLeft: DataTableColumn[] = [
   { key: "m_py", label: "PY", kind: "value", measure: "m", scenario: "PY" },
   { key: "m_pl", label: "PL", kind: "value", measure: "m", scenario: "PL" },
@@ -416,7 +416,7 @@ export const comparisonLeft: DataTableColumn[] = [
   },
 ];
 
-/** Right group — the same measures year to date, with embedded marks. */
+/** Right group - the same measures year to date, with embedded marks. */
 export const comparisonRight: DataTableColumn[] = [
   { key: "y_py", label: "PY", kind: "value", measure: "y", scenario: "PY" },
   { key: "y_pl", label: "PL", kind: "value", measure: "y", scenario: "PL" },
@@ -445,7 +445,7 @@ export const comparisonRight: DataTableColumn[] = [
 
 /* ------------------------------ MatrixTable ------------------------------ */
 
-/** A short P&L row tree — one collapsible group plus result lines. */
+/** A short P&L row tree - one collapsible group plus result lines. */
 export const matrixRows: MatrixRow[] = [
   {
     id: "revenue",
@@ -477,7 +477,7 @@ export const matrixColumns: MatrixPeriod[] = [
 
 /**
  * `values[rowId][periodId][scenario]`, in mUSD. `Revenue` carries no values of
- * its own — the matrix aggregates it from its children. Quarterly figures add
+ * its own - the matrix aggregates it from its children. Quarterly figures add
  * up to their year.
  */
 export const matrixValues: MatrixValues = {

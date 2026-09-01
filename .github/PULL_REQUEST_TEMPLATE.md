@@ -13,5 +13,5 @@
 - [ ] IBCS-correct where applicable (AC solid · PY grey · PL frame · FC hatch; variance coloured by impact, not sign)
 - [ ] Added/updated tests for the change
 - [ ] Updated docs (component page / README) if user-facing
-- [ ] Added a changeset (`npx changeset`) if user-facing — `CHANGELOG.md` is
+- [ ] Added a changeset (`npx changeset`) if user-facing - `CHANGELOG.md` is
       generated at release time, don't edit it by hand

@@ -36,7 +36,7 @@ export interface LineChartProps {
   higherIsBetter?: boolean;
   /**
    * The lower current-vs-comparison variance panel: "abs" shows Δ values,
-   * "pct" shows Δ%, "none" omits the panel entirely. Default "none" — a dense
+   * "pct" shows Δ%, "none" omits the panel entirely. Default "none" - a dense
    * line chart is read as a shape first, so the panel is opt-in here.
    */
   variance?: "abs" | "pct" | "none";
@@ -44,7 +44,7 @@ export interface LineChartProps {
   showMarkers?: boolean;
   /**
    * IBCS template C07 forecast tail: the input period index from which the
-   * current (AC) line turns into a forecast — drawn DASHED with hollow markers,
+   * current (AC) line turns into a forecast - drawn DASHED with hollow markers,
    * matching the forecast visual language used across the library. The
    * connecting segment into the first forecast period is itself dashed. Omit
    * (default) for a fully-measured line. Out-of-range / non-finite values
@@ -63,7 +63,7 @@ export interface LineChartProps {
   width?: number;
   height?: number;
   /**
-   * Horizontal point spacing — the lead-in/out gutter at the plot edges. Omit
+   * Horizontal point spacing - the lead-in/out gutter at the plot edges. Omit
    * for the centred default; pass `{ outer: 0 }` to anchor the first/last points
    * to the edges so the series fills the plot width (no side whitespace).
    */
@@ -77,22 +77,22 @@ export interface LineChartProps {
   style?: CSSProperties;
 }
 
-/** Per-scenario stroke style for line rendering (no legend box — end labels carry it). */
+/** Per-scenario stroke style for line rendering (no legend box - end labels carry it). */
 function lineStyle(
   scenario: ScenarioKey,
   tokens: IbcsTokens,
 ): { stroke: string; width: number; dash?: string } {
   switch (scenario) {
-    // Actual: solid, dark, heaviest — "this is real".
+    // Actual: solid, dark, heaviest - "this is real".
     case "AC":
       return { stroke: tokens.scenario.AC.stroke, width: 2 };
-    // Previous year: solid, faded grey — "the past".
+    // Previous year: solid, faded grey - "the past".
     case "PY":
       return { stroke: tokens.color.neutral, width: 1.75 };
-    // Plan / budget: dashed — "not real yet".
+    // Plan / budget: dashed - "not real yet".
     case "PL":
       return { stroke: tokens.scenario.PL.stroke, width: 1.5, dash: "5 3" };
-    // Forecast: dotted — "expected".
+    // Forecast: dotted - "expected".
     case "FC":
       return { stroke: tokens.scenario.FC.stroke, width: 1.5, dash: "1.5 2.5" };
   }
@@ -100,7 +100,7 @@ function lineStyle(
 
 /**
  * Style for the forecast tail of an otherwise-solid (AC) line: same hue and
- * weight as its measured run, but dashed — the IBCS "this part is forecast"
+ * weight as its measured run, but dashed - the IBCS "this part is forecast"
  * treatment (paired with hollow markers). Mirrors TrendChart's hatched FC.
  * Only AC is ever split (PY/PL/FC already carry their own dash).
  */
@@ -110,7 +110,7 @@ function forecastTailDash(): string {
 
 /**
  * One `<path>` string per series. Subpaths break (an `M` instead of `L`)
- * wherever a period is missing, so genuine gaps are not bridged — yet the whole
+ * wherever a period is missing, so genuine gaps are not bridged - yet the whole
  * line is still a single element, which keeps dense series cheap to render.
  */
 function buildPath(
@@ -129,7 +129,7 @@ function buildPath(
 }
 
 /**
- * Approximate rendered width of `s` in px at `fontSize` — wide glyphs (CJK,
+ * Approximate rendered width of `s` in px at `fontSize` - wide glyphs (CJK,
  * fullwidth, emoji) ~1.05·em, normal ~0.62·em. SSR-safe (no DOM measuring).
  *
  * Deliberately local: the shared `internal/text` heuristic is width-agnostic,
@@ -179,8 +179,8 @@ function fitText(s: string, maxPx: number, fontSize: number): string {
  * (no external legend), supports positive and negative values against a zero
  * baseline, and an optional lower panel shows the current series' variance.
  *
- * A forwarded `ref` lands on the chart `<svg>` — the useful handle for export /
- * serialization — even though the component also renders a screen-reader table
+ * A forwarded `ref` lands on the chart `<svg>` - the useful handle for export /
+ * serialization - even though the component also renders a screen-reader table
  * beside it.
  */
 export const LineChart = forwardRef<SVGSVGElement, LineChartProps>(function LineChart(
@@ -208,7 +208,7 @@ export const LineChart = forwardRef<SVGSVGElement, LineChartProps>(function Line
   const data = useDataTween(dataProp);
   const grow = useMountGrow(700, 0, data);
 
-  // `variance` doubles as the panel's on/off switch — resolve it to the plain
+  // `variance` doubles as the panel's on/off switch - resolve it to the plain
   // flag + mode the geometry below already speaks.
   const showVariancePanel = variance !== "none";
   const varianceMode = variance === "pct" ? "pct" : "abs";
@@ -298,7 +298,7 @@ export const LineChart = forwardRef<SVGSVGElement, LineChartProps>(function Line
   }
 
   // Screen-reader data table: each period's value per scenario, plus the shown
-  // variance — so SR users read the actual numbers, not the decorative svg.
+  // variance - so SR users read the actual numbers, not the decorative svg.
   const hasVarTable = showVariancePanel && variancePoints.length > 0;
   const a11yColumns = [
     ...lines.map((s) => s.scenario),
@@ -327,7 +327,7 @@ export const LineChart = forwardRef<SVGSVGElement, LineChartProps>(function Line
         height={height}
         viewBox={`0 0 ${width} ${height}`}
         className={className}
-        // A single labelled image — no `aria-hidden`, which would cancel the
+        // A single labelled image - no `aria-hidden`, which would cancel the
         // label out and leave assistive tech with nothing but the sr-only table.
         role="img"
         aria-label={
@@ -359,7 +359,7 @@ export const LineChart = forwardRef<SVGSVGElement, LineChartProps>(function Line
           strokeWidth={1}
         />
 
-        {/* Reference bands & lines — drawn UNDER the data so they read as a
+        {/* Reference bands & lines - drawn UNDER the data so they read as a
           backdrop the series sits on. Bands shade first, then lines, then
           their clamped in-box labels. */}
         {resolvedRefs.length > 0 && (
@@ -436,7 +436,7 @@ export const LineChart = forwardRef<SVGSVGElement, LineChartProps>(function Line
           </g>
         )}
 
-        {/* Scenario lines — one path each, drawn back-to-front so AC sits on top.
+        {/* Scenario lines - one path each, drawn back-to-front so AC sits on top.
           The measured (AC) line splits at `forecastFrom` into a solid run plus a
           dashed forecast tail (template C07); other scenarios draw whole. */}
         {lines
@@ -489,7 +489,7 @@ export const LineChart = forwardRef<SVGSVGElement, LineChartProps>(function Line
             );
           })}
 
-        {/* Point markers — only when sparse enough to read as connectors, not
+        {/* Point markers - only when sparse enough to read as connectors, not
           noise. AC points at/after `forecastFrom` are drawn HOLLOW to denote
           forecast, mirroring the dashed tail. */}
         {markers &&
@@ -613,7 +613,7 @@ export const LineChart = forwardRef<SVGSVGElement, LineChartProps>(function Line
       </svg>
       <ChartDataTable
         caption={
-          title ? `${title} — data table` : `Line chart of ${lines.length} series — data table`
+          title ? `${title} - data table` : `Line chart of ${lines.length} series - data table`
         }
         columns={a11yColumns}
         rows={a11yRows}

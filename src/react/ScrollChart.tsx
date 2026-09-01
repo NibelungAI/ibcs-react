@@ -19,7 +19,7 @@ export interface ScrollChartProps {
 }
 
 /**
- * Fill one dimension, scroll the other — a thin preset of {@link ChartBox}.
+ * Fill one dimension, scroll the other - a thin preset of {@link ChartBox}.
  * `height` set → `fit="scale"` (fill width, scroll below `minWidth`); `width`
  * set → `fit="fixed"` with a `maxHeight` viewport (scroll vertically). For full
  * control over fit / align / padding use `ChartBox` directly.

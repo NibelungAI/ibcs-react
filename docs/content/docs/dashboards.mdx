@@ -1,6 +1,6 @@
 ---
 title: Dashboards
-description: Seven full management dashboards — KPI strip, charts and a table each — assembled entirely from ibcs-react components in IBCS notation.
+description: Seven full management dashboards - KPI strip, charts and a table each - assembled entirely from ibcs-react components in IBCS notation.
 ---
 
 import { ExecutiveOverview } from "@/components/demos/dashboards/executive-overview";
@@ -11,8 +11,8 @@ import { RegionalBreakdown } from "@/components/demos/dashboards/regional-breakd
 import { OperationsCost } from "@/components/demos/dashboards/operations-cost";
 import { ForecastPlanning } from "@/components/demos/dashboards/forecast-planning";
 
-Seven realistic **management dashboards** — the things people most commonly
-build with BI and reporting tools — each assembled entirely from `ibcs-react`
+Seven realistic **management dashboards** - the things people most commonly
+build with BI and reporting tools - each assembled entirely from `ibcs-react`
 components. Every one is a multi-panel composition (a KPI strip, two or more
 charts and a table), leads with its **message** and names its **Who / What /
 When**. The figures are fictitious but plausible.
@@ -28,7 +28,7 @@ Three things do the work, and none of them is a chart:
 1. **The headline is the conclusion.** Not "Revenue by region" but "APAC and
    the new Cloud line carried the quarter". The panels below it are the
    evidence.
-2. **Who / What / When** under the headline — the audience, the measure and
+2. **Who / What / When** under the headline - the audience, the measure and
    its unit, and the period. Without them a number is unreadable.
 3. **One layout grid.** A four-up KPI strip, then panels in a two-column grid
    (sometimes with a wider left column), each panel a `<div>` with a small caps
@@ -56,7 +56,7 @@ Three things do the work, and none of them is a chart:
 </div>
 ```
 
-Charts take explicit `width` / `height` — they are printable artifacts, not
+Charts take explicit `width` / `height` - they are printable artifacts, not
 fluid boxes. For a panel that must fill a wide column on a laptop and still
 show all twelve months on a phone, wrap the chart in
 `ScrollChart` (or [ChartBox](/docs/interaction#sizing-and-fit) for full control
@@ -72,15 +72,15 @@ import { ScrollChart, TrendChart } from "ibcs-react";
 ```
 
 Because `ScrollChart` takes a render function as its child, the panel around it
-has to be a client component — a function cannot be handed from a server
+has to be a client component - a function cannot be handed from a server
 component to a client one.
 
 ## 1 · Executive overview
 
-> The group closed FY26 ahead of prior year on every headline KPI — revenue
+> The group closed FY26 ahead of prior year on every headline KPI - revenue
 > **+15%** and a 1.6-point margin gain lift net income to **€8.9M (+10%)**.
 
-**Contoso Group · Office of the CFO** — performance summary in € thousands, AC
+**Contoso Group · Office of the CFO** - performance summary in € thousands, AC
 versus PY (and Plan) · FY 2026, full year.
 
 Four KPI cards with sparklines set the frame; the bridge explains how revenue
@@ -99,10 +99,10 @@ Components: [KpiCard](/docs/components/kpi-card),
 
 ## 2 · Sales performance
 
-> Bookings beat plan by **+€1.9M (+8%)** and ran **+14% on PY** — APAC and the
+> Bookings beat plan by **+€1.9M (+8%)** and ran **+14% on PY** - APAC and the
 > new Cloud line carried the quarter while EMEA mid-market lagged.
 
-**Northwind Trading · Commercial** — bookings and pipeline in € thousands, AC
+**Northwind Trading · Commercial** - bookings and pipeline in € thousands, AC
 versus Plan and PY · Q3 2026, quarter to date.
 
 The regional columns show AC against a hollow Plan; the ranking chart sorts the
@@ -121,10 +121,10 @@ Components: [VarianceColumnChart](/docs/components/variance-column),
 ## 3 · Budget versus actual
 
 > Revenue is tracking **+€0.42M (+3.3%) above plan** at month 9, but a
-> procurement overrun keeps the EBIT beat to **+€0.18M** — watch raw-material
+> procurement overrun keeps the EBIT beat to **+€0.18M** - watch raw-material
 > spend.
 
-**Helios Manufacturing · FP&A** — budget versus actual in € thousands, AC
+**Helios Manufacturing · FP&A** - budget versus actual in € thousands, AC
 versus Plan · FY 2026, YTD through September.
 
 The integrated variance chart puts the monthly ΔPlan directly above the columns
@@ -145,10 +145,10 @@ guide.
 
 ## 4 · P&L deep-dive
 
-> Net income reached **€8.9M (+10% on PY, +19% versus plan)** — gross margin
+> Net income reached **€8.9M (+10% on PY, +19% versus plan)** - gross margin
 > widened to 71.4% as service revenue grew faster than cost of sales.
 
-**Software & Service Group · Group Finance** — profit and loss statement in €
+**Software & Service Group · Group Finance** - profit and loss statement in €
 thousands, AC with ΔPY and ΔPL · FY 2026, full year.
 
 The statement carries its own integrated waterfall and two variance columns, so
@@ -165,10 +165,10 @@ Components: [StatementTable](/docs/components/statement-table),
 
 ## 5 · Regional breakdown
 
-> Group net sales climbed from €25.6M to **€30.1M (+17%)** over four quarters —
+> Group net sales climbed from €25.6M to **€30.1M (+17%)** over four quarters -
 > a fast-growing Asia Pacific (**+45%**) led, with every market ahead of PY.
 
-**Global Retail Co. · Regional Operations** — net sales in € thousands by
+**Global Retail Co. · Regional Operations** - net sales in € thousands by
 market, AC versus PY · FY 2026, quarterly.
 
 Three lenses on the same four markets: stacked columns for the quarterly build,
@@ -187,9 +187,9 @@ Components: [StackedChart](/docs/components/stacked-chart),
 ## 6 · Operations and cost
 
 > Unit cost fell **−4.2% versus PY** on higher throughput, but an energy spike
-> (**+18%**) offset half the saving — net conversion cost down €0.31M.
+> (**+18%**) offset half the saving - net conversion cost down €0.31M.
 
-**Helios Plants · Operations** — conversion cost in € thousands, AC versus PY,
+**Helios Plants · Operations** - conversion cost in € thousands, AC versus PY,
 where lower is better · FY 2026, YTD.
 
 A cost dashboard is where polarity matters most. The bridge walks PY cost to AC
@@ -211,12 +211,12 @@ Components: [WaterfallChart](/docs/components/waterfall-chart),
 > The rolling forecast lands FY26 revenue at **€25.9M (+5% versus plan)** on a
 > strong H2 backlog; EBIT closes **+€0.30M ahead of plan**.
 
-**Atlas Industrial · Corporate Planning** — rolling forecast in € thousands, AC
+**Atlas Industrial · Corporate Planning** - rolling forecast in € thousands, AC
 and FC versus Plan · FY 2026, 9+3 forecast.
 
 Nine months of actuals and a hatched forecast tail run against the plan line;
 the EBIT panel marks its last two quarters `isForecast` and lands the year in a
-stacked AC + FC total bar. The matrix does the same switch structurally — Q1
+stacked AC + FC total bar. The matrix does the same switch structurally - Q1
 and Q2 print PL/AC, Q3 and Q4 print PL/FC, set per period.
 
 <Frame>
@@ -229,9 +229,9 @@ Components: [TrendChart](/docs/components/trend-chart),
 
 ## Where to next
 
-- [Report](/docs/components/report) — the same compositions declared as JSON
+- [Report](/docs/components/report) - the same compositions declared as JSON
   instead of JSX.
-- [Gallery](/gallery) — one dataset through every chart, with a live theme
+- [Gallery](/gallery) - one dataset through every chart, with a live theme
   switch.
-- [IBCS & ISO 24896](/docs/ibcs) — the notation these dashboards follow.
-- [Theming](/docs/theming) — repaint every panel from one provider.
+- [IBCS & ISO 24896](/docs/ibcs) - the notation these dashboards follow.
+- [Theming](/docs/theming) - repaint every panel from one provider.

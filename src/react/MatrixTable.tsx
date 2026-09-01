@@ -22,9 +22,9 @@ import {
 } from "../core/matrixTable";
 
 export interface MatrixTableProps {
-  /** Row tree — a statement (P&L), with flow markers and drill-down. */
+  /** Row tree - a statement (P&L), with flow markers and drill-down. */
   rows: MatrixRow[];
-  /** Period tree — Year → Quarter → Month, expanding in place. */
+  /** Period tree - Year → Quarter → Month, expanding in place. */
   columns: MatrixPeriod[];
   /** `values[rowId][periodId][scenario]` lookup. */
   values: MatrixValues;
@@ -39,20 +39,20 @@ export interface MatrixTableProps {
   /** Theme tokens (colors). Merged onto the defaults; never hardcode colors. */
   tokens?: IbcsTokensOverride;
   /**
-   * Row ids expanded on mount — the uncontrolled seed. Default: all except
+   * Row ids expanded on mount - the uncontrolled seed. Default: all except
    * `defaultCollapsed` rows. Note the polarity: unlike StatementTable/DataTable
    * (which track a COLLAPSED set) the matrix names what is OPEN, because its
-   * periods deliberately start collapsed — a matrix opens Year by Year.
+   * periods deliberately start collapsed - a matrix opens Year by Year.
    */
   defaultExpandedRows?: readonly string[];
   /**
-   * Period ids expanded on mount — the uncontrolled seed. Default: those with
+   * Period ids expanded on mount - the uncontrolled seed. Default: those with
    * `defaultExpanded`. Expanded (not collapsed) ids, per the note above.
    */
   defaultExpandedCols?: readonly string[];
   /**
    * Expanded row ids as a CONTROLLED value: when provided the matrix renders
-   * exactly this set and never mutates it — every toggle reports the next set
+   * exactly this set and never mutates it - every toggle reports the next set
    * through `onExpandedRowsChange` for the parent to apply (URL sync,
    * persistence, cross-linked views). Omit it for the uncontrolled behaviour.
    */
@@ -60,7 +60,7 @@ export interface MatrixTableProps {
   /** Fired with the NEXT expanded row ids (sorted) on every row toggle. */
   onExpandedRowsChange?: (ids: string[]) => void;
   /**
-   * Expanded period ids as a CONTROLLED value — same contract as
+   * Expanded period ids as a CONTROLLED value - same contract as
    * `expandedRows`, for the period columns.
    */
   expandedCols?: ReadonlySet<string> | readonly string[];
@@ -88,16 +88,16 @@ export interface MatrixTableProps {
   /**
    * Decorate individual cells. Called per value cell with its `cellRef`
    * (`cellRefOf(rowId, periodId, scenario)`); return `{ ribbon: true }` to draw
-   * a small corner marker — e.g. on cells that carry a comment.
+   * a small corner marker - e.g. on cells that carry a comment.
    */
   cellDecorations?: (cellRef: string) => { ribbon?: boolean } | undefined;
-  /** Optional className per value cell (by `cellRef`) — for flash / selected state. */
+  /** Optional className per value cell (by `cellRef`) - for flash / selected state. */
   getCellClassName?: (cellRef: string) => string | undefined;
   /** Colour of the cell ribbon marker. Default a blue (#2f6fed). */
   ribbonColor?: string;
   /**
    * A short description of the matrix, rendered as a visually-hidden
-   * `<caption>` — a name for screen-reader users, no visual change.
+   * `<caption>` - a name for screen-reader users, no visual change.
    */
   caption?: string;
   className?: string;
@@ -114,7 +114,7 @@ const HEADER_ROW_H = 26; // fixed height per header row → cumulative sticky of
 
 /**
  * On a phone, freezing the label column eats most of the screen and the frozen
- * column overlapping the scrolled cells reads awkwardly — so below 640px the
+ * column overlapping the scrolled cells reads awkwardly - so below 640px the
  * label column un-freezes and scrolls with the rest.
  */
 const STICKY_CSS = `@media (max-width:640px){.ibcs-mtx-lbl{position:static !important;left:auto !important;}}`;
@@ -122,14 +122,14 @@ const STICKY_CSS = `@media (max-width:640px){.ibcs-mtx-lbl{position:static !impo
 /**
  * The period-header toggle is a real `<button>` (keyboard reachable, with a
  * spoken "Expand Q1" name) that must look exactly like the header text it
- * replaced — hence the full reset to inherited typography.
+ * replaced - hence the full reset to inherited typography.
  */
 const MATRIX_CSS = `
 .ibcs-mtx-hbtn { font: inherit; color: inherit; letter-spacing: inherit; background: none; border: 0; padding: 0; margin: 0; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap }
 .ibcs-mtx-hbtn:focus-visible, .ibcs-mtx-cell:focus-visible { outline: 2px solid currentColor; outline-offset: -2px }
 `;
 
-/** Every row id that has children (any depth) — the expandable rows. */
+/** Every row id that has children (any depth) - the expandable rows. */
 function expandableRowIds(rows: MatrixRow[]): string[] {
   const ids: string[] = [];
   const walk = (rs: MatrixRow[]) => {
@@ -245,7 +245,7 @@ export function MatrixTable({
    * funnels through here, so controlled and uncontrolled mode cannot drift.
    * Controlled mode only reports the next value; uncontrolled mode applies it
    * and reports it too (observer, like onChange on an uncontrolled input).
-   * Row callbacks are translated back to EXPANDED ids — the prop's polarity.
+   * Row callbacks are translated back to EXPANDED ids - the prop's polarity.
    */
   const commitCollapsedRows = (next: Set<string>) => {
     if (!rowsControlled) setUncontrolledCollapsedRows(next);
@@ -263,7 +263,7 @@ export function MatrixTable({
     commitCollapsedRows(next);
   };
 
-  // All period ids that have children (any depth) — for whole-tree expand. So a
+  // All period ids that have children (any depth) - for whole-tree expand. So a
   // reader can open EVERY year→quarter→month at once, not click them one by one.
   const allExpandableColIds = useMemo(() => {
     const ids: string[] = [];
@@ -335,8 +335,8 @@ export function MatrixTable({
     color: tokens.color.text,
   };
 
-  // Each header level sticks at its own cumulative offset so the full header —
-  // year, quarter, month AND the AC/PY/ΔBdg row — stays frozen while the body
+  // Each header level sticks at its own cumulative offset so the full header -
+  // year, quarter, month AND the AC/PY/ΔBdg row - stays frozen while the body
   // scrolls. Without the per-level `top`, every row would pin to 0 and overlap.
   const stickyTopAt = (level: number): React.CSSProperties =>
     maxHeight != null ? { position: "sticky", top: level * HEADER_ROW_H, zIndex: 3 } : {};
@@ -366,7 +366,7 @@ export function MatrixTable({
       : undefined;
     // A clickable <td> is a button in all but name, so give it the role, a tab
     // stop, Enter/Space activation and a spoken name (row + period + column +
-    // value) — otherwise the interaction is mouse-only and silent.
+    // value) - otherwise the interaction is mouse-only and silent.
     const activation: React.TdHTMLAttributes<HTMLTableCellElement> = onClick
       ? {
           role: "button",
@@ -411,8 +411,8 @@ export function MatrixTable({
       className={className}
       style={{
         fontFamily: tokens.font.family,
-        // `min-width: 0` lets the table shrink — and therefore its inner
-        // horizontal scroll engage — when it sits in a flex or grid cell (a
+        // `min-width: 0` lets the table shrink - and therefore its inner
+        // horizontal scroll engage - when it sits in a flex or grid cell (a
         // dashboard panel). Without it the flex item's default `min-width: auto`
         // is the table's full width, so a wide matrix overflows or squashes its
         // columns instead of scrolling. No effect in a normal block context.
@@ -558,7 +558,7 @@ export function MatrixTable({
                     borderTop: isResult ? `1.5px solid ${tokens.color.text}` : "none",
                   }}
                 >
-                  {/* Sticky label cell — a row header, so a screen reader names
+                  {/* Sticky label cell - a row header, so a screen reader names
                       the line with every figure. The <th> defaults (bold,
                       centred) are overridden to keep the old <td> rendering. */}
                   <th
@@ -758,7 +758,7 @@ function PeriodHeader({
 }) {
   const clickable = cell.expandable && cell.periodId != null;
   // Expanded parent bands (e.g. a Year over its Quarters) are left-aligned so the
-  // label stays pinned to the left edge of its span — it remains visible and
+  // label stays pinned to the left edge of its span - it remains visible and
   // attached to its columns even when the group is wide and scrolled. Leaf
   // headers (the actual columns) stay centered over their scenario sub-columns.
   const alignLeft = cell.expanded;

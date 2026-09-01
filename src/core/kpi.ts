@@ -1,6 +1,6 @@
 /**
  * KPI model: one headline figure (the actual) compared against one or more
- * scenarios, with a favorability-aware status. Pure logic — `<KpiCard>` renders
+ * scenarios, with a favorability-aware status. Pure logic - `<KpiCard>` renders
  * it, and a KPI is just one of the block types a report can lay out.
  */
 
@@ -16,7 +16,7 @@ export interface KpiValues {
   FC?: number;
 }
 
-/** Serializable KPI definition — a report block, or a standalone card. */
+/** Serializable KPI definition - a report block, or a standalone card. */
 export interface KpiConfig {
   /** Caption above the number, e.g. "Revenue". */
   label: string;
@@ -30,20 +30,20 @@ export interface KpiConfig {
    * `"cost"` makes `checkIbcs` insist on `higherIsBetter:false` even when the
    * label doesn't sound like a cost; `"revenue"` silences the heuristic for
    * labels that merely sound like one ("Revenue after tax"). Rendering is
-   * unaffected — favorability still follows `higherIsBetter`.
+   * unaffected - favorability still follows `higherIsBetter`.
    */
   measureKind?: "cost" | "revenue";
   /**
-   * Number formatting — and the KPI's unit symbol: `currency` for a leading
+   * Number formatting - and the KPI's unit symbol: `currency` for a leading
    * one ("€30.1M"), `suffix` for a trailing one ("18.4%").
    */
   format?: FormatOptions;
   /**
-   * What KIND of number this is. `"ratio"` declares a percentage measure — a
-   * margin, a rate, a share — whose deltas are PERCENTAGE POINTS: the card
+   * What KIND of number this is. `"ratio"` declares a percentage measure - a
+   * margin, a rate, a share - whose deltas are PERCENTAGE POINTS: the card
    * renders the absolute delta as `+0.6pp` and drops the relative delta,
    * because "the margin grew +0.9%" next to "18.4%" invites misreading a
-   * relative change as points. Default `"absolute"` — ordinary quantities,
+   * relative change as points. Default `"absolute"` - ordinary quantities,
    * deltas shown as value and percent.
    */
   unit?: "absolute" | "ratio";

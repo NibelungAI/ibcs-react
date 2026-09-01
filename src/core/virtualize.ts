@@ -4,7 +4,7 @@
  * Pure geometry: given the scroll offset and a fixed row height, work out which
  * row indices are inside the viewport (plus an overscan margin) and how much
  * blank space to reserve above and below so the scrollbar stays the right size.
- * Framework-agnostic — `StatementTable` feeds it scroll state and renders only
+ * Framework-agnostic - `StatementTable` feeds it scroll state and renders only
  * the returned slice between two spacer rows.
  */
 

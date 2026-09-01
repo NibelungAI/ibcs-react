@@ -1,17 +1,17 @@
 ---
 title: ScatterChart
-description: A value/value scattergram (IBCS C09) with optional constant-product iso-lines.
+description: The IBCS scattergram (template C09) - a value/value scatter plot with optional constant-product iso-lines.
 ---
 
 import { ScatterChart } from "ibcs-react";
 
 Two measures on two value axes, points optionally grouped, with hyperbolas of
-constant x·y drawn behind them — the iso-lines that turn a cloud into a
+constant x·y drawn behind them - the iso-lines that turn a cloud into a
 statement about a meaningful product (e.g. equal gross profit).
 
 ## When to use
 
-Correlation between two measures — margin vs revenue, price vs volume.
+Correlation between two measures - margin vs revenue, price vs volume.
 Iso-lines reveal a meaningful product (x·y).
 
 ## Example
@@ -48,7 +48,7 @@ import { ScatterChart } from "ibcs-react";
 />;
 ```
 
-The chart handles anything from a handful of points to thousands — dense data
+The chart handles anything from a handful of points to thousands - dense data
 is down-sampled automatically. Label only the points that carry the message;
 unlabelled points still read as the cloud they belong to.
 

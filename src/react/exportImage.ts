@@ -6,7 +6,7 @@
  * helpers are no-ops and `svgToPngBlob` rejects rather than throwing at import
  * time. Charts in this library paint with inline presentation attributes
  * (`fill`, `stroke`, …), so a deep clone of the node already carries its full
- * appearance — no computed-style inlining is required. The one thing CSS, not
+ * appearance - no computed-style inlining is required. The one thing CSS, not
  * attributes, supplies is the font, so the serializer pins `font-family` onto
  * the clone's root.
  */
@@ -106,7 +106,7 @@ export function downloadSVG(svg: SVGSVGElement, filename = "chart.svg"): void {
  *
  * The serialized SVG is loaded into an `Image` via a UTF-8 data URL, drawn onto
  * an offscreen `<canvas>`, and encoded as PNG. `background` paints behind the
- * chart (default opaque white — PNGs have no document background, so without it
+ * chart (default opaque white - PNGs have no document background, so without it
  * the transparent areas would show through wherever the chart is pasted); pass
  * `null` to keep the alpha channel transparent. Rejects outside a browser or if
  * image decoding / encoding fails.

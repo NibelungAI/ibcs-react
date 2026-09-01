@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "ibcs-report — statements in, board pack out",
+  title: "ibcs-report - statements in, board pack out",
   description:
     "An agent skill that turns a P&L, balance sheet or management pack into a print-ready A4 PDF board report whose charts and tables are ibcs-react components in IBCS / ISO 24896 notation.",
 };
@@ -13,12 +13,12 @@ const REF = "/skills/ibcs-report/reference";
 const DEMO_FILES = [
   {
     file: "01_Vantera_PnL_FY2025.xlsx",
-    what: "P&L only — actual, prior year, budget, forecast",
+    what: "P&L only - actual, prior year, budget, forecast",
     with: "drag it in together with the balance sheet",
   },
   {
     file: "02_Vantera_BalanceSheet_FY2025.xlsx",
-    what: "Balance sheet — actual, prior year",
+    what: "Balance sheet - actual, prior year",
     with: "the other half of the pair",
   },
   {
@@ -28,7 +28,7 @@ const DEMO_FILES = [
   },
   {
     file: "Northbridge_Logistics_FY2025.xlsx",
-    what: "A deliberately thin single P&L — two years, no budget, no balance sheet",
+    what: "A deliberately thin single P&L - two years, no budget, no balance sheet",
     with: "produces ~5 pages, and does not pad",
   },
 ];
@@ -36,18 +36,18 @@ const DEMO_FILES = [
 const REFERENCES = [
   {
     file: "A_Vantera_8p_reference_design.pdf",
-    label: "A — Vantera, 8 pages",
+    label: "A - Vantera, 8 pages",
     note: "the reference design, from the P&L + balance sheet pair",
   },
   {
     file: "B_Vantera_10p_from_full_pack.pdf",
-    label: "B — Vantera, 10 pages",
+    label: "B - Vantera, 10 pages",
     note: "from the full workbook, one sentence of instruction",
   },
   {
     file: "C_Northbridge_5p_from_thin_pnl.pdf",
-    label: "C — Northbridge, 5 pages",
-    note: "same instruction, half the data — half the report",
+    label: "C - Northbridge, 5 pages",
+    note: "same instruction, half the data - half the report",
   },
 ];
 
@@ -75,8 +75,8 @@ export default function IbcsReportSkillPage() {
       </p>
       <h1 className="mt-2 text-4xl font-semibold tracking-tight">Statements in, board pack out</h1>
       <p className="mt-4 max-w-2xl text-lg text-fd-muted-foreground">
-        <code>ibcs-report</code> teaches a coding agent to turn financial statements — a P&L, a
-        balance sheet, a whole management pack — into a print-ready A4 PDF report: a designed cover,
+        <code>ibcs-report</code> teaches a coding agent to turn financial statements - a P&L, a
+        balance sheet, a whole management pack - into a print-ready A4 PDF report: a designed cover,
         contents, commentary that says what happened, and every chart and table drawn with{" "}
         <code>ibcs-react</code> in IBCS® notation.
       </p>
@@ -93,7 +93,7 @@ export default function IbcsReportSkillPage() {
           </code>
         </pre>
         <p className="mt-3 text-sm text-fd-muted-foreground">
-          Or skip installing — the skill is served from this site, so one sentence is enough:{" "}
+          Or skip installing - the skill is served from this site, so one sentence is enough:{" "}
           <em>
             “read{" "}
             <Link href="/skills/ibcs-report/SKILL.md" className="underline underline-offset-4">
@@ -115,8 +115,8 @@ export default function IbcsReportSkillPage() {
 
       <h2 className="mt-12 text-xl font-semibold tracking-tight">What comes out</h2>
       <p className="mt-2 max-w-2xl text-sm text-fd-muted-foreground">
-        Real runs, not mockups. B and C come from the same one-sentence instruction — ten pages and
-        five — because the page plan follows the data, not a template.
+        Real runs, not mockups. B and C come from the same one-sentence instruction - ten pages and
+        five - because the page plan follows the data, not a template.
       </p>
       <div className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-4">
         {PREVIEWS.map((p) => (
@@ -143,11 +143,11 @@ export default function IbcsReportSkillPage() {
 
       <h2 className="mt-12 text-xl font-semibold tracking-tight">Try it with the demo data</h2>
       <p className="mt-2 max-w-2xl text-sm text-fd-muted-foreground">
-        Two fictional companies with internally consistent figures — every statement foots, the
+        Two fictional companies with internally consistent figures - every statement foots, the
         balance sheet balances. Download, attach, and use prompts like{" "}
-        <em>“Here’s our FY2025 management pack — turn it into a proper board report PDF”</em> or{" "}
+        <em>“Here’s our FY2025 management pack - turn it into a proper board report PDF”</em> or{" "}
         <em>
-          “Can you make a management report out of this P&L? It’s all I have — no balance sheet and
+          “Can you make a management report out of this P&L? It’s all I have - no balance sheet and
           we don’t run a budget.”
         </em>
       </p>
@@ -169,12 +169,12 @@ export default function IbcsReportSkillPage() {
 
       <h2 className="mt-12 text-xl font-semibold tracking-tight">How it works</h2>
       <ol className="mt-3 max-w-2xl list-decimal space-y-2 pl-5 text-sm leading-relaxed text-fd-muted-foreground">
-        <li>Reads every sheet — scenarios, units, periods — and checks that subtotals foot.</li>
+        <li>Reads every sheet - scenarios, units, periods - and checks that subtotals foot.</li>
         <li>
           Finds the story first: both comparisons (prior year <b>and</b> budget), the ratios, and
           where they disagree.
         </li>
-        <li>Plans pages against the data — a thin P&L makes a short report, not a padded one.</li>
+        <li>Plans pages against the data - a thin P&L makes a short report, not a padded one.</li>
         <li>
           Writes one <code>build.mjs</code> that composes A4 pages of server-rendered{" "}
           <code>ibcs-react</code> components.
@@ -205,7 +205,7 @@ export default function IbcsReportSkillPage() {
             >
               {f}
             </Link>{" "}
-            — {note}
+            - {note}
           </li>
         ))}
       </ul>
@@ -213,7 +213,7 @@ export default function IbcsReportSkillPage() {
       <p className="mt-12 text-xs leading-relaxed text-fd-muted-foreground">
         Vantera Industrial Group and Northbridge Logistics are fictional companies; the figures are
         internally consistent demo data and no real entity is depicted. Reports contain no
-        ibcs-react branding — they are documents a company would publish.
+        ibcs-react branding - they are documents a company would publish.
       </p>
     </main>
   );

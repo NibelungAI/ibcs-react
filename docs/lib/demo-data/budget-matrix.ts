@@ -3,8 +3,8 @@
  * a period column tree (Year → Quarter → Month), Plan / Actual / Forecast per
  * period, plus the monthly revenue distribution used by the companion chart.
  *
- * Everything is serializable — rows, columns and a `values[row][period][scn]`
- * lookup — so the same model can come straight out of an API.
+ * Everything is serializable - rows, columns and a `values[row][period][scn]`
+ * lookup - so the same model can come straight out of an API.
  */
 import type { ColumnDatum, MatrixPeriod, MatrixRow, MatrixValues } from "ibcs-react";
 
@@ -99,7 +99,7 @@ const pad = (n: number) => String(n).padStart(2, "0");
  * Build the `values[rowId][periodId][scenario]` lookup. The derived result
  * lines (gross profit, EBIT, …) are computed from the base lines at every
  * granularity, so totals stay consistent when a column drills down. `Revenue`
- * and `Operating expenses` are deliberately NOT stored — they auto-aggregate
+ * and `Operating expenses` are deliberately NOT stored - they auto-aggregate
  * from their row children in the matrix's cell resolver.
  */
 function buildValues(yearsWithMonths: string[]): MatrixValues {
@@ -177,7 +177,7 @@ export const budgetColumnsQuarters: MatrixPeriod[] = [
   { id: "2024", label: "2024", children: quartersOf("2024") },
 ];
 
-/** One year straight as 12 months — no year or quarter tier. */
+/** One year straight as 12 months - no year or quarter tier. */
 export const budgetColumnsMonths: MatrixPeriod[] = monthsOf("2024");
 
 /** Two years, each expanding directly into its 12 months. */
@@ -186,7 +186,7 @@ export const budgetColumnsYearMonths: MatrixPeriod[] = [
   { id: "2024", label: "2024", children: monthsOf("2024") },
 ];
 
-/** Plain figures, no compaction — the matrix prints full numbers. */
+/** Plain figures, no compaction - the matrix prints full numbers. */
 export const budgetFormat = { compact: false as const, decimals: 0 };
 
 const revYear = (year: Year, scn: Scn) =>

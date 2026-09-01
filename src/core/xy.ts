@@ -1,5 +1,5 @@
 /**
- * Pure XY-plane geometry for value/value charts — IBCS "Scattergrams" (C09)
+ * Pure XY-plane geometry for value/value charts - IBCS "Scattergrams" (C09)
  * and bubble charts (C10). Framework-agnostic: this module knows nothing about
  * React or the DOM. It turns data + a plot rectangle into pixel-space scales,
  * "nice" axis ticks, and the constant-profit hyperbolas (iso-lines) that the
@@ -13,7 +13,7 @@
 export interface ScatterDatum {
   x: number;
   y: number;
-  /** Category/series this point belongs to — drives its (semantic) color. */
+  /** Category/series this point belongs to - drives its (semantic) color. */
   group?: string;
   /** Short annotation drawn next to the point when few are shown. */
   label?: string;
@@ -64,7 +64,7 @@ export interface XyDomain {
 /**
  * The result of {@link computeXyScale}: the resolved value domain, the plot
  * rectangle in px, and two pure mapping functions. `xOf`/`yOf` take a value and
- * return a pixel coordinate — they capture no DOM, only numbers, so they are
+ * return a pixel coordinate - they capture no DOM, only numbers, so they are
  * safe to call during render and in tests.
  */
 export interface XyScale extends XyDomain {
@@ -190,7 +190,7 @@ export function computeXyScale(
 }
 
 /**
- * How many decimal places a step needs to print exactly — used to snap the
+ * How many decimal places a step needs to print exactly - used to snap the
  * emitted ticks so `0.1 * 3` reads "0.3", not "0.30000000000000004".
  * Handles exponential notation (`1e-7`) as well as plain decimals.
  */
@@ -204,18 +204,18 @@ function stepDecimals(step: number): number {
 }
 
 /**
- * "Nice" axis tick values across [min, max] — rounded to 1/2/5×10ⁿ steps so the
+ * "Nice" axis tick values across [min, max] - rounded to 1/2/5×10ⁿ steps so the
  * labels read cleanly. Returns ascending values, including the endpoints when
  * they land on the step. Pure; safe for both X and Y axes.
  *
- * The step is picked the way D3 does it — by ERROR, i.e. the 1/2/5/10 multiple
- * whose tick count lands CLOSEST to `count` (√2 / √10 / √50 thresholds) — not
+ * The step is picked the way D3 does it - by ERROR, i.e. the 1/2/5/10 multiple
+ * whose tick count lands CLOSEST to `count` (√2 / √10 / √50 thresholds) - not
  * by rounding the raw step down. Rounding down always overshoots: a raw step in
  * `[1, √2)×10ⁿ` was demoted to `1×10ⁿ`, which nearly DOUBLED the tick count
  * (`computeTicks(0, 80, 5)` used to return 9 ticks; it now returns 5).
  *
  * Degenerate input:
- *  - a non-finite `min`/`max` yields `[]` — an unlabelled axis beats a "NaN"
+ *  - a non-finite `min`/`max` yields `[]` - an unlabelled axis beats a "NaN"
  *    label, and callers already render an empty tick list fine;
  *  - a finite but EMPTY span (`min === max`, or `count < 1`) yields `[min]`, so
  *    a flat series still shows its single level.
@@ -231,7 +231,7 @@ export function computeTicks(min: number, max: number, count = 5): number[] {
     (err >= Math.sqrt(50) ? 10 : err >= Math.sqrt(10) ? 5 : err >= Math.sqrt(2) ? 2 : 1) * pow10;
   if (!Number.isFinite(step) || step <= 0) return [min];
 
-  // Walk INTEGER step indices and multiply — an additive `v += step` loop
+  // Walk INTEGER step indices and multiply - an additive `v += step` loop
   // accumulates fp drift across the axis.
   const first = Math.ceil(min / step - 1e-9);
   const last = Math.floor(max / step + 1e-9);
@@ -248,7 +248,7 @@ export function computeTicks(min: number, max: number, count = 5): number[] {
 }
 
 /**
- * Constant-product hyperbolas x·y = k — the C09 "equal gross profit" iso-lines.
+ * Constant-product hyperbolas x·y = k - the C09 "equal gross profit" iso-lines.
  * For each level `k`, samples a polyline of `{x,y}` points that stay inside the
  * domain rectangle (positive quadrant). Levels whose curve never enters the
  * domain yield an empty polyline. Pure geometry; the renderer turns each
@@ -287,7 +287,7 @@ export function computeIsoLines(
  * assuming `product` is monotonic in `y` over the bracket (true for the default
  * `x·y` whenever `x ≠ 0`). Returns the root, or `null` when the bracket does not
  * change sign (the curve does not pass through this x-column) or the endpoints
- * are non-finite — so callers never receive NaN/±Infinity. Pure.
+ * are non-finite - so callers never receive NaN/±Infinity. Pure.
  */
 function solveIsoY(
   x: number,
@@ -339,12 +339,12 @@ export interface IsoLinePointsOptions {
  * `x·y` product this traces the hyperbola `y = value / x`; a custom `product`
  * lets it trace e.g. constant-margin curves. `y` is found per column by
  * {@link solveIsoY} bisection, so columns where the curve leaves the plot (or
- * where `x = 0`, the asymptote) are simply skipped — never emitted as NaN/±Inf.
+ * where `x = 0`, the asymptote) are simply skipped - never emitted as NaN/±Inf.
  *
  * Degrades to an empty array when the domain is degenerate, when `value` is
  * non-finite, or when an axis strictly straddles 0 (asymptote inside the plot,
- * which would split the curve). A zero-based axis with 0 at the very edge — the
- * normal C09 case — renders fine. Pure and SSR-safe.
+ * which would split the curve). A zero-based axis with 0 at the very edge - the
+ * normal C09 case - renders fine. Pure and SSR-safe.
  */
 export function isoLinePoints(
   value: number,
@@ -361,7 +361,7 @@ export function isoLinePoints(
   if (!Number.isFinite(value)) return points;
   if (!Number.isFinite(xMin) || !Number.isFinite(xMax) || !(xMax > xMin)) return points;
   if (!Number.isFinite(yMin) || !Number.isFinite(yMax) || !(yMax > yMin)) return points;
-  // An asymptote strictly inside the plot would tear the curve in two — bail.
+  // An asymptote strictly inside the plot would tear the curve in two - bail.
   if (xMin < 0 && xMax > 0) return points;
   if (yMin < 0 && yMax > 0) return points;
 
@@ -376,7 +376,7 @@ export function isoLinePoints(
 
 /**
  * Pick ~`count` "nice" round iso-values (1/2/5 × 10ⁿ) spanning the open product
- * range `(min, max)` — used to auto-place iso-lines when the caller gives a
+ * range `(min, max)` - used to auto-place iso-lines when the caller gives a
  * `product` range but no explicit levels. Only positive levels are returned
  * (a constant-product hyperbola needs a positive level). Returns ascending
  * values, or `[]` when the range is non-finite, non-positive, or degenerate.
@@ -393,7 +393,7 @@ export function niceIsoValues(min: number, max: number, count = 5): number[] {
   if (!(rawStep > 0)) return [];
 
   // Walk up the 1/2/5×10ⁿ ladder from the raw step until the level count lands
-  // at or below the target, so a very wide range stays ~4–6 lines, not dozens.
+  // at or below the target, so a very wide range stays ~4-6 lines, not dozens.
   const ladder = [1, 2, 5];
   let mag = Math.pow(10, Math.floor(Math.log10(rawStep)));
   let li = ladder.findIndex((m) => m * mag >= rawStep);
@@ -442,7 +442,7 @@ export function samplePoints<T>(points: ReadonlyArray<T>, max: number): Readonly
 }
 
 /**
- * Radius (px) for a bubble whose AREA is proportional to `size` — area ∝ size
+ * Radius (px) for a bubble whose AREA is proportional to `size` - area ∝ size
  * means radius ∝ √size. Normalizes against `maxSize` so the largest bubble hits
  * `maxRadius`. A small floor keeps tiny bubbles visible. Pure.
  */
@@ -519,7 +519,7 @@ export function distinctGroups(points: ReadonlyArray<ScatterDatum>): string[] {
 }
 
 /**
- * Build a single SVG path `d` string drawing a filled circle at each point —
+ * Build a single SVG path `d` string drawing a filled circle at each point -
  * the fast path for large scatter sets (one `<path>` per color instead of one
  * `<circle>` per point). Each circle is two half-arcs. Coordinates are rounded
  * to keep the string compact.

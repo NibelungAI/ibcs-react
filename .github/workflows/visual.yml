@@ -1,17 +1,17 @@
-# Visual regression — pixel diffing of every fixture in the shared catalogue.
+# Visual regression - pixel diffing of every fixture in the shared catalogue.
 #
 # Deliberately NOT part of ci.yml. Screenshot baselines are platform-specific:
 # font rasterization and antialiasing differ between Windows, macOS and Linux, so
 # a baseline recorded on a contributor's laptop would fail on every other machine.
 # The committed set is therefore the LINUX one and it is only ever produced here,
 # on ubuntu-latest with the Chromium build pinned by @playwright/test. Locally,
-# `npm run test:visual` still works — those baselines land in an untracked
+# `npm run test:visual` still works - those baselines land in an untracked
 # platform folder (see .gitignore).
 #
 # Two entry points:
-#   * schedule / plain manual run — compares against the committed linux
+#   * schedule / plain manual run - compares against the committed linux
 #     baselines and uploads the report plus actual/diff PNGs when something moved.
-#   * manual run with `update-baselines` — regenerates the baselines and uploads
+#   * manual run with `update-baselines` - regenerates the baselines and uploads
 #     them as an artifact for a human to review and commit. Also how the very
 #     first set is created: until then the compare job legitimately fails with
 #     "A snapshot doesn't exist".
@@ -54,7 +54,7 @@ jobs:
 
       - run: npm ci
 
-      # Chromium only — the harness renders inline SVG, a second engine would add
+      # Chromium only - the harness renders inline SVG, a second engine would add
       # a second baseline set for no extra signal.
       - name: Install Chromium
         run: npx playwright install --with-deps chromium

@@ -1,7 +1,7 @@
 /**
  * Shared shorthands for the Report cookbook demos: a width budget, a few
  * format presets, tiny datum builders and one column-trio helper. They exist
- * so each recipe stays one or two lines long — the same shorthands are printed
+ * so each recipe stays one or two lines long - the same shorthands are printed
  * once at the top of `content/docs/cookbook.mdx`.
  */
 
@@ -111,7 +111,7 @@ export const cohortCols = [
   { id: "m5", label: "M5" },
 ];
 
-/** Percent of the cohort still active — deliberately sparse (young cohorts). */
+/** Percent of the cohort still active - deliberately sparse (young cohorts). */
 export const cohortValues = {
   jan: {
     m0: { AC: 100 },

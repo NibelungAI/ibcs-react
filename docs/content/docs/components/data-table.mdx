@@ -1,6 +1,6 @@
 ---
 title: DataTable
-description: The general cross-entity IBCS table — rows are entities, columns are values, embedded variances and sparklines.
+description: The IBCS table with hierarchical rows and variance columns (template T01) - rows are entities, columns are values, embedded variances and sparklines.
 ---
 
 import { DataTable } from "ibcs-react";
@@ -8,7 +8,7 @@ import { regionRows, regionColumns } from "@/lib/demo-data/tables";
 
 The general comparison table: rows are entities (regions, teams, products),
 columns are measures. A column is a plain value, a variance drawn as an
-embedded bar or pin, or a sparkline — so magnitude, deviation and trend sit
+embedded bar or pin, or a sparkline - so magnitude, deviation and trend sit
 side by side in one grid.
 
 ## When to use
@@ -84,12 +84,12 @@ its children and collapses on click.
 
 Clicking a header cycles the sort: descending, then ascending, then off.
 
-- **Uncontrolled** — seed the initial order with `defaultSort` (`{ key, dir }`,
+- **Uncontrolled** - seed the initial order with `defaultSort` (`{ key, dir }`,
   or `null` for unsorted) and let the table own it. `onSortChange` still fires
   as an observer.
-- **Controlled** — pass `sort` (or `null`) plus `onSortChange`. The table
+- **Controlled** - pass `sort` (or `null`) plus `onSortChange`. The table
   renders exactly that sort and never mutates it; each header activation
-  reports the next sort — `null` when the cycle clears it — for you to apply.
+  reports the next sort - `null` when the cycle clears it - for you to apply.
 
 The collapsed groups follow the same convention: `defaultCollapsed` is the
 uncontrolled seed, `collapsed` (a `ReadonlySet<string>` or string array) plus

@@ -22,7 +22,7 @@ const btn = (on: boolean): React.CSSProperties => ({
   color: on ? "#fff" : "#3a3a36",
 });
 
-/** Jitter the base data — a stand-in for a real feed. */
+/** Jitter the base data - a stand-in for a real feed. */
 const jitter = (): ColumnDatum[] =>
   sampleQuarterlyRevenue.map((d) => ({
     ...d,

@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Report cookbook — People & HR. One component per recipe; each renders the
+ * Report cookbook - People & HR. One component per recipe; each renders the
  * exact snippet printed next to it in `content/docs/cookbook.mdx`.
  */
 import {
@@ -16,7 +16,7 @@ import {
 import { CARD_W, fK, fN, fN1, C, L, S, varCols } from "@/lib/demo-data/cookbook";
 import { KpiStrip } from "./shared";
 
-/** Headcount by department — Aurora Retail · FTE · AC vs PY */
+/** Headcount by department - Aurora Retail · FTE · AC vs PY */
 export function HeadcountByDepartment() {
   return (
     <StructureChart
@@ -37,7 +37,7 @@ export function HeadcountByDepartment() {
   );
 }
 
-/** Attrition trend — Aurora Retail · % annualized · lower better */
+/** Attrition trend - Aurora Retail · % annualized · lower better */
 export function AttritionTrend() {
   return (
     <LineChart
@@ -54,7 +54,7 @@ export function AttritionTrend() {
   );
 }
 
-/** Hiring funnel — Aurora Retail · count · application → hire */
+/** Hiring funnel - Aurora Retail · count · application → hire */
 export function HiringFunnel() {
   return (
     <StructureChart
@@ -76,7 +76,7 @@ export function HiringFunnel() {
   );
 }
 
-/** Compensation by level — Aurora Retail · € k · base salary spread */
+/** Compensation by level - Aurora Retail · € k · base salary spread */
 export function CompensationByLevel() {
   return (
     <BubbleChart
@@ -98,7 +98,7 @@ export function CompensationByLevel() {
   );
 }
 
-/** Gender diversity by org — Aurora Retail · % · current */
+/** Gender diversity by org - Aurora Retail · % · current */
 export function GenderDiversityByOrg() {
   return (
     <StackedChart
@@ -121,7 +121,7 @@ export function GenderDiversityByOrg() {
   );
 }
 
-/** Headcount plan vs actual — Aurora Retail · FTE · AC vs PL by quarter */
+/** Headcount plan vs actual - Aurora Retail · FTE · AC vs PL by quarter */
 export function HeadcountPlanVsActual() {
   return (
     <VarianceColumnChart
@@ -139,7 +139,7 @@ export function HeadcountPlanVsActual() {
   );
 }
 
-/** Tenure distribution — Aurora Retail · FTE · by band */
+/** Tenure distribution - Aurora Retail · FTE · by band */
 export function TenureDistribution() {
   return (
     <StackedChart
@@ -151,8 +151,8 @@ export function TenureDistribution() {
       ]}
       series={[
         { key: "y0", label: "<1 yr" },
-        { key: "y1", label: "1–3 yr" },
-        { key: "y3", label: "3–5 yr" },
+        { key: "y1", label: "1-3 yr" },
+        { key: "y3", label: "3-5 yr" },
         { key: "y5", label: "5+ yr" },
       ]}
       orientation="bar"
@@ -164,7 +164,7 @@ export function TenureDistribution() {
   );
 }
 
-/** Talent KPIs — Aurora Retail · AC vs PY */
+/** Talent KPIs - Aurora Retail · AC vs PY */
 export function TalentKPIs() {
   return (
     <KpiStrip
@@ -193,7 +193,7 @@ export function TalentKPIs() {
   );
 }
 
-/** Span of control — Aurora Retail · reports per manager · by org */
+/** Span of control - Aurora Retail · reports per manager · by org */
 export function SpanOfControl() {
   return (
     <DataTable
@@ -222,7 +222,7 @@ export function SpanOfControl() {
   );
 }
 
-/** Offer acceptance rate — Aurora Retail · % · monthly AC vs PY */
+/** Offer acceptance rate - Aurora Retail · % · monthly AC vs PY */
 export function OfferAcceptanceRate() {
   return (
     <LineChart
@@ -237,7 +237,7 @@ export function OfferAcceptanceRate() {
   );
 }
 
-/** Training hours per FTE — Aurora Retail · hours · AC vs PL target */
+/** Training hours per FTE - Aurora Retail · hours · AC vs PL target */
 export function TrainingHoursPerFTE() {
   return (
     <VarianceColumnChart
@@ -255,7 +255,7 @@ export function TrainingHoursPerFTE() {
   );
 }
 
-/** Workforce cost & FTE — Aurora Retail · € m / FTE · combo */
+/** Workforce cost & FTE - Aurora Retail · € m / FTE · combo */
 export function WorkforceCostAndFTE() {
   return (
     <ComboChart
@@ -276,7 +276,7 @@ export function WorkforceCostAndFTE() {
   );
 }
 
-/** Absenteeism rate — Aurora Retail · % · monthly, lower better */
+/** Absenteeism rate - Aurora Retail · % · monthly, lower better */
 export function AbsenteeismRate() {
   return (
     <LineChart

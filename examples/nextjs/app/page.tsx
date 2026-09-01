@@ -2,7 +2,7 @@ import Demo from "./Demo";
 
 // This is a React Server Component (no "use client"): it renders static intro
 // markup on the server and mounts the interactive charts via the <Demo/> client
-// component below. That split is the recommended pattern — the charts use hooks
+// component below. That split is the recommended pattern - the charts use hooks
 // (hover/animation) and so must live in a "use client" boundary.
 export default function Page() {
   return (
@@ -22,7 +22,7 @@ export default function Page() {
           <a href="https://www.npmjs.com/package/ibcs-react" style={{ color: "#1858c2" }}>
             ibcs-react
           </a>{" "}
-          — zero-dependency, SSR-safe IBCS / ISO&nbsp;24896 business charts and KPI cards. The
+          - zero-dependency, SSR-safe IBCS / ISO&nbsp;24896 business charts and KPI cards. The
           components below are rendered from inline sample data inside a{" "}
           <code>&quot;use client&quot;</code> component.
         </p>

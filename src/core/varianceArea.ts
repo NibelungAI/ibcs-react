@@ -8,17 +8,17 @@ import { computeVariance } from "./variance";
  * FORECAST tail is flagged for hatched rendering.
  *
  * Framework agnostic: {@link VarianceAreaChart} is a thin React renderer over
- * this. All math is linear interpolation — no DOM, no `window`, no `Date`,
- * no `Math.random` — so it is safe to run on the server and inside `useMemo`.
+ * this. All math is linear interpolation - no DOM, no `window`, no `Date`,
+ * no `Math.random` - so it is safe to run on the server and inside `useMemo`.
  */
 
 /** One period: an actual, its reference level, and an optional forecast value. */
 export interface VarianceAreaDatum {
   /** Period label along the horizontal axis ("Jan", "Q1", "2024", …). */
   category: string;
-  /** Actual value — the dark line/area drawn on top. */
+  /** Actual value - the dark line/area drawn on top. */
   AC: number;
-  /** Reference level (Ø average / PY / PL) — the grey baseline area. */
+  /** Reference level (Ø average / PY / PL) - the grey baseline area. */
   reference: number;
   /** Forecast value; used for the line in the forecast tail when present. */
   FC?: number;
@@ -31,7 +31,7 @@ export interface VarianceAreaOptions {
    * value out of range) for an all-actual series.
    */
   forecastFrom?: number;
-  /** Whether a higher value is good — set false for cost series. Default true. */
+  /** Whether a higher value is good - set false for cost series. Default true. */
   higherIsBetter?: boolean;
 }
 
@@ -82,7 +82,7 @@ export interface VarianceAreaSegment {
   points: XY[];
   /** Favorable (green) when true, unfavorable (red) when false. */
   favorable: boolean;
-  /** Lies in the forecast tail — render hatched. */
+  /** Lies in the forecast tail - render hatched. */
   forecast: boolean;
 }
 
@@ -131,7 +131,7 @@ function num(v: number | undefined): number | null {
  * Between each pair of periods, where the AC and reference lines cross, a
  * crossing x is found by linear interpolation (`t = gapA / (gapA − gapB)`) and
  * the band is split so green (favorable) stays above / red (unfavorable) below
- * cleanly — no polygon straddles a crossing. Robust to empty data, a single
+ * cleanly - no polygon straddles a crossing. Robust to empty data, a single
  * point, negatives, zeros and non-finite inputs (treated as 0).
  */
 export function computeVarianceArea(
@@ -218,7 +218,7 @@ export function computeVarianceArea(
     if (ga === 0 && gb === 0) continue; // flat coincident lines, nothing to fill
 
     if (ga * gb < 0) {
-      // The lines cross between i and i+1 — split into two triangles at the
+      // The lines cross between i and i+1 - split into two triangles at the
       // crossing (where the value and reference pixels coincide).
       const t = ga / (ga - gb);
       const cx = a.x + t * (b.x - a.x);
@@ -240,7 +240,7 @@ export function computeVarianceArea(
         Math.sign(gb),
       );
     } else {
-      // Same side for the whole interval — one quad along value then reference.
+      // Same side for the whole interval - one quad along value then reference.
       const sign = ga !== 0 ? Math.sign(ga) : Math.sign(gb);
       push(
         [

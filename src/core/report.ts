@@ -44,7 +44,7 @@ interface ReportBlockBase {
   id: string;
   /** Grid columns to span (1..report.columns). Default sensible per type. */
   span?: number;
-  /** Block heading — a structured Who/What/When title, or a plain string. */
+  /** Block heading - a structured Who/What/When title, or a plain string. */
   title?: StructuredTitle | string;
   /** Interpretive one-liner, kept separate from the neutral title (SAY). */
   message?: string;
@@ -64,7 +64,7 @@ export interface ChartBlock extends ReportBlockBase {
    * domain per group from the report config.
    *
    * NOTE (current limitation): `ConfiguredChart`/`ChartConfig` don't yet accept
-   * an external domain override, so this tag is advisory — the resolver exposes
+   * an external domain override, so this tag is advisory - the resolver exposes
    * the shared domain for callers (and for a future `domain` prop on the chart
    * components) rather than forcing the rendered axis today.
    */
@@ -78,13 +78,13 @@ export interface StatementBlock extends ReportBlockBase {
  * A prose block: commentary, an executive summary, a methodology note.
  *
  * The three text slots are distinct on purpose (ISO 24896 "SAY"):
- *  - `title`   — the neutral heading (Who / What / When, or a plain string),
- *  - `message` — the interpretive one-liner (the key message),
- *  - `body`    — the prose itself, one or more paragraphs.
+ *  - `title`   - the neutral heading (Who / What / When, or a plain string),
+ *  - `message` - the interpretive one-liner (the key message),
+ *  - `body`    - the prose itself, one or more paragraphs.
  *
  * Before `body` existed a text block could only borrow `message` for its prose,
  * which conflated the key message with the narrative. `message` is therefore
- * SOFT-DEPRECATED for prose — it still renders exactly as before (so existing
+ * SOFT-DEPRECATED for prose - it still renders exactly as before (so existing
  * reports are untouched), and it remains the right field for a genuine one-line
  * key message alongside a `body`.
  */
@@ -97,7 +97,7 @@ export interface TextBlock extends ReportBlockBase {
   body?: string;
 }
 
-/** A serializable subset of DataTable props — the general cross-entity comparison table. */
+/** A serializable subset of DataTable props - the general cross-entity comparison table. */
 export interface TableBlockConfig {
   columns: DataTableColumn[];
   rows: DataTableRow[];

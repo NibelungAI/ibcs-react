@@ -3,7 +3,7 @@
  * user can swap green/red for the black/red "good = neutral" convention, and
  * so the lib can be themed for dark mode by the caller.
  *
- * Defaults are tuned for a light surface — but the surface itself is a token
+ * Defaults are tuned for a light surface - but the surface itself is a token
  * (`color.surface`), so a dark theme is a preset swap, not a fork.
  */
 
@@ -32,7 +32,7 @@ export interface IbcsTokens {
     textMuted: string;
     rowBorder: string;
     /**
-     * Opaque component background — cards, menus, tooltips, sticky table cells
+     * Opaque component background - cards, menus, tooltips, sticky table cells
      * and the fill of hollow (plan) scenario shapes, which must hide whatever
      * they overlap. This is what makes a dark theme possible: without it the
      * chrome is white on a dark page.
@@ -76,13 +76,13 @@ export const defaultTokens: IbcsTokens = {
     onFill: "#fff",
   },
   scenario: {
-    // Actual: solid, dark — "this is real".
+    // Actual: solid, dark - "this is real".
     AC: { fill: "#54534e", stroke: "#54534e", variant: "solid" },
-    // Previous year: solid, faded grey — "the past".
+    // Previous year: solid, faded grey - "the past".
     PY: { fill: "#bdbcb6", stroke: "#bdbcb6", variant: "solid" },
-    // Plan / budget: hollow frame — "not real yet".
+    // Plan / budget: hollow frame - "not real yet".
     PL: { fill: "transparent", stroke: "#54534e", variant: "frame" },
-    // Forecast: hatched — "expected".
+    // Forecast: hatched - "expected".
     FC: { fill: "transparent", stroke: "#54534e", variant: "hatch" },
   },
   font: { family: UI_FONT_FAMILY },
@@ -90,7 +90,7 @@ export const defaultTokens: IbcsTokens = {
 
 /**
  * Strict-IBCS / business green-red variant: darker actual bars and vivid
- * green/red variance — the classic "good stands out, bad stands out" look.
+ * green/red variance - the classic "good stands out, bad stands out" look.
  */
 export const greenRedTokens: IbcsTokens = {
   ...defaultTokens,
@@ -116,7 +116,7 @@ export const vividTokens: IbcsTokens = {
 };
 
 /**
- * "Ocean" — a cool blue-grey IBCS theme: Actual #233549 dark solid, Previous
+ * "Ocean" - a cool blue-grey IBCS theme: Actual #233549 dark solid, Previous
  * year #758CA4 light solid, Forecast hatched, Plan outlined, with the IBCS
  * semantic green #178236 / red #D00A0A. A clean, standards-faithful alternative
  * to the default warm greys.
@@ -146,7 +146,7 @@ export const oceanTokens: IbcsTokens = {
   font: { family: UI_FONT_FAMILY },
 };
 
-/** "Azure" — a monochromatic bright-blue alternative. */
+/** "Azure" - a monochromatic bright-blue alternative. */
 export const azureTokens: IbcsTokens = {
   color: {
     neutral: "#0074E2",
@@ -173,10 +173,10 @@ export const azureTokens: IbcsTokens = {
 };
 
 /**
- * "CVD-safe" — a colour-vision-deficiency-safe variance palette. Red/green is
+ * "CVD-safe" - a colour-vision-deficiency-safe variance palette. Red/green is
  * the most common colour-blindness confusion, so favorable→teal and
  * unfavorable→orange (a CVD-distinguishable pair from the ColorBrewer Dark2 /
- * Okabe–Ito families) keep variance legible for ~8% of male viewers. Scenario
+ * Okabe-Ito families) keep variance legible for ~8% of male viewers. Scenario
  * fills stay greyscale (IBCS distinguishes scenarios by fill, not hue) so only
  * the impact colours change.
  */
@@ -186,7 +186,7 @@ export const cvdTokens: IbcsTokens = {
 };
 
 /**
- * "Mono / print" — a greyscale palette for black-and-white printing and the
+ * "Mono / print" - a greyscale palette for black-and-white printing and the
  * IBCS SIMPLIFY ideal. Favorable reads as a darker grey, unfavorable as a
  * lighter grey; combined with the signed +/- labels and hatched/framed scenario
  * fills, variance still reads without any colour.
@@ -217,7 +217,7 @@ export const monoTokens: IbcsTokens = {
 };
 
 /**
- * "Dark" — an ink set tuned for dark surfaces. The components draw on a
+ * "Dark" - an ink set tuned for dark surfaces. The components draw on a
  * transparent SVG; the caller supplies the dark page/card background, and these
  * tokens supply light-on-dark ink. Text is near-white, axis/gridline/rowBorder
  * are low-contrast light greys, and good/bad are brighter/more saturated than
@@ -257,8 +257,8 @@ export const darkTokens: IbcsTokens = {
 
 /**
  * Named presets, handy for a theme switcher. Keyed by STABLE code identifiers
- * — the same vocabulary as the named exports (`greenRed` ↔ `greenRedTokens`)
- * — so lookups autocomplete, typos fail to compile, and UI copy can change
+ * - the same vocabulary as the named exports (`greenRed` ↔ `greenRedTokens`)
+ * - so lookups autocomplete, typos fail to compile, and UI copy can change
  * without breaking anyone's saved theme id. Human display strings live in
  * {@link tokenPresetLabels}.
  *
@@ -282,7 +282,7 @@ export const tokenPresets = {
   dark: darkTokens,
 } satisfies Record<string, IbcsTokens>;
 
-/** A valid {@link tokenPresets} key — `keyof typeof tokenPresets`. */
+/** A valid {@link tokenPresets} key - `keyof typeof tokenPresets`. */
 export type TokenPresetId = keyof typeof tokenPresets;
 
 /** Display names for {@link tokenPresets}, for pickers and legends. */
@@ -298,9 +298,9 @@ export const tokenPresetLabels: Record<TokenPresetId, string> = {
 };
 
 // v1.0.0 keyed `tokenPresets` by the display strings themselves ("Green /
-// Red", "Mono / print", …). Those lookups keep working at runtime — as
+// Red", "Mono / print", …). Those lookups keep working at runtime - as
 // NON-ENUMERABLE aliases, so `Object.keys`/`entries` (the theme-switcher
-// iteration path) see each preset exactly once — but they are deliberately
+// iteration path) see each preset exactly once - but they are deliberately
 // absent from the type: new code gets the stable ids and a compile error, old
 // JS keeps running.
 for (const [id, legacy] of [
@@ -341,7 +341,7 @@ export function mergeTokens(
   };
 }
 
-/** Recursive partial — every group and leaf optional. */
+/** Recursive partial - every group and leaf optional. */
 export type DeepPartial<T> = { [K in keyof T]?: T[K] extends object ? DeepPartial<T[K]> : T[K] };
 
 /**

@@ -22,7 +22,7 @@ export interface ChartSelection<D = unknown> {
 /**
  * The selection state + helpers returned by {@link useChartSelection}.
  *
- * `K` is your key type — usually the `category` string, but anything works.
+ * `K` is your key type - usually the `category` string, but anything works.
  */
 export interface UseChartSelectionResult<K> {
   /** The current selection as a read-only set. */
@@ -41,7 +41,7 @@ export interface UseChartSelectionResult<K> {
  * A tiny, framework-free selection model for click-to-filter interactions:
  * pair it with a chart's `onSelect` to drive cross-filtering, highlighting or a
  * drill-down panel. Holds a `Set` of selected keys with ergonomic helpers.
- * SSR-safe — pure `useState`, no DOM access.
+ * SSR-safe - pure `useState`, no DOM access.
  *
  * ```tsx
  * const sel = useChartSelection<string>();

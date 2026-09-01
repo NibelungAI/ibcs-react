@@ -4,7 +4,7 @@ import { useElementSize } from "./hooks/useElementSize";
 
 /**
  * What the sizing wrappers accept as their child: a render-prop called with
- * the resolved integer px size, or — the common case — a SINGLE chart element
+ * the resolved integer px size, or - the common case - a SINGLE chart element
  * that gets `width`/`height` cloned onto it:
  *
  * ```tsx
@@ -32,25 +32,25 @@ export function renderChartChild(
 }
 
 /**
- * How a chart maps to the space it's given — the chart equivalent of an
+ * How a chart maps to the space it's given - the chart equivalent of an
  * `<img>`'s `object-fit`:
  *
  * - `"scale"` (default): fill the available width keeping the chart's aspect
  *   ratio (`width / height`). It scales with the container but never below
- *   `minWidth` — past that it scrolls. The everyday responsive choice.
+ *   `minWidth` - past that it scrolls. The everyday responsive choice.
  * - `"fixed"`: always the intrinsic `width × height`. If the container is
  *   smaller it scrolls. "A set size, everything scrolls around it."
  * - `"contain"`: scale to fit BOTH dimensions of the box keeping aspect, then
  *   letterbox + `align` the spare space. Needs a bounded height (`maxHeight`).
- * - `"fill"`: stretch to the box — width fills, height = `maxHeight` (or the
+ * - `"fill"`: stretch to the box - width fills, height = `maxHeight` (or the
  *   intrinsic height).
  */
 export type ChartFit = "scale" | "fixed" | "contain" | "fill";
 
 export interface ChartBoxProps {
-  /** The chart's intrinsic width — its design size and aspect numerator. */
+  /** The chart's intrinsic width - its design size and aspect numerator. */
   width: number;
-  /** The chart's intrinsic height — its design size and aspect denominator. */
+  /** The chart's intrinsic height - its design size and aspect denominator. */
   height: number;
   /** Fit mode (see {@link ChartFit}). Default `"scale"`. */
   fit?: ChartFit;
@@ -74,7 +74,7 @@ export interface ChartBoxProps {
   style?: React.CSSProperties;
   /**
    * The chart to size: a single element (given `width`/`height` automatically)
-   * or a render-prop `(w, h) => …` — see {@link ChartChildren}.
+   * or a render-prop `(w, h) => …` - see {@link ChartChildren}.
    */
   children: ChartChildren;
 }
@@ -89,7 +89,7 @@ function sides(p: ChartBoxProps["padding"]) {
 }
 
 /**
- * One sizing primitive for every chart — fit, alignment, scroll and padding,
+ * One sizing primitive for every chart - fit, alignment, scroll and padding,
  * the way you'd size an image. Unlike scaling a bitmap, the chart re-renders at
  * the resolved pixel size, so text and strokes stay crisp at any fit.
  *
@@ -160,7 +160,7 @@ export function ChartBox({
     }
   } else {
     // "scale": fill the width, keep the intrinsic HEIGHT (a wider container makes
-    // a wider chart, not a taller one — what a time series wants). Floor the
+    // a wider chart, not a taller one - what a time series wants). Floor the
     // width at minWidth (then it scrolls). maxHeight can shrink the height.
     drawW = clampW(availW);
     drawH = maxHeight != null ? Math.min(height, maxHeight) : height;

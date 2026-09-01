@@ -1,19 +1,19 @@
 ---
 title: TrendChart
-description: A many-period time series — AC solid / FC hatched columns, PY & PL reference lines, variance panel.
+description: A many-period time series - AC solid / FC hatched columns, PY & PL reference lines, variance panel.
 ---
 
 import { TrendChart } from "ibcs-react";
 
 Actuals as solid columns, forecast periods hatched, prior year and plan drawn
 as reference lines over them, and a variance panel underneath. A `summary` row
-is set off as a total — on its own terms: summaries stay out of the period
+is set off as a total - on its own terms: summaries stay out of the period
 scale, so a full-year total is drawn capped with a marked scale break and its
 value label instead of crushing the months into slivers.
 
 ## When to use
 
-Trend over time — 12–13 periods with actuals then forecast, against prior year
+Trend over time - 12-13 periods with actuals then forecast, against prior year
 and plan.
 
 ## Example
@@ -55,7 +55,7 @@ import { TrendChart } from "ibcs-react";
 
 ### Relative variance vs plan
 
-Compare the forecast tail against plan as a percent — the hatched FC periods
+Compare the forecast tail against plan as a percent - the hatched FC periods
 carry through to the percent variance panel.
 
 <Frame center>
@@ -93,7 +93,7 @@ by narrowing `referenceLines`, e.g. `referenceLines={["PY"]}`.
 ### A year plus its total
 
 Mark the total with `summary: true`. It is set off by a divider, drawn in the
-emphasis colour — and kept OFF the period scale: the total is ~12× any month,
+emphasis colour - and kept OFF the period scale: the total is ~12× any month,
 so on a shared axis the months would collapse to slivers. Instead the summary
 column (and its variance bar) is capped with a marked scale break, its real
 value printed above; the PY line stops at December, because a total is not a

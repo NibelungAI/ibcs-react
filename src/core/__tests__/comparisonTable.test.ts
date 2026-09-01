@@ -34,7 +34,7 @@ const rows: DataTableRow[] = [
   { id: "us", label: "United States", values: { rev: { AC: 120, PY: 100 } } },
 ];
 
-describe("buildComparisonModel — build-up rows", () => {
+describe("buildComparisonModel - build-up rows", () => {
   const model = buildComparisonModel(rows, leftColumns, rightColumns);
 
   it("emits detail rows first, then the group's bold subtotal", () => {
@@ -71,7 +71,7 @@ describe("buildComparisonModel — build-up rows", () => {
   });
 });
 
-describe("buildComparisonModel — totals", () => {
+describe("buildComparisonModel - totals", () => {
   it("appends a grand-total row summed over the top-level groups", () => {
     const model = buildComparisonModel(rows, leftColumns, rightColumns, { showTotals: true });
     const total = model.rows[model.rows.length - 1]!;
@@ -99,7 +99,7 @@ describe("buildComparisonModel — totals", () => {
   it("sums every scenario of a measure into the grand total", () => {
     const model = buildComparisonModel(rows, leftColumns, rightColumns, { showTotals: true });
     const total = model.rows[model.rows.length - 1]!;
-    // AC on the left, PY on the right — both scenarios of "rev" are summed.
+    // AC on the left, PY on the right - both scenarios of "rev" are summed.
     expect(valueOf(total.leftCells[0]!)).toBe(220);
     expect(valueOf(total.rightCells[0]!)).toBe(195);
   });
@@ -118,7 +118,7 @@ describe("buildComparisonModel — totals", () => {
   });
 });
 
-describe("buildComparisonModel — column models & headers", () => {
+describe("buildComparisonModel - column models & headers", () => {
   const model = buildComparisonModel(rows, leftColumns, rightColumns);
 
   it("scales a variance column's domain to the max |Δ| over detail rows only", () => {

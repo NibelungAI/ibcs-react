@@ -1,6 +1,6 @@
 ---
 name: ibcs-react
-description: Build IBCS / ISO 24896 business reports in React with the ibcs-react npm package — variance column charts, waterfalls/bridges, trend charts, statement (P&L / balance sheet) tables, matrix tables, KPI cards and full dashboards driven by scenario data (AC actual / PY previous year / PL plan / FC forecast). Use when installing ibcs-react, importing its components (VarianceColumnChart, WaterfallChart, StatementTable, DataTable, MatrixTable, KpiCard, Report), theming with IbcsThemeProvider/tokens, exporting charts, or linting a report with checkIbcs.
+description: Build IBCS / ISO 24896 business reports in React with the ibcs-react npm package - variance column charts, waterfalls/bridges, trend charts, statement (P&L / balance sheet) tables, matrix tables, KPI cards and full dashboards driven by scenario data (AC actual / PY previous year / PL plan / FC forecast). Use when installing ibcs-react, importing its components (VarianceColumnChart, WaterfallChart, StatementTable, DataTable, MatrixTable, KpiCard, Report), theming with IbcsThemeProvider/tokens, exporting charts, or linting a report with checkIbcs.
 license: MIT
 metadata:
   author: NibelungAI
@@ -10,18 +10,18 @@ metadata:
 # ibcs-react
 
 Zero-dependency, SSR-safe React components that encode the IBCS® notation (the
-basis of ISO 24896) — so charts and tables come out standards-correct without
+basis of ISO 24896) - so charts and tables come out standards-correct without
 chart wiring or a house-style debate.
 
 ## When to use
 
-A React/Next.js app needs management-reporting visuals — variance charts,
-bridges, P&L or balance-sheet tables, KPI cards, dashboards — over actual vs
+A React/Next.js app needs management-reporting visuals - variance charts,
+bridges, P&L or balance-sheet tables, KPI cards, dashboards - over actual vs
 previous year / plan / forecast numbers, and the output must be IBCS /
 ISO 24896 conformant (or auditable by a linter).
 
 Not for: general-purpose dataviz (no maps, gauges, radars) or data fetching
-(components never fetch — bring the numbers). For the notation rules themselves
+(components never fetch - bring the numbers). For the notation rules themselves
 (any tool), see the `ibcs-notation` skill.
 
 ## Install
@@ -30,7 +30,7 @@ Not for: general-purpose dataviz (no maps, gauges, radars) or data fetching
 npm install ibcs-react
 ```
 
-- Peers: `react` + `react-dom` **>= 18** (19 fine; `react-dom` optional — only
+- Peers: `react` + `react-dom` **>= 18** (19 fine; `react-dom` optional - only
   the tooltip portal uses it). Zero other runtime deps (hand-rolled inline SVG),
   ESM + CJS with bundled types, SSR-safe (no `window`/`document` at module load
   or first render).
@@ -38,7 +38,7 @@ npm install ibcs-react
   component can `import { VarianceColumnChart } from "ibcs-react"` directly. Add
   your own `"use client"` file only when _your_ code holds state/handlers.
 - `ibcs-react/core` is a React-free barrel (layout math, `formatValue`,
-  `computeVariance`, `statementToCSV`, `checkIbcs`, tokens) — import it in RSC,
+  `computeVariance`, `statementToCSV`, `checkIbcs`, tokens) - import it in RSC,
   route handlers, cron jobs or CI.
 
 ## The one data model
@@ -59,7 +59,7 @@ interface ScenarioDatum {
 
 `ScenarioDatum` is THE category-row shape (`CategoryDatum`, `ColumnDatum`,
 `LineDatum`, `ComboDatum` alias it; `TrendDatum` adds `summary?`;
-`StructureDatum` adds `higherIsBetter?` — same `category` key, so one array
+`StructureDatum` adds `higherIsBetter?` - same `category` key, so one array
 feeds `VarianceColumnChart` and `StructureChart` alike). A missing scenario is
 _not drawn_, never zero. Statements are a tree of `StatementLine`:
 
@@ -164,17 +164,17 @@ const findings = checkIbcs(reportConfig); // ChartConfig | KpiConfig | ReportCon
 <ConformanceReport findings={findings} />;
 ```
 
-Rule ids live in `IBCS_RULES` — run the check in CI over stored configs.
+Rule ids live in `IBCS_RULES` - run the check in CI over stored configs.
 A chart/report with NO title is flagged (SAY requires Who/What/When); declare
 `measureKind: "cost" | "revenue"` on a config when the title's wording
 shouldn't drive the cost-favorability heuristic. JSX-authored charts lint via
-`checkIbcsProps("VarianceColumnChart", props)` — the component name supplies
+`checkIbcsProps("VarianceColumnChart", props)` - the component name supplies
 the `type`, same rules, same findings.
 
 ## Rules of thumb
 
 - Set `higherIsBetter: false` on cost / expense / tax so an increase reads red.
-- Absolute deviations are bars, relative ones pins — never on one axis.
+- Absolute deviations are bars, relative ones pins - never on one axis.
 - A group line with empty `values: {}` reports the sum of its children.
 - Every chart forwards `ref` to its `<svg>` (the export handle) and renders a
   visually-hidden data table for screen readers.
@@ -184,10 +184,10 @@ the `type`, same rules, same findings.
 
 | File                                                        | Purpose                                                                       |
 | ----------------------------------------------------------- | ----------------------------------------------------------------------------- |
-| [charts.md](./references/charts.md)                         | Every chart, its data shape, key props, C01–C13 mapping                       |
+| [charts.md](./references/charts.md)                         | Every chart, its data shape, key props, C01-C13 mapping                       |
 | [tables.md](./references/tables.md)                         | StatementTable / DataTable / ComparisonTable / MatrixTable + controlled state |
 | [theming-and-export.md](./references/theming-and-export.md) | Tokens, presets, provider, ExportMenu, ChartBox sizing, tooltips              |
 
-Docs: <https://ibcs-react.com> — index for agents at `/llms.txt`, whole corpus at
+Docs: <https://ibcs-react.com> - index for agents at `/llms.txt`, whole corpus at
 `/llms-full.txt`, and any docs page is raw Markdown by appending `.mdx` to its
 URL (e.g. `https://ibcs-react.com/docs/data-model.mdx`).

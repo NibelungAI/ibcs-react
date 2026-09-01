@@ -28,14 +28,14 @@ export interface DataTableProps {
   /** Append a bold, summed totals row. Default false. */
   showTotals?: boolean;
   /**
-   * Sort applied on mount — the uncontrolled seed. Click a header to (re)sort;
+   * Sort applied on mount - the uncontrolled seed. Click a header to (re)sort;
    * click again to flip direction, a third time to clear. Ignored once `sort`
    * is provided.
    */
   defaultSort?: DataTableSort | null;
   /**
    * Sort as a CONTROLLED value (`null` = unsorted): when provided the table
-   * renders exactly this sort and never mutates it — header clicks report the
+   * renders exactly this sort and never mutates it - header clicks report the
    * next sort through `onSortChange` for the parent to apply.
    */
   sort?: DataTableSort | null;
@@ -45,13 +45,13 @@ export interface DataTableProps {
    */
   onSortChange?: (sort: DataTableSort | null) => void;
   /**
-   * Group ids collapsed on mount — the uncontrolled seed (else each row's
+   * Group ids collapsed on mount - the uncontrolled seed (else each row's
    * `defaultCollapsed` flag). Ignored once `collapsed` is provided.
    */
   defaultCollapsed?: readonly string[];
   /**
    * Collapsed group ids as a CONTROLLED value: when provided the table renders
-   * exactly this set and never mutates it — every toggle reports the next set
+   * exactly this set and never mutates it - every toggle reports the next set
    * through `onCollapsedChange` for the parent to apply (URL sync, persistence,
    * cross-linked tables). Omit it for the uncontrolled behaviour.
    */
@@ -71,7 +71,7 @@ export interface DataTableProps {
   maxLabelWidth?: number;
   /**
    * A short description of the table, rendered as a visually-hidden
-   * `<caption>` — screen-reader users get a name for the table without any
+   * `<caption>` - screen-reader users get a name for the table without any
    * visual change. Omit for a purely decorative/duplicated table.
    */
   caption?: string;
@@ -223,7 +223,7 @@ export function DataTable({
     >
       <style>{TABLE_CSS}</style>
       {/* Horizontal-scroll wrapper: fixed-width variance/sparkline columns never
-          overflow or overlap a narrow container — they scroll instead. */}
+          overflow or overlap a narrow container - they scroll instead. */}
       <div style={{ overflowX: "auto", maxWidth: "100%" }}>
         <table
           className="ibcs-dtbl"
@@ -514,7 +514,7 @@ function CellView({
   const mark = resolveMark(cm.column);
   const mode = cm.column.mode ?? "abs";
 
-  // "none": a plain signed, impact-coloured number — the IBCS T01 numeric
+  // "none": a plain signed, impact-coloured number - the IBCS T01 numeric
   // variance column (no embedded bar/pin).
   if (mark === "none") {
     const { value, favorable } = cell.variance;
@@ -559,7 +559,7 @@ function flowMarker(flow: "add" | "subtract" | "result"): string {
 }
 
 /**
- * Embedded variance bar/pin — the IBCS VarianceCell convention reused from
+ * Embedded variance bar/pin - the IBCS VarianceCell convention reused from
  * StatementTable: a left-axis magnitude bar for absolute deltas, a centred/
  * offset pin (with off-scale arrows) for percentages. Colour follows business
  * impact (favorable green / unfavorable red), never the raw sign.

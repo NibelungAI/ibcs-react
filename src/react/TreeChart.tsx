@@ -7,7 +7,7 @@ import { ChartDataTable, type ChartDataRow } from "./a11y";
 import { useIbcsTokens } from "./theme";
 
 // Local, CJK-aware text metrics: wide glyphs count ~1em where the shared
-// `./internal/text` heuristic assumes a uniform 0.6em — kept for label fitting.
+// `./internal/text` heuristic assumes a uniform 0.6em - kept for label fitting.
 /** Approx. glyph width in px (CJK/full-width/emoji count as ~1em). SSR-safe. */
 function isWide(cp: number): boolean {
   return (
@@ -312,7 +312,7 @@ export const TreeChart = forwardRef<SVGSVGElement, TreeChartProps>(function Tree
         })}
       </svg>
       <ChartDataTable
-        caption={title ? `${title} — data table` : "Calculation tree data table"}
+        caption={title ? `${title} - data table` : "Calculation tree data table"}
         columns={a11yColumns}
         rows={a11yRows}
       />

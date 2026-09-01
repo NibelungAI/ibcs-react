@@ -3,11 +3,11 @@
  *
  * This is the "CHECK" half of the notation standard: given a serializable
  * config (a chart, a KPI, or a whole report), report where it departs from the
- * IBCS visual grammar — non-linear chart types, unstructured titles, missing
+ * IBCS visual grammar - non-linear chart types, unstructured titles, missing
  * variance, wrong favorability for cost measures, and so on.
  *
  * Pure logic: zero React, zero deps, JSON-serializable input and output. The
- * input is typed `unknown` on purpose — these checks run on values that may have
+ * input is typed `unknown` on purpose - these checks run on values that may have
  * been hand-authored or round-tripped through JSON, so every access is guarded.
  */
 
@@ -18,7 +18,7 @@ import type { KpiConfig } from "./kpi";
 
 /** A single conformance observation. `path` locates it within the input. */
 export interface IbcsFinding {
-  /** Rule id — matches an entry in {@link IBCS_RULES}. */
+  /** Rule id - matches an entry in {@link IBCS_RULES}. */
   rule: string;
   severity: "error" | "warning" | "info";
   message: string;
@@ -49,7 +49,7 @@ export const IBCS_RULES: readonly IbcsRule[] = [
     id: "structured-title",
     title: "Structured Who / What / When title",
     severity: "warning",
-    doc: "ISO 24896 SAY: a title states Who (entity), What (measure + unit) and When (period) on separate lines, kept apart from the interpretive key message. A bare string title loses that structure — and a chart or report with NO title at all says nothing. Both are flagged.",
+    doc: "ISO 24896 SAY: a title states Who (entity), What (measure + unit) and When (period) on separate lines, kept apart from the interpretive key message. A bare string title loses that structure - and a chart or report with NO title at all says nothing. Both are flagged.",
   },
   {
     id: "show-variance",
@@ -105,7 +105,7 @@ const LINEAR_CHART_TYPES = new Set<string>([
   "scatter",
   "bubble",
   "waterfall",
-  // This library's chart configs — all linear by construction.
+  // This library's chart configs - all linear by construction.
   "varianceColumn",
   "trend",
   "structure",
@@ -117,7 +117,7 @@ const LINEAR_CHART_TYPES = new Set<string>([
 /**
  * Chart types IBCS explicitly forbids: area/angle encodings that distort
  * comparison. Anything not in this set and not in {@link LINEAR_CHART_TYPES}
- * is an UNKNOWN type — a different failure with a different message.
+ * is an UNKNOWN type - a different failure with a different message.
  */
 const NON_LINEAR_CHART_TYPES = new Set<string>([
   "pie",
@@ -133,7 +133,7 @@ const NON_LINEAR_CHART_TYPES = new Set<string>([
   "treemap",
 ]);
 
-/** The values a user should actually type — this library's config vocabulary. */
+/** The values a user should actually type - this library's config vocabulary. */
 const VALID_TYPE_LIST = CHART_TYPES.map((t) => `"${t}"`).join(", ");
 
 const COST_LABEL = /cost|expense|tax|opex/i;
@@ -142,7 +142,7 @@ const COST_LABEL = /cost|expense|tax|opex/i;
 
 const normalizeType = (s: string): string => s.toLowerCase().replace(/[^a-z0-9]/g, "");
 
-/** Small, bounded Levenshtein — inputs are short type names, never user data. */
+/** Small, bounded Levenshtein - inputs are short type names, never user data. */
 function editDistance(a: string, b: string): number {
   const m = a.length;
   const n = b.length;
@@ -191,7 +191,7 @@ function isObject(v: unknown): v is Record<string, unknown> {
 
 /* ------------------------------------------------------------- title check */
 
-/** True when a title is present in any form — a non-blank string or an object. */
+/** True when a title is present in any form - a non-blank string or an object. */
 function hasTitle(title: unknown): boolean {
   if (typeof title === "string") return title.trim() !== "";
   return isObject(title);
@@ -213,7 +213,7 @@ function titleText(title: unknown): string {
 }
 
 /**
- * Flag a title that is a bare string instead of a structured Who/What/When —
+ * Flag a title that is a bare string instead of a structured Who/What/When -
  * and, where a title is REQUIRED (charts, reports), flag a missing one at the
  * same severity. Without the `required` arm, deleting the title would silence
  * the rule it violates.
@@ -229,7 +229,7 @@ function checkTitle(
       out.push({
         rule: "structured-title",
         severity: "warning",
-        message: `${opts.subject ?? "config"} has no title — ISO 24896 SAY requires a Who/What/When structured title.`,
+        message: `${opts.subject ?? "config"} has no title - ISO 24896 SAY requires a Who/What/When structured title.`,
         path,
       });
     }
@@ -239,7 +239,7 @@ function checkTitle(
     out.push({
       rule: "structured-title",
       severity: "warning",
-      message: `title "${title}" is a bare string — use a Who/What/When structured title (ISO 24896 SAY).`,
+      message: `title "${title}" is a bare string - use a Who/What/When structured title (ISO 24896 SAY).`,
       path,
     });
   }
@@ -251,7 +251,7 @@ function checkTitle(
  * Push a cost-favorability warning when a cost-like measure does not read a
  * rise as unfavorable. Detection order:
  *
- *  1. explicit `measureKind` ("cost" → always check; "revenue" → never) — the
+ *  1. explicit `measureKind` ("cost" → always check; "revenue" → never) - the
  *     declaration survives any title edit and beats the heuristic;
  *  2. text heuristic over the effective title / label (structured titles
  *     included via {@link titleText}).
@@ -273,7 +273,7 @@ function checkCostFavorability(
   out.push({
     rule: "cost-favorability",
     severity: "warning",
-    message: `${why} — set higherIsBetter:false so impact coloring is correct.`,
+    message: `${why} - set higherIsBetter:false so impact coloring is correct.`,
     path: pathOf("higherIsBetter"),
   });
 }
@@ -283,7 +283,7 @@ function checkCostFavorability(
 function checkChart(
   c: Record<string, unknown>,
   base = "",
-  /** A title carried by the surrounding report block, if any — it titles this chart too. */
+  /** A title carried by the surrounding report block, if any - it titles this chart too. */
   externalTitle?: unknown,
 ): IbcsFinding[] {
   const out: IbcsFinding[] = [];
@@ -292,13 +292,13 @@ function checkChart(
 
   // Three distinct failures share this rule: no type at all, a type IBCS
   // forbids, and a type this library simply does not know. Each gets its own
-  // message — and the valid values listed are the API vocabulary (CHART_TYPES),
+  // message - and the valid values listed are the API vocabulary (CHART_TYPES),
   // not IBCS prose, so following the hint actually works.
   if (typeof type !== "string") {
     out.push({
       rule: "linear-chart-type",
       severity: "error",
-      message: `chart config has no "type" — expected one of ${VALID_TYPE_LIST}.`,
+      message: `chart config has no "type" - expected one of ${VALID_TYPE_LIST}.`,
       path: p("type"),
     });
   } else if (!LINEAR_CHART_TYPES.has(type)) {
@@ -306,7 +306,7 @@ function checkChart(
       out.push({
         rule: "linear-chart-type",
         severity: "error",
-        message: `chart type "${type}" is non-linear — IBCS forbids area/angle encodings because they distort comparison. Use one of ${VALID_TYPE_LIST}.`,
+        message: `chart type "${type}" is non-linear - IBCS forbids area/angle encodings because they distort comparison. Use one of ${VALID_TYPE_LIST}.`,
         path: p("type"),
       });
     } else {
@@ -314,7 +314,7 @@ function checkChart(
       out.push({
         rule: "linear-chart-type",
         severity: "error",
-        message: `unknown chart type "${type}"${suggestion ? ` — did you mean "${suggestion}"?` : ""} Valid types: ${VALID_TYPE_LIST}.`,
+        message: `unknown chart type "${type}"${suggestion ? ` - did you mean "${suggestion}"?` : ""} Valid types: ${VALID_TYPE_LIST}.`,
         path: p("type"),
       });
     }
@@ -330,13 +330,13 @@ function checkChart(
       rule: "data-present",
       severity: "error",
       message: isTree
-        ? "tree chart has no root node — nothing to plot."
-        : "chart has no data — nothing to plot.",
+        ? "tree chart has no root node - nothing to plot."
+        : "chart has no data - nothing to plot.",
       path: isTree ? p("root") : p("data"),
     });
   }
 
-  // The chart must be titled — by its own config, or by the report block that
+  // The chart must be titled - by its own config, or by the report block that
   // hosts it. Only when BOTH are absent is the missing-title finding emitted;
   // a present-but-bare title is flagged wherever it sits.
   checkTitle(c.title, p("title"), out, {
@@ -353,13 +353,13 @@ function checkChart(
     out.push({
       rule: "show-variance",
       severity: "info",
-      message: "no variance shown — IBCS reports typically show AC vs a comparison.",
+      message: "no variance shown - IBCS reports typically show AC vs a comparison.",
       path: base || undefined,
     });
   }
 
   // Cost-like measure must read overruns as unfavorable. The effective title
-  // is the config's own, falling back to the hosting block's — so moving the
+  // is the config's own, falling back to the hosting block's - so moving the
   // title up a level does not blind the check.
   const effectiveTitle = hasTitle(c.title) ? c.title : externalTitle;
   checkCostFavorability(c, titleText(effectiveTitle), p, out);
@@ -378,7 +378,7 @@ function checkKpi(c: Record<string, unknown>, base = ""): IbcsFinding[] {
     out.push({
       rule: "data-present",
       severity: "error",
-      message: "KPI has no headline value — values.AC must be a number.",
+      message: "KPI has no headline value - values.AC must be a number.",
       path: p("values"),
     });
   }
@@ -387,7 +387,7 @@ function checkKpi(c: Record<string, unknown>, base = ""): IbcsFinding[] {
     out.push({
       rule: "show-variance",
       severity: "info",
-      message: "no variance shown — IBCS reports typically show AC vs a comparison.",
+      message: "no variance shown - IBCS reports typically show AC vs a comparison.",
       path: p("comparisons"),
     });
   }
@@ -395,7 +395,7 @@ function checkKpi(c: Record<string, unknown>, base = ""): IbcsFinding[] {
   checkCostFavorability(c, typeof c.label === "string" ? c.label : "", p, out);
 
   // A %-formatted KPI that has not been declared a ratio still shows the
-  // relative delta of a percentage — the "+0.9% next to a margin" smell.
+  // relative delta of a percentage - the "+0.9% next to a margin" smell.
   if (
     isObject(c.format) &&
     typeof c.format.suffix === "string" &&
@@ -406,7 +406,7 @@ function checkKpi(c: Record<string, unknown>, base = ""): IbcsFinding[] {
       rule: "ratio-units",
       severity: "info",
       message:
-        'KPI is formatted as a percentage but not declared unit:"ratio" — a ratio\'s delta should read as percentage points (+0.6pp), not as a relative change of the percentage.',
+        'KPI is formatted as a percentage but not declared unit:"ratio" - a ratio\'s delta should read as percentage points (+0.6pp), not as a relative change of the percentage.',
       path: p("unit"),
     });
   }
@@ -453,7 +453,7 @@ function checkReport(r: Record<string, unknown>): IbcsFinding[] {
       out.push({
         rule: "block-type",
         severity: "error",
-        message: `unknown report block type ${JSON.stringify(b.type)} — expected kpi, chart, statement, table or text.`,
+        message: `unknown report block type ${JSON.stringify(b.type)} - expected kpi, chart, statement, table or text.`,
         path: `${bp}.type`,
       });
     }
@@ -503,7 +503,7 @@ function checkReport(r: Record<string, unknown>): IbcsFinding[] {
     out.push({
       rule: "shared-scale",
       severity: "info",
-      message: `report has ${chartBlocks} charts — give same-unit charts a shared, zero-based value scale so bar lengths are comparable.`,
+      message: `report has ${chartBlocks} charts - give same-unit charts a shared, zero-based value scale so bar lengths are comparable.`,
       path: "blocks",
     });
   }
@@ -517,7 +517,7 @@ function checkReport(r: Record<string, unknown>): IbcsFinding[] {
  * Chart components mapped to the `type` their props are linted as. Components
  * with an exact config counterpart use it; the specialised variance charts
  * lint as the linear family they render (their extra props simply carry no
- * rules); `PieChart` maps to `"pie"` on purpose — linting a pie must say so.
+ * rules); `PieChart` maps to `"pie"` on purpose - linting a pie must say so.
  */
 const COMPONENT_CHART_TYPES = {
   VarianceColumnChart: "varianceColumn",
@@ -547,7 +547,7 @@ export type LintableComponentName = keyof typeof COMPONENT_CHART_TYPES | "KpiCar
 const LINTABLE_LIST = [...Object.keys(COMPONENT_CHART_TYPES), "KpiCard"].join(", ");
 
 /**
- * Lint COMPONENT PROPS — the JSX authoring path — against the same IBCS rules
+ * Lint COMPONENT PROPS - the JSX authoring path - against the same IBCS rules
  * {@link checkIbcs} runs on configs.
  *
  * The prop shapes of the chart components are near-identical to their config
@@ -569,7 +569,7 @@ const LINTABLE_LIST = [...Object.keys(COMPONENT_CHART_TYPES), "KpiCard"].join(",
  * and are ignored. Lint-only declarations (`measureKind`) may be added to the
  * linted object even though the component does not render them. `KpiCard`
  * props already ARE a `KpiConfig`, so they lint directly. Unknown component
- * names return a single `input-shape` info naming the lintable components —
+ * names return a single `input-shape` info naming the lintable components -
  * pure logic, zero React, same contract as {@link checkIbcs}.
  */
 export function checkIbcsProps(
@@ -581,7 +581,7 @@ export function checkIbcsProps(
       {
         rule: "input-shape",
         severity: "info",
-        message: "props must be an object — nothing to check.",
+        message: "props must be an object - nothing to check.",
       },
     ];
   }
@@ -594,12 +594,12 @@ export function checkIbcsProps(
       {
         rule: "input-shape",
         severity: "info",
-        message: `no notation rules for component "${component}" — lintable components: ${LINTABLE_LIST}.`,
+        message: `no notation rules for component "${component}" - lintable components: ${LINTABLE_LIST}.`,
       },
     ];
   }
 
-  // The component name wins over any stray `type` prop — the JSX said what it is.
+  // The component name wins over any stray `type` prop - the JSX said what it is.
   return checkChart({ ...props, type });
 }
 
@@ -619,7 +619,7 @@ export function checkIbcs(target: ChartConfig | ReportConfig | KpiConfig | unkno
       {
         rule: "input-shape",
         severity: "info",
-        message: "value is not a config object — nothing to check.",
+        message: "value is not a config object - nothing to check.",
       },
     ];
   }
@@ -637,7 +637,7 @@ export function checkIbcs(target: ChartConfig | ReportConfig | KpiConfig | unkno
     {
       rule: "input-shape",
       severity: "info",
-      message: "unrecognized config shape — expected a ChartConfig, KpiConfig or ReportConfig.",
+      message: "unrecognized config shape - expected a ChartConfig, KpiConfig or ReportConfig.",
     },
   ];
 }

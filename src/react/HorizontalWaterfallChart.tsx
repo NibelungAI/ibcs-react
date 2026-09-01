@@ -20,7 +20,7 @@ export interface HorizontalWaterfallChartProps {
   scenario?: ScenarioKey;
   /**
    * A parallel bridge (same categories, another scenario) to compare each
-   * running level against — draws a variance panel to the RIGHT, aligned row
+   * running level against - draws a variance panel to the RIGHT, aligned row
    * for row and coloured by favorability. A DATASET, not a scenario key: the
    * sibling charts' `comparison` names a scenario, a bridge needs the other
    * scenario's contributions spelled out.
@@ -48,7 +48,7 @@ export interface HorizontalWaterfallChartProps {
   /** Styles merged *over* the chart's own layout styles. */
   style?: CSSProperties;
   /**
-   * Fired as the pointer moves over / leaves a row (`null` on leave) — for a
+   * Fired as the pointer moves over / leaves a row (`null` on leave) - for a
    * custom tooltip. Pairs naturally with `useChartHover`. Default undefined.
    */
   onHover?: (hover: ChartHover<WaterfallDatum> | null) => void;
@@ -79,14 +79,14 @@ const SCENARIO_LABEL: Record<ScenarioKey, string> = {
  * just beyond each bar's leading edge, clamped inside the SVG. A vertical zero
  * baseline is always present; negative running levels sit left of it.
  *
- * An optional `comparisonData` bridge drives a variance panel to the RIGHT — each
+ * An optional `comparisonData` bridge drives a variance panel to the RIGHT - each
  * row's level vs the comparison, impact-coloured with signed labels and
  * off-scale arrows (pin mode) when a delta exceeds the panel's half-scale.
  *
  * This is the primitive that later composes into IBCS C05 (columns + horizontal
  * waterfall) and C06. Reuses the orientation-agnostic {@link computeBridge}.
  *
- * The svg is the chart's root element — it takes `className` / `style` and the
+ * The svg is the chart's root element - it takes `className` / `style` and the
  * forwarded ref, and carries the accessible name (`role="img"` + `aria-label`);
  * the built-in tooltip portals to `document.body` and flips at the viewport
  * edges.
@@ -209,7 +209,7 @@ export const HorizontalWaterfallChart = forwardRef<SVGSVGElement, HorizontalWate
 
     // Screen-reader data table: each row's contribution (or, for a result row,
     // its total), the running level it walks the bridge to, and the comparison
-    // variance where the panel shows one — mirrors the vertical WaterfallChart.
+    // variance where the panel shows one - mirrors the vertical WaterfallChart.
     const a11yColumns = [
       "Contribution",
       "Running total",
@@ -248,7 +248,7 @@ export const HorizontalWaterfallChart = forwardRef<SVGSVGElement, HorizontalWate
             </text>
           )}
 
-          {/* Zero baseline — always present (ISO 24896): a vertical axis line. */}
+          {/* Zero baseline - always present (ISO 24896): a vertical axis line. */}
           <line
             x1={zeroX}
             y1={padT}
@@ -260,8 +260,8 @@ export const HorizontalWaterfallChart = forwardRef<SVGSVGElement, HorizontalWate
 
           {/* Step connectors: a thin vertical line at the leaving level of step i,
           from its row's bottom edge to the next row's top edge, at axis weight.
-          Drawn for EVERY adjacent pair — including into and out of result
-          checkpoints (the running total is exactly where a result bar ends) —
+          Drawn for EVERY adjacent pair - including into and out of result
+          checkpoints (the running total is exactly where a result bar ends) -
           so the bridge reads as one connected path, like the vertical chart. */}
           {bars.map((b, i) => {
             // `bands` has one entry per bar, so the last row has no follower.
@@ -286,7 +286,7 @@ export const HorizontalWaterfallChart = forwardRef<SVGSVGElement, HorizontalWate
 
           {/* Floating / full bars */}
           {bars.map((b, i) => {
-            // `bars` and `bands` are both derived per datum — index-aligned with `data`.
+            // `bars` and `bands` are both derived per datum - index-aligned with `data`.
             const rowBand = bands[i];
             const datum = data[i];
             if (!rowBand || !datum) return null;
@@ -304,7 +304,7 @@ export const HorizontalWaterfallChart = forwardRef<SVGSVGElement, HorizontalWate
             const right = b.isTotal ? b.to >= 0 : b.direction === "up";
             const labelVal = b.isTotal ? b.to : b.delta;
             const info = { category: b.category, scenario, value: labelVal, datum };
-            // The row's visible marks in FINAL (un-animated) geometry — xOf,
+            // The row's visible marks in FINAL (un-animated) geometry - xOf,
             // not xA: the waterfall step (the focus/tap anchor) and, when the
             // variance panel draws one for this row, that panel's lane strip at
             // the bar's thickness. The full-row rect stays the hit band.
@@ -356,7 +356,7 @@ export const HorizontalWaterfallChart = forwardRef<SVGSVGElement, HorizontalWate
             );
           })}
 
-          {/* Category labels — right-aligned in the left gutter, on each row. */}
+          {/* Category labels - right-aligned in the left gutter, on each row. */}
           {bars.map((b, i) => {
             const rowBand = bands[i];
             if (!rowBand) return null;
@@ -391,7 +391,7 @@ export const HorizontalWaterfallChart = forwardRef<SVGSVGElement, HorizontalWate
               {bars.map((b, i) => {
                 const v = b.variance;
                 // Skip result/subtotal rows: a calculated checkpoint (e.g. gross
-                // margin) carries no independent variance — its movement is just the
+                // margin) carries no independent variance - its movement is just the
                 // sum of the contributions above it, already shown as their bars.
                 const rowBand = bands[i];
                 if (!v || b.isTotal || !rowBand) return null;
@@ -418,7 +418,7 @@ export const HorizontalWaterfallChart = forwardRef<SVGSVGElement, HorizontalWate
                 const labelAnchor: "start" | "end" = right ? "start" : "end";
                 // When the clamp pins the label back ONTO its own bar (favorable
                 // bars hit the panel's right edge), the impact colour would be the
-                // bar colour — invisible. Flip to white in that case.
+                // bar colour - invisible. Flip to white in that case.
                 const onBar = right ? labelX < tipX - 1 : labelX > tipX + 1;
                 const labelColor = onBar && mark === "bar" ? tokens.color.onFill : color;
                 if (mark === "pin") {
@@ -486,8 +486,8 @@ export const HorizontalWaterfallChart = forwardRef<SVGSVGElement, HorizontalWate
         <ChartDataTable
           caption={
             title
-              ? `${title} — data table`
-              : `Horizontal bridge of ${SCENARIO_LABEL[scenario]} contributions — data table`
+              ? `${title} - data table`
+              : `Horizontal bridge of ${SCENARIO_LABEL[scenario]} contributions - data table`
           }
           columns={a11yColumns}
           rows={a11yRows}

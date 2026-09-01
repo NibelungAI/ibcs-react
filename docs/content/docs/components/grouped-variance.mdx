@@ -1,6 +1,6 @@
 ---
 title: GroupedVarianceChart
-description: Grouped two-scenario multi-tier chart (IBCS C03 columns / C04 bars) with absolute and relative variance tiers.
+description: The IBCS multi-tier column chart (template C03) and multi-tier bar chart (C04) - two grouped scenarios with absolute and relative variance tiers.
 ---
 
 import { GroupedVarianceChart } from "ibcs-react";
@@ -11,8 +11,9 @@ grey, PL a hollow frame, FC hatched.
 
 ## When to use
 
-Compare two scenarios side by side (not overlaid) with both Δ and Δ% tiers —
-the canonical IBCS multi-tier column (vertical) or bar (horizontal) layout. Use
+Compare two scenarios side by side (not overlaid) with both Δ and Δ% tiers -
+the canonical IBCS multi-tier column chart (vertical) or multi-tier bar chart
+(horizontal) layout. Use
 [IntegratedVarianceChart](/docs/components/integrated-variance) instead when you
 want the comparison overlaid behind AC.
 
@@ -22,7 +23,7 @@ want the comparison overlaid behind AC.
   <GroupedVarianceChart
     orientation="column"
     comparison="PY"
-    title="Revenue by region — AC vs PY"
+    title="Revenue by region - AC vs PY"
     width={680}
     height={440}
     format={{ compact: true }}
@@ -38,7 +39,7 @@ want the comparison overlaid behind AC.
 ```tsx
 import { GroupedVarianceChart } from "ibcs-react";
 
-// C03 — grouped columns (vertical), tiers stack: Δ% / Δabs / columns
+// C03 - grouped columns (vertical), tiers stack: Δ% / Δabs / columns
 <GroupedVarianceChart
   orientation="column" // or "bar" for C04 (panels side by side)
   comparison="PY" // "PY" | "PL" (hollow frame) | "FC" (hatched)

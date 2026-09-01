@@ -1,5 +1,5 @@
 /**
- * A complete worked build.mjs — the six-page report this skill produces from a
+ * A complete worked build.mjs - the six-page report this skill produces from a
  * P&L and a balance sheet (the Vantera demo pack: AC / PY / PL on the P&L,
  * AC / PY on the balance sheet, source figures in TEUR).
  *
@@ -10,7 +10,7 @@
  *   1 cover        an editorial title; facts limited to what the source states
  *   2 contents     contents(), notationKey(), the basis line
  *   3 key figures  DataTable with a Budget column group + a plain ratio strip
- *   4 income stmt  StatementTable — the integrated waterfall, ΔPY bar + ΔPY% pin
+ *   4 income stmt  StatementTable - the integrated waterfall, ΔPY bar + ΔPY% pin
  *   5 EBIT bridge  WaterfallChart with comparisonData = the budget bridge
  *   6 balance sht  StatementTable mode="stock", merged small lines
  *
@@ -193,7 +193,7 @@ const bridgeAC = scaleUnits([
   { category: "EBIT '25", value: 0, flow: "result" }, // result ignores its value
 ]);
 // The same bridge as budgeted (PY → PL). comparisonData compares the RUNNING
-// level against this bridge at each step — a cumulative position-vs-plan walk
+// level against this bridge at each step - a cumulative position-vs-plan walk
 // that ends on the total EBIT miss, not per-step deltas.
 const bridgePL = scaleUnits([
   { category: "EBIT '24", value: 57800, flow: "add" },
@@ -403,10 +403,10 @@ const p1 = page(
     // The one sentence in the document allowed a point of view.
     title: "Growth on borrowed margin",
     year: "2025",
-    // Facts limited to what the source workbooks state — the P&L footer says
+    // Facts limited to what the source workbooks state - the P&L footer says
     // "unaudited management accounts"; no city or auditor is named, so none appears.
     facts: [
-      ["Reporting period", "1 January – 31 December 2025"],
+      ["Reporting period", "1 January - 31 December 2025"],
       ["Reporting entity", "Vantera Industrial Group AG"],
       ["Presentation currency", "Euro (€), compact notation"],
       ["Status", "Unaudited management accounts"],
@@ -455,7 +455,7 @@ const p3 = page(
   margin fell from 15.5% to 14.6%. Profit for the period closed at €40.7 million
   against a budgeted €45.5 million.`)}
   ${P(`The year is therefore green against last year and red against plan on the
-  same measures — the tension the following pages trace through the income
+  same measures - the tension the following pages trace through the income
   statement, the earnings bridge and the balance sheet.`)}`,
   { section: "Financial highlights" },
 );
@@ -481,8 +481,8 @@ const p4 = page(
   of goods sold rose <b>12.4% against revenue growth of 10.4%</b>: raw materials
   alone absorbed €22.2 million more than prior year (+15.1%), and €7.0 million
   more than budgeted. The gross margin gave up 1.2 points to 35.2%.`)}
-  ${P(`Operating expenses were held close to plan — administrative expenses came
-  in €0.7 million under budget — but could not close the materials gap. EBIT
+  ${P(`Operating expenses were held close to plan - administrative expenses came
+  in €0.7 million under budget - but could not close the materials gap. EBIT
   finished €2.5 million above prior year and <b>€6.2 million behind budget</b>;
   after a €1.2 million heavier financial result and €13.9 million of tax, profit
   for the period is €40.7 million (+2.5%).`)}`,
@@ -503,12 +503,12 @@ const p5 = page(
       tooltip: false,
     }),
   )}</div>
-  ${CAP("Steps are contributions to the change in EBIT. The panel beneath tracks the cumulative position against the budgeted bridge to the €66.5 million plan — where EBIT stood versus budget after each step.")}
+  ${CAP("Steps are contributions to the change in EBIT. The panel beneath tracks the cumulative position against the budgeted bridge to the €66.5 million plan - where EBIT stood versus budget after each step.")}
   ${P(`The €2.5 million improvement in EBIT decomposes into a €38.8 million
   revenue contribution against €31.3 million of added cost of goods and €6.9
   million of operating expense and other movements. The panel walks the position
   against plan: <b>€1.8 million ahead</b> after revenue, then €5.2 million
-  behind once raw materials have taken <b>€7.0 million more than budgeted</b> —
+  behind once raw materials have taken <b>€7.0 million more than budgeted</b> -
   on its own larger than the entire shortfall. Labour and overhead widen the gap
   to €6.7 million, operating expenses claw €0.7 million back, and the year ends
   <b>€6.2 million behind</b> the €66.5 million plan.`)}`,
@@ -529,7 +529,7 @@ const p6 = page(
       labelMaxWidth: 220,
       // Abs ΔPY only: this sheet has large NEGATIVE percent moves (cash −17.8%),
       // and negative pct-pin labels clip left of the pin axis (see
-      // components.md rough edges) — so the percents live in the prose instead.
+      // components.md rough edges) - so the percents live in the prose instead.
       varianceColumns: [{ base: "PY", mode: "abs", mark: "bar" }],
     }),
   )}</div>
@@ -544,9 +544,9 @@ const p6 = page(
 fs.writeFileSync(
   "report.html",
   documentHtml({
-    title: "Vantera Industrial Group AG — Annual Management Report 2025",
+    title: "Vantera Industrial Group AG - Annual Management Report 2025",
     css: css({ ink: INK }),
     pages: [p1, p2, p3, p4, p5, p6],
   }),
 );
-console.log("wrote report.html — now: node fit.mjs && node render.mjs");
+console.log("wrote report.html - now: node fit.mjs && node render.mjs");

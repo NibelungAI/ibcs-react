@@ -40,7 +40,7 @@ export interface StructureChartProps {
   width?: number;
   height?: number;
   /**
-   * Vertical band layout — the gap between component rows and the lead-in/out
+   * Vertical band layout - the gap between component rows and the lead-in/out
    * gutter (this chart's categories run top-to-bottom). Omit for the centred
    * default; pass `{ outer: 0 }` to trim the whitespace above the first row and
    * below the last so the rows sit flush to the plot edges (fill edge-to-edge).
@@ -56,13 +56,13 @@ export interface StructureChartProps {
   /** Inline style merged OVER the chart `<svg>`'s own layout style. */
   style?: CSSProperties;
   /**
-   * Fired when a component row is clicked — for click-to-filter / drill-down.
+   * Fired when a component row is clicked - for click-to-filter / drill-down.
    * Pairs naturally with `useChartSelection`. Omit for a non-interactive chart.
    * The clickable area spans the whole row.
    */
   onSelect?: (selection: ChartSelection<StructureDatum>) => void;
   /**
-   * Fired as the pointer moves over / leaves a component row (`null` on leave) —
+   * Fired as the pointer moves over / leaves a component row (`null` on leave) -
    * for a custom tooltip. Pairs naturally with `useChartHover`. Default undefined.
    */
   onHover?: (hover: ChartHover<StructureDatum> | null) => void;
@@ -78,12 +78,12 @@ export interface StructureChartProps {
 /**
  * IBCS structure / composition chart: a ranked horizontal breakdown of a whole
  * into its parts. Each component is a bar (current series solid, comparison
- * faded behind — the IBCS overlap), labelled with its value, its share of the
+ * faded behind - the IBCS overlap), labelled with its value, its share of the
  * total, and its Δ vs the comparison colored by favorability. A total row sits
  * beneath. Largest contributor first by default.
  *
- * A forwarded `ref` lands on the chart `<svg>` — the useful handle for export /
- * serialization — even though the component also renders a screen-reader table
+ * A forwarded `ref` lands on the chart `<svg>` - the useful handle for export /
+ * serialization - even though the component also renders a screen-reader table
  * beside it.
  */
 export const StructureChart = forwardRef<SVGSVGElement, StructureChartProps>(
@@ -111,7 +111,7 @@ export const StructureChart = forwardRef<SVGSVGElement, StructureChartProps>(
     },
     ref,
   ) {
-    // `variance` doubles as the Δ column's on/off switch — resolve it once so
+    // `variance` doubles as the Δ column's on/off switch - resolve it once so
     // the gutter maths and the markup below stay exactly as they were.
     const showVariance = variance !== "none";
     const tokens = useIbcsTokens(tokenOverride);
@@ -123,7 +123,7 @@ export const StructureChart = forwardRef<SVGSVGElement, StructureChartProps>(
     const hatchId = svgSafeId(useId());
     // The comparison scenario is drawn in its own IBCS notation, not always solid
     // grey: PY solid, PL a hollow white frame, FC hatched (same as the column
-    // chart) — so flipping AC-vs-PY/PL/FC restyles the reference bar correctly.
+    // chart) - so flipping AC-vs-PY/PL/FC restyles the reference bar correctly.
     const cmpStyle = tokens.scenario[comparison];
 
     const layout = useMemo(
@@ -177,7 +177,7 @@ export const StructureChart = forwardRef<SVGSVGElement, StructureChartProps>(
     const baselineY = padT + availH;
 
     // Built-in tooltip rows for the hovered component: value, signed Δ vs the
-    // comparison (impact-coloured), and its share — reusing the layout's variance.
+    // comparison (impact-coloured), and its share - reusing the layout's variance.
     const renderTooltip = () => {
       const h = hover.hovered;
       if (!tooltip || !h) return null;
@@ -213,7 +213,7 @@ export const StructureChart = forwardRef<SVGSVGElement, StructureChartProps>(
     };
 
     // Screen-reader data table: each component's value, the comparison, optional
-    // variance and share, plus the total row — values, not the decorative svg.
+    // variance and share, plus the total row - values, not the decorative svg.
     const a11yColumns = [
       "Value",
       comparison,
@@ -330,7 +330,7 @@ export const StructureChart = forwardRef<SVGSVGElement, StructureChartProps>(
               value: s.current,
               datum: s,
             };
-            // The row's visible marks in FINAL (un-animated) geometry — the
+            // The row's visible marks in FINAL (un-animated) geometry - the
             // current bar first (the anchor for focus/tap), then the comparison
             // bar when it is drawn. The full-row rect below stays as the
             // generous click target; the tooltip only fires near these.
@@ -408,7 +408,7 @@ export const StructureChart = forwardRef<SVGSVGElement, StructureChartProps>(
                       {fitLabel(s.label, lw - 6, labelFont)}
                     </text>
 
-                    {/* Value at the bar tip — clamped so it can't run under the Δ column. */}
+                    {/* Value at the bar tip - clamped so it can't run under the Δ column. */}
                     <text
                       x={Math.min(tipX, width - padR - shareW - deltaW - valueW)}
                       y={cy + 4}
@@ -505,7 +505,7 @@ export const StructureChart = forwardRef<SVGSVGElement, StructureChartProps>(
         </svg>
         <ChartDataTable
           caption={
-            title ? `${title} — data table` : `Composition versus ${comparison} — data table`
+            title ? `${title} - data table` : `Composition versus ${comparison} - data table`
           }
           columns={a11yColumns}
           rows={a11yRows}

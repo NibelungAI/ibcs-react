@@ -15,7 +15,7 @@ import {
 } from "@/lib/demo-data/sample-data";
 
 /**
- * Live renders of the IBCS table templates T01–T04, each under the report title
+ * Live renders of the IBCS table templates T01-T04, each under the report title
  * block the notation asks for (company · report title with unit · period). One
  * palette (the Ocean preset) across all four, so the templates differ only in
  * layout and variance notation.
@@ -50,7 +50,7 @@ function Card({ children }: { children: ReactNode }) {
   return <div style={{ fontFamily: TOK.font.family }}>{children}</div>;
 }
 
-/** T01 — the flanking hierarchy with numeric variance columns. */
+/** T01 - the flanking hierarchy with numeric variance columns. */
 export function TemplateT01() {
   return (
     <Card>
@@ -65,7 +65,7 @@ export function TemplateT01() {
         leftColumns={tableT01Left}
         rightColumns={tableT01Right}
         leftGroupLabel="November"
-        rightGroupLabel="January–November"
+        rightGroupLabel="January-November"
         showTotals
         totalsLabel="World"
         format={{ compact: false }}
@@ -75,7 +75,7 @@ export function TemplateT01() {
   );
 }
 
-/** T02 — the same hierarchy with the variance embedded as bars and pins. */
+/** T02 - the same hierarchy with the variance embedded as bars and pins. */
 export function TemplateT02() {
   return (
     <Card>
@@ -90,7 +90,7 @@ export function TemplateT02() {
         leftColumns={tableT02Left}
         rightColumns={tableT02Right}
         leftGroupLabel="November"
-        rightGroupLabel="January–November"
+        rightGroupLabel="January-November"
         showTotals
         totalsLabel="World"
         format={{ compact: false }}
@@ -101,7 +101,7 @@ export function TemplateT02() {
   );
 }
 
-/** T03 — a multi-year profit and loss statement with flow markers. */
+/** T03 - a multi-year profit and loss statement with flow markers. */
 export function TemplateT03() {
   return (
     <Card>
@@ -121,7 +121,7 @@ export function TemplateT03() {
   );
 }
 
-/** T04 — the integrated statement, waterfall lane dropped. */
+/** T04 - the integrated statement, waterfall lane dropped. */
 export function TemplateT04() {
   return (
     <Card>

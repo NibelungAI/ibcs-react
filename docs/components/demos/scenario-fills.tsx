@@ -12,19 +12,19 @@ export function ScenarioFills() {
     {
       key: "AC",
       label: "AC · Actual",
-      sub: "solid, dark — this is real",
+      sub: "solid, dark - this is real",
       style: { background: s.AC.fill } as CSSProperties,
     },
     {
       key: "PY",
       label: "PY · Previous year",
-      sub: "solid grey — the past",
+      sub: "solid grey - the past",
       style: { background: s.PY.fill } as CSSProperties,
     },
     {
       key: "PL",
       label: "PL · Plan / budget",
-      sub: "outline frame — not real yet",
+      sub: "outline frame - not real yet",
       style: {
         background: "transparent",
         border: `2px solid ${s.PL.stroke}`,
@@ -33,7 +33,7 @@ export function ScenarioFills() {
     {
       key: "FC",
       label: "FC · Forecast",
-      sub: "hatched — expected",
+      sub: "hatched - expected",
       style: {
         backgroundImage: `repeating-linear-gradient(45deg, ${s.FC.stroke} 0 2px, transparent 2px 5px)`,
         border: `1px solid ${s.FC.stroke}`,

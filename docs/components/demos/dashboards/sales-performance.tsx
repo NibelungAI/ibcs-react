@@ -43,7 +43,7 @@ const repColumns: DataTableColumn[] = [
 ];
 
 /**
- * 2 · Sales performance — Northwind Trading.
+ * 2 · Sales performance - Northwind Trading.
  * Bookings vs plan by region, product lines ranked by ΔPlan, and a rep table
  * that sorts on any column.
  */
@@ -98,7 +98,7 @@ export function SalesPerformance() {
         </Panel>
         <Panel title="Product lines · ranked by ΔPlan">
           <RankingVarianceChart
-            title="Bookings by product line — AC vs Plan"
+            title="Bookings by product line - AC vs Plan"
             baseLabel="PL"
             width={560}
             rowHeight={26}

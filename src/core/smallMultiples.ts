@@ -9,7 +9,7 @@ import { computeVariance } from "./variance";
  * panel uses the SAME scale, so panels are visually comparable at a glance.
  */
 export interface SharedScale {
-  /** Most negative point across all panels (≤ 0 — the zero baseline is always in). */
+  /** Most negative point across all panels (≤ 0 - the zero baseline is always in). */
   domainMin: number;
   /** Most positive point across all panels (≥ 0). */
   domainMax: number;
@@ -41,7 +41,7 @@ export function computeSharedScale<T>(
 
 /**
  * One panel's contribution to a shared scale. The renderer never needs the
- * panel's identity here — only the numbers it would plot and (optionally) what
+ * panel's identity here - only the numbers it would plot and (optionally) what
  * unit they are in, so the axis hint can be formatted correctly.
  */
 export interface SharedDomainPanel {
@@ -64,7 +64,7 @@ export interface SharedDomainOptions {
   /** Force the domain symmetric about 0 (ideal for variance). Default false. */
   symmetric?: boolean;
   /**
-   * Outlier clamp. When set to a fraction in (0, 1) — e.g. `0.95` — the positive
+   * Outlier clamp. When set to a fraction in (0, 1) - e.g. `0.95` - the positive
    * bound is pulled down to the 95th percentile of the positive values and the
    * negative bound up to the 5th percentile of the negative values, computed
    * across EVERY panel. This stops one giant panel from flattening all the
@@ -79,7 +79,7 @@ export interface SharedDomainOptions {
   clampPercentile?: number;
 }
 
-/** The shared domain plus solver metadata. Pure numbers — JSON-serializable. */
+/** The shared domain plus solver metadata. Pure numbers - JSON-serializable. */
 export interface SharedDomainResult extends SharedScale {
   /** True when {@link SharedDomainOptions.clampPercentile} reduced the extent. */
   clamped: boolean;
@@ -122,7 +122,7 @@ function unNegZero(n: number): number {
 /**
  * Round a raw `[min, max]` to friendly axis bounds, ALWAYS keeping 0 inside
  * (small multiples share a zero baseline). Returns the rounded bounds plus a
- * nice tick `step` that divides them — handy for an axis hint. Pure & SSR-safe.
+ * nice tick `step` that divides them - handy for an axis hint. Pure & SSR-safe.
  *
  * Passing a symmetric input (e.g. `niceBounds(-M, M)`) yields symmetric output,
  * which is what variance panels want.
@@ -144,7 +144,7 @@ export function niceBounds(
 
 /**
  * THE shared-scale solver. Given many panels' value arrays, compute ONE value
- * domain so every panel maps values to pixels identically — the core of the
+ * domain so every panel maps values to pixels identically - the core of the
  * IBCS rule "same scale = same meaning". The domain always spans 0.
  *
  * Handles mixed positive/negative data, optional symmetry (for variance),
@@ -242,7 +242,7 @@ export interface MiniDatum {
   higherIsBetter?: boolean;
 }
 
-/** A named group of rows — one small multiple panel. */
+/** A named group of rows - one small multiple panel. */
 export interface MiniGroupInput {
   label: string;
   data: MiniDatum[];

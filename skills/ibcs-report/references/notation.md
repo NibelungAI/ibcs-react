@@ -10,7 +10,7 @@ conforms.
 
 Scenarios are told apart by **fill**, not hue: actual solid dark, prior year
 solid light, plan a hollow frame, forecast hatched. That leaves colour free to
-carry one job — **green favourable, red unfavourable, for the business**. A cost
+carry one job - **green favourable, red unfavourable, for the business**. A cost
 line that grew is red even though the number went up; revenue that fell is red
 even though it is a revenue line.
 
@@ -27,7 +27,7 @@ bar. In a printed management report prefer a `DataTable` of key figures: it
 aligns perfectly, carries ΔPY and ΔPL in the same row, and can hold a sparkline.
 Cards earn their place on screens where a card is a tap target.
 
-Pie charts are discouraged outright — angle is the hardest encoding to compare,
+Pie charts are discouraged outright - angle is the hardest encoding to compare,
 and the library's own `checkIbcs` flags them. Use `StructureChart`: ranked
 horizontal bars with the share printed beside each one, which answers both
 "how big" and "what share" without asking the reader to judge wedges.
@@ -41,7 +41,7 @@ solve a crowded chart by giving one series its own axis.
 
 ## Titles and structure
 
-A chart title says **who, what, when** — "Revenue by month, group, FY 2025" — not
+A chart title says **who, what, when** - "Revenue by month, group, FY 2025" - not
 "Revenue chart". The linter flags bare-string titles for this reason. Put the
 unit in the page subtitle once rather than repeating it on every axis.
 

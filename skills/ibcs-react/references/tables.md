@@ -1,9 +1,9 @@
-# Tables — quick reference
+# Tables - quick reference
 
-Four tables cover the IBCS table templates T01–T04. All take `format`, `tokens`,
+Four tables cover the IBCS table templates T01-T04. All take `format`, `tokens`,
 `className`/`style`; the interactive ones take a visually-hidden `caption`.
 
-## StatementTable — T03 / T04 (P&L, balance sheet)
+## StatementTable - T03 / T04 (P&L, balance sheet)
 
 The integrated waterfall: a `StatementLine[]` tree with the scenario lane drawn
 as stepping bars plus right-hand variance panels.
@@ -35,7 +35,7 @@ as stepping bars plus right-hand variance panels.
 
 `VarianceColumnSpec` = `{ base, mode?: "abs"|"pct", mark?: "bar"|"pin", label?, clampPct? }`.
 
-## DataTable — T01 (cross-entity comparison)
+## DataTable - T01 (cross-entity comparison)
 
 Rows = entities (hierarchical via `children`), columns = measures.
 
@@ -72,10 +72,10 @@ const columns: DataTableColumn[] = [
   `spark?: Record<string, number[]>`, `children?`, `group?`, `emphasis?`,
   `flow?`, `doubleRule?`, `defaultCollapsed?`.
 
-## ComparisonTable — T01 / T02 (centre-label flanking layout)
+## ComparisonTable - T01 / T02 (centre-label flanking layout)
 
 One measure, two column groups (e.g. Month vs YTD) flanking the row labels.
-Static layout — no interactive state.
+Static layout - no interactive state.
 
 ```tsx
 <ComparisonTable
@@ -90,7 +90,7 @@ Static layout — no interactive state.
 />
 ```
 
-## MatrixTable — budget / control matrix
+## MatrixTable - budget / control matrix
 
 A row tree crossed with an expanding period column tree (Year → Quarter → Month).
 
@@ -113,7 +113,7 @@ A row tree crossed with an expanding period column tree (Year → Quarter → Mo
 ```
 
 Every value cell carries a `data-cell-ref` (build one with
-`cellRefOf(rowId, periodId, scenario)` from `ibcs-react/core`) — enough to hang a comment/annotation layer off the table without
+`cellRefOf(rowId, periodId, scenario)` from `ibcs-react/core`) - enough to hang a comment/annotation layer off the table without
 forking it.
 
 ## Controlled ⇄ uncontrolled state
@@ -129,12 +129,12 @@ mode, as an observer.
 | `DataTable`                 | `defaultCollapsed`, `defaultSort`            | `collapsed` + `onCollapsedChange`, `sort` + `onSortChange(sort \| null)`      |
 | `MatrixTable`               | `defaultExpandedRows`, `defaultExpandedCols` | `expandedRows`/`expandedCols` + `onExpandedRowsChange`/`onExpandedColsChange` |
 | `useStatement(lines, opts)` | `defaultCollapsed`                           | `collapsed` + `onCollapsedChange`                                             |
-| `ComparisonTable`           | —                                            | static, no state                                                              |
+| `ComparisonTable`           | -                                            | static, no state                                                              |
 
 `collapsed` / `expanded*` accept a `ReadonlySet<string>` or a `readonly string[]`.
 `useStatement` is literally `StatementTable`'s engine and additionally returns
 `rows`, `toggle`, `isCollapsed`, `domainMax`, `groupIds`, `allCollapsed`,
-`allExpanded` — use it to wire a custom toolbar or a second synced view.
+`allExpanded` - use it to wire a custom toolbar or a second synced view.
 
 ## Statement → table/chart projections
 

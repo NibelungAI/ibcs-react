@@ -1,6 +1,6 @@
 ---
 title: Example reports
-description: Management reports in the style of the IBCS chart and table templates — a P&L bridge, variance waterfalls, ranked deviations, a KPI strip — built entirely from ibcs-react components.
+description: Management reports in the style of the IBCS chart and table templates - a P&L bridge, variance waterfalls, ranked deviations, a KPI strip - built entirely from ibcs-react components.
 ---
 
 import {
@@ -19,7 +19,7 @@ import {
 } from "ibcs-react";
 
 Reports in the style of the IBCS® chart and table templates, built entirely
-from `ibcs-react` components — no wrapper library, no post-processing, just the
+from `ibcs-react` components - no wrapper library, no post-processing, just the
 props shown alongside each one.
 
 Each report follows the same reporting pattern: the **message** first (the
@@ -28,7 +28,7 @@ the exhibit. Data is realistic but fictitious, and company names are invented.
 
 ## Profit & loss as a dual bridge
 
-_Software and Service Group · Profit & loss statement in kEUR — AC, PY and ΔPY · 2025_
+_Software and Service Group · Profit & loss statement in kEUR - AC, PY and ΔPY · 2025_
 
 **Compared to 2024, higher operating expenses (+187 kEUR) were mainly offset by
 higher licence sales (+183 kEUR), lifting the group result by +91 kEUR (+48%).**
@@ -68,9 +68,9 @@ reads unfavorable even though its delta is positive.
 
 ## Net sales by state, with a variance bridge
 
-_Housing and Construction Inc. · Net sales in kUSD — by state, AC vs PY and PL · Q3 2025_
+_Housing and Construction Inc. · Net sales in kUSD - by state, AC vs PY and PL · Q3 2025_
 
-**Net sales fell 343 kUSD against previous year — Illinois (−288) drove almost
+**Net sales fell 343 kUSD against previous year - Illinois (−288) drove almost
 the entire decline.**
 
 <Frame>
@@ -93,13 +93,13 @@ the entire decline.**
 </Frame>
 
 The bar chart carries the level, the attached waterfall carries the bridge from
-the previous-year total to the actual one — one exhibit answering both "how big"
+the previous-year total to the actual one - one exhibit answering both "how big"
 and "what moved".
 [BarVarianceWaterfallChart](/docs/components/bar-variance-waterfall)
 
 ## Monthly contribution margin with an integrated variance
 
-_Furniture Inc. · Contribution margin in kEUR — AC vs PY, monthly · 2025_
+_Furniture Inc. · Contribution margin in kEUR - AC vs PY, monthly · 2025_
 
 **Contribution margin runs ahead of prior year for most months; the forecast
 closes the year at 2,036 kEUR (+5%).**
@@ -140,7 +140,7 @@ full-year column apart on the right as an AC + FC stack.
 
 ## Net sales build-up, columns plus a waterfall
 
-_Furniture Inc. · Net sales in kEUR — AC vs PL, monthly build-up · 2025_
+_Furniture Inc. · Net sales in kEUR - AC vs PL, monthly build-up · 2025_
 
 **We expect to close 24 kEUR (+15.6%) above plan on the back of a strong
 forecast from September.**
@@ -184,7 +184,7 @@ stacked AC + FC total closes the year on the right.
 
 ## Income statement as a calculation bridge
 
-_Enterprise Software Group · Income statement in bn EUR — AC vs PY · 2025_
+_Enterprise Software Group · Income statement in bn EUR - AC vs PY · 2025_
 
 **Operating profit grew +0.1 bn EUR: +1.6 bn of higher software revenue was
 almost entirely consumed by +1.8 bn of higher operating expenses.**
@@ -226,14 +226,14 @@ almost entirely consumed by +1.8 bn of higher operating expenses.**
 </Frame>
 
 The same component as the first report, on a longer scheme with two nested
-subtotals — a statement stays legible as a bridge as long as the calculation
+subtotals - a statement stays legible as a bridge as long as the calculation
 scheme is explicit.
 
 ## Profit after tax by region
 
-_Electronic Inc. · Profit after tax in kEUR — by region, AC vs PY and PL · November 2025_
+_Electronic Inc. · Profit after tax in kEUR - by region, AC vs PY and PL · November 2025_
 
-**Profit after tax beat plan by +234 kEUR (+5%) — the Americas (+292) carried
+**Profit after tax beat plan by +234 kEUR (+5%) - the Americas (+292) carried
 the month, partly offset by shortfalls in Europe.**
 
 <Frame>
@@ -291,20 +291,20 @@ the month, partly offset by shortfalls in Europe.**
 </Frame>
 
 One measure, four deviation columns: absolute bars for size, relative pins for
-rate, against two bases. The header sort is uncontrolled here — see
+rate, against two bases. The header sort is uncontrolled here - see
 [Interaction & data](/docs/interaction#controlled-tables) to own it.
 [DataTable](/docs/components/data-table)
 
 ## Net sales by product line, ranked by deviation
 
-_Furniture Inc. · Net sales in kEUR — by product line, ranked by ΔPL · 2025_
+_Furniture Inc. · Net sales in kEUR - by product line, ranked by ΔPL · 2025_
 
 **Net sales missed plan by −1,420 kEUR: Seating and Tables drove the gap, while
 Storage and Lighting beat plan.**
 
 <Frame>
   <RankingVarianceChart
-    title="Net sales by product line — AC vs Plan"
+    title="Net sales by product line - AC vs Plan"
     baseLabel="PL"
     width={760}
     format={{ compact: false, decimals: 0 }}
@@ -320,13 +320,13 @@ Storage and Lighting beat plan.**
   />
 </Frame>
 
-Sorting by deviation rather than by size puts the story — where the plan broke —
+Sorting by deviation rather than by size puts the story - where the plan broke -
 at the top of the page.
 [RankingVarianceChart](/docs/components/ranking-variance)
 
 ## Order intake with a forecast tail
 
-_Machinery Group · Order intake in kEUR — monthly, AC and FC vs PY · 2025_
+_Machinery Group · Order intake in kEUR - monthly, AC and FC vs PY · 2025_
 
 **Order intake has tracked above prior year all year; the forecast holds the
 lead into Q4, closing +8% vs PY.**
@@ -360,7 +360,7 @@ the hatched forecast notation automatically.
 
 ## Net sales by region over time
 
-_Software and Service Group · Net sales in mEUR — by region, quarterly · 2025_
+_Software and Service Group · Net sales in mEUR - by region, quarterly · 2025_
 
 **Group net sales climbed from 27.0 to 33.9 mEUR over four quarters, led by EMEA
 and a fast-growing APAC.**
@@ -385,13 +385,13 @@ and a fast-growing APAC.**
   />
 </Frame>
 
-A structure over time. Keep the series count low — a stack is readable for the
+A structure over time. Keep the series count low - a stack is readable for the
 bottom segment and the total, and little else.
 [StackedChart](/docs/components/stacked-chart)
 
 ## Quarterly EBIT against plan
 
-_Industrial Components Ltd. · EBIT in kEUR — quarterly, AC vs PL · 2025_
+_Industrial Components Ltd. · EBIT in kEUR - quarterly, AC vs PL · 2025_
 
 **EBIT recovered through the year: after a soft Q2 (−40 vs plan) the second half
 beat plan, closing +260 kEUR ahead.**
@@ -412,13 +412,13 @@ beat plan, closing +260 kEUR ahead.**
   />
 </Frame>
 
-Grouped columns with the deviation tiers below — the plan bar is hollow-framed,
+Grouped columns with the deviation tiers below - the plan bar is hollow-framed,
 so scenario and variance never compete for the same visual channel.
 [GroupedVarianceChart](/docs/components/grouped-variance)
 
 ## P&L calculation scheme as a table
 
-_Software and Service Group · Profit & loss statement in mEUR — AC with ΔPY and ΔPL · 2025_
+_Software and Service Group · Profit & loss statement in mEUR - AC with ΔPY and ΔPL · 2025_
 
 **Net income reached 8.9 mEUR (+10% vs PY, +19% vs plan) on strong service
 revenue and disciplined operating expenses.**
@@ -521,7 +521,7 @@ of the calculation is visible without leaving the numbers.
 
 ## Operating profit by segment
 
-_Enterprise Software Group · Operating profit by segment in kEUR — AC vs PY · 2025_
+_Enterprise Software Group · Operating profit by segment in kEUR - AC vs PY · 2025_
 
 **All four segments grew operating profit against prior year; Cloud (+118 kEUR)
 was the strongest absolute contributor.**
@@ -546,7 +546,7 @@ Segments on one shared scale, so a division is never flattered by its own axis.
 
 ## Headline KPIs
 
-_Software and Service Group · Headline KPIs — AC vs PY · 2025_
+_Software and Service Group · Headline KPIs - AC vs PY · 2025_
 
 **The group closed 2025 ahead of prior year on every headline KPI: revenue +12%,
 margin up 1.4 points, and a lower cost ratio.**
@@ -581,15 +581,15 @@ margin up 1.4 points, and a lower cost ratio.**
   </div>
 </Frame>
 
-The unit belongs to `format` — `currency` for a leading symbol, `suffix` for a
-trailing one — and the cost ratio sets `higherIsBetter={false}`, so its fall
+The unit belongs to `format` - `currency` for a leading symbol, `suffix` for a
+trailing one - and the cost ratio sets `higherIsBetter={false}`, so its fall
 reads favorable.
 [KpiCard](/docs/components/kpi-card)
 
 ## Where to next
 
-- [Industry reports](/docs/industry-reports) — the same pattern applied to SaaS,
+- [Industry reports](/docs/industry-reports) - the same pattern applied to SaaS,
   retail, manufacturing, banking, healthcare and a corporate P&L.
-- [Gallery](/gallery) — every component at a glance.
-- [Report](/report) — a full report assembled from a JSON `ReportConfig`.
-- [IBCS & ISO 24896](/docs/ibcs) — the notation rules these exhibits follow.
+- [Gallery](/gallery) - every component at a glance.
+- [Report](/report) - a full report assembled from a JSON `ReportConfig`.
+- [IBCS & ISO 24896](/docs/ibcs) - the notation rules these exhibits follow.

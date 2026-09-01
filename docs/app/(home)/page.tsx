@@ -5,7 +5,7 @@ import { GetIt } from "@/components/get-it";
 
 export const metadata: Metadata = {
   description:
-    "Zero-dependency React components for IBCS® business communication — variance charts, waterfalls, statement tables, dashboards and reports following the IBCS notation, the basis of ISO 24896.",
+    "Zero-dependency React components for IBCS® business communication - variance charts, waterfalls, statement tables, dashboards and reports following the IBCS notation, the basis of ISO 24896.",
 };
 
 export default function HomePage() {
@@ -15,7 +15,7 @@ export default function HomePage() {
         IBCS business charts for React
       </h1>
       <p className="mt-4 max-w-2xl text-lg text-fd-muted-foreground">
-        Variance columns, waterfalls, statement tables, dashboards — printable, self-explanatory
+        Variance columns, waterfalls, statement tables, dashboards - printable, self-explanatory
         components following the IBCS® notation, the basis of ISO&nbsp;24896. Zero runtime
         dependencies.
       </p>

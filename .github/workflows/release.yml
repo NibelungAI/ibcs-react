@@ -1,6 +1,6 @@
 name: Release
 
-# Changesets release automation — publishes via npm TRUSTED PUBLISHING (OIDC).
+# Changesets release automation - publishes via npm TRUSTED PUBLISHING (OIDC).
 # There is deliberately NO NPM_TOKEN secret: npm accepts publishes coming from
 # exactly this workflow file in this repo (verified via GitHub's OIDC identity)
 # and attaches provenance attestations automatically.
@@ -10,7 +10,7 @@ name: Release
 #      GitHub Actions: org `NibelungAI`, repository `ibcs-react`, workflow
 #      filename `release.yml`, no environment; allowed actions: npm publish.
 #      Recommended afterwards: Publishing access → "Require two-factor
-#      authentication and disallow tokens" — OIDC publishes keep working.
+#      authentication and disallow tokens" - OIDC publishes keep working.
 #   2. Settings → Actions → General → Workflow permissions: allow GitHub Actions
 #      to **create and approve pull requests** (the action opens the "Version
 #      Packages" PR on your behalf; the org-level setting gates the repo one).
@@ -28,7 +28,7 @@ on:
     branches: [main]
   # Manual re-fire. A squash-merge of the bot-created "Version Packages" PR
   # through the merge API can land on main WITHOUT emitting a workflow push
-  # event (observed on PR #1: commit on main, zero runs) — this gives the
+  # event (observed on PR #1: commit on main, zero runs) - this gives the
   # release a button for that case instead of an empty commit.
   workflow_dispatch:
 
@@ -56,15 +56,15 @@ jobs:
         with:
           node-version: 22
           cache: npm
-          # Required for OIDC publishing — without it npm never attempts the
+          # Required for OIDC publishing - without it npm never attempts the
           # token exchange against the registry.
           registry-url: "https://registry.npmjs.org"
 
       # Trusted publishing needs npm >= 11.5.1; Node 22 bundles npm 10. Pinned
-      # to major 11 — NOT @latest: npm 12 changed `npm info --json` to emit an
+      # to major 11 - NOT @latest: npm 12 changed `npm info --json` to emit an
       # array, which breaks changesets' published-version check (it reads
       # `.versions` off an object, gets undefined, concludes the current
-      # version is unpublished and re-publishes it — the registry then rejects
+      # version is unpublished and re-publishes it - the registry then rejects
       # with "cannot publish over previously published versions").
       - name: Update npm (OIDC publish support)
         run: npm install -g npm@11
@@ -85,7 +85,7 @@ jobs:
           # sync with the new version so `npm ci` stays reproducible. MUST be a
           # single command: the action execs this input without a shell, so a
           # compound `a && b` here passes "&&" as an argument to changesets
-          # ("Too many arguments") — the shell lives inside the npm script.
+          # ("Too many arguments") - the shell lives inside the npm script.
           version: npm run version-packages
           publish: npx changeset publish
           commit: "chore: version packages"

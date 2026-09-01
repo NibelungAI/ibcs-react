@@ -9,7 +9,7 @@ const series: StackedSeries[] = [
   { key: "other", label: "Other" },
 ];
 
-// C01 — stacked columns over time.
+// C01 - stacked columns over time.
 const monthly: StackedDatum[] = [
   "Jan",
   "Feb",
@@ -33,7 +33,7 @@ const monthly: StackedDatum[] = [
   },
 }));
 
-// C02 — stacked bars over a structure.
+// C02 - stacked bars over a structure.
 const byUnit: StackedDatum[] = [
   { category: "North", values: { emea: 0, amer: 320, apac: 40, other: 30 } },
   { category: "South", values: { emea: 0, amer: 210, apac: 30, other: 20 } },
@@ -60,7 +60,7 @@ export const C01_Columns: Story = {
     orientation: "column",
     width: 760,
     height: 380,
-    title: "Revenue by region — monthly (C01)",
+    title: "Revenue by region - monthly (C01)",
   },
 };
 
@@ -76,5 +76,5 @@ export const C02_Bars: Story = {
 };
 
 export const Highlighted: Story = {
-  args: { ...C01_Columns.args, highlight: "apac", title: "Revenue — APAC highlighted" },
+  args: { ...C01_Columns.args, highlight: "apac", title: "Revenue - APAC highlighted" },
 };

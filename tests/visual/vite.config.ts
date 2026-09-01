@@ -3,7 +3,7 @@ import react from "@vitejs/plugin-react";
 import { fileURLToPath } from "node:url";
 
 /**
- * Dev server for the visual regression harness — deliberately separate from the
+ * Dev server for the visual regression harness - deliberately separate from the
  * demo config so screenshots never depend on demo content or docs layout.
  *
  * Started by `playwright.config.ts`'s `webServer` block; run it by hand with

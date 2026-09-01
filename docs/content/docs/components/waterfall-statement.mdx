@@ -1,11 +1,11 @@
 ---
 title: WaterfallStatementChart
-description: IBCS C12 — a P&L calculation scheme as two side-by-side waterfalls (PY + AC) with variance tiers.
+description: IBCS C12 - a P&L calculation scheme as two side-by-side vertical waterfalls (PY + AC) with variance tiers.
 ---
 
 import { WaterfallStatementChart } from "ibcs-react";
 
-Two row-aligned bridges — the comparison scenario and AC — followed by the
+Two row-aligned bridges - the comparison scenario and AC - followed by the
 absolute and relative deviation tiers. The richest of the statement-as-chart
 templates.
 
@@ -18,7 +18,7 @@ actual waterfalls sit side by side, row-aligned, with ΔPY and ΔPY% tiers.
 
 <Frame center>
   <WaterfallStatementChart
-    title="Profit & loss — AC 2025, PY and ΔPY"
+    title="Profit & loss - AC 2025, PY and ΔPY"
     comparison="PY"
     width={900}
     format={{ compact: true }}
@@ -40,7 +40,7 @@ actual waterfalls sit side by side, row-aligned, with ΔPY and ΔPY% tiers.
 import { WaterfallStatementChart } from "ibcs-react";
 
 <WaterfallStatementChart
-  title="Profit & loss — AC 2025, PY and ΔPY"
+  title="Profit & loss - AC 2025, PY and ΔPY"
   comparison="PY"
   lines={[
     { label: "Licences", ac: 896, base: 713, flow: "add" },

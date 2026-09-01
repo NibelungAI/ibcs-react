@@ -74,13 +74,13 @@ export interface IntegratedLayout {
   /** Comparison scenario the Δ panels are computed against. */
   comparison: "PY" | "PL";
   higherIsBetter: boolean;
-  /** Most negative value across AC/PY/PL and the FY stack (≤ 0) — the column floor. */
+  /** Most negative value across AC/PY/PL and the FY stack (≤ 0) - the column floor. */
   domainMin: number;
-  /** Most positive value across AC/PY/PL and the FY stack (≥ 0) — the column ceiling. */
+  /** Most positive value across AC/PY/PL and the FY stack (≥ 0) - the column ceiling. */
   domainMax: number;
-  /** Largest in-scale |Δ| — the half-scale of the absolute variance panel. */
+  /** Largest in-scale |Δ| - the half-scale of the absolute variance panel. */
   absMax: number;
-  /** Largest in-scale |Δ%| as a fraction — the half-scale of the percent panel. */
+  /** Largest in-scale |Δ%| as a fraction - the half-scale of the percent panel. */
   pctMax: number;
   /** A |Δ%| at or beyond this fraction is drawn off-scale (arrow tip). */
   pctClamp: number;
@@ -110,7 +110,7 @@ export interface ComputeIntegratedOptions {
  * renderer pins them to the panel edge with an arrow. Non-finite values are
  * MISSING: they never widen the domain, never accumulate into the FY stack and
  * never yield a variance, and an all-negative chart keeps `domainMax === 0`.
- * Framework agnostic — the React `IntegratedVarianceChart` is just a renderer
+ * Framework agnostic - the React `IntegratedVarianceChart` is just a renderer
  * over this.
  */
 export function computeIntegratedVariance(

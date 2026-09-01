@@ -1,19 +1,19 @@
 /**
- * Layout model for IBCS **chart-template C06** — a *grouped structure + variance
+ * Layout model for IBCS **chart-template C06** - a *grouped structure + variance
  * waterfall* exhibit ("In Q3 2025, the total decrease in net sales compared to
  * PY was 343 kUSD").
  *
  * One coherent value axis carries three things at once, reading top-to-bottom:
  *
- *   1. HEADER totals — a hollow-frame **PL** bar and a faded-grey **PY** bar,
+ *   1. HEADER totals - a hollow-frame **PL** bar and a faded-grey **PY** bar,
  *      each a full bar from the zero axis to its total.
- *   2. ENTITY rows — for every location/product a solid dark **AC** bar from the
+ *   2. ENTITY rows - for every location/product a solid dark **AC** bar from the
  *      zero axis, with the **PY** reference drawn behind it (grey solid, visible
  *      only where PY exceeds AC), AND, floating far to the right around the PY
  *      total, that entity's absolute variance Δ = AC − PY as one step of a
  *      VERTICALLY-running waterfall. Sorted (default) by that variance so the
  *      favorable steps sit on top and the run bridges PY's total down to AC's.
- *   3. AC total — a solid dark bar, then the bridge's RESULT bars: the headline
+ *   3. AC total - a solid dark bar, then the bridge's RESULT bars: the headline
  *      AC − PY (the −343) and, when PY data is present, the secondary AC − PL.
  *
  * A parallel relative-variance tier (Δ%, default vs PY) is laid out separately
@@ -21,7 +21,7 @@
  *
  * The key trick: the entity AC/PY structure bars and the variance waterfall
  * share ONE zero-based scale (`domainMax`), so the waterfall's PL reference line
- * lands exactly at the end of the PL header bar — there is no second scale to
+ * lands exactly at the end of the PL header bar - there is no second scale to
  * keep in sync. This module is the pure, framework-agnostic transform; the React
  * `BarVarianceWaterfallChart` only maps these value-space numbers to pixels.
  *
@@ -29,7 +29,7 @@
  * plan bridge: the reference becomes PL, the overlay a hollow frame, the
  * waterfall Δ = AC − PL, and the secondary result is dropped.
  *
- * SSR-safe: no DOM, clock, or randomness — a deterministic transform. Robust to
+ * SSR-safe: no DOM, clock, or randomness - a deterministic transform. Robust to
  * empty / single / negative / zero / huge inputs (never divides by zero, never
  * emits NaN).
  */
@@ -46,7 +46,7 @@ export interface BarVarianceDatum {
   label: string;
   /** Actual value (AC). */
   ac: number;
-  /** Plan / budget value (PL) — the top hollow-frame reference. */
+  /** Plan / budget value (PL) - the top hollow-frame reference. */
   base: number;
   /**
    * Prior-year value (PY). When present (on any row) the waterfall and the
@@ -67,7 +67,7 @@ export interface BarVarianceRow {
   ac: number;
   /** Plan value PL (sanitized). */
   base: number;
-  /** The waterfall/overlay reference — PY when in use, else PL. */
+  /** The waterfall/overlay reference - PY when in use, else PL. */
   ref: number;
   higherIsBetter: boolean;
   /** Absolute variance the waterfall steps by: AC − ref. */
@@ -88,13 +88,13 @@ export interface BarVarianceRow {
 
 /** Rolled-up totals and the bridge's result variances. */
 export interface BarVarianceTotals {
-  /** Σ PL — the plan total (top hollow-frame bar). */
+  /** Σ PL - the plan total (top hollow-frame bar). */
   pl: number;
-  /** Σ PY — the prior-year total; also where the waterfall starts. */
+  /** Σ PY - the prior-year total; also where the waterfall starts. */
   py: number;
   /** PY total shown in the header bar: `pyTotal` override, else `py`. */
   pyDisplay: number;
-  /** Σ AC — the actual total; where the waterfall lands. */
+  /** Σ AC - the actual total; where the waterfall lands. */
   ac: number;
   /** Headline result AC − PY (the "−343"). */
   refAbs: number;
@@ -132,7 +132,7 @@ export interface BarVarianceWaterfallOptions {
   /**
    * Row order:
    *  - "variance" (default): by the waterfall variance (AC − ref) descending, so
-   *    favorable steps stack on top — the IBCS sorted-bridge look,
+   *    favorable steps stack on top - the IBCS sorted-bridge look,
    *  - "value": by AC descending,
    *  - "none": preserve input order.
    */
@@ -149,7 +149,7 @@ export interface BarVarianceWaterfallOptions {
  * Build the C06 layout from raw entities.
  *
  * The waterfall starts at the SUM of the rows' references (PY) so that adding
- * every step's AC − PY lands exactly on the AC total — the bridge is always
+ * every step's AC − PY lands exactly on the AC total - the bridge is always
  * arithmetically closed, regardless of the `pyTotal` display override (which
  * only changes the header bar's length, never the geometry). The Δ% scale is
  * derived from the rows only (outliers excluded) so the total's percentage never
@@ -263,7 +263,7 @@ export function computeBarVarianceWaterfall(
     reference,
     pctBase: effectivePctBase,
     // Both ends are zero-seeded above, so this only repairs an EMPTY domain
-    // (all-zero data) — an all-negative exhibit keeps its max at 0.
+    // (all-zero data) - an all-negative exhibit keeps its max at 0.
     ...normalizeDomain(domainMin, domainMax),
     pctMax: pctMax || clamp,
   };

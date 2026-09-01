@@ -1,5 +1,5 @@
 /**
- * ibcs-report kit — the print chrome, palette and page shell for an A4
+ * ibcs-report kit - the print chrome, palette and page shell for an A4
  * management report whose charts and tables are ibcs-react components.
  *
  * Everything here is meant to be edited. The defaults encode a design that has
@@ -68,7 +68,7 @@ export const TOKENS = mergeTokens(
 
 /**
  * Compact formatting. Feed components REAL currency units and let the library
- * print "412.3M". `currency` puts a symbol in front — set it per client
+ * print "412.3M". `currency` puts a symbol in front - set it per client
  * (`fmt("£")`), because a report whose numbers carry no unit is unreadable.
  * Compact mode trims trailing zeros, so 59,000,000 prints "59M" beside
  * "65.8M"; that is the library's behaviour, not a bug to chase.
@@ -84,7 +84,7 @@ export const FMT = fmt();
 /* -------------------------------------------------------------- identity */
 /**
  * A generated mark keeps the report looking like the client's document rather
- * than a template. Chamfer one corner and set the initial inside — legible at
+ * than a template. Chamfer one corner and set the initial inside - legible at
  * 20px in the running header and at 40px on the cover.
  */
 export function mark({
@@ -180,7 +180,7 @@ export function notationKey({ scenarios = ["AC", "PY", "PL", "FC"], marks = true
   if (marks)
     rows.push(`<div>${sw('<rect x="0" y="5" width="14" height="7" fill="#1D2226"/><line x1="0" y1="21" x2="28" y2="21" stroke="#1D2226" stroke-width="1.4"/><circle cx="31" cy="21" r="4" fill="#1D2226"/>')}
       <span><b>Bars · pins</b> absolute values, relative values</span></div>`);
-  // Only document notation the report actually uses — a legend entry for a
+  // Only document notation the report actually uses - a legend entry for a
   // scenario that appears nowhere makes the reader hunt for something absent.
   return `<div class="key">
   <h4>Notation</h4>
@@ -260,7 +260,7 @@ p.cap{font-size:7.6pt;color:#8A9199;line-height:1.4;margin:3px 0 9px}
 .lockup.light b{color:#fff}
 .lockup.light span{color:#9AA6B2}
 
-/* cover — one flat band, no cut corners */
+/* cover - one flat band, no cut corners */
 .cover .body{padding:0;top:0;bottom:0}
 .cover .hdr{display:none}
 .cover-band{position:absolute;top:0;left:0;right:0;height:142mm;background:${ink};
@@ -307,7 +307,7 @@ table.plain td.r{text-align:right;font-weight:600;color:${ink}}
 .chart{margin:2px 0 5px}
 .table-wrap{margin:5px 0 8px}
 
-/* ratio strip — plain typography, because ratios have mixed polarity and do
+/* ratio strip - plain typography, because ratios have mixed polarity and do
    not belong in a variance table */
 .ratios{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;margin:6px 0 4px;
   border-top:1.5px solid ${ink};border-bottom:1px solid ${rule}}
@@ -322,7 +322,7 @@ table.plain td.r{text-align:right;font-weight:600;color:${ink}}
 .signoff div:last-child{font-size:8.2pt;color:#6F7A85;line-height:1.55}
 .signoff b{color:${ink};font-weight:700}
 
-/* fitting aids — zoom changes layout height, transform does not, so zoom is
+/* fitting aids - zoom changes layout height, transform does not, so zoom is
    the one that actually buys a page back. Classes exist for every 2% from
    .z98 down to .z70; a class outside that range silently does nothing. */
 ${Array.from({ length: 15 }, (_, i) => 98 - i * 2)
@@ -344,7 +344,7 @@ export function documentHtml({ title, pages, css: sheet }) {
  */
 /**
  * Scales the keys AC / PY / PL / FC / value / base wherever they appear, at any
- * depth. That covers every datum shape in the library — but it means a numeric
+ * depth. That covers every datum shape in the library - but it means a numeric
  * prop you happen to call `value` or `base` in the same object also gets
  * multiplied. Scale your data before you mix it with component props.
  */

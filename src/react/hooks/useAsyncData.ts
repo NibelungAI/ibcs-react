@@ -7,7 +7,7 @@ export interface UseAsyncDataOptions<T> {
   /**
    * Extra reactive inputs. The fetcher re-runs whenever any of these change
    * (alongside the automatic mount run). Mirrors a `useEffect` dependency list
-   * — and, like one, its **length must stay constant across renders**: the list
+   * - and, like one, its **length must stay constant across renders**: the list
    * is spliced into the internal effect's dependency array, so growing or
    * shrinking it between renders makes React throw. Pass a fixed-shape array
    * (use `null` for "not applicable" slots) rather than a conditional one.
@@ -25,7 +25,7 @@ export interface UseAsyncDataOptions<T> {
   refreshMs?: number;
   /**
    * Keep showing the previous `data` during a re-fetch (so the UI doesn't blank
-   * out) — the re-fetch surfaces as `refreshing` rather than `loading`.
+   * out) - the re-fetch surfaces as `refreshing` rather than `loading`.
    * Default true.
    */
   keepPreviousData?: boolean;
@@ -57,13 +57,13 @@ export interface UseAsyncDataResult<T> {
  * `initialData` / loading state and the browser fetches in an effect).
  *
  * In-flight requests are aborted on unmount, on a manual `refetch`, when
- * `enabled` flips to `false`, and before each new run — the fetcher receives an
+ * `enabled` flips to `false`, and before each new run - the fetcher receives an
  * {@link AbortSignal} to forward to `fetch`. Aborted requests are ignored
  * (never surfaced as errors) and never leave the hook stuck in `loading`. Set
  * `refreshMs` to poll.
  *
  * `deps` must keep a **constant length** across renders (see
- * {@link UseAsyncDataOptions.deps}) — it feeds React's dependency array.
+ * {@link UseAsyncDataOptions.deps}) - it feeds React's dependency array.
  *
  * ```tsx
  * const { data, loading, refreshing, error, refetch } = useAsyncData(
@@ -82,7 +82,7 @@ export function useAsyncData<T>(
 
   const [data, setData] = useState<T | undefined>(initialData);
   const [error, setError] = useState<Error | null>(null);
-  // Start in the loading state when we'll fetch and have nothing to show — this
+  // Start in the loading state when we'll fetch and have nothing to show - this
   // is also the value the server renders, avoiding a mount flash in the browser.
   const [loading, setLoading] = useState<boolean>(enabled && initialData === undefined);
   const [refreshing, setRefreshing] = useState<boolean>(false);
@@ -117,7 +117,7 @@ export function useAsyncData<T>(
         setRefreshing(false);
       },
       (err: unknown) => {
-        // Ignore aborts — they're our own cancellation, not a real failure.
+        // Ignore aborts - they're our own cancellation, not a real failure.
         if (controller.signal.aborted || (err as { name?: string })?.name === "AbortError") return;
         setError(err instanceof Error ? err : new Error(String(err)));
         setLoading(false);
@@ -147,7 +147,7 @@ export function useAsyncData<T>(
     if (!enabled) {
       // Going idle mid-flight: aborting alone would strand the flags, because
       // the settle handlers bail out on an aborted signal and nothing else
-      // clears them — the hook would report `loading` forever.
+      // clears them - the hook would report `loading` forever.
       controllerRef.current?.abort();
       controllerRef.current = null;
       setLoading(false);

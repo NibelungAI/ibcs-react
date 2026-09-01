@@ -1,7 +1,7 @@
 /**
  * Serializable, JSON-friendly chart configuration.
  *
- * A `ChartConfig` fully describes a chart — its type, visual options, and data —
+ * A `ChartConfig` fully describes a chart - its type, visual options, and data -
  * with nothing but plain JSON values (no functions, no React). This is what lets
  * a report be authored, stored, and round-tripped as JSON, and is the bridge to
  * an interactive BI-grade "configure the visual" experience: edit the JSON, get a chart.
@@ -22,7 +22,7 @@ import type { ComboDatum, ComboSecondaryDatum } from "./combo";
 import type { TreeNode } from "./tree";
 
 /**
- * One category's value per scenario — the row shape charts consume. The
+ * One category's value per scenario - the row shape charts consume. The
  * canonical {@link ScenarioDatum} with `AC` required: a config-authored
  * category chart always has an actual to draw.
  */
@@ -62,7 +62,7 @@ interface ChartConfigBase {
    * `"cost"` makes `checkIbcs` insist on `higherIsBetter:false` even when the
    * title doesn't sound like a cost; `"revenue"` silences the heuristic for
    * titles that merely sound like one ("Revenue after tax"). Rendering is
-   * unaffected — favorability still follows `higherIsBetter`.
+   * unaffected - favorability still follows `higherIsBetter`.
    */
   measureKind?: "cost" | "revenue";
 }
@@ -101,7 +101,7 @@ export interface TrendChartConfig extends ChartConfigBase {
   /**
    * Scenarios drawn as reference lines riding along the columns. Default
    * `["PY","PL"]`; pass `["PY"]` for prior year only, `[]` for none. Only
-   * "PY" and "PL" are honored today (FC support may come later) — any other
+   * "PY" and "PL" are honored today (FC support may come later) - any other
    * scenario is ignored.
    */
   referenceLines?: ScenarioKey[];
@@ -180,7 +180,7 @@ export interface LineChartConfig extends ChartConfigBase {
   higherIsBetter?: boolean;
   /**
    * The lower variance panel: "abs" shows Δ values, "pct" shows Δ%, "none"
-   * omits the panel entirely. Default "none" — a dense line chart is read as
+   * omits the panel entirely. Default "none" - a dense line chart is read as
    * a shape first, so the panel is opt-in here.
    */
   variance?: "abs" | "pct" | "none";
@@ -343,7 +343,7 @@ function validateCommonOptions(c: Record<string, unknown>): string | null {
 
 /**
  * Validate an arbitrary parsed value (e.g. from a JSON editor) as a ChartConfig.
- * Returns a typed config or a human-readable error — never throws.
+ * Returns a typed config or a human-readable error - never throws.
  */
 export function validateChartConfig(value: unknown): ConfigValidation {
   if (typeof value !== "object" || value === null) {
@@ -359,8 +359,8 @@ export function validateChartConfig(value: unknown): ConfigValidation {
   }
 
   // Waterfall is validated first: it carries no ScenarioKey `comparison` and no
-  // variance mode at all — its reference is `comparisonData`, a parallel bridge
-  // of contributions — so the common check has nothing to say about it, and its
+  // variance mode at all - its reference is `comparisonData`, a parallel bridge
+  // of contributions - so the common check has nothing to say about it, and its
   // own {category, value, flow} row shape needs checks no other config wants.
   if (c.type === "waterfall") {
     if (c.mark != null && c.mark !== "bar" && c.mark !== "pin") {
@@ -391,8 +391,8 @@ export function validateChartConfig(value: unknown): ConfigValidation {
     return { ok: true, config: value as WaterfallChartConfig };
   }
 
-  // Stacked carries a `series` list and a {category, values} data shape — no
-  // ScenarioKey comparison — so it's validated before the common check too.
+  // Stacked carries a `series` list and a {category, values} data shape - no
+  // ScenarioKey comparison - so it's validated before the common check too.
   if (c.type === "stacked") {
     if (c.orientation != null && c.orientation !== "column" && c.orientation !== "bar") {
       return { ok: false, error: 'orientation must be "column" or "bar".' };
@@ -539,7 +539,7 @@ export function validateChartConfig(value: unknown): ConfigValidation {
     }
     // Rows are named components carrying optional scenarios; at least one
     // scenario value must be present. The name key is `category`, with the
-    // pre-1.1 `label` kept as a permanent alias — `category` wins when both
+    // pre-1.1 `label` kept as a permanent alias - `category` wins when both
     // are present, the same resolution the chart itself applies.
     for (let i = 0; i < c.data.length; i++) {
       const d = c.data[i] as Record<string, unknown>;

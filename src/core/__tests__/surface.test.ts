@@ -7,7 +7,7 @@ import * as root from "../../index";
  * INTENTIONAL-SURFACE GUARD.
  *
  * Every name a barrel exports is a semver promise. This test pins the runtime
- * export names of both entries — `ibcs-react/core` and the `ibcs-react` root —
+ * export names of both entries - `ibcs-react/core` and the `ibcs-react` root -
  * so adding or removing one is a deliberate, reviewed act rather than a side
  * effect of an `export *`. When it fails, read the diff: if the change is
  * intended, update the snapshot in the same commit (and the docs / changeset
@@ -16,7 +16,7 @@ import * as root from "../../index";
  *
  * LIMITATION: only runtime values (functions, constants, components) can be
  * enumerated with `Object.keys`. Type-only exports are erased at runtime and
- * therefore NOT covered here — `npx tsc --noEmit` over `src`, `demo` and the
+ * therefore NOT covered here - `npx tsc --noEmit` over `src`, `demo` and the
  * README examples is what guards those.
  */
 const names = (module: object): string[] => Object.keys(module).sort();

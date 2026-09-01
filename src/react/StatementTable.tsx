@@ -20,7 +20,7 @@ export interface StatementTableProps {
   /** The statement model (P&L or balance sheet). */
   lines: StatementLine[];
   /**
-   * Statement kind. "flow" (default) renders the integrated waterfall — each
+   * Statement kind. "flow" (default) renders the integrated waterfall - each
    * line moves a running total (a P&L). "stock" renders the balance-sheet view:
    * each line is an absolute level (ending balance), no running total.
    */
@@ -45,7 +45,7 @@ export interface StatementTableProps {
    * Render the integrated waterfall lane (the scenario "Actual" svg column with
    * stepping bars/connectors/zero-axis and AC labels-on-bars). Default true.
    * When false, the lane is omitted entirely and the scenario value is shown as
-   * a plain numeric column instead — yielding IBCS template T04: a financial
+   * a plain numeric column instead - yielding IBCS template T04: a financial
    * statement grid (label | base value(s) | AC | variance bars/pins, no lane).
    */
   showWaterfall?: boolean;
@@ -54,13 +54,13 @@ export interface StatementTableProps {
   format?: FormatOptions;
   tokens?: IbcsTokensOverride;
   /**
-   * Group ids collapsed on mount — the uncontrolled seed (overrides each
+   * Group ids collapsed on mount - the uncontrolled seed (overrides each
    * line's `defaultCollapsed` flag). Ignored once `collapsed` is provided.
    */
   defaultCollapsed?: readonly string[];
   /**
    * Collapsed group ids as a CONTROLLED value: when provided the table renders
-   * exactly this set and never mutates it — every toggle reports the next set
+   * exactly this set and never mutates it - every toggle reports the next set
    * through `onCollapsedChange` for the parent to apply (URL sync, persistence,
    * two tables kept in step). Omit it for the uncontrolled behaviour.
    */
@@ -89,7 +89,7 @@ export interface StatementTableProps {
    */
   maxHeight?: number;
   /**
-   * Only render the rows in (and near) the viewport — windowing for big
+   * Only render the rows in (and near) the viewport - windowing for big
    * statements. Defaults to true whenever `maxHeight` is set. Has no effect
    * without `maxHeight`. Row fade-in is suppressed while virtualizing.
    */
@@ -98,7 +98,7 @@ export interface StatementTableProps {
   overscan?: number;
   /**
    * A short description of the statement, rendered as a visually-hidden
-   * `<caption>` — a name for screen-reader users, no visual change.
+   * `<caption>` - a name for screen-reader users, no visual change.
    */
   caption?: string;
   className?: string;
@@ -158,7 +158,7 @@ const ROW_ANIM_CSS = `
 
 /**
  * The row hover tint, as static CSS. Tinting from React state re-renders every
- * row (and its waterfall/variance svgs) on each move between rows — a heavy
+ * row (and its waterfall/variance svgs) on each move between rows - a heavy
  * price for a decorative background. `tr:hover` is free, and the spacer rows a
  * virtualized body pads with (`.ibcs-row-pad`) are excluded so hovering the
  * empty space above/below the window doesn't light up.
@@ -240,7 +240,7 @@ export function StatementTable({
     });
   };
 
-  // Hover state exists purely to feed the tooltip — the row tint is CSS. With
+  // Hover state exists purely to feed the tooltip - the row tint is CSS. With
   // the tooltip off no hover handler is attached at all, so a mouse sweep
   // across a 5000-row statement costs zero renders.
   const moveHover = (id: string, x: number, y: number) => {
@@ -496,7 +496,7 @@ export function StatementTable({
                     tooltip
                       ? (e) => {
                           // A tap's implicit leave must not dismiss the tap
-                          // tooltip — Escape / a tap elsewhere does that.
+                          // tooltip - Escape / a tap elsewhere does that.
                           if (e.pointerType !== "touch") leaveHover(line.id);
                         }
                       : undefined
@@ -521,7 +521,7 @@ export function StatementTable({
                 >
                   {/* Label: marker + chevron + indentation. A min-width keeps the
                     description column from being crushed (and wrapping mid-word)
-                    when the table is squeezed — e.g. two tables side by side. */}
+                    when the table is squeezed - e.g. two tables side by side. */}
                   <th
                     scope="row"
                     style={{
@@ -533,7 +533,7 @@ export function StatementTable({
                     }}
                   >
                     {/* Align the chevron + marker to the label's FIRST line, not
-                      the vertical centre — otherwise on a two-line label the
+                      the vertical centre - otherwise on a two-line label the
                       "−"/"+" marker drops between the lines and reads as a stray
                       underscore. */}
                     <span
@@ -585,7 +585,7 @@ export function StatementTable({
                           fontWeight: emphasis ? 600 : 400,
                           color: depth > 0 ? tokens.color.textMuted : tokens.color.text,
                           // Wrap up to two lines, then ellipsize. Full text on hover
-                          // via the title attribute above — so even a clamped label
+                          // via the title attribute above - so even a clamped label
                           // stays fully readable.
                           display: "-webkit-box",
                           WebkitLineClamp: 2,
@@ -1027,7 +1027,7 @@ const RowTooltip = React.forwardRef<
       <div style={{ fontWeight: 600, marginBottom: 6 }}>{line.label}</div>
       <TipRow
         k={SCENARIO_LABEL[scenario]}
-        val={ac == null ? "—" : formatValue(ac, exact)}
+        val={ac == null ? "-" : formatValue(ac, exact)}
         surface={tokens.color.surface}
         strong
       />
@@ -1054,12 +1054,12 @@ const RowTooltip = React.forwardRef<
           >
             <TipRow
               k={SCENARIO_LABEL[base]}
-              val={baseVal == null ? "—" : formatValue(baseVal, exact)}
+              val={baseVal == null ? "-" : formatValue(baseVal, exact)}
               surface={tokens.color.surface}
             />
             <TipRow
               k={`Δ ${SCENARIO_LABEL[base]}`}
-              val={v ? `${formatSigned(v.abs, exact)}  (${formatPercent(v.pct)})` : "—"}
+              val={v ? `${formatSigned(v.abs, exact)}  (${formatPercent(v.pct)})` : "-"}
               surface={tokens.color.surface}
               color={color}
             />
@@ -1081,7 +1081,7 @@ function TipRow({
   val: string;
   strong?: boolean;
   color?: string;
-  /** Default ink of the panel — the theme's `color.surface`. */
+  /** Default ink of the panel - the theme's `color.surface`. */
   surface: string;
 }) {
   return (

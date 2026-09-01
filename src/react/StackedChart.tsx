@@ -30,7 +30,7 @@ export interface StackedChartProps {
   width?: number;
   height?: number;
   /**
-   * Categorical band layout — the gap between stacks and the lead-in/out gutter
+   * Categorical band layout - the gap between stacks and the lead-in/out gutter
    * (vertical for the "bar" orientation). Omit for the centred default; pass
    * `{ outer: 0 }` to trim the side whitespace so the first/last stacks sit
    * flush to the plot edges (fill edge-to-edge).
@@ -49,14 +49,14 @@ export interface StackedChartProps {
   /** Emphasize one series (by key): it keeps its color, the rest are muted. */
   highlight?: string;
   /**
-   * Fired when a category column / bar is clicked — for click-to-filter.
+   * Fired when a category column / bar is clicked - for click-to-filter.
    * Pairs naturally with `useChartSelection`. Omit for a non-interactive chart.
    * `value` is the category total; the whole column / bar is clickable.
    */
   onSelect?: (selection: ChartSelection<StackedDatum>) => void;
   /**
    * Fired as the pointer moves over / leaves a category column / bar (`null` on
-   * leave) — for a custom tooltip. Pairs with `useChartHover`. Default undefined.
+   * leave) - for a custom tooltip. Pairs with `useChartHover`. Default undefined.
    */
   onHover?: (hover: ChartHover<StackedDatum> | null) => void;
   /**
@@ -117,8 +117,8 @@ function rampColors(tokens: IbcsTokens, n: number): string[] {
 
 /**
  * Approximate rendered width of `s` in px at `fontSize`. Wide glyphs (CJK,
- * fullwidth, emoji) count ~1.05·em, normal glyphs ~0.62·em. SSR-safe — no DOM
- * measuring — and iterates by code point so surrogate pairs count once.
+ * fullwidth, emoji) count ~1.05·em, normal glyphs ~0.62·em. SSR-safe - no DOM
+ * measuring - and iterates by code point so surrogate pairs count once.
  *
  * Deliberately local: the shared `internal/text` heuristic is width-agnostic,
  * and stacked labels sit in tight in-plot gutters where a CJK label measured at
@@ -166,14 +166,14 @@ function fitText(s: string, maxPx: number, fontSize: number): string {
 /* --------------------------------------------------------------- component */
 
 /**
- * IBCS stacked chart — templates C01 (stacked columns over time) and C02
+ * IBCS stacked chart - templates C01 (stacked columns over time) and C02
  * (stacked bars over a structure). Series stack from a zero baseline; the
  * period/category total is printed at the end of each stack; series are
- * labelled in place (integrated labels — no external legend box). A thin
+ * labelled in place (integrated labels - no external legend box). A thin
  * inline-SVG renderer over {@link computeStacked}; no charting dependencies.
  *
  * A forwarded `ref` lands on the chart `<svg>` of whichever orientation is
- * rendered — the useful handle for export / serialization — even though the
+ * rendered - the useful handle for export / serialization - even though the
  * component also renders a screen-reader table beside it.
  */
 export const StackedChart = forwardRef<SVGSVGElement, StackedChartProps>(function StackedChart(
@@ -254,7 +254,7 @@ export const StackedChart = forwardRef<SVGSVGElement, StackedChartProps>(functio
     );
   };
 
-  // Screen-reader data table: per-category, each series' value plus the total —
+  // Screen-reader data table: per-category, each series' value plus the total -
   // shared by both orientations, so SR users read values, not the svg.
   const a11yColumns = [...series.map((s) => s.label), "Total"];
   const a11yRows: ChartDataRow[] = columns.map((col) => {
@@ -270,8 +270,8 @@ export const StackedChart = forwardRef<SVGSVGElement, StackedChartProps>(functio
     <ChartDataTable
       caption={
         title
-          ? `${title} — data table`
-          : `Stacked ${orientation === "column" ? "columns" : "bars"} — data table`
+          ? `${title} - data table`
+          : `Stacked ${orientation === "column" ? "columns" : "bars"} - data table`
       }
       columns={a11yColumns}
       rows={a11yRows}
@@ -367,7 +367,7 @@ export const StackedChart = forwardRef<SVGSVGElement, StackedChartProps>(functio
             const info = { category: col.category, value: col.total, datum };
             // The stack's own extent in FINAL (un-animated) geometry: from the
             // top of the upward segments down to the bottom of the downward
-            // ones — not the whole plot band the hit rect covers.
+            // ones - not the whole plot band the hit rect covers.
             const stackTop = yOf(col.positiveTotal);
             const stackBottom = yOf(col.negativeTotal);
             const markRects: MarkRect[] = [
@@ -570,7 +570,7 @@ export const StackedChart = forwardRef<SVGSVGElement, StackedChartProps>(functio
           const info = { category: col.category, value: col.total, datum };
           // The stack's own extent in FINAL (un-animated) geometry: from the
           // left end of the downward segments to the right end of the upward
-          // ones — not the whole row the hit rect covers.
+          // ones - not the whole row the hit rect covers.
           const stackLeft = xOf(col.negativeTotal);
           const stackRight = xOf(col.positiveTotal);
           const markRects: MarkRect[] = [

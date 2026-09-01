@@ -1,24 +1,24 @@
 ---
 title: Hooks
-description: Every React hook the library exports — animation primitives, statement and filter state, a live feed, async data, selection, hover and element measurement.
+description: Every React hook the library exports - animation primitives, statement and filter state, a live feed, async data, selection, hover and element measurement.
 ---
 
 import { LiveDataDemo } from "@/components/demos/hooks/live-data";
 
 The library exports the same hooks its own components are built on:
 zero-dependency, SSR-safe and tree-shakeable. Import any of them from
-`ibcs-react`. They fall into four families — **animation** primitives,
+`ibcs-react`. They fall into four families - **animation** primitives,
 **data** helpers, **interaction** models and one **layout** measurement hook.
 
 Nothing here is required to render a chart. Each hook exists so you can build a
-custom view — your own statement, your own mark, your own toolbar — and have it
+custom view - your own statement, your own mark, your own toolbar - and have it
 behave exactly like the built-in components.
 
 ## Animation
 
 The library does not sell animation as a feature. It ships small
-`requestAnimationFrame` + easing primitives so _you_ can add motion — an
-entrance growth, a value tween — without a motion library. Every one of them
+`requestAnimationFrame` + easing primitives so _you_ can add motion - an
+entrance growth, a value tween - without a motion library. Every one of them
 collapses to its final value when the user prefers reduced motion, and every
 one renders the _finished_ value on the server, so SSR markup carries real
 geometry instead of a collapsed first frame.
@@ -34,7 +34,7 @@ usePrefersReducedMotion(): boolean
 ```
 
 True when the OS asks for reduced motion, kept live through `matchMedia` and
-read via `useSyncExternalStore` — so the very first client render already
+read via `useSyncExternalStore` - so the very first client render already
 reflects the real preference instead of flashing one frame of animation at
 exactly the users who asked not to see one. On the server it returns `false`
 (the other hooks render their finished value there anyway).
@@ -68,7 +68,7 @@ final frame. Reduced motion, `duration <= 0` or a missing
 identity, and numbers are erased from that signature. An inline `data={[…]}`
 literal therefore does not restart the entrance on every parent render, and a
 live feed re-emitting the same rows with new values does not re-grow the chart
-from its baseline — value updates glide via [`useDataTween`](#usedatatween).
+from its baseline - value updates glide via [`useDataTween`](#usedatatween).
 What replays the entrance is a genuinely new dataset: rows added or removed,
 categories renamed.
 
@@ -76,7 +76,7 @@ categories renamed.
 import { useMountGrow } from "ibcs-react";
 
 function GrowingBar({ data, fullHeight, base }) {
-  // Replays when the data changes shape — not on value ticks or re-renders.
+  // Replays when the data changes shape - not on value ticks or re-renders.
   const p = useMountGrow(600, 0, data);
   return <rect height={fullHeight * p} y={base - fullHeight * p} />;
 }
@@ -99,7 +99,7 @@ interface AnimateOptions {
 ```
 
 Tweens a number toward `target` whenever it changes, gliding from the value
-currently on screen — retargeting mid-flight is supported. The first render
+currently on screen - retargeting mid-flight is supported. The first render
 (server included) shows `target`, so static output is always correct; pass
 `from` to opt into a real mount animation. Reduced motion jumps straight to the
 target.
@@ -114,7 +114,7 @@ function Gauge({ value }) {
 ```
 
 **When to use:** a value that changes over time and should glide rather than
-snap — a live gauge, an axis maximum that retargets.
+snap - a live gauge, an axis maximum that retargets.
 
 ### useCountUp
 
@@ -125,7 +125,7 @@ useCountUp(target: number, opts?: AnimateOptions): number
 A thin alias of `useAnimatedValue` with a clearer name at the call site: an
 animated number you render through your own formatter. This is what powers
 `KpiCard`'s headline, which passes `{ duration: 700, from: 0 }`. Without
-`from`, the first render shows the target and only later changes tween — pass
+`from`, the first render shows the target and only later changes tween - pass
 `from: 0` when you want the figure to count up on mount.
 
 ```tsx
@@ -147,13 +147,13 @@ useDataTween<T>(target: T, opts?: Omit<AnimateOptions, "from">): T
 
 `useAnimatedValue` for a whole data structure: every numeric leaf glides from
 where it currently sits to its new value, everything else switches instantly.
-This is the hook behind live charts — every chart runs its `data` through it
+This is the hook behind live charts - every chart runs its `data` through it
 and recomputes layout from the interpolated rows each frame, so a feed's tick
 moves bars from their previous heights, stretches scales smoothly and slides
 variance pins, instead of replaying the entrance from zero.
 
 A **shape** change does not morph: rows added or removed, categories renamed,
-or a value appearing where none was is a new dataset — it shows immediately,
+or a value appearing where none was is a new dataset - it shows immediately,
 and the entrance replays for it. Retargeting mid-flight continues from the
 frame currently on screen. Reduced motion (or `duration <= 0`) jumps straight
 to the target, and the first render (server included) is always the target
@@ -207,7 +207,7 @@ interface UseStatementResult {
 ```
 
 Owns a statement's collapse/expand state and derives its waterfall (or, in
-`"stock"` mode, its levels) layout — literally the engine
+`"stock"` mode, its levels) layout - literally the engine
 [StatementTable](/docs/components/statement-table) runs on, so a custom view
 behaves exactly like the built-in one. Flatten plus layout are memoized against
 the model, the collapsed set, the scenario and the mode.
@@ -215,7 +215,7 @@ the model, the collapsed set, the scenario and the mode.
 Uncontrolled by default (seed with `defaultCollapsed`, or with each line's own
 `defaultCollapsed` flag); pass `collapsed` + `onCollapsedChange` to own the
 state yourself, exactly like the tables. `groupIds` is empty for a flat
-statement — the cue to hide an expand/collapse toolbar entirely.
+statement - the cue to hide an expand/collapse toolbar entirely.
 
 ```tsx
 import { useStatement } from "ibcs-react";
@@ -249,7 +249,7 @@ useStatementBridge(
 Derives a `WaterfallChart`'s `data` **and** `comparisonData` from one
 statement, so the bridge takes part in the same `comparison` toggle as every
 other chart. The siblings accept a scenario _key_ (`comparison="PY"`) while a
-bridge needs the other scenario's contributions spelled out as a dataset —
+bridge needs the other scenario's contributions spelled out as a dataset -
 this hook absorbs that asymmetry:
 
 ```tsx
@@ -260,7 +260,7 @@ function Dashboard({ pnl, regions, comparison }) {
     <>
       {/* every other chart */}
       <VarianceColumnChart data={regions} comparison={comparison} />
-      {/* the bridge — same toggle, no special-case branch */}
+      {/* the bridge - same toggle, no special-case branch */}
       <WaterfallChart {...useStatementBridge(pnl, comparison)} />
     </>
   );
@@ -287,8 +287,8 @@ interface UseFiltersResult<F> {
 }
 ```
 
-Generic, typed report-filter state — scenario, comparison, period or dimension
-selections — in one object with ergonomic setters. There is no schema: `F` is
+Generic, typed report-filter state - scenario, comparison, period or dimension
+selections - in one object with ergonomic setters. There is no schema: `F` is
 whatever you pass as `initial`, and `reset()` returns to the value captured on
 the first render.
 
@@ -306,7 +306,7 @@ patch({ period: "Q4" }); // merge a partial
 reset(); // back to the initial object
 ```
 
-**When to use:** a dashboard or report toolbar with a handful of controls — one
+**When to use:** a dashboard or report toolbar with a handful of controls - one
 typed state object instead of several `useState` calls, with a free `reset`.
 
 ### useLiveData
@@ -329,7 +329,7 @@ interface UseLiveDataResult<T> {
 }
 ```
 
-Emits a fresh value on an interval — a zero-dependency live feed. SSR-safe: the
+Emits a fresh value on an interval - a zero-dependency live feed. SSR-safe: the
 producer seeds the first value synchronously, and the interval only ever runs
 inside an effect. `enabled` is a live switch rather than a seed, but between
 its transitions your own `start()` / `stop()` wins, so a manual pause is never
@@ -373,7 +373,7 @@ useVariances(
 ```
 
 Memoized wrappers over the core `computeVariance`. `useVariance` gives the delta
-for one pair — `{ abs, pct, favorable }`, or `null` when either side is missing.
+for one pair - `{ abs, pct, favorable }`, or `null` when either side is missing.
 `useVariances` applies the same comparison element-wise across two parallel
 arrays; the result has the length of `data`, with `null` wherever a pair is
 incomplete.
@@ -381,7 +381,7 @@ incomplete.
 ```tsx
 import { useVariance, useVariances } from "ibcs-react";
 
-// One pair on a cost line — favorable colouring flips:
+// One pair on a cost line - favorable colouring flips:
 const v = useVariance(actual, plan, /* higherIsBetter */ false);
 // v?.abs, v?.pct, v?.favorable
 
@@ -389,7 +389,7 @@ const v = useVariance(actual, plan, /* higherIsBetter */ false);
 const deltas = useVariances(acValues, pyValues);
 ```
 
-**When to use:** IBCS-correct variances for your own cells or labels — coloured
+**When to use:** IBCS-correct variances for your own cells or labels - coloured
 by `favorable` (impact), not by sign. See
 [IBCS & ISO 24896](/docs/ibcs) for why that distinction matters.
 
@@ -420,7 +420,7 @@ interface UseAsyncDataResult<T> {
 ```
 
 Drives a component off an API call, a DB query or anything returning a Promise.
-The fetcher runs on mount and whenever `deps` change — never during render, so
+The fetcher runs on mount and whenever `deps` change - never during render, so
 the hook is SSR-safe. In-flight requests are aborted on unmount, on a manual
 `refetch`, when `enabled` flips to `false` and before each new run; aborts are
 ignored rather than surfaced as errors. Because `deps` is spliced into a real
@@ -465,7 +465,7 @@ interface UseChartSelectionResult<K> {
 
 A tiny selection model for click-to-filter: pair it with a chart's `onSelect`,
 which fires `{ category, scenario?, value, datum }`. Generic over the key type
-(usually the category string) and SSR-safe — pure `useState`, no DOM access.
+(usually the category string) and SSR-safe - pure `useState`, no DOM access.
 
 ```tsx
 import { VarianceColumnChart, useChartSelection } from "ibcs-react";
@@ -500,7 +500,7 @@ and pointer moves are applied imperatively on an animation frame, so following
 the cursor costs no React re-render.
 
 It pairs directly with a chart's `onHover` (the mirror of `onSelect`, plus
-`x`/`y`) once you have switched the built-in panel off with `tooltip={false}` —
+`x`/`y`) once you have switched the built-in panel off with `tooltip={false}` -
 this is the canonical wiring:
 
 ```tsx
@@ -528,7 +528,7 @@ const hover = useChartHover<ColumnDatum>();
 ```
 
 For a mark you draw yourself there is no `onHover` to borrow, so call `onMove`
-from the element's own `onPointerMove` and `onLeave` from `onPointerLeave` —
+from the element's own `onPointerMove` and `onLeave` from `onPointerLeave` -
 any event with `clientX` / `clientY` satisfies `PointerLike`.
 
 **When to use:** a fully custom tooltip panel, or the library's panel on a chart
@@ -568,21 +568,21 @@ render. Without a `ResizeObserver` the element is measured once and then left
 static.
 
 **When to use:** measuring your own container. For sizing a chart, reach for
-[ChartBox](/docs/interaction#sizing-and-fit) first — it does this and the fit
+[ChartBox](/docs/interaction#sizing-and-fit) first - it does this and the fit
 maths for you.
 
 ## Theming
 
 `useIbcsTokens(override?)` resolves a `tokens` prop against the nearest
-`IbcsThemeProvider` and the defaults — the hook every component calls
+`IbcsThemeProvider` and the defaults - the hook every component calls
 internally, so a custom chart participates in the same theme. It is documented
 with the rest of the token system in [Theming](/docs/theming).
 
 ## Where to next
 
-- [Interaction & data](/docs/interaction) — live demos of `useChartSelection`,
+- [Interaction & data](/docs/interaction) - live demos of `useChartSelection`,
   `useChartHover` and `useAsyncData`, plus the sizing wrappers.
-- [Data model](/docs/data-model) — the `StatementLine` and scenario datum shapes
+- [Data model](/docs/data-model) - the `StatementLine` and scenario datum shapes
   these hooks operate on.
-- [Components](/docs/components) — the built-ins, each assembled from exactly
+- [Components](/docs/components) - the built-ins, each assembled from exactly
   these hooks.

@@ -1,6 +1,6 @@
 ---
 title: Industry reports
-description: The standard management report for SaaS, retail, manufacturing, banking, healthcare and a corporate P&L — KPI strip, charts and statement, built from ibcs-react components.
+description: The standard management report for SaaS, retail, manufacturing, banking, healthcare and a corporate P&L - KPI strip, charts and statement, built from ibcs-react components.
 ---
 
 import {
@@ -15,9 +15,9 @@ import {
   DataTable,
 } from "ibcs-react";
 
-The management report a controller in each of six industries would recognise —
+The management report a controller in each of six industries would recognise -
 SaaS, retail, manufacturing, banking, healthcare and a classic corporate profit
-& loss — each built entirely from `ibcs-react` components. Pick the one closest
+& loss - each built entirely from `ibcs-react` components. Pick the one closest
 to your world and copy the composition.
 
 Every report follows the same pattern: the **message** first, then
@@ -25,14 +25,14 @@ Every report follows the same pattern: the **message** first, then
 table. Data is realistic but fictitious, and company names are invented.
 
 Two notation habits hold throughout, and they are worth copying. There are no
-gauges or pies for KPIs — a `KpiCard` with an impact-coloured delta says more in
+gauges or pies for KPIs - a `KpiCard` with an impact-coloured delta says more in
 less space. And every cost, churn, scrap or ratio measure carries
 `higherIsBetter={false}`, so an increase reads unfavorable even though its sign
 is positive.
 
 ## SaaS
 
-_Helix Cloud Inc. (B2B SaaS) · ARR, retention and unit economics — AC vs PY, PL and FC · 2025_
+_Helix Cloud Inc. (B2B SaaS) · ARR, retention and unit economics - AC vs PY, PL and FC · 2025_
 
 **ARR grew to 48.6 mEUR (+22% vs PY) on 118% net revenue retention: expansion
 more than covered churn, and the forecast holds the pace into Q4.**
@@ -87,7 +87,7 @@ more than covered churn, and the forecast holds the pace into Q4.**
   </div>
 </Frame>
 
-**ARR bridge — opening to closing (mEUR)**
+**ARR bridge - opening to closing (mEUR)**
 
 <Frame>
   <WaterfallChart
@@ -105,7 +105,7 @@ more than covered churn, and the forecast holds the pace into Q4.**
   />
 </Frame>
 
-**MRR — monthly, AC and FC vs PY (kEUR)**
+**MRR - monthly, AC and FC vs PY (kEUR)**
 
 <Frame>
   <TrendChart
@@ -130,7 +130,7 @@ more than covered churn, and the forecast holds the pace into Q4.**
   />
 </Frame>
 
-**ARR by plan tier — AC vs PY and PL (kEUR)**
+**ARR by plan tier - AC vs PY and PL (kEUR)**
 
 <Frame>
   <DataTable
@@ -183,7 +183,7 @@ churn carry `higherIsBetter={false}`, so growth in either reads red.
 
 ## Retail
 
-_Northgate Retail Group · Sales, like-for-like and margin by category — AC vs PY · FY 2025_
+_Northgate Retail Group · Sales, like-for-like and margin by category - AC vs PY · FY 2025_
 
 **Net sales reached 1,284 mEUR (+6.1% vs PY) on +3.2% like-for-like; Food and
 Home led, while margin pressure in Apparel trimmed the gross rate by 0.4 points.**
@@ -230,7 +230,7 @@ Home led, while margin pressure in Apparel trimmed the gross rate by 0.4 points.
   </div>
 </Frame>
 
-**Like-for-like sales by category — ranked, AC vs PY (%)**
+**Like-for-like sales by category - ranked, AC vs PY (%)**
 
 <Frame center>
   <RankingVarianceChart
@@ -249,7 +249,7 @@ Home led, while margin pressure in Apparel trimmed the gross rate by 0.4 points.
   />
 </Frame>
 
-**Sales and gross margin by category — AC vs PY and PL (mEUR)**
+**Sales and gross margin by category - AC vs PY and PL (mEUR)**
 
 <Frame>
   <DataTable
@@ -315,9 +315,9 @@ bottom of the ranking and into the message.
 
 ## Manufacturing
 
-_Rhine Manufacturing AG, Plant Düsseldorf · Output, OEE, scrap and unit-cost variance — AC vs PL and standard · 2025_
+_Rhine Manufacturing AG, Plant Düsseldorf · Output, OEE, scrap and unit-cost variance - AC vs PL and standard · 2025_
 
-**Unit cost rose +110 €/unit against standard — adverse material prices (+180)
+**Unit cost rose +110 €/unit against standard - adverse material prices (+180)
 outweighed favourable usage and overhead; OEE recovered to 78% after a weak Q2.**
 
 <Frame>
@@ -364,7 +364,7 @@ outweighed favourable usage and overhead; OEE recovered to 78% after a weak Q2.*
   </div>
 </Frame>
 
-**Unit-cost variance — standard to actual (€/unit)**
+**Unit-cost variance - standard to actual (€/unit)**
 
 <Frame>
   <WaterfallChart
@@ -384,10 +384,10 @@ outweighed favourable usage and overhead; OEE recovered to 78% after a weak Q2.*
 
 One modelling detail worth stealing: the standard cost is the _opening level_,
 so it is `flow: "add"` (a full bar from zero), not `flow: "result"`. A result at
-the top of a bridge would be drawn at the running total — which is zero before
-anything has accrued — and render as an empty bar.
+the top of a bridge would be drawn at the running total - which is zero before
+anything has accrued - and render as an empty bar.
 
-**OEE by quarter — AC vs plan (%)**
+**OEE by quarter - AC vs plan (%)**
 
 <Frame center>
   <VarianceColumnChart
@@ -404,7 +404,7 @@ anything has accrued — and render as an empty bar.
   />
 </Frame>
 
-**Cost of production — AC vs PY and PL (kEUR)**
+**Cost of production - AC vs PY and PL (kEUR)**
 
 <Frame>
   <StatementTable
@@ -462,13 +462,13 @@ anything has accrued — and render as an empty bar.
   />
 </Frame>
 
-A cost statement builds _up_, so every line is `flow: "add"` — and every line is
+A cost statement builds _up_, so every line is `flow: "add"` - and every line is
 `higherIsBetter: false`, which is what makes the deviation bars read correctly
 on a report where more is worse.
 
 ## Banking
 
-_Meridian Bank · Net interest income, efficiency and loan book — AC vs PY · 2025_
+_Meridian Bank · Net interest income, efficiency and loan book - AC vs PY · 2025_
 
 **Pre-tax profit rose to 312 mEUR (+9% vs PY) as net interest income climbed
 +94 mEUR; the cost-income ratio improved 2.1 points and loan losses stayed
@@ -518,7 +518,7 @@ contained.**
   </div>
 </Frame>
 
-**Income statement — AC vs PY, calculation bridge (mEUR)**
+**Income statement - AC vs PY, calculation bridge (mEUR)**
 
 <Frame>
   <WaterfallStatementChart
@@ -547,7 +547,7 @@ contained.**
   />
 </Frame>
 
-**Loan book by segment — AC vs PY and PL (mEUR)**
+**Loan book by segment - AC vs PY and PL (mEUR)**
 
 <Frame>
   <DataTable
@@ -603,15 +603,15 @@ contained.**
 </Frame>
 
 Loan loss provisions and the two ratio KPIs are the only lines where more is
-worse, and each says so once through `higherIsBetter` — the colours then follow
+worse, and each says so once through `higherIsBetter` - the colours then follow
 without any per-cell styling.
 
 ## Healthcare
 
-_St. Mary's Health System · Volumes, cost per case and quality — AC vs PY and PL · 2025_
+_St. Mary's Health System · Volumes, cost per case and quality - AC vs PY and PL · 2025_
 
 **More patients at a lower cost per case: admissions +4% vs PY and cost per case
-2% under plan, with a shorter stay freeing capacity — readmissions (+0.3 points)
+2% under plan, with a shorter stay freeing capacity - readmissions (+0.3 points)
 the one watch item.**
 
 <Frame>
@@ -659,7 +659,7 @@ the one watch item.**
   </div>
 </Frame>
 
-**Patient volume by service line — AC vs PY (cases)**
+**Patient volume by service line - AC vs PY (cases)**
 
 <Frame>
   <GroupedVarianceChart
@@ -679,7 +679,7 @@ the one watch item.**
   />
 </Frame>
 
-**Cost per case by quarter — AC vs plan (€)**
+**Cost per case by quarter - AC vs plan (€)**
 
 <Frame center>
   <VarianceColumnChart
@@ -698,13 +698,13 @@ the one watch item.**
 </Frame>
 
 The cost chart is the clearest illustration of impact colouring: `Q1` is above
-plan and reads red, `Q2` to `Q4` are below plan and read green — the opposite of
+plan and reads red, `Q2` to `Q4` are below plan and read green - the opposite of
 what the raw sign would suggest, because the chart is told
 `higherIsBetter={false}` once at the top.
 
 ## Corporate P&L
 
-_Atlas Corporation · Group profit & loss — AC vs PY and PL · 2025_
+_Atlas Corporation · Group profit & loss - AC vs PY and PL · 2025_
 
 **Net income reached 96.4 mEUR (+14% vs PY, +8% vs plan) as revenue grew 9% and
 disciplined operating expenses lifted the EBIT margin 1.3 points to 18.7%.**
@@ -746,7 +746,7 @@ disciplined operating expenses lifted the EBIT margin 1.3 points to 18.7%.**
   </div>
 </Frame>
 
-**Income statement — AC vs PY, calculation bridge (mEUR)**
+**Income statement - AC vs PY, calculation bridge (mEUR)**
 
 <Frame>
   <WaterfallStatementChart
@@ -770,7 +770,7 @@ disciplined operating expenses lifted the EBIT margin 1.3 points to 18.7%.**
   />
 </Frame>
 
-**Profit & loss statement — AC with ΔPY and ΔPL (mEUR)**
+**Profit & loss statement - AC with ΔPY and ΔPL (mEUR)**
 
 <Frame>
   <StatementTable
@@ -840,22 +840,22 @@ disciplined operating expenses lifted the EBIT margin 1.3 points to 18.7%.**
 
 The bridge and the table are two views of one model: the chart carries the shape
 of the calculation, the table carries the exact figures and both deviations. In
-a real report you would author the statement once and project it into both — see
+a real report you would author the statement once and project it into both - see
 [Data model](/docs/data-model) for the adapters that do it.
 
 ## Making these fit your layout
 
 The charts above are drawn at fixed pixel widths, which is what keeps IBCS
 geometry honest. To drop one into a fluid dashboard, wrap it in `ChartBox` (or
-its `ScrollChart` preset) and pick a fit — see
+its `ScrollChart` preset) and pick a fit - see
 [Sizing and fit](/docs/interaction#sizing-and-fit).
 
 ## Where to next
 
-- [Example reports](/docs/example-reports) — the flagship chart and table
+- [Example reports](/docs/example-reports) - the flagship chart and table
   templates, one exhibit at a time.
-- [Theming](/docs/theming) — put your palette on any of these without touching
+- [Theming](/docs/theming) - put your palette on any of these without touching
   the notation.
-- [Report](/report) — the same composition driven by a JSON `ReportConfig`.
-- [Conformance](/docs/conformance) — the library's own check against IBCS
+- [Report](/report) - the same composition driven by a JSON `ReportConfig`.
+- [Conformance](/docs/conformance) - the library's own check against IBCS
   notation rules, run over a report config.

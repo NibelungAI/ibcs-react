@@ -16,7 +16,7 @@ import type { StatementLine } from "../../core/types";
 /**
  * Unit tests for the browser-facing hooks. Everything is deterministic: fake
  * timers plus a hand-rolled `requestAnimationFrame` queue that only advances
- * when a test flushes it — no real waiting, no flakes.
+ * when a test flushes it - no real waiting, no flakes.
  */
 
 // ---------------------------------------------------------------- RAF harness
@@ -158,20 +158,20 @@ describe("useMountGrow", () => {
     });
     expect(last(seen)).toBe(1);
 
-    // A new array with equal contents — the inline-literal case. No replay.
+    // A new array with equal contents - the inline-literal case. No replay.
     seen.length = 0;
     rerender(<Probe data={[1, 2, 3]} tick={1} />);
     expect(seen.every((p) => p === 1)).toBe(true);
     expect(frames.size).toBe(0);
 
-    // A value-only change — a live tick. Values are useDataTween's business;
+    // A value-only change - a live tick. Values are useDataTween's business;
     // the entrance stays finished instead of re-growing from the baseline.
     seen.length = 0;
     rerender(<Probe data={[1, 2, 4]} tick={2} />);
     expect(seen.every((p) => p === 1)).toBe(true);
     expect(frames.size).toBe(0);
 
-    // A shape change — a row appended → this IS a new dataset; replay from 0.
+    // A shape change - a row appended → this IS a new dataset; replay from 0.
     seen.length = 0;
     rerender(<Probe data={[1, 2, 4, 8]} tick={3} />);
     expect(last(seen)).toBe(0);
@@ -214,7 +214,7 @@ describe("useDataTween", () => {
 
     act(() => {
       vi.runOnlyPendingTimers();
-      flushFrame(100); // t = 0 — the origin frame: exactly where the value sat
+      flushFrame(100); // t = 0 - the origin frame: exactly where the value sat
     });
     expect(last(seen)[0]!.AC).toBe(100);
 
@@ -226,7 +226,7 @@ describe("useDataTween", () => {
     expect(mid).toBeLessThan(200);
 
     act(() => {
-      flushFrame(1100); // t = 1 — lands on the target identity, not a copy
+      flushFrame(1100); // t = 1 - lands on the target identity, not a copy
     });
     expect(last(seen)).toBe(next);
   });
@@ -246,7 +246,7 @@ describe("useDataTween", () => {
     const displayed = last(seen)[0]!.AC;
     expect(displayed).toBeGreaterThan(50);
 
-    // New target arrives mid-tween: the value walks back from where it IS —
+    // New target arrives mid-tween: the value walks back from where it IS -
     // never snapping, never restarting from the old origin.
     rerender(<Probe data={[{ category: "Q1", AC: 0 }]} />);
     act(() => {
@@ -261,7 +261,7 @@ describe("useDataTween", () => {
     expect(last(seen)[0]!.AC).toBe(0);
   });
 
-  it("jumps on a shape change — that is the entrance's job, not a morph", () => {
+  it("jumps on a shape change - that is the entrance's job, not a morph", () => {
     mockMatchMedia(false);
     const seen: Row[][] = [];
     const Probe = makeProbe(seen);
@@ -278,7 +278,7 @@ describe("useDataTween", () => {
     expect(last(seen)).toBe(next);
     expect(frames.size).toBe(0);
 
-    // Same length but a renamed category — still a different dataset.
+    // Same length but a renamed category - still a different dataset.
     const renamed = [
       { category: "Q1", AC: 100 },
       { category: "Q3", AC: 50 },
@@ -360,17 +360,17 @@ describe("charts on a live feed", () => {
     );
     act(() => {
       vi.runOnlyPendingTimers();
-      flushFrame(2100); // t = 0 of the tween — the continuity frame
+      flushFrame(2100); // t = 0 of the tween - the continuity frame
     });
     // The tallest column still stands at (essentially) its previous height and
-    // the old figures are still the ones on screen — an entrance replay would
+    // the old figures are still the ones on screen - an entrance replay would
     // have collapsed every rect toward 0.
     const firstFrame = Math.max(...heights(container));
     expect(firstFrame).toBeGreaterThan(settled * 0.9);
     expect(container.textContent).toContain("120");
 
     act(() => {
-      flushFrame(3200); // tween finished — the new values are on screen
+      flushFrame(3200); // tween finished - the new values are on screen
     });
     expect(container.textContent).toContain("130");
     // The scale absorbs the growth: the tallest column ends where it began.
@@ -407,7 +407,7 @@ describe("useAsyncData", () => {
 
     rerender(<Probe enabled={false} fetcher={fetcher} />);
 
-    // The in-flight call is aborted AND the flag is cleared — the settle
+    // The in-flight call is aborted AND the flag is cleared - the settle
     // handlers bail on an aborted signal, so nothing else would clear it.
     expect(signals[0]?.aborted).toBe(true);
     expect(container.textContent).toBe("idle");
@@ -456,7 +456,7 @@ describe("useElementSize", () => {
     // jsdom has no layout, so the initial measurement is 0×0.
     expect(container.textContent).toBe("0x0");
 
-    // The callback must not call setState synchronously — that is what trips
+    // The callback must not call setState synchronously - that is what trips
     // "ResizeObserver loop completed with undelivered notifications".
     act(() => observer.emit(320, 180));
     expect(container.textContent).toBe("0x0");
@@ -573,7 +573,7 @@ describe("useStatement", () => {
     );
     expect(container.textContent).toBe("rev,svc,goods,cogs,gp");
 
-    // Reports the next set — and changes nothing until the caller applies it.
+    // Reports the next set - and changes nothing until the caller applies it.
     act(() => last(seen).toggle("svc"));
     expect(onCollapsedChange).toHaveBeenLastCalledWith([]);
     expect(container.textContent).toBe("rev,svc,goods,cogs,gp");

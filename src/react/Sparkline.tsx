@@ -19,7 +19,7 @@ export interface SparklineProps {
   /**
    * Stretch to fill the parent's width. The `width` prop becomes the logical
    * coordinate width while the SVG renders at `width="100%"` (via a viewBox), so
-   * the chart fills any container without measuring it — handy inside a card.
+   * the chart fills any container without measuring it - handy inside a card.
    * SSR-safe (no layout jump). Default false.
    */
   fluid?: boolean;
@@ -34,7 +34,7 @@ export interface SparklineProps {
  * own min/max (a sparkline shows shape, not absolute level), and a flat series
  * renders along the middle rather than collapsing.
  *
- * **Accessibility:** a sparkline is a decorative-by-design embedded mark — it
+ * **Accessibility:** a sparkline is a decorative-by-design embedded mark - it
  * lives beside the number it trends (a KPI headline, a table cell), so it
  * carries `aria-hidden="true"` and NO `role`. Screen readers get the visible
  * value instead of a shape they cannot inspect; announcing both would just be

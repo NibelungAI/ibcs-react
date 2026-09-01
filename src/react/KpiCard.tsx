@@ -12,15 +12,15 @@ export interface KpiCardProps extends KpiConfig {
   tokens?: IbcsTokensOverride;
   /**
    * Count up the headline number (from `0` on mount, then tweening on every
-   * change). Default true — and `prefers-reduced-motion` is respected
+   * change). Default true - and `prefers-reduced-motion` is respected
    * automatically: for those users the final value renders immediately, with
    * no frame loop, regardless of this prop. SSR always renders the finished
-   * value. `false` switches the count-up off for everyone — what you want in
+   * value. `false` switches the count-up off for everyone - what you want in
    * tests, print and screenshot pipelines.
    */
   animate?: boolean;
   /**
-   * Card chrome — border, background, corner radius, an optional left accent bar
+   * Card chrome - border, background, corner radius, an optional left accent bar
    * and shadow. Defaults to a calm white card with an 8px radius and a hairline
    * border, and **no** colour accent bar (the variance figure carries the
    * favorability colour). Opt into `accent: true` for the coloured edge,
@@ -38,9 +38,9 @@ export interface KpiCardProps extends KpiConfig {
  * IBCS impact-coloured deltas (favorability, not sign), and an optional
  * sparkline. Built to drop into a report grid as a "kpi" block.
  *
- * The unit is part of `format` — `currency` for a leading symbol
+ * The unit is part of `format` - `currency` for a leading symbol
  * (`{ currency: "€" }` → €30.1M), `suffix` for a trailing one
- * (`{ suffix: "%" }` → 18.4%) — and the card states it once, muted, beside the
+ * (`{ suffix: "%" }` → 18.4%) - and the card states it once, muted, beside the
  * headline rather than repeating it on every delta.
  */
 export function KpiCard({
@@ -82,8 +82,8 @@ export function KpiCard({
 
   // The card's unit lives in the format, on the side it belongs on:
   // `format.currency` leads the number ("€30.1M"), `format.suffix` trails it
-  // ("82.4%"). The card prints those affixes itself — a touch smaller and
-  // muted, as on a polished BI card — and strips them from the options the
+  // ("82.4%"). The card prints those affixes itself - a touch smaller and
+  // muted, as on a polished BI card - and strips them from the options the
   // figures are formatted with, so a symbol is stated once, on the headline,
   // and can never double up ("€€30.1M") or repeat on every delta.
   const { currency: prefixUnit = "", suffix: suffixUnit = "", ...numberFormat } = format;
@@ -97,12 +97,12 @@ export function KpiCard({
     const flat = v.abs === 0;
     const color = flat ? tokens.color.zero : v.favorable ? tokens.color.good : tokens.color.bad;
     // Arrow follows the DIRECTION of change (sign); colour follows FAVORABILITY,
-    // so a rising cost is a red ▲ — an IBCS staple. No pill: the coloured figure
+    // so a rising cost is a red ▲ - an IBCS staple. No pill: the coloured figure
     // is the signal. The marker scales gently with magnitude (Zebra-style).
     const arrow = flat ? "→" : v.abs > 0 ? "▲" : "▼";
     const tri = primary ? Math.max(7.5, Math.min(12, 7.5 + Math.abs(v.pct ?? 0) * 9)) : 8;
     // Ratio measures (margins, rates) move in PERCENTAGE POINTS: the delta is
-    // `+0.6pp`, and the relative change of the ratio is dropped — "+0.9%"
+    // `+0.6pp`, and the relative change of the ratio is dropped - "+0.9%"
     // beside "18.4%" reads as points and misleads (ISO 24896 keeps the two
     // apart for exactly this reason).
     const ratio = unit === "ratio";

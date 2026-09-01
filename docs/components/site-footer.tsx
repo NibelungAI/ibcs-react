@@ -1,6 +1,6 @@
 /**
  * Site footer with the legally-motivated independence / trademark disclaimer
- * (Austrian UWG; agreed legal wording — do not reword without checking; the
+ * (Austrian UWG; agreed legal wording - do not reword without checking; the
  * separate checkIbcs sentence was dropped deliberately as product noise).
  *
  * `variant="page"` (default): full-width card band at the bottom of the

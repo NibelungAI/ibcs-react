@@ -98,7 +98,7 @@ const plStatement: StatementLine[] = [
 ];
 
 /**
- * 4 · P&L deep-dive — Software & Service Group.
+ * 4 · P&L deep-dive - Software & Service Group.
  * The statement itself carries the integrated waterfall and two variance
  * columns; the right rail breaks EBIT down by segment and walks the margin.
  */

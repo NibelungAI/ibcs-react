@@ -11,7 +11,7 @@
  *
  * The whole thing is a pure, serializable model: a row tree, a period tree and
  * a `values[rowId][periodId][scenario]` lookup. The renderer
- * (`MatrixTable.tsx`) computes layout from these with the helpers below — no
+ * (`MatrixTable.tsx`) computes layout from these with the helpers below - no
  * data fetching, no side effects, SSR-safe.
  */
 
@@ -19,7 +19,7 @@ import { SCENARIO_KEYS, type ScenarioKey, type Variance } from "./types";
 import { computeVariance } from "./variance";
 
 /* ------------------------------------------------------------------ *
- * Row model — a tree of statement lines.
+ * Row model - a tree of statement lines.
  * ------------------------------------------------------------------ */
 
 /** How a row participates in the statement: a step up, a step down, or a subtotal. */
@@ -46,7 +46,7 @@ export interface MatrixRow {
 }
 
 /* ------------------------------------------------------------------ *
- * Column model — a tree of periods.
+ * Column model - a tree of periods.
  * ------------------------------------------------------------------ */
 
 export interface MatrixPeriod {
@@ -55,7 +55,7 @@ export interface MatrixPeriod {
   /**
    * Scenario sub-columns rendered under this period when it is a (visible)
    * leaf. Defaults to the table's `scenarios` order. Use this to vary the mix
-   * per period — e.g. historic years show `["PL","AC"]` while the current year
+   * per period - e.g. historic years show `["PL","AC"]` while the current year
    * shows `["PL","FC"]`.
    */
   scenarios?: ScenarioKey[];
@@ -66,14 +66,14 @@ export interface MatrixPeriod {
 }
 
 /* ------------------------------------------------------------------ *
- * Values — a serializable lookup.
+ * Values - a serializable lookup.
  * ------------------------------------------------------------------ */
 
 /** `values[rowId][periodId]` → a partial map of scenario → number. */
 export type MatrixValues = Record<string, Record<string, Partial<Record<ScenarioKey, number>>>>;
 
 /* ------------------------------------------------------------------ *
- * Per-cell addressing — for click handlers, decorations and scroll-to.
+ * Per-cell addressing - for click handlers, decorations and scroll-to.
  * ------------------------------------------------------------------ */
 
 /** A value sub-cell's scenario: a real scenario, or "DELTA" for the Δ column. */
@@ -190,7 +190,7 @@ export interface LeafColumn {
   groupIndex: number;
   /**
    * This leaf is the first column of a new top-level group (and not the very
-   * first column overall) — i.e. a group boundary. Drives the single inter-group
+   * first column overall) - i.e. a group boundary. Drives the single inter-group
    * gap, applied identically in the header bands, scenario row and body so they
    * stay column-aligned. NOT set between sibling leaves of the same group (e.g.
    * months within a quarter get no gap).
@@ -292,7 +292,7 @@ export function buildColumnLayout(columns: MatrixPeriod[], opts: BuildOpts): Col
   columns.forEach((p, i) => collectLeaves(p, 0, i));
 
   // A single gap precedes the first leaf of every top-level group except the
-  // very first — i.e. exactly at the boundaries between top-level periods. This
+  // very first - i.e. exactly at the boundaries between top-level periods. This
   // is the only place an inter-group gap is introduced; every renderer reads it
   // so the header bands, scenario row and body share the same column edges.
   leaves.forEach((leaf, li) => {
@@ -304,7 +304,7 @@ export function buildColumnLayout(columns: MatrixPeriod[], opts: BuildOpts): Col
 
   // Second pass: emit header cells, distributed into rows by level. We walk the
   // tree left → right (same order as the leaves) and track a leaf cursor so each
-  // header cell can inherit the `startsGap` flag of the leftmost leaf it spans —
+  // header cell can inherit the `startsGap` flag of the leftmost leaf it spans -
   // that keeps a group's whole left spine (Year → Quarter → Month) aligned over
   // the body's single gap.
   const headerRows: ColumnHeaderCell[][] = Array.from({ length: maxLevel + 1 }, () => []);
@@ -419,7 +419,7 @@ export function resolveCell(
 }
 
 /**
- * One matrix cell's variance — the library-wide {@link Variance} shape (`abs`,
+ * One matrix cell's variance - the library-wide {@link Variance} shape (`abs`,
  * `pct`, `favorable`). Kept as a named alias because it is part of this
  * module's public vocabulary; it is NOT a separate shape, so the matrix and
  * every other view stay in sync by construction.

@@ -39,7 +39,7 @@ export function ConfiguredChart({
 }: ConfiguredChartProps) {
   const result = useMemo(() => validateChartConfig(config), [config]);
 
-  // Config-level color overrides merge on top of any tokens prop — ONCE, for
+  // Config-level color overrides merge on top of any tokens prop - ONCE, for
   // every branch. Built inline per branch this was a fresh object on every
   // render, which invalidated the `useMemo(..., [tokens])` inside whichever
   // chart was mounted and re-ran its whole layout for nothing.

@@ -5,24 +5,24 @@
  * Before this module each chart hand-copied the same `onMouseMove` /
  * `onMouseLeave` closure pair (18 copies, three of which had drifted), no
  * chart showed its tooltip on keyboard focus, and any pointer inside a mark's
- * full-height transparent hit band — including the blank space above a short
- * column — triggered the tooltip. `markInteraction` builds the handlers once
+ * full-height transparent hit band - including the blank space above a short
+ * column - triggered the tooltip. `markInteraction` builds the handlers once
  * per render from the chart's `useChartHover` state and its `tooltip` /
  * `onHover` props:
  *
  *   - pointer moves feed the built-in tooltip (when `tooltip`) and `onHover`
  *   - when a mark passes its geometry (`forMark(info, rects)`), the pointer
  *     must be within {@link MARK_HOVER_TOLERANCE_PX} screen pixels of one of
- *     those rects — the generous hit band stays for clicks/selection, but the
+ *     those rects - the generous hit band stays for clicks/selection, but the
  *     tooltip no longer fires over blank plot space
  *   - a touch tap shows the tooltip anchored to the mark (there is no hover
  *     on touch); it stays until a tap elsewhere or Escape dismisses it (see
  *     `useHoverDismissal`, wired inside `useChartHover`)
  *   - keyboard focus on a selectable mark anchors the tooltip to the mark
- *     (WCAG 1.4.13 — hover content must also appear on focus)
+ *     (WCAG 1.4.13 - hover content must also appear on focus)
  *   - leave/blur clears both
  *
- * Plain factory, not a hook — safe to call anywhere in render, no state.
+ * Plain factory, not a hook - safe to call anywhere in render, no state.
  * Handlers never serialize into markup, so adopting this is render-identical.
  *
  * Internal module: not part of the public API surface.
@@ -33,7 +33,7 @@ import type { ChartHover, ChartHoverInfo, UseChartHoverResult } from "../hooks/u
 
 /**
  * One mark's bounds in SVG user units (the chart's own coordinate space).
- * Pass the FINAL, un-animated geometry — the hover target must be right even
+ * Pass the FINAL, un-animated geometry - the hover target must be right even
  * while the entrance animation is still growing the mark.
  */
 export interface MarkRect {
@@ -61,7 +61,7 @@ export interface MarkHandlerProps {
 
 export interface MarkInteraction<D> {
   /**
-   * True when anything consumes hover (built-in tooltip or `onHover`) — gate
+   * True when anything consumes hover (built-in tooltip or `onHover`) - gate
    * transparent hit-target rendering on this, exactly like the old
    * `hoverEnabled` locals did.
    */
@@ -90,7 +90,7 @@ interface SvgSpace {
 
 /**
  * Resolve the coordinate mapping, or `null` when it cannot be measured (no
- * enclosing svg, zero layout size — e.g. jsdom — or `display: none`). A null
+ * enclosing svg, zero layout size - e.g. jsdom - or `display: none`). A null
  * mapping disables proximity gating rather than guessing.
  */
 function svgSpaceOf(el: Element): SvgSpace | null {
@@ -98,7 +98,7 @@ function svgSpaceOf(el: Element): SvgSpace | null {
   if (!svg) return null;
   const rect = svg.getBoundingClientRect();
   if (!(rect.width > 0) || !(rect.height > 0)) return null;
-  // Parse the attribute rather than `viewBox.baseVal` — identical result in
+  // Parse the attribute rather than `viewBox.baseVal` - identical result in
   // browsers, and it also works under jsdom's partial SVG DOM.
   const vb = (svg.getAttribute("viewBox") ?? "")
     .trim()

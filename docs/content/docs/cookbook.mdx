@@ -1,6 +1,6 @@
 ---
 title: Report cookbook
-description: 97 ready-made business reports and dashboards across seven domains — each a live mini-report built from one to four ibcs-react components, with copy-pasteable source.
+description: 97 ready-made business reports and dashboards across seven domains - each a live mini-report built from one to four ibcs-react components, with copy-pasteable source.
 ---
 
 import {
@@ -123,7 +123,7 @@ visual stress test.
 
 Every recipe carries a _who / what / when_ line, the live report and its
 source. One scenario-keyed model (AC / PY / PL / FC) feeds tables, charts and
-KPI cards alike — switching report type is mostly choosing the component, not
+KPI cards alike - switching report type is mostly choosing the component, not
 reshaping the numbers. For the notation rules behind the marks, see
 [IBCS in practice](/docs/ibcs); for the data shapes, see the
 [data model](/docs/data-model).
@@ -131,7 +131,7 @@ reshaping the numbers. For the notation rules behind the marks, see
 ## Shared shorthands
 
 To keep each snippet to a line or two, the samples below reuse a handful of
-local shorthands — datum builders, format presets and a width budget — defined
+local shorthands - datum builders, format presets and a width budget - defined
 once here:
 
 ```tsx
@@ -146,7 +146,7 @@ const fN = { compact: false } as const; // plain counts / scores
 const fN1 = { compact: false, decimals: 1 } as const;
 const fPct1 = { compact: false, decimals: 1 } as const;
 
-// datum builders — a `category` plus optional AC / PY / PL / FC
+// datum builders - a `category` plus optional AC / PY / PL / FC
 const C = (category, AC, PY, PL) => ({
   category,
   AC,
@@ -202,7 +202,7 @@ response.
 
 ## Finance & accounting
 
-Statements, bridges, variance and working-capital views — the backbone of the
+Statements, bridges, variance and working-capital views - the backbone of the
 monthly close. 18 recipes.
 
 Components used here: [AreaChart](/docs/components/area-chart),
@@ -273,7 +273,7 @@ import { WaterfallChart } from "ibcs-react";
 />;
 ```
 
-### P&L bridge — PY → AC operating income
+### P&L bridge - PY → AC operating income
 
 Helios Foods · € m · effect decomposition
 
@@ -301,7 +301,7 @@ import { WaterfallChart } from "ibcs-react";
 />;
 ```
 
-### Budget vs actual — quarterly revenue
+### Budget vs actual - quarterly revenue
 
 Aurora Retail · € m · AC vs PL
 
@@ -453,8 +453,8 @@ import { StackedChart } from "ibcs-react";
   ]}
   series={[
     { key: "cur", label: "Current" },
-    { key: "d30", label: "1–30" },
-    { key: "d60", label: "31–60" },
+    { key: "d30", label: "1-30" },
+    { key: "d60", label: "31-60" },
     { key: "d90", label: "61+" },
   ]}
   orientation="bar"
@@ -517,7 +517,7 @@ import { LineChart } from "ibcs-react";
 
 ### Multi-year P&L statement
 
-Vector Software · € m · 2012–2015 (wide → scroll)
+Vector Software · € m · 2012-2015 (wide → scroll)
 
 <Frame>
   <MultiYearPAndLStatement />
@@ -1006,7 +1006,7 @@ import { DataTable } from "ibcs-react";
 />;
 ```
 
-### Regional bookings — small multiples
+### Regional bookings - small multiples
 
 Vector Software · € m · AC vs PY
 
@@ -2181,7 +2181,7 @@ import { DataTable } from "ibcs-react";
 />;
 ```
 
-### Production yield — small multiples
+### Production yield - small multiples
 
 Cobalt Devices · % · AC vs PY by line
 
@@ -2453,8 +2453,8 @@ import { StackedChart } from "ibcs-react";
   data={[{ category: "All staff", values: { y0: 240, y1: 380, y3: 290, y5: 180 } }]}
   series={[
     { key: "y0", label: "<1 yr" },
-    { key: "y1", label: "1–3 yr" },
-    { key: "y3", label: "3–5 yr" },
+    { key: "y1", label: "1-3 yr" },
+    { key: "y3", label: "3-5 yr" },
     { key: "y5", label: "5+ yr" },
   ]}
   orientation="bar"
@@ -2998,8 +2998,8 @@ import { ComparisonTable } from "ibcs-react";
 
 ## About these examples
 
-All companies — Northwind Materials, Aurora Retail, Vector Software, Lumen
-Media, Cobalt Devices, Helios Foods and the like — and every number in them are
+All companies - Northwind Materials, Aurora Retail, Vector Software, Lumen
+Media, Cobalt Devices, Helios Foods and the like - and every number in them are
 invented for illustration. Charts are sized to a single `CARD_W` budget so the
 recipes stay comparable; wide tables scroll inside their frame rather than
 bleeding across the page.

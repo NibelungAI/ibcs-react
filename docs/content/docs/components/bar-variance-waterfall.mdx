@@ -1,6 +1,6 @@
 ---
 title: BarVarianceWaterfallChart
-description: IBCS C06 — ranked AC bars beside a vertical waterfall of the absolute variances (PY → AC).
+description: IBCS C06 - ranked AC bars beside a vertical waterfall chart of the absolute variances (PY → AC).
 ---
 
 import { BarVarianceWaterfallChart } from "ibcs-react";
@@ -12,14 +12,14 @@ with a relative deviation tier.
 ## When to use
 
 Explain a total movement by entity: who drove the gap from previous year to
-actual, sorted by impact, as a bridge — with the plan and previous-year totals
+actual, sorted by impact, as a bridge - with the plan and previous-year totals
 framing it.
 
 ## Example
 
 <Frame center>
   <BarVarianceWaterfallChart
-    title="Net sales by state — Q3 (AC vs PY/PL)"
+    title="Net sales by state - Q3 (AC vs PY/PL)"
     pyTotal={2071}
     width={720}
     format={{ compact: true }}
@@ -38,7 +38,7 @@ framing it.
 import { BarVarianceWaterfallChart } from "ibcs-react";
 
 <BarVarianceWaterfallChart
-  title="Net sales by state — Q3 (AC vs PY/PL)"
+  title="Net sales by state - Q3 (AC vs PY/PL)"
   pyTotal={2071}
   sortBy="variance"
   data={[
@@ -54,7 +54,7 @@ chart into the PY → AC bridge mode where the deviations must add up to the gap
 between the two totals. `pctBase` picks which of the two the relative tier
 measures against.
 
-Sorting by variance is the point — it puts the entities that moved the total at
+Sorting by variance is the point - it puts the entities that moved the total at
 the top. Collect the long tail into an "Others" row so the bridge stays
 readable.
 

@@ -5,14 +5,14 @@ import { computeVariance } from "./variance";
 /**
  * Pure layout for an IBCS calculation tree (template C11): boxes holding a
  * label + a value (+ optional Δ vs PY) connected by links that express a math
- * relationship — e.g. Return on assets = Return / Assets, with Net sales and
+ * relationship - e.g. Return on assets = Return / Assets, with Net sales and
  * Assets feeding in. Framework-agnostic and JSON-serializable: the React
  * `TreeChart` is just a renderer over the positions computed here.
  *
  * Layout is deterministic. Every node gets a `depth` (distance from the root)
  * and a `row` (vertical slot, in leaf units): leaves take successive integer
  * slots in traversal order and each parent is centered on its children. The
- * renderer maps (depth, row) to pixels — left-to-right for "horizontal", or
+ * renderer maps (depth, row) to pixels - left-to-right for "horizontal", or
  * top-down for "vertical".
  */
 
@@ -25,7 +25,7 @@ export interface TreeNode {
   py?: number;
   /** How the children combine into this node's value (root = a / b, etc.). */
   op?: "+" | "-" | "*" | "/";
-  /** Per-node number format, overriding the chart's — e.g. a ratio/percent root
+  /** Per-node number format, overriding the chart's - e.g. a ratio/percent root
    *  among currency drivers (ROA shown as % while its children stay in €). */
   format?: FormatOptions;
   children?: TreeNode[];
@@ -39,7 +39,7 @@ export interface TreeLayoutNode {
   py: number | undefined;
   format?: FormatOptions;
   op: "+" | "-" | "*" | "/" | undefined;
-  /** Column index — 0 is the root. */
+  /** Column index - 0 is the root. */
   depth: number;
   /** Vertical slot in leaf units (float; parents are centered on their children). */
   row: number;
@@ -62,7 +62,7 @@ export interface TreeLayout {
   links: TreeLink[];
   /** Number of columns (max depth + 1). */
   depthCount: number;
-  /** Number of leaf rows — the vertical extent in slot units. */
+  /** Number of leaf rows - the vertical extent in slot units. */
   rowCount: number;
   orientation: "horizontal" | "vertical";
 }

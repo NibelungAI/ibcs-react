@@ -56,7 +56,7 @@ export interface WaterfallStatementChartProps {
   /** Styles merged *over* the chart's own layout styles. */
   style?: CSSProperties;
   /**
-   * Fired as the pointer moves over / leaves a row (`null` on leave) — for a
+   * Fired as the pointer moves over / leaves a row (`null` on leave) - for a
    * custom tooltip. Pairs with `useChartHover`. Default undefined.
    */
   onHover?: (hover: ChartHover<WaterfallStatementRow> | null) => void;
@@ -72,19 +72,19 @@ export interface WaterfallStatementChartProps {
 const SCENARIO_LABEL: Record<ScenarioKey, string> = { AC: "AC", PY: "PY", PL: "PL", FC: "FC" };
 
 /**
- * IBCS chart-template **C12** — a P&L calculation scheme as TWO side-by-side
+ * IBCS chart-template **C12** - a P&L calculation scheme as TWO side-by-side
  * vertical waterfalls plus absolute and relative variance tiers, all row-aligned
  * to the P&L lines.
  *
  * Four column tiers run left→right, every row a P&L line (a left gutter holds
  * the flow marker `+`/`−`/`=` and label):
- *  1. **comparison lane** (PY/PL, grey) — a horizontal bridge walking the lines;
- *  2. **AC lane** (dark) — the same rows on the SAME value→pixel scale as (1),
+ *  1. **comparison lane** (PY/PL, grey) - a horizontal bridge walking the lines;
+ *  2. **AC lane** (dark) - the same rows on the SAME value→pixel scale as (1),
  *     so the two bridges are directly comparable;
- *  3. **ΔPY** — absolute-variance bars from a per-tier zero axis, coloured by
+ *  3. **ΔPY** - absolute-variance bars from a per-tier zero axis, coloured by
  *     IMPACT (good/bad/zero, honouring `higherIsBetter`), signed labels, with
  *     off-scale arrow tips;
- *  4. **ΔPY%** — a pin column (line + dot), off-scale arrows past the clamp
+ *  4. **ΔPY%** - a pin column (line + dot), off-scale arrows past the clamp
  *     (omit via `showPctPanel={false}`).
  *
  * Result rows are emphasised (bold label, heavier bars) and ruled above. The
@@ -97,7 +97,7 @@ const SCENARIO_LABEL: Record<ScenarioKey, string> = { AC: "AC", PY: "PY", PL: "P
  * {@link IbcsThemeProvider}, incl. `color.surface` for hollow scenario frames). Robust to
  * empty / single / negative / long-label inputs.
  *
- * The svg is the chart's root element — it takes `className` / `style` and the
+ * The svg is the chart's root element - it takes `className` / `style` and the
  * forwarded ref, and carries the accessible name (`role="img"` + `aria-label`);
  * the built-in tooltip portals to `document.body` and flips at the viewport
  * edges.
@@ -224,7 +224,7 @@ export const WaterfallStatementChart = forwardRef<SVGSVGElement, WaterfallStatem
 
           {/* step connectors at the leaving level, between consecutive steps */}
           {rows.map((r, i) => {
-            // No connector after the last row — `next` is undefined exactly there.
+            // No connector after the last row - `next` is undefined exactly there.
             const next = rows[i + 1];
             if (!next) return null;
             const bar = r[which];
@@ -483,7 +483,7 @@ export const WaterfallStatementChart = forwardRef<SVGSVGElement, WaterfallStatem
     };
 
     // Screen-reader data table: one row per P&L line, columns in the same order
-    // as the tiers — the comparison lane, the AC lane, the absolute variance and
+    // as the tiers - the comparison lane, the AC lane, the absolute variance and
     // (when its pin tier is drawn) the relative one, formatted exactly as the
     // tier labels are (`formatPercentPlain`, with the % in the column header).
     const a11yColumns = [
@@ -596,7 +596,7 @@ export const WaterfallStatementChart = forwardRef<SVGSVGElement, WaterfallStatem
                 datum: r,
                 scenario: "AC" as ScenarioKey,
               };
-              // This row's visible marks in FINAL (un-animated) geometry —
+              // This row's visible marks in FINAL (un-animated) geometry -
               // laneXOf, not the lanes' animated xA: the AC lane bar (the
               // focus/tap anchor), the comparison lane bar, then the Δ and Δ%
               // tiers as their lane strips at the mark's thickness. This
@@ -637,8 +637,8 @@ export const WaterfallStatementChart = forwardRef<SVGSVGElement, WaterfallStatem
         <ChartDataTable
           caption={
             title
-              ? `${title} — data table`
-              : `P&L calculation scheme, AC versus ${compLabel} — data table`
+              ? `${title} - data table`
+              : `P&L calculation scheme, AC versus ${compLabel} - data table`
           }
           columns={a11yColumns}
           rows={a11yRows}

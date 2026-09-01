@@ -10,7 +10,7 @@ import {
 /**
  * A dynamic report assembled entirely from a JSON `ReportConfig`: a KPI strip,
  * the IBCS income statement, a 13-period trend, a revenue structure, and a
- * quarterly variance chart — all on one responsive grid, one theme. This is the
+ * quarterly variance chart - all on one responsive grid, one theme. This is the
  * "build reports from components + cards in blocks" target, ISO 24896-styled
  * (Who/What/When title, impact-coloured variances, embedded variance bars).
  */
@@ -19,7 +19,7 @@ export function ExampleReport({ tokens }: { tokens?: IbcsTokens }) {
     () => ({
       title: {
         who: "Contoso Group",
-        what: "Performance summary — € thousands",
+        what: "Performance summary - € thousands",
         when: "FY 2026 · Actual vs Previous year",
       },
       message:
@@ -81,7 +81,7 @@ export function ExampleReport({ tokens }: { tokens?: IbcsTokens }) {
           id: "stmt",
           type: "statement",
           span: 7,
-          title: { who: "Contoso Group", what: "Income statement — € thousands", when: "FY 2026" },
+          title: { who: "Contoso Group", what: "Income statement - € thousands", when: "FY 2026" },
           config: {
             lines: sampleStatementFlat,
             waterfallWidth: 230,
@@ -95,8 +95,8 @@ export function ExampleReport({ tokens }: { tokens?: IbcsTokens }) {
           span: 5,
           title: {
             who: "Contoso Group",
-            what: "Revenue — € thousands",
-            when: "Jan–Dec 2026, AC/FC vs PY",
+            what: "Revenue - € thousands",
+            when: "Jan-Dec 2026, AC/FC vs PY",
           },
           config: {
             type: "trend",
@@ -112,7 +112,7 @@ export function ExampleReport({ tokens }: { tokens?: IbcsTokens }) {
           span: 6,
           title: {
             who: "Contoso Group",
-            what: "Revenue by region — € thousands",
+            what: "Revenue by region - € thousands",
             when: "FY 2026 vs PY",
           },
           config: {
@@ -129,7 +129,7 @@ export function ExampleReport({ tokens }: { tokens?: IbcsTokens }) {
           span: 6,
           title: {
             who: "Contoso Group",
-            what: "Revenue by quarter — € thousands",
+            what: "Revenue by quarter - € thousands",
             when: "FY 2026 vs PY",
           },
           config: {
@@ -147,7 +147,7 @@ export function ExampleReport({ tokens }: { tokens?: IbcsTokens }) {
           span: 7,
           title: {
             who: "Contoso Group",
-            what: "Operating income bridge — € thousands",
+            what: "Operating income bridge - € thousands",
             when: "FY 2026, Revenue to Operating income",
           },
           message:
@@ -172,7 +172,7 @@ export function ExampleReport({ tokens }: { tokens?: IbcsTokens }) {
           span: 5,
           title: {
             who: "Contoso Group",
-            what: "Revenue by region — € thousands",
+            what: "Revenue by region - € thousands",
             when: "FY 2026 · AC vs PY",
           },
           config: {

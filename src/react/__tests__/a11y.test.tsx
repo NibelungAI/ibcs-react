@@ -12,7 +12,7 @@ afterEach(cleanup);
  * An `<svg>` is a picture: a screen reader can announce its `aria-label` and
  * nothing else. So every component that DRAWS DATA must also render the same
  * numbers as a real, visually-hidden `<table>` (see `ChartDataTable` in
- * `../a11y`) — row headers, column headers, a caption. This suite derives the
+ * `../a11y`) - row headers, column headers, a caption. This suite derives the
  * component list from the shared fixture catalogue, so a new chart is covered
  * the moment it gets a fixture; there is no list to keep in sync here.
  */
@@ -20,7 +20,7 @@ afterEach(cleanup);
 /**
  * Components that legitimately draw an `<svg>` with NO data table. Every entry
  * is a DECORATIVE-BY-DESIGN mark whose numbers are already reachable as text
- * elsewhere in the DOM — not a gap in the contract.
+ * elsewhere in the DOM - not a gap in the contract.
  */
 const DECORATIVE_SVG = new Map<string, string>([
   [
@@ -37,7 +37,7 @@ const DECORATIVE_SVG = new Map<string, string>([
     "svg is the decorative sparkline; the KPI numbers are DOM text in the card",
   ],
   [
-    // A micro-chart with no axes, labels or scale by definition — the shape of a
+    // A micro-chart with no axes, labels or scale by definition - the shape of a
     // series next to the number it belongs to.
     "Sparkline",
     "micro-chart trend hint with no axes or labels; deliberately decorative",
@@ -46,13 +46,13 @@ const DECORATIVE_SVG = new Map<string, string>([
     // Loading placeholder: `variant="chart"` draws grey shapes. There is no data
     // yet, so there is nothing to tabulate.
     "Skeleton",
-    "loading placeholder — grey shapes, no data",
+    "loading placeholder - grey shapes, no data",
   ],
   [
     // The loading state renders the same `Skeleton`; the real chart (with its
     // table) replaces it once data arrives.
     "ChartState",
-    "renders Skeleton while loading — no data",
+    "renders Skeleton while loading - no data",
   ],
 ]);
 
@@ -61,7 +61,7 @@ const DECORATIVE_SVG = new Map<string, string>([
  * container and so never reach the assertion below:
  *  - `ChartTooltip` portals to `document.body` and repeats numbers a hovered
  *    chart already exposes in its own table;
- *  - `ExportMenu` renders only its trigger (a button) plus a menu — no marks.
+ *  - `ExportMenu` renders only its trigger (a button) plus a menu - no marks.
  * They are left out of `DECORATIVE_SVG` on purpose: adding them would claim they
  * draw svg, and the staleness check below would fail.
  */
@@ -82,7 +82,7 @@ describe("chart accessibility: svg charts expose a data table", () => {
     it(`${name} renders a data table beside its svg`, () => {
       const { svg, table } = shapeOf(element);
       if (!svg) {
-        // Not a chart (a table component, a layout wrapper, a report block) —
+        // Not a chart (a table component, a layout wrapper, a report block) -
         // nothing to assert, its content is already semantic DOM.
         expect(svg).toBe(false);
         return;
@@ -108,7 +108,7 @@ describe("chart accessibility: svg charts expose a data table", () => {
     }
     expect(
       stale,
-      `stale decorative-svg exclusion(s): ${stale.join(", ")} — drop them from DECORATIVE_SVG`,
+      `stale decorative-svg exclusion(s): ${stale.join(", ")} - drop them from DECORATIVE_SVG`,
     ).toEqual([]);
   });
 });
@@ -117,7 +117,7 @@ describe("chart accessibility: svg charts expose a data table", () => {
  * REGRESSION (consumer report B1): the visually-hidden recipe must sit on a
  * wrapper `<div>`, never on the `<table>` itself. CSS table layout treats
  * `width`/`height` as a MINIMUM, so a table styled with the 1×1 clip recipe
- * keeps its full-size — invisible but real — layout box, and every ancestor
+ * keeps its full-size - invisible but real - layout box, and every ancestor
  * with `overflow` set grows a phantom scrollbar for it (~344px per chart in
  * the dashboard that reported it). jsdom performs no layout, so scrollHeight
  * cannot be asserted here; what this locks in is the structural contract that
@@ -134,7 +134,7 @@ describe("sr-only chart tables collapse: the hiding style wraps the table, never
       for (const t of container.querySelectorAll("table")) {
         expect(
           carriesClamp(t),
-          `${name} puts the visually-hidden clamp on a <table> — CSS table boxes ignore the 1×1 clamp and inflate ancestor scrollHeight; wrap it in a <div style={srOnly}> instead`,
+          `${name} puts the visually-hidden clamp on a <table> - CSS table boxes ignore the 1×1 clamp and inflate ancestor scrollHeight; wrap it in a <div style={srOnly}> instead`,
         ).toBe(false);
       }
       cleanup();
@@ -142,7 +142,7 @@ describe("sr-only chart tables collapse: the hiding style wraps the table, never
   });
 
   it("svg charts wrap their hidden data table in a div carrying the clamp", () => {
-    // TrendChart stands in for every chart that renders a ChartDataTable — the
+    // TrendChart stands in for every chart that renders a ChartDataTable - the
     // shared component is what's under test, the fixture just mounts it.
     const fixture = cases.find((c) => c.name === "TrendChart");
     const { container } = render(fixture!.element);
@@ -152,7 +152,7 @@ describe("sr-only chart tables collapse: the hiding style wraps the table, never
     expect(wrapper.tagName).toBe("DIV");
     expect(carriesClamp(wrapper)).toBe(true);
     expect(wrapper.style.height).toBe("1px");
-    // The table stays in the accessibility tree — hidden, not removed.
+    // The table stays in the accessibility tree - hidden, not removed.
     expect(wrapper.style.display).not.toBe("none");
     expect(wrapper.getAttribute("aria-hidden")).toBeNull();
     expect(table!.querySelector("caption")).not.toBeNull();
@@ -170,7 +170,7 @@ function rowCells(container: HTMLElement, label: string): string[] {
 
 /**
  * The table must carry the chart's REAL numbers, formatted the way the chart
- * labels them — an empty or placeholder table would satisfy the check above.
+ * labels them - an empty or placeholder table would satisfy the check above.
  * Two representative charts from this pass stand in for the rest.
  */
 describe("chart data tables carry the fixture's formatted values", () => {
@@ -194,7 +194,7 @@ describe("chart data tables carry the fixture's formatted values", () => {
 
     const headers = [...container.querySelectorAll("table thead th")].map((th) => th.textContent);
     expect(headers).toEqual(["", "X", "Y", "Group"]);
-    // Fixture: (1,2) group A, (3,5) group A, (4,1) group B — unlabelled points.
+    // Fixture: (1,2) group A, (3,5) group A, (4,1) group B - unlabelled points.
     expect(rowCells(container, "Point 1")).toEqual(["1", "2", "A"]);
     expect(rowCells(container, "Point 3")).toEqual(["4", "1", "B"]);
   });

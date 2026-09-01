@@ -26,8 +26,8 @@ import { computeWaterfallStatement, type WaterfallStatementLine } from "../water
  * Degenerate-input conformance suite for the pure layout modules.
  *
  * Every layout must survive the four shapes real financial data actually takes
- * at the edges — empty, all-zero, ALL-NEGATIVE (a loss / cost / margin series)
- * and NaN-laced (a broken feed) — plus the single-row case, and for each must
+ * at the edges - empty, all-zero, ALL-NEGATIVE (a loss / cost / margin series)
+ * and NaN-laced (a broken feed) - plus the single-row case, and for each must
  * guarantee the same four invariants:
  *
  *  1. every domain field is finite,
@@ -110,7 +110,7 @@ const SUBJECTS: Subject[] = [
       return { input, run: () => computeWaterfall(flattenVisible(input, new Set())) };
     },
     domains: [["domainMin", "domainMax"]],
-    // `line` is the caller's model, echoed by reference — not our geometry.
+    // `line` is the caller's model, echoed by reference - not our geometry.
     ignore: ["line"],
   },
   {
@@ -223,7 +223,7 @@ const SUBJECTS: Subject[] = [
       }));
       return { input, run: () => computeStructure(input) };
     },
-    // A composition has no value domain — only the `maxAbs` bar scale.
+    // A composition has no value domain - only the `maxAbs` bar scale.
     domains: [],
   },
   {
@@ -335,7 +335,7 @@ describe("nonFinitePaths (the checker guarding every case below)", () => {
 });
 
 for (const subject of SUBJECTS) {
-  describe(`${subject.name} — degenerate input`, () => {
+  describe(`${subject.name} - degenerate input`, () => {
     const ignore = new Set(subject.ignore ?? []);
 
     for (const [shape, values] of Object.entries(VALUE_SETS)) {
@@ -377,7 +377,7 @@ for (const subject of SUBJECTS) {
   });
 }
 
-describe("all-negative regression — the wasted-plot bug", () => {
+describe("all-negative regression - the wasted-plot bug", () => {
   it("gives a small loss series the whole plot instead of an empty upper half", () => {
     // A margin-erosion series: every period is a loss between -0.5 and -0.1.
     const layout = computeTrend([
@@ -386,7 +386,7 @@ describe("all-negative regression — the wasted-plot bug", () => {
       { category: "Mar", AC: -0.1 },
     ]);
     expect(layout.domainMin).toBe(-0.5);
-    // Was 1 before the fix — the data used ~33% of the lane.
+    // Was 1 before the fix - the data used ~33% of the lane.
     expect(layout.domainMax).toBe(0);
   });
 
@@ -423,7 +423,7 @@ describe("missing (non-finite) values never accumulate", () => {
       { category: "COGS", value: 50, flow: "subtract" },
     ];
     const layout = computeBridge(items, "AC", { comparison });
-    // Comparison levels: 0 (NaN skipped) then -50 — finite, so both variances are.
+    // Comparison levels: 0 (NaN skipped) then -50 - finite, so both variances are.
     expect(layout.bars[0]!.variance!.abs).toBe(100);
     expect(layout.bars[1]!.variance!.abs).toBe(90);
   });

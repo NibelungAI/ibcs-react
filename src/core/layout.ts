@@ -106,7 +106,7 @@ export function computeWaterfall(rows: FlatRow[], scenario: ScenarioKey = "AC"):
 }
 
 /**
- * Compute a "stock" (levels) layout — the balance-sheet view. Unlike the
+ * Compute a "stock" (levels) layout - the balance-sheet view. Unlike the
  * waterfall, nothing flows into a running total: every row is an absolute
  * **level**, a full bar from the zero axis to its own value (the ending
  * balance). Subtotals (result lines) and group headers are emphasised (drawn
@@ -127,7 +127,7 @@ export function computeLevels(rows: FlatRow[], scenario: ScenarioKey = "AC"): Wa
     domainMax = Math.max(domainMax, v);
 
     // A subtotal is a result line or any group header (its value is the sum of
-    // its parts) — drawn as the emphasised full bar. Everything else is a leaf
+    // its parts) - drawn as the emphasised full bar. Everything else is a leaf
     // level, a neutral bar from the axis.
     const isSubtotal = (row.line.flow ?? "add") === "result" || row.hasChildren;
     const bar: WaterfallBar = isSubtotal

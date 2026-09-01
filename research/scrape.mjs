@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 /**
- * IBCS reference-material farm — a small, dependency-free crawler.
+ * IBCS reference-material farm - a small, dependency-free crawler.
  *
  * Harvests pages from ibcs.com (text + images + metadata) into research/data/
  * so we can study the official IBCS examples/templates offline and reproduce
  * them faithfully as react-ibcs components. The engine is version-controlled;
  * the harvested data (research/data/) is gitignored and never pushed.
  *
- * Zero npm dependencies — uses Node 18+ built-ins (global fetch, fs, path).
+ * Zero npm dependencies - uses Node 18+ built-ins (global fetch, fs, path).
  *
  * Usage:
  *   node research/scrape.mjs                      # crawl the default seeds
@@ -80,7 +80,7 @@ const ENTITIES = {
   apos: "'",
   nbsp: " ",
   "#8217": "’",
-  "#8211": "–",
+  "#8211": "-",
   "#8220": "“",
   "#8221": "”",
 };
@@ -247,7 +247,7 @@ async function scrapePage(url, manifest, opts, nowIso) {
   try {
     ({ buf: html, type } = await fetchBuf(url));
   } catch (e) {
-    console.warn(`  ✗ ${url} — ${e.message}`);
+    console.warn(`  ✗ ${url} - ${e.message}`);
     return { slug, links: [], error: e.message };
   }
   if (!/text\/html/i.test(type)) return { slug, links: [], skipped: true };
@@ -270,7 +270,7 @@ async function scrapePage(url, manifest, opts, nowIso) {
         const { buf } = await fetchBuf(img.url);
         await writeFile(dest, buf);
       } catch (e) {
-        console.warn(`    (img fail ${img.url} — ${e.message})`);
+        console.warn(`    (img fail ${img.url} - ${e.message})`);
         continue;
       }
       await sleep(120);

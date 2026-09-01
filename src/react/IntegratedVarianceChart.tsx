@@ -37,7 +37,7 @@ export interface IntegratedVarianceChartProps {
   width?: number;
   height?: number;
   /**
-   * Horizontal band layout — the gap between month columns and the lead-in/out
+   * Horizontal band layout - the gap between month columns and the lead-in/out
    * gutter. Omit for the centred default; pass `{ outer: 0 }` to trim the side
    * whitespace so the first/last months sit flush to the month area's edges.
    */
@@ -50,7 +50,7 @@ export interface IntegratedVarianceChartProps {
   /** Inline style merged over the `<svg>`'s own layout style (your keys win). */
   style?: CSSProperties;
   /**
-   * Fired as the pointer moves over / leaves a bottom column (`null` on leave) —
+   * Fired as the pointer moves over / leaves a bottom column (`null` on leave) -
    * for a custom tooltip. Pairs naturally with `useChartHover`. Default undefined.
    */
   onHover?: (hover: ChartHover<IntegratedDatum> | null) => void;
@@ -64,16 +64,16 @@ export interface IntegratedVarianceChartProps {
 }
 
 /**
- * IntegratedVarianceChart — the signature Zebra-BI "integrated" column chart
+ * IntegratedVarianceChart - the signature Zebra-BI "integrated" column chart
  * (IBCS #64/#65): three vertically stacked, perfectly x-aligned panels over
  * one set of categories.
  *
- *  1. TOP — Δ% pins (lollipops): a thin pin from a zero axis, up & green when
+ *  1. TOP - Δ% pins (lollipops): a thin pin from a zero axis, up & green when
  *     favorable, down & red when not, with a % label. Off-scale percents are
  *     pinned to the edge with an arrow; forecast periods get a hollow tip.
- *  2. MIDDLE — Δ absolute bars from a zero line, up favorable / down
+ *  2. MIDDLE - Δ absolute bars from a zero line, up favorable / down
  *     unfavorable, forecast months hatched, signed labels.
- *  3. BOTTOM — the AC column chart: solid actual columns with the comparison
+ *  3. BOTTOM - the AC column chart: solid actual columns with the comparison
  *     drawn in its own IBCS notation (PY solid grey behind, or PL a hollow
  *     white frame), forecast months hatched, value labels above. An optional
  *     full-year TOTAL column (optionally stacked) sits apart to the right.
@@ -150,7 +150,7 @@ export const IntegratedVarianceChart = forwardRef<SVGSVGElement, IntegratedVaria
     const colTopY = cursor;
     const colBase = colTopY + colPanelH;
 
-    // X layout — identical month bands across ALL panels. The FY area is reserved
+    // X layout - identical month bands across ALL panels. The FY area is reserved
     // on the right everywhere (drawn only in the bottom panel) so the months stay
     // pixel-aligned across the three panels.
     const innerW = width - padL - padR;
@@ -221,7 +221,7 @@ export const IntegratedVarianceChart = forwardRef<SVGSVGElement, IntegratedVaria
     };
 
     // Screen-reader data table: each period's AC, the comparison, and the Δ / Δ%
-    // (plus the full-year total) — values, not the decorative svg.
+    // (plus the full-year total) - values, not the decorative svg.
     const a11yColumns = ["AC", comparison, `Δ${comparison}`, `Δ${comparison}%`];
     const a11yRows: ChartDataRow[] = cells.map((c) => ({
       label: c.isForecast ? `${c.category} (FC)` : c.category,
@@ -341,7 +341,7 @@ export const IntegratedVarianceChart = forwardRef<SVGSVGElement, IntegratedVaria
                         fill={color}
                       />
                     ) : c.isForecast ? (
-                      // Forecast: a hollow (outlined) square tip — "expected".
+                      // Forecast: a hollow (outlined) square tip - "expected".
                       <rect
                         x={cx - 3.2}
                         y={tipY - 3.2}
@@ -644,8 +644,8 @@ export const IntegratedVarianceChart = forwardRef<SVGSVGElement, IntegratedVaria
         <ChartDataTable
           caption={
             title
-              ? `${title} — data table`
-              : `Integrated variance of AC versus ${comparison} — data table`
+              ? `${title} - data table`
+              : `Integrated variance of AC versus ${comparison} - data table`
           }
           columns={a11yColumns}
           rows={a11yRows}

@@ -16,7 +16,7 @@ const DATA = [
 ];
 
 /**
- * All eight token presets, same data and same props — only `tokens` differs.
+ * All eight token presets, same data and same props - only `tokens` differs.
  * Each card paints itself with the preset's own `color.surface`, so the Dark
  * preset shows on the surface it was designed for.
  */

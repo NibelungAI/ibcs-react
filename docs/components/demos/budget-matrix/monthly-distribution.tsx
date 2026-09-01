@@ -6,7 +6,7 @@ import { monthlyRevenueDistribution } from "@/lib/demo-data/budget-matrix";
 
 /**
  * The matrix answers "what are the numbers"; this answers "how does the year
- * build up" — the same revenue, spread across 12 months, compared against
+ * build up" - the same revenue, spread across 12 months, compared against
  * either Plan or Previous year. Clicking a column reports the selection.
  */
 export function MonthlyDistribution() {
@@ -87,8 +87,8 @@ export function MonthlyDistribution() {
         comparison={base}
         title={
           base === "PL"
-            ? "Revenue by month — Actual vs Plan"
-            : "Revenue by month — Actual vs Previous year"
+            ? "Revenue by month - Actual vs Plan"
+            : "Revenue by month - Actual vs Previous year"
         }
         width={920}
         height={320}
@@ -97,7 +97,7 @@ export function MonthlyDistribution() {
         onSelect={(sel) => setSelected(sel.datum?.category ?? null)}
       />
       <div style={{ fontSize: 12.5, color: "#6b6a64", marginTop: 8 }}>
-        Selected month: <b>{selected ?? "none"}</b> — wire `onSelect` to filter the matrix above.
+        Selected month: <b>{selected ?? "none"}</b> - wire `onSelect` to filter the matrix above.
       </div>
     </div>
   );

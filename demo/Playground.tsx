@@ -13,7 +13,7 @@ import { sampleRevenueStructure, sampleQuarterlyRevenue } from "../src/demo/samp
 
 /**
  * The interactive flagship: one filter bar (built on `useFilters`) drives a KPI
- * strip, a region structure chart, a quarter column chart and a region table —
+ * strip, a region structure chart, a quarter column chart and a region table -
  * every view re-renders from the same filtered model. A live-data toggle
  * (`useLiveData`) jitters the source on an interval so the charts tween to new
  * values, and the scenario toggle (AC vs PY / PL / FC) flows everywhere.
@@ -45,13 +45,13 @@ const baseQuarters: ColumnDatum[] = sampleQuarterlyRevenue.map((q) => ({
   FC: Math.round(q.AC * 1.03),
 }));
 
-/** A region datum as authored here — `category` known present, plus an FC. */
+/** A region datum as authored here - `category` known present, plus an FC. */
 type Region = (typeof baseRegions)[number];
 
 const ALL_REGIONS = baseRegions.map((r) => r.category);
 const ALL_QUARTERS = baseQuarters.map((q) => q.category);
 
-/** Jitter every scenario value ±pct, preserving shape — the "live" feed. */
+/** Jitter every scenario value ±pct, preserving shape - the "live" feed. */
 function jitter<T extends object>(rows: readonly T[], pct = 0.1): T[] {
   const j = (v: number) => Math.round(v * (1 + (Math.random() * 2 - 1) * pct));
   return rows.map((d) => {
@@ -86,7 +86,7 @@ export function Playground({ tokens }: { tokens: IbcsTokens }) {
     ? feed.data
     : { regions: baseRegions, quarters: baseQuarters };
 
-  // The two filtered views every section reads from — recomputed on any change.
+  // The two filtered views every section reads from - recomputed on any change.
   const regionData = useMemo(
     () => source.regions.filter((r) => regions.includes(r.category)),
     [source.regions, regions],
@@ -151,7 +151,7 @@ export function Playground({ tokens }: { tokens: IbcsTokens }) {
           </div>
           <p style={{ fontSize: 12.5, color: "#6b6a64", margin: "4px 0 0", maxWidth: 620 }}>
             One filter bar, four linked views. Pick a comparison base, toggle regions and quarters,
-            and stream live data — the KPIs, structure chart, quarter chart and table all re-render
+            and stream live data - the KPIs, structure chart, quarter chart and table all re-render
             from the same filtered model.
           </p>
         </div>
@@ -269,7 +269,7 @@ export function Playground({ tokens }: { tokens: IbcsTokens }) {
 
       {/* ----- charts + table (all react to filters) ----- */}
       <div style={{ display: "flex", flexWrap: "wrap", gap: 18 }}>
-        <Panel title={`Revenue by region — AC vs ${comparison}`} sub={BASE_LABELS[comparison]}>
+        <Panel title={`Revenue by region - AC vs ${comparison}`} sub={BASE_LABELS[comparison]}>
           {regionData.length ? (
             <StructureChart
               key={comparison}
@@ -286,7 +286,7 @@ export function Playground({ tokens }: { tokens: IbcsTokens }) {
         </Panel>
 
         <Panel
-          title={`Revenue by quarter — AC vs ${comparison}`}
+          title={`Revenue by quarter - AC vs ${comparison}`}
           sub={`${quarters.length} of ${ALL_QUARTERS.length} quarters`}
         >
           {quarterData.length ? (

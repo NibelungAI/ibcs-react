@@ -1,5 +1,5 @@
 /**
- * Pure layout for IBCS chart-template **C12** — a P&L calculation scheme drawn
+ * Pure layout for IBCS chart-template **C12** - a P&L calculation scheme drawn
  * as TWO side-by-side vertical waterfalls (a comparison lane and an Actual lane)
  * plus an absolute- and a relative-variance tier, all row-aligned to the P&L
  * lines.
@@ -16,7 +16,7 @@
  * {@link computeBridge} (run once per lane); everything here is the C12-specific
  * pairing, shared-scale merge and per-line variance.
  *
- * Pure and SSR-safe — no DOM / time / randomness, and never returns `NaN`: a
+ * Pure and SSR-safe - no DOM / time / randomness, and never returns `NaN`: a
  * non-finite value is MISSING (it contributes 0 to its lane's run), and a
  * degenerate all-zero domain widens to a safe `[0, 1]` while an all-negative
  * statement keeps `domainMax === 0`.
@@ -38,20 +38,20 @@ export interface WaterfallStatementLine {
   label: string;
   /** Actual value (the dark lane). */
   ac: number;
-  /** Comparison value — previous year / plan (the grey lane). */
+  /** Comparison value - previous year / plan (the grey lane). */
   base: number;
   /**
    * How the line moves the running total:
    *  - "add"      (default): up by the value (revenue, income)
    *  - "subtract": down by the value (cost, expense, tax)
-   *  - "result":  a checkpoint subtotal — a full bar from zero to the running
+   *  - "result":  a checkpoint subtotal - a full bar from zero to the running
    *               total, which it does NOT advance (Sales revenue, EBIT, …)
    */
   flow?: "add" | "subtract" | "result";
   /**
    * Whether a higher value is good here. Default true; set false on cost /
    * expense / tax lines so an increase reads as unfavorable (red). Drives the
-   * variance colour only — never the geometry.
+   * variance colour only - never the geometry.
    */
   higherIsBetter?: boolean;
 }
@@ -64,7 +64,7 @@ export interface WsLaneBar {
   to: number;
   /** Signed amount applied to the running total (0 for a result). */
   delta: number;
-  /** True for a "result" row — a full, emphasised bar from zero. */
+  /** True for a "result" row - a full, emphasised bar from zero. */
   isTotal: boolean;
   /** Visual travel: "up" when `to >= from`, else "down". */
   direction: "up" | "down";
@@ -133,7 +133,7 @@ export interface ComputeWaterfallStatementOptions {
   clampPct?: number;
   /**
    * A |Δ| beyond this is drawn as an off-scale bar (arrow tip). Default
-   * `Infinity` — the absolute tier auto-scales to its own max so nothing is
+   * `Infinity` - the absolute tier auto-scales to its own max so nothing is
    * off-scale unless the caller opts into a fixed clamp.
    */
   clampAbs?: number;
@@ -155,7 +155,7 @@ function toDatum(value: number, flow: "add" | "subtract" | "result"): WaterfallD
  * bridge accumulation once for the comparison values and once for the actuals,
  * merges their domains so BOTH lanes share a single value→pixel scale, and
  * computes each row's variance on its representative value (the running-total
- * LEVEL for result rows, the line's own value otherwise — matching how the
+ * LEVEL for result rows, the line's own value otherwise - matching how the
  * IBCS C12 reference labels ΔPY).
  *
  * @param lines the P&L lines, top-to-bottom

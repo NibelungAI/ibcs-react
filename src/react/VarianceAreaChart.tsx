@@ -30,20 +30,20 @@ export interface VarianceAreaChartProps {
   /** The periods, in order. Each carries an actual, a reference, and maybe FC. */
   data: VarianceAreaDatum[];
   /**
-   * First index of the forecast tail — points from here on are drawn hatched
+   * First index of the forecast tail - points from here on are drawn hatched
    * (and use `FC` when present). Omit for an all-actual series.
    */
   forecastFrom?: number;
   /** Tag shown beside the reference (Ø average) line. Default "Ø". */
   referenceLabel?: string;
-  /** Whether a higher value is good — set false for cost series. Default true. */
+  /** Whether a higher value is good - set false for cost series. Default true. */
   higherIsBetter?: boolean;
   /** Total-variance mark: a filled "bar" (default) or a "pin" (line + dot). */
   mark?: "bar" | "pin";
   width?: number;
   height?: number;
   /**
-   * Horizontal point spacing — the lead-in/out gutter at the plot edges. Omit
+   * Horizontal point spacing - the lead-in/out gutter at the plot edges. Omit
    * for the centred default; pass `{ outer: 0 }` to anchor the first/last points
    * to the edges so the series fills the plot width (no side whitespace).
    */
@@ -56,7 +56,7 @@ export interface VarianceAreaChartProps {
   /** Inline style merged over the `<svg>`'s own layout style (your keys win). */
   style?: CSSProperties;
   /**
-   * Fired as the pointer moves over / leaves a period (`null` on leave) — for a
+   * Fired as the pointer moves over / leaves a period (`null` on leave) - for a
    * custom tooltip. Pairs naturally with `useChartHover`. Default undefined.
    */
   onHover?: (hover: ChartHover<VarianceAreaDatum> | null) => void;
@@ -74,8 +74,8 @@ export interface VarianceAreaChartProps {
  *
  * A dark ACTUAL line sits over a light-grey REFERENCE area (Ø average / PY / PL,
  * filled from the zero baseline up to the reference level). The GAP between them
- * is filled by favorability — green where actual is favorable vs the reference,
- * red where unfavorable (impact, via `higherIsBetter`) — split cleanly at every
+ * is filled by favorability - green where actual is favorable vs the reference,
+ * red where unfavorable (impact, via `higherIsBetter`) - split cleanly at every
  * crossing. An optional FORECAST tail (`forecastFrom` onward) is hatched, and a
  * small total-variance bar/pin with a signed % label sits on the right.
  *
@@ -368,7 +368,7 @@ export const VarianceAreaChart = forwardRef<SVGSVGElement, VarianceAreaChartProp
             strokeWidth={1}
           />
 
-          {/* Reference (Ø) line — the top edge of the grey area */}
+          {/* Reference (Ø) line - the top edge of the grey area */}
           {n >= 2 && (
             <path
               d={linePath(refLine)}
@@ -534,7 +534,7 @@ export const VarianceAreaChart = forwardRef<SVGSVGElement, VarianceAreaChartProp
             })}
         </svg>
         <ChartDataTable
-          caption={title ? `${title} — data table` : `Actual versus ${referenceLabel} — data table`}
+          caption={title ? `${title} - data table` : `Actual versus ${referenceLabel} - data table`}
           columns={a11yColumns}
           rows={a11yRows}
         />

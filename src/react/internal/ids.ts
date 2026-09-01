@@ -2,7 +2,7 @@
  * Id-collection helpers shared by the controlled-state components.
  *
  * Every table (and `useStatement`) accepts its controlled sets as either an
- * array or a `Set` — friendlier for callers keeping the ids in URL state or in
+ * array or a `Set` - friendlier for callers keeping the ids in URL state or in
  * a store. They all normalized that the same way, in four private copies; this
  * is the one implementation.
  *

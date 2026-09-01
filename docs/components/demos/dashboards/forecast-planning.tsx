@@ -17,7 +17,7 @@ const forecastMatrixRows: MatrixRow[] = [
   { id: "ebit", label: "EBIT", flow: "result" },
 ];
 
-/** H1 closed on actuals, H2 still on forecast — set per period. */
+/** H1 closed on actuals, H2 still on forecast - set per period. */
 const forecastMatrixCols: MatrixPeriod[] = [
   { id: "q1", label: "Q1", scenarios: ["PL", "AC"] },
   { id: "q2", label: "Q2", scenarios: ["PL", "AC"] },
@@ -47,7 +47,7 @@ const forecastMatrixValues: MatrixValues = {
 };
 
 /**
- * 7 · Forecast and planning — Atlas Industrial.
+ * 7 · Forecast and planning - Atlas Industrial.
  * A 9+3 view: nine actual months plus a forecast tail against plan, the EBIT
  * build-up with an FY landing bar, and a matrix whose scenarios switch from
  * AC to FC at the half-year.

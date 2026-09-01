@@ -1,6 +1,6 @@
 ---
 title: Interaction & data
-description: Tooltips, onHover and onSelect, controlled tables, async data with useAsyncData — and the ChartBox sizing wrappers that fit a chart to its space.
+description: Tooltips, onHover and onSelect, controlled tables, async data with useAsyncData - and the ChartBox sizing wrappers that fit a chart to its space.
 ---
 
 import { VarianceColumnChart, StructureChart } from "ibcs-react";
@@ -20,28 +20,28 @@ and adds no dependencies.
 
 ## Hover tooltips
 
-Every chart that draws interactive marks — and `StatementTable`'s rows — shows a
+Every chart that draws interactive marks - and `StatementTable`'s rows - shows a
 floating tooltip. It is **on by default**: `tooltip` defaults to `true`, so
 there is nothing to wire.
 
 What it does today, exactly:
 
-- **Trigger** — a pointer within a few pixels of the mark itself (the generous
+- **Trigger** - a pointer within a few pixels of the mark itself (the generous
   hit band stays for clicks, but the tooltip no longer fires over blank plot
   space), keyboard focus on a selectable mark, or a tap on touch, where the
   panel anchors to the mark rather than the finger.
-- **Placement** — on the client it renders into a `document.body` portal, so
+- **Placement** - on the client it renders into a `document.body` portal, so
   an ancestor with `transform`, `filter` or `overflow` (a dashboard shell, a
   `ChartBox`) can neither clip it nor re-anchor it. It sits 16 px from the
   pointer and flips to the other side at the right or bottom viewport edge, and
   it never captures the pointer.
-- **Content** — the category as the title, the value, the comparison value and
+- **Content** - the category as the title, the value, the comparison value and
   the impact-coloured delta, printed at **full precision** even when the chart's
   own labels are compact: the tooltip is where you go for the exact figure.
-- **Dismissal** — `Escape` hides it without moving the pointer or focus
+- **Dismissal** - `Escape` hides it without moving the pointer or focus
   (WCAG 1.4.13), a tap elsewhere dismisses a tap-anchored one, and leaving or
   blurring the mark clears it.
-- **At rest** — nothing is rendered. The server output is just the `<svg>`, so
+- **At rest** - nothing is rendered. The server output is just the `<svg>`, so
   there is no stray panel in static HTML or in a print.
 
 <Frame>
@@ -66,7 +66,7 @@ What it does today, exactly:
 ```tsx
 import { VarianceColumnChart } from "ibcs-react";
 
-// On by default — hover, focus or tap a column.
+// On by default - hover, focus or tap a column.
 <VarianceColumnChart data={data} comparison="PY" />
 
 // Opt out, or listen yourself with the mirror of onSelect:
@@ -74,7 +74,7 @@ import { VarianceColumnChart } from "ibcs-react";
 ```
 
 `onHover` fires with `{ category, scenario?, value, datum, x, y }` as the
-pointer moves over a mark and with `null` when it leaves — the same payload as
+pointer moves over a mark and with `null` when it leaves - the same payload as
 `onSelect` plus the pointer's viewport coordinates.
 
 ## Custom tooltips
@@ -126,7 +126,7 @@ works, so the same panel can label a custom SVG shape.
 
 `VarianceColumnChart`, `StructureChart`, `TrendChart`, `StackedChart` and
 `PieChart` take an optional `onSelect`. Click any mark and it fires
-`{ category, scenario?, value, datum }` — the whole element is a click target,
+`{ category, scenario?, value, datum }` - the whole element is a click target,
 the cursor turns to a pointer, and the mark is reachable and activatable by
 keyboard. Omit the prop and nothing changes: no visual, no behaviour.
 
@@ -170,7 +170,7 @@ which categories a detail table or a second chart should show.
 
 Every stateful table follows the React convention: a `default*` prop seeds the
 uncontrolled behaviour, and a value + `on*Change` pair hands the state to you.
-Provide the controlled value and the table never mutates it — it only reports
+Provide the controlled value and the table never mutates it - it only reports
 what the next state would be, which is what makes URL sync, persistence and two
 views kept in step possible.
 
@@ -181,7 +181,7 @@ views kept in step possible.
 | `MatrixTable`    | `defaultExpandedRows`, `defaultExpandedCols`                 | `expandedRows` + `onExpandedRowsChange`, `expandedCols` + `onExpandedColsChange` |
 
 Note the matrix's polarity: it names what is **open**, because its period
-columns deliberately start collapsed — a matrix opens year by year.
+columns deliberately start collapsed - a matrix opens year by year.
 
 The sort below is owned by the page. Header clicks and the buttons write to the
 same state, so they can never disagree:
@@ -212,7 +212,7 @@ const [collapsed, setCollapsed] = useState<string[]>(["opex"]);
 <StatementTable lines={lines} collapsed={collapsed} onCollapsedChange={setCollapsed} />;
 ```
 
-Leave the controlled props off and the table owns its state as before —
+Leave the controlled props off and the table owns its state as before -
 `onCollapsedChange` then acts as a plain observer, useful for analytics.
 The same engine is available on its own as
 [useStatement](/docs/hooks#usestatement) when you render your own statement
@@ -228,7 +228,7 @@ fetcher an `AbortSignal`, cancels in-flight requests on unmount, refetch or an
 fetches during render, so it is SSR-safe.
 
 `ChartState` is its rendering counterpart: a skeleton while loading, an error
-message with an optional retry, an empty state, or your content — each slot
+message with an optional retry, an empty state, or your content - each slot
 overridable through `renderLoading` / `renderError` / `renderEmpty`. The demo
 below uses a mock fetcher that resolves after about 0.9 s.
 
@@ -241,7 +241,7 @@ import { useAsyncData, ChartState, StatementTable } from "ibcs-react";
 
 function LivePnl() {
   const { data, loading, refreshing, error, refetch } = useAsyncData(
-    // The fetcher gets an AbortSignal — forward it to fetch().
+    // The fetcher gets an AbortSignal - forward it to fetch().
     (signal) => fetch("/api/pnl", { signal }).then((r) => r.json()),
     { refreshMs: 30_000, keepPreviousData: true },
   );
@@ -262,7 +262,7 @@ function LivePnl() {
 }
 ```
 
-For a timer-driven feed with no network behind it — a demo, a monitoring wall —
+For a timer-driven feed with no network behind it - a demo, a monitoring wall -
 reach for [useLiveData](/docs/hooks#uselivedata) instead.
 
 ## Sizing and fit
@@ -273,15 +273,15 @@ that must not collide. To fit one into a fluid layout, wrap it the way you would
 fit a picture into a frame.
 
 `ChartBox` is the one sizing primitive. Pick a `fit` and it re-renders the chart
-at the resolved integer size — unlike scaling a bitmap, text and strokes stay
+at the resolved integer size - unlike scaling a bitmap, text and strokes stay
 crisp:
 
-- `"scale"` (default) — fill the available width keeping the aspect ratio, but
+- `"scale"` (default) - fill the available width keeping the aspect ratio, but
   never below `minWidth`; past that it scrolls. The everyday responsive choice.
-- `"contain"` — scale to fit both dimensions, then letterbox and align the spare
+- `"contain"` - scale to fit both dimensions, then letterbox and align the spare
   space. Needs a bounded height (`maxHeight`).
-- `"fixed"` — always the intrinsic size; the container scrolls around it.
-- `"fill"` — stretch to the box: the width fills, the height is `maxHeight` or
+- `"fixed"` - always the intrinsic size; the container scrolls around it.
+- `"fill"` - stretch to the box: the width fills, the height is `maxHeight` or
   the intrinsic height.
 
 Switch the mode and resize the window to feel each:
@@ -345,8 +345,8 @@ can use directly for your own containers.
 
 ## Where to next
 
-- [Hooks](/docs/hooks) — the full signatures of `useChartSelection`,
+- [Hooks](/docs/hooks) - the full signatures of `useChartSelection`,
   `useChartHover`, `useAsyncData` and the rest.
-- [Accessibility](/docs/accessibility) — keyboard reachability of selectable
+- [Accessibility](/docs/accessibility) - keyboard reachability of selectable
   marks, and how the tooltip satisfies WCAG 1.4.13.
-- [Playground](/playground) — the same interaction wiring on live data.
+- [Playground](/playground) - the same interaction wiring on live data.

@@ -1,16 +1,16 @@
 /**
- * Center-label "flanking" comparison table — the IBCS table templates T01/T02.
+ * Center-label "flanking" comparison table - the IBCS table templates T01/T02.
  *
  * Where `DataTable` puts the row labels on the LEFT and stacks every measure to
  * their right, the IBCS reference (ibcs.com T01/T02) places the row labels in
  * the CENTRE and flanks them with two symmetric column groups: a current period
  * on the left (e.g. "November") and a year-to-date on the right (e.g.
- * "January–November"). Each group repeats the same measures (PY / PL / AC and
+ * "January-November"). Each group repeats the same measures (PY / PL / AC and
  * the AC-vs-base variances).
  *
  * Rows are a BUILD-UP: a group's detail rows come first, then the group itself
  * renders as a BOLD subtotal (summed from its children), and an optional grand
- * total closes the table with a heavier rule. This module is pure data — it
+ * total closes the table with a heavier rule. This module is pure data - it
  * reuses the `DataTableRow` / `DataTableColumn` model and the variance maths
  * from {@link ./datatable}, and hands the React layer a fully-resolved model.
  */
@@ -177,7 +177,7 @@ function buildTotalRow(
 
 /**
  * Resolve the build-up render model: detail rows first, then each group's bold
- * subtotal, then an optional grand total — flanked by two resolved column sets.
+ * subtotal, then an optional grand total - flanked by two resolved column sets.
  */
 export function buildComparisonModel(
   rows: DataTableRow[],

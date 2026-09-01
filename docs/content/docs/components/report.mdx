@@ -1,19 +1,19 @@
 ---
 title: Report
-description: Render a whole report from a JSON ReportConfig — a responsive grid of KPI, chart, statement, table and text blocks.
+description: Render a whole report from a JSON ReportConfig - a responsive grid of KPI, chart, statement, table and text blocks.
 ---
 
 import { Report } from "ibcs-react";
 
 One component renders an entire page from a serializable `ReportConfig`: a
 structured Who / What / When title, a key message, and a responsive grid of
-blocks. Each block names its type, its span on the grid, and a config object —
+blocks. Each block names its type, its span on the grid, and a config object -
 so a report is data you can store, version and generate, not hand-written JSX.
 
 ## When to use
 
 Assembling a dynamic report from cards and blocks that are authored, stored or
-produced elsewhere — a report builder, a saved layout, a server-generated
+produced elsewhere - a report builder, a saved layout, a server-generated
 dashboard. When the layout is fixed and hand-written, compose the individual
 components directly instead.
 
@@ -22,7 +22,7 @@ components directly instead.
 <Frame>
   <Report
     config={{
-      title: { who: "Acme", what: "Revenue — EUR thousands", when: "FY 2026 vs PY" },
+      title: { who: "Acme", what: "Revenue - EUR thousands", when: "FY 2026 vs PY" },
       message: "Up 17.5% on prior year.",
       columns: 12,
       blocks: [
@@ -75,7 +75,7 @@ components directly instead.
 import { Report } from "ibcs-react";
 
 const config = {
-  title: { who: "Acme", what: "Revenue — EUR thousands", when: "FY 2026 vs PY" },
+  title: { who: "Acme", what: "Revenue - EUR thousands", when: "FY 2026 vs PY" },
   message: "Up 17.5% on prior year.",
   columns: 12,
   blocks: [
@@ -96,23 +96,23 @@ const config = {
 ## Blocks
 
 Every block carries an `id`, an optional `span` (columns of the grid, which
-defaults per type), an optional structured `title` and an optional `message` —
+defaults per type), an optional structured `title` and an optional `message` -
 the interpretive one-liner, kept separate from the neutral title. The `type`
 then selects the renderer and the shape of `config`:
 
 | `type`      | Renders                                            | `config`                                                                      |
 | ----------- | -------------------------------------------------- | ----------------------------------------------------------------------------- |
-| `kpi`       | [KpiCard](/docs/components/kpi-card)               | `KpiConfig` — label, scenario values, comparisons, format, optional sparkline |
-| `chart`     | `ConfiguredChart`                                  | `ChartConfig` — a `type` plus that chart's data and options                   |
-| `statement` | [StatementTable](/docs/components/statement-table) | `StatementBlockConfig` — lines, mode, variance columns, format                |
-| `table`     | [DataTable](/docs/components/data-table)           | `TableBlockConfig` — columns, rows, totals, initial sort, format              |
+| `kpi`       | [KpiCard](/docs/components/kpi-card)               | `KpiConfig` - label, scenario values, comparisons, format, optional sparkline |
+| `chart`     | `ConfiguredChart`                                  | `ChartConfig` - a `type` plus that chart's data and options                   |
+| `statement` | [StatementTable](/docs/components/statement-table) | `StatementBlockConfig` - lines, mode, variance columns, format                |
+| `table`     | [DataTable](/docs/components/data-table)           | `TableBlockConfig` - columns, rows, totals, initial sort, format              |
 | `text`      | Prose                                              | the block's own `title`, `message` and `body` (blank lines split paragraphs)  |
 
 Below 760px the grid collapses to a single column, so every block spans the
 full width.
 
 Chart blocks go through `ConfiguredChart`, which validates the config and
-renders a readable message instead of throwing when it is invalid — 11 of the
+renders a readable message instead of throwing when it is invalid - 11 of the
 23 chart components are reachable this way. Use `validateReportConfig` to check
 an untrusted (JSON-authored) report before rendering it.
 

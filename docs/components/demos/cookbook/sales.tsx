@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Report cookbook — Sales. One component per recipe; each renders the
+ * Report cookbook - Sales. One component per recipe; each renders the
  * exact snippet printed next to it in `content/docs/cookbook.mdx`.
  */
 import {
@@ -16,7 +16,7 @@ import {
 } from "ibcs-react";
 import { CARD_W, fM, fK, fN, C, L, S, varCols } from "@/lib/demo-data/cookbook";
 
-/** Revenue by product line — Aurora Retail · € m · AC vs PY */
+/** Revenue by product line - Aurora Retail · € m · AC vs PY */
 export function RevenueByProductLine() {
   return (
     <StructureChart
@@ -36,7 +36,7 @@ export function RevenueByProductLine() {
   );
 }
 
-/** Revenue by channel — Aurora Retail · € m · channel mix over quarters */
+/** Revenue by channel - Aurora Retail · € m · channel mix over quarters */
 export function RevenueByChannel() {
   return (
     <StackedChart
@@ -72,7 +72,7 @@ export function RevenueByChannel() {
   );
 }
 
-/** Sales-rep leaderboard — Vector Software · € k · bookings AC vs PY */
+/** Sales-rep leaderboard - Vector Software · € k · bookings AC vs PY */
 export function SalesRepLeaderboard() {
   return (
     <DataTable
@@ -111,7 +111,7 @@ export function SalesRepLeaderboard() {
   );
 }
 
-/** Sales pipeline funnel — Vector Software · count · stage drop-off */
+/** Sales pipeline funnel - Vector Software · count · stage drop-off */
 export function SalesPipelineFunnel() {
   return (
     <StructureChart
@@ -133,7 +133,7 @@ export function SalesPipelineFunnel() {
   );
 }
 
-/** Win rate by region — Vector Software · % · AC vs PY */
+/** Win rate by region - Vector Software · % · AC vs PY */
 export function WinRateByRegion() {
   return (
     <DataTable
@@ -172,7 +172,7 @@ export function WinRateByRegion() {
   );
 }
 
-/** Quota attainment by team — Vector Software · % · AC vs target (PL=100) */
+/** Quota attainment by team - Vector Software · % · AC vs target (PL=100) */
 export function QuotaAttainmentByTeam() {
   return (
     <VarianceColumnChart
@@ -191,7 +191,7 @@ export function QuotaAttainmentByTeam() {
   );
 }
 
-/** Bookings vs target — Vector Software · € m · monthly AC vs PL */
+/** Bookings vs target - Vector Software · € m · monthly AC vs PL */
 export function BookingsVsTarget() {
   return (
     <TrendChart
@@ -213,7 +213,7 @@ export function BookingsVsTarget() {
   );
 }
 
-/** Discount vs deal size — Vector Software · won deals this quarter */
+/** Discount vs deal size - Vector Software · won deals this quarter */
 export function DiscountVsDealSize() {
   return (
     <ScatterChart
@@ -238,7 +238,7 @@ export function DiscountVsDealSize() {
   );
 }
 
-/** New vs existing business — Aurora Retail · € m · quarterly split */
+/** New vs existing business - Aurora Retail · € m · quarterly split */
 export function NewVsExistingBusiness() {
   return (
     <StackedChart
@@ -261,7 +261,7 @@ export function NewVsExistingBusiness() {
   );
 }
 
-/** Average deal size trend — Vector Software · € k · 12 months (dense) */
+/** Average deal size trend - Vector Software · € k · 12 months (dense) */
 export function AverageDealSizeTrend() {
   return (
     <LineChart
@@ -287,7 +287,7 @@ export function AverageDealSizeTrend() {
   );
 }
 
-/** Top accounts by revenue — Aurora Retail · € k · AC vs PY (sortable) */
+/** Top accounts by revenue - Aurora Retail · € k · AC vs PY (sortable) */
 export function TopAccountsByRevenue() {
   return (
     <DataTable
@@ -326,7 +326,7 @@ export function TopAccountsByRevenue() {
   );
 }
 
-/** Regional bookings — small multiples — Vector Software · € m · AC vs PY */
+/** Regional bookings - small multiples - Vector Software · € m · AC vs PY */
 export function RegionalBookingsSmallMultiples() {
   return (
     <div style={{ width: CARD_W }}>
@@ -357,7 +357,7 @@ export function RegionalBookingsSmallMultiples() {
   );
 }
 
-/** Discount analysis by tier — Aurora Retail · % · AC vs PY (cost-like) */
+/** Discount analysis by tier - Aurora Retail · % · AC vs PY (cost-like) */
 export function DiscountAnalysisByTier() {
   return (
     <VarianceColumnChart
@@ -377,7 +377,7 @@ export function DiscountAnalysisByTier() {
   );
 }
 
-/** Lost-deal reasons — Vector Software · count · this quarter */
+/** Lost-deal reasons - Vector Software · count · this quarter */
 export function LostDealReasons() {
   return (
     <StructureChart

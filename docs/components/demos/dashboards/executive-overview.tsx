@@ -4,7 +4,7 @@ import { KpiCard, ScrollChart, StructureChart, TrendChart, WaterfallChart } from
 import { Dashboard, DashGrid, KpiStrip, Panel, series } from "./dashboard-layout";
 
 /**
- * 1 · Executive overview — Contoso Group.
+ * 1 · Executive overview - Contoso Group.
  * KPI strip, an operating-income bridge, revenue structure by region and a
  * full 12-month trend that scrolls sideways instead of squashing.
  */
@@ -76,7 +76,7 @@ export function ExecutiveOverview() {
         </Panel>
       </DashGrid>
 
-      <Panel title="Revenue — 12 months, AC / FC vs PY" span2>
+      <Panel title="Revenue - 12 months, AC / FC vs PY" span2>
         {/* ScrollChart fills the wide panel on a laptop and keeps 760px,
             scrolling sideways on a phone instead of squashing 12 months. */}
         <ScrollChart height={250} minWidth={760}>

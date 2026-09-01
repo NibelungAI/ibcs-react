@@ -188,10 +188,10 @@ describe("KpiCard", () => {
     expect(screen.getByText("100")).toBeTruthy();
   });
 
-  it("skips the count-up under prefers-reduced-motion — even with animate on (the default)", () => {
+  it("skips the count-up under prefers-reduced-motion - even with animate on (the default)", () => {
     // Consumer report D5.1 assumed the default count-up ignores the OS motion
-    // preference. It never did — `useAnimatedValue` collapses to the target
-    // when the media query matches — but nothing pinned that down. This does:
+    // preference. It never did - `useAnimatedValue` collapses to the target
+    // when the media query matches - but nothing pinned that down. This does:
     // reduced motion + `animate` → final figure immediately, zero frames.
     vi.stubGlobal(
       "matchMedia",
@@ -212,7 +212,7 @@ describe("KpiCard", () => {
   });
 
   it('renders percentage-point deltas for unit:"ratio" and drops the relative delta', () => {
-    // Consumer report D3: a margin KPI showed "+0.6" and "+0.9%" — the second
+    // Consumer report D3: a margin KPI showed "+0.6" and "+0.9%" - the second
     // being the relative change OF a percentage, which reads as points and
     // misleads. Declared a ratio, the delta is "+0.6pp" and nothing else.
     render(
@@ -250,7 +250,7 @@ describe("KpiCard", () => {
     );
 
     // The affix is a separate muted span, so the headline's own text is the
-    // bare number — but it reads as one figure.
+    // bare number - but it reads as one figure.
     expect(screen.getByText("30.1M")).toBeTruthy();
     expect(document.body.textContent).toContain("€30.1M");
     expect(document.body.textContent).toContain("18.4%");
@@ -269,7 +269,7 @@ describe("ChartState", () => {
       </ChartState>,
     );
 
-    // An error replaces the content — assertive, not a polite status update.
+    // An error replaces the content - assertive, not a polite status update.
     expect(screen.getByRole("alert").textContent).toContain("boom");
     expect(screen.queryByRole("status")).toBeNull();
 
@@ -313,7 +313,7 @@ describe("checkIbcs report table blocks", () => {
 });
 
 describe("ChartBox single-child form", () => {
-  it("clones the resolved size onto a lone chart element — no render-prop needed", () => {
+  it("clones the resolved size onto a lone chart element - no render-prop needed", () => {
     // `fit="fixed"` sizes from the intrinsic props alone, so jsdom's zero-size
     // measurements don't matter and the child renders immediately.
     const { container } = render(

@@ -32,7 +32,7 @@ const useIsoLayoutEffect = typeof window === "undefined" ? useEffect : useLayout
  * notifications" error.
  *
  * SSR-safe: nothing touches `window`, `document` or `ResizeObserver` at module
- * load or during render — all access happens inside effects. In environments
+ * load or during render - all access happens inside effects. In environments
  * without `ResizeObserver` the element is measured once via `getBoundingClientRect`
  * and then left static (no live updates).
  *

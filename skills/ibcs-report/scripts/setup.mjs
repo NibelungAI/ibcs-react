@@ -29,7 +29,7 @@ for (const f of ["assets/kit.mjs", "scripts/render.mjs", "scripts/fit.mjs"])
   fs.copyFileSync(path.join(SKILL_DIR, f), path.join(DIR, path.basename(f)));
 
 // A browser to print with: the env override, a system Chromium/Chrome, or
-// Playwright's own download (idempotent — skipped when already present).
+// Playwright's own download (idempotent - skipped when already present).
 const hasSystem = [
   process.env.PLAYWRIGHT_CHROMIUM,
   "/opt/pw-browsers/chromium",
@@ -52,11 +52,11 @@ if (!hasSystem) {
     sh("npx playwright install chromium");
   } catch {
     console.warn(
-      "Chromium download failed — set PLAYWRIGHT_CHROMIUM to a Chrome/Chromium binary before fit/render.",
+      "Chromium download failed - set PLAYWRIGHT_CHROMIUM to a Chrome/Chromium binary before fit/render.",
     );
   }
 }
 
 console.log(
-  `ready in ${DIR} — write build.mjs here, then: node build.mjs && node fit.mjs && node render.mjs`,
+  `ready in ${DIR} - write build.mjs here, then: node build.mjs && node fit.mjs && node render.mjs`,
 );

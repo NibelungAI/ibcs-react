@@ -7,7 +7,7 @@ minor release; please upgrade to the newest version before reporting.
 
 ## Reporting a vulnerability
 
-Please report security issues **privately** — do not open a public issue.
+Please report security issues **privately** - do not open a public issue.
 
 - Email **contact@nibelung.io** with a description, affected version, and a
   reproduction if possible.
@@ -17,7 +17,7 @@ Please report security issues **privately** — do not open a public issue.
 ## Scope
 
 `ibcs-react` is a **client-side rendering** library with **zero runtime
-dependencies** — charts are hand-rolled inline SVG and components are
+dependencies** - charts are hand-rolled inline SVG and components are
 server-render-safe. The attack surface is therefore small, but we still take
 reports seriously (e.g. unsanitized values reaching the DOM, ReDoS in a helper,
 SSR data leakage). Issues in your own data pipeline or in a peer dependency

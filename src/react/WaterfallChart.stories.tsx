@@ -29,7 +29,7 @@ const meta: Meta<typeof WaterfallChart> = {
     width: 640,
     height: 360,
     mark: "bar",
-    title: "Operating result bridge — AC",
+    title: "Operating result bridge - AC",
   },
   argTypes: {
     scenario: { control: "select", options: ["AC", "PY", "PL", "FC"] },
@@ -42,7 +42,7 @@ type Story = StoryObj<typeof WaterfallChart>;
 
 export const Basic: Story = {};
 export const WithComparison: Story = {
-  args: { comparisonData: bridgePY, title: "Operating result bridge — AC vs PY" },
+  args: { comparisonData: bridgePY, title: "Operating result bridge - AC vs PY" },
 };
 export const ComparisonPins: Story = {
   args: { comparisonData: bridgePY, mark: "pin", title: "Bridge with variance pins" },

@@ -1,7 +1,7 @@
 {
   "name": "ibcs-react-docs",
   "private": true,
-  "description": "Documentation site for ibcs-react — Next.js + fumadocs",
+  "description": "Documentation site for ibcs-react - Next.js + fumadocs",
   "scripts": {
     "dev": "next dev -p 8080 --turbopack",
     "build": "next build --turbopack",

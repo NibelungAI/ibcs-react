@@ -21,7 +21,7 @@ export interface WaterfallChartProps {
   scenario?: ScenarioKey;
   /**
    * A parallel bridge (same columns, another scenario) to compare each running
-   * level against — draws a variance panel beneath, colored by favorability.
+   * level against - draws a variance panel beneath, colored by favorability.
    * A DATASET, not a scenario key: the sibling charts' `comparison` names a
    * scenario, a bridge needs the other scenario's contributions spelled out.
    */
@@ -35,7 +35,7 @@ export interface WaterfallChartProps {
   width?: number;
   height?: number;
   /**
-   * Horizontal band layout — the gap between columns and the lead-in/out gutter.
+   * Horizontal band layout - the gap between columns and the lead-in/out gutter.
    * Omit for the centred default; pass `{ outer: 0 }` to trim the side whitespace
    * so the first/last columns sit flush to the plot edges (fill edge-to-edge).
    */
@@ -48,7 +48,7 @@ export interface WaterfallChartProps {
   /** Inline style merged OVER the chart `<svg>`'s own layout style. */
   style?: CSSProperties;
   /**
-   * Fired as the pointer moves over / leaves a bar (`null` on leave) — for a
+   * Fired as the pointer moves over / leaves a bar (`null` on leave) - for a
    * custom tooltip. Pairs naturally with `useChartHover`. Default undefined.
    */
   onHover?: (hover: ChartHover<WaterfallDatum> | null) => void;
@@ -92,8 +92,8 @@ const SCENARIO_LABEL: Record<ScenarioKey, string> = {
  * Distinct from the in-table waterfall in `StatementTable` (which walks a
  * `StatementLine` tree); this consumes a flat, serializable `WaterfallDatum[]`.
  *
- * A forwarded `ref` lands on the chart `<svg>` — the useful handle for export /
- * serialization — even though the component also renders a screen-reader table
+ * A forwarded `ref` lands on the chart `<svg>` - the useful handle for export /
+ * serialization - even though the component also renders a screen-reader table
  * beside it.
  */
 export const WaterfallChart = forwardRef<SVGSVGElement, WaterfallChartProps>(
@@ -223,7 +223,7 @@ export const WaterfallChart = forwardRef<SVGSVGElement, WaterfallChartProps>(
     };
 
     // Screen-reader data table: each step's contribution (or total), the running
-    // level, and the comparison variance where present — values, not the svg.
+    // level, and the comparison variance where present - values, not the svg.
     const a11yColumns = [
       "Contribution",
       "Running total",
@@ -246,7 +246,7 @@ export const WaterfallChart = forwardRef<SVGSVGElement, WaterfallChartProps>(
           height={height}
           viewBox={`0 0 ${width} ${height}`}
           className={className}
-          // A single labelled image — no `aria-hidden`, which would cancel the
+          // A single labelled image - no `aria-hidden`, which would cancel the
           // label out and leave assistive tech with nothing but the sr-only table.
           role="img"
           aria-label={`${sub}Bridge of ${n} ${SCENARIO_LABEL[scenario]} contributions to a running total${hasVariance ? ", with a variance panel" : ""}.`}
@@ -264,7 +264,7 @@ export const WaterfallChart = forwardRef<SVGSVGElement, WaterfallChartProps>(
             </text>
           )}
 
-          {/* Zero baseline — always present (ISO 24896). */}
+          {/* Zero baseline - always present (ISO 24896). */}
           <line
             x1={padL}
             y1={zeroY}
@@ -275,9 +275,9 @@ export const WaterfallChart = forwardRef<SVGSVGElement, WaterfallChartProps>(
           />
 
           {/* Connectors: a thin line tying the leaving level of step i to the start
-          of step i+1. Drawn for EVERY adjacent pair — including into and out of
+          of step i+1. Drawn for EVERY adjacent pair - including into and out of
           result checkpoints, since the running total (b.cumAfter) is exactly the
-          level a result column draws to — so the bridge reads as one connected
+          level a result column draws to - so the bridge reads as one connected
           path. Axis-weight grey (a 1px rowBorder line was near-invisible). */}
           {bars.map((b, i) => {
             if (i === bars.length - 1) return null;
@@ -327,7 +327,7 @@ export const WaterfallChart = forwardRef<SVGSVGElement, WaterfallChartProps>(
             // The one visible mark of this step, in FINAL (un-animated)
             // geometry: the column between its start and end level (a total
             // column runs from the zero baseline). The tooltip fires only near
-            // it — the full-height band rect below stays the generous hit area.
+            // it - the full-height band rect below stays the generous hit area.
             const yTopFinal = yOf(topV);
             const yBotFinal = yOf(botV);
             const markRects: MarkRect[] = [
@@ -378,7 +378,7 @@ export const WaterfallChart = forwardRef<SVGSVGElement, WaterfallChartProps>(
             );
           })}
 
-          {/* Category labels — angled when they can't fit horizontally, so long
+          {/* Category labels - angled when they can't fit horizontally, so long
           P&L labels keep their full text instead of overlapping. */}
           {bars.map((b, i) => {
             const x = cxOf(i);
@@ -524,8 +524,8 @@ export const WaterfallChart = forwardRef<SVGSVGElement, WaterfallChartProps>(
         <ChartDataTable
           caption={
             title
-              ? `${title} — data table`
-              : `Bridge of ${SCENARIO_LABEL[scenario]} contributions — data table`
+              ? `${title} - data table`
+              : `Bridge of ${SCENARIO_LABEL[scenario]} contributions - data table`
           }
           columns={a11yColumns}
           rows={a11yRows}

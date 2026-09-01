@@ -43,7 +43,7 @@ export interface RankingVarianceChartProps {
   /** Height of each entity row, in px. Default 26. */
   rowHeight?: number;
   /**
-   * Vertical band layout — the row spacing and the top/bottom gutter of the row
+   * Vertical band layout - the row spacing and the top/bottom gutter of the row
    * body. Omit for the default (rows packed flush, top to bottom); pass e.g.
    * `{ inner: 0.2 }` to open a gap between rows, or `{ outer: 0.5 }` to inset the
    * first/last rows. The chart's overall height (rowHeight·rows) is unchanged.
@@ -66,26 +66,26 @@ export interface RankingVarianceChartProps {
    */
   tooltip?: boolean;
   /**
-   * Fired as the pointer moves over / leaves a row (`null` on leave) — for a
+   * Fired as the pointer moves over / leaves a row (`null` on leave) - for a
    * custom tooltip. Pairs naturally with `useChartHover`. Default undefined.
    */
   onHover?: (hover: ChartHover<RankingRow> | null) => void;
 }
 
 /**
- * RankingVarianceChart — an IBCS horizontal *integrated variance* chart
+ * RankingVarianceChart - an IBCS horizontal *integrated variance* chart
  * (reference #66). A ranked list of entities renders across three aligned
  * panels sharing every row:
  *
- *  1. LEFT   — solid AC bars growing from a left axis, with the plan / prior
+ *  1. LEFT   - solid AC bars growing from a left axis, with the plan / prior
  *              `base` overlaid as a scenario-variant reference (PL → a hollow
  *              white frame, PY → a faded solid behind, FC → hatched). The AC
  *              value is labelled at each bar's end, clamped inside the panel.
- *  2. MIDDLE — the absolute variance ΔPL as bars from a CENTER zero axis,
+ *  2. MIDDLE - the absolute variance ΔPL as bars from a CENTER zero axis,
  *              favorable to the right (green) / unfavorable to the left (red),
  *              with off-scale edge arrows beyond the shared scale and signed
  *              impact-coloured labels.
- *  3. RIGHT  — the relative variance ΔPL% as a pin (line + dot) from a center
+ *  3. RIGHT  - the relative variance ΔPL% as a pin (line + dot) from a center
  *              axis, the same off-scale arrow treatment, and signed % labels.
  *
  * A bold TOTAL row (sum of AC, with its own ΔPL / ΔPL%) sits beneath a rule.
@@ -156,7 +156,7 @@ export const RankingVarianceChart = forwardRef<SVGSVGElement, RankingVarianceCha
     const height = totalTop + totalH + padB;
 
     // Row-band layout (the vertical categorical axis). Each row fills its whole
-    // step — the hit target spans the full row — so the historical default is rows
+    // step - the hit target spans the full row - so the historical default is rows
     // packed flush from the top, reproduced exactly by `resolveBandPadding(1)`
     // (step = rowH, no gutter). `bandPadding` lets a caller open up row spacing or
     // a top/bottom gutter (e.g. `{ inner: 0.2 }`) without changing the default.
@@ -247,7 +247,7 @@ export const RankingVarianceChart = forwardRef<SVGSVGElement, RankingVarianceCha
       const fontW = emphasis ? 700 : 400;
 
       // Edge-aligned variance labels: right edge for favorable (right) marks,
-      // left edge for unfavorable, centered for zero — always inside the panel.
+      // left edge for unfavorable, centered for zero - always inside the panel.
       const absLabel = (() => {
         if (!showRowText || estTextW(aLabel, valFont) > absValW + 6) return null;
         const x = aDir > 0 ? absX1 - 2 : aDir < 0 ? absX0 + 2 : absCx;
@@ -387,7 +387,7 @@ export const RankingVarianceChart = forwardRef<SVGSVGElement, RankingVarianceCha
     const headerY = padT + headerH - 6;
 
     // Screen-reader data table: AC, the base, and absolute / relative variance per
-    // entity (plus the total) — values, not the decorative svg.
+    // entity (plus the total) - values, not the decorative svg.
     const a11yColumns = ["AC", baseLabel, `Δ${baseLabel}`, `Δ${baseLabel}%`];
     const a11yRows: ChartDataRow[] = rows.map((r) => ({
       label: r.label,
@@ -523,7 +523,7 @@ export const RankingVarianceChart = forwardRef<SVGSVGElement, RankingVarianceCha
             // This row's visible marks across the three panels, in FINAL
             // (un-animated) geometry: the AC bar (the focus/tap anchor), its
             // reference overlay, then the two variance panels as lane strips at
-            // the mark's thickness — the full-row rect stays the hit band.
+            // the mark's thickness - the full-row rect stays the hit band.
             const markRects: MarkRect[] = [];
             if (r.ac !== 0)
               markRects.push({
@@ -614,7 +614,7 @@ export const RankingVarianceChart = forwardRef<SVGSVGElement, RankingVarianceCha
                     >
                       Total
                     </text>
-                    {/* Total AC is the sum (off the per-row bar scale) — shown as a bold value. */}
+                    {/* Total AC is the sum (off the per-row bar scale) - shown as a bold value. */}
                     <text
                       x={acX0 + 2}
                       y={cy + valFont * 0.34}
@@ -633,7 +633,7 @@ export const RankingVarianceChart = forwardRef<SVGSVGElement, RankingVarianceCha
         </svg>
         <ChartDataTable
           caption={
-            title ? `${title} — data table` : `Ranked variance versus ${baseLabel} — data table`
+            title ? `${title} - data table` : `Ranked variance versus ${baseLabel} - data table`
           }
           columns={a11yColumns}
           rows={a11yRows}

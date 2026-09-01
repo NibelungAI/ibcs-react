@@ -14,7 +14,7 @@ import { ChartDataTable, type ChartDataRow } from "./a11y";
 import { useIbcsTokens } from "./theme";
 
 // Local, CJK-aware text metrics: wide glyphs count ~1em where the shared
-// `./internal/text` heuristic assumes a uniform 0.6em — kept for label fitting.
+// `./internal/text` heuristic assumes a uniform 0.6em - kept for label fitting.
 /** Approx. glyph width in px (CJK/full-width/emoji count as ~1em). SSR-safe. */
 function isWide(cp: number): boolean {
   return (
@@ -87,7 +87,7 @@ export interface BubbleChartProps {
  * IBCS bubble chart (template C10): two value axes plus a third magnitude
  * encoded as bubble AREA (radius ∝ √size). Bubbles are semi-transparent so
  * overlaps stay readable, colored by semantic group, and labelled directly when
- * few are shown — no external legend box for the points themselves. Inline SVG,
+ * few are shown - no external legend box for the points themselves. Inline SVG,
  * no charting dependency.
  *
  * The forwarded ref lands on the chart's `<svg>` element.
@@ -168,7 +168,7 @@ export const BubbleChart = forwardRef<SVGSVGElement, BubbleChartProps>(function 
   );
 
   // Screen-reader data table: each bubble's two coordinates plus the magnitude
-  // its area encodes (and its group when colored by one) as real numbers — the
+  // its area encodes (and its group when colored by one) as real numbers - the
   // size encoding is invisible to a screen reader without it. Rows keep input
   // order (not the biggest-first paint order) so they read as the data does.
   const a11yColumns = [
@@ -408,7 +408,7 @@ export const BubbleChart = forwardRef<SVGSVGElement, BubbleChartProps>(function 
               >
                 <rect x={0} y={-7} width={9} height={9} rx={1.5} fill={colorMap[g]} />
                 <text x={13} y={1} fontSize={10} fill={tokens.color.textMuted}>
-                  {fitText(g || "—", 95, 10)}
+                  {fitText(g || "-", 95, 10)}
                 </text>
               </g>
             ))}
@@ -426,7 +426,7 @@ export const BubbleChart = forwardRef<SVGSVGElement, BubbleChartProps>(function 
         )}
       </svg>
       <ChartDataTable
-        caption={title ? `${title} — data table` : "Bubble chart data table"}
+        caption={title ? `${title} - data table` : "Bubble chart data table"}
         columns={a11yColumns}
         rows={a11yRows}
       />

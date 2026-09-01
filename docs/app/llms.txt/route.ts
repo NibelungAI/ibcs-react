@@ -6,7 +6,7 @@ import { llms } from "fumadocs-core/source";
 export const revalidate = false;
 
 /**
- * /llms.txt — the llms.txt index (llmstxt.org): a curated, small Markdown
+ * /llms.txt - the llms.txt index (llmstxt.org): a curated, small Markdown
  * file agents read first. Every linked page is also available as raw
  * Markdown by appending `.mdx` to its URL; /llms-full.txt is the whole
  * corpus in one file.
@@ -22,7 +22,7 @@ export function GET() {
 
   const text = `# ibcs-react
 
-> Zero-dependency, SSR-safe React components for IBCS® business communication —
+> Zero-dependency, SSR-safe React components for IBCS® business communication -
 > variance charts, waterfalls, statement tables, dashboards and reports
 > following the IBCS notation, the basis of ISO 24896.
 
@@ -43,7 +43,7 @@ export function GET() {
     A4 board-report PDF drawn with ibcs-react components. To use without installing, read that
     SKILL.md and follow it (references and scripts resolve relative to it). Install just it:
     \`npx skills add NibelungAI/ibcs-react@ibcs-report\`.
-  - [ibcs-react](${SITE_URL}/skills/ibcs-react/SKILL.md): using the library correctly — data
+  - [ibcs-react](${SITE_URL}/skills/ibcs-react/SKILL.md): using the library correctly - data
     model, component recipes, theming, export.
   - [ibcs-notation](${SITE_URL}/skills/ibcs-notation/SKILL.md): the notation rules alone,
     useful with any charting tool.

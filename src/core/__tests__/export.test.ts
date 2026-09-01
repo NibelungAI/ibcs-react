@@ -39,7 +39,7 @@ describe("statementToMatrix", () => {
   });
 });
 
-describe("statementToCSV — normal statements are unchanged", () => {
+describe("statementToCSV - normal statements are unchanged", () => {
   it("round-trips ordinary labels and numbers without decoration", () => {
     const csv = statementToCSV(lines);
     const rows = csv.split("\r\n");
@@ -66,7 +66,7 @@ describe("statementToCSV — normal statements are unchanged", () => {
   });
 });
 
-describe("statementToCSV — formula guarding", () => {
+describe("statementToCSV - formula guarding", () => {
   const hostile: StatementLine[] = [
     { id: "a", label: "=cmd|' /C calc'!A0", values: { AC: 1, PY: 1 } },
     { id: "b", label: "Revenue", values: { AC: 2, PY: 1 } },

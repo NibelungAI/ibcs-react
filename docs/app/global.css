@@ -2,7 +2,7 @@
 @import "fumadocs-ui/css/neutral.css";
 @import "fumadocs-ui/css/preset.css";
 
-/* IBM Plex everywhere — the next/font variables are set on <html> in
+/* IBM Plex everywhere - the next/font variables are set on <html> in
    app/layout.tsx; map them onto Tailwind's font tokens so every font-sans /
    font-mono utility (fumadocs included) resolves to Plex. */
 @theme {
@@ -28,7 +28,7 @@ html {
   -webkit-tap-highlight-color: transparent;
 }
 
-/* "Get it" ledger (components/get-it.tsx) — IBCS ink palette, light + dark.
+/* "Get it" ledger (components/get-it.tsx) - IBCS ink palette, light + dark.
    Lives here (not an inline <style>) so browser dark-mode extensions cannot
    create hydration mismatches by touching a rendered style element. */
 .gi {

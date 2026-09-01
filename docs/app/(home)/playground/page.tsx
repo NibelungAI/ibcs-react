@@ -4,7 +4,7 @@ import { Playground } from "@/components/demos/playground";
 export const metadata: Metadata = {
   title: "Playground",
   description:
-    "One filter bar drives four linked views — KPI cards, a structure chart, a variance column chart and a data table, all re-rendering from the same filtered model, with an optional live feed.",
+    "One filter bar drives four linked views - KPI cards, a structure chart, a variance column chart and a data table, all re-rendering from the same filtered model, with an optional live feed.",
 };
 
 export default function PlaygroundPage() {

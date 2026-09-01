@@ -1,13 +1,13 @@
 ---
 title: Data model
-description: ScenarioKey, StatementLine and the category datum shapes — plus the statement adapters that project one model onto every view.
+description: ScenarioKey, StatementLine and the category datum shapes - plus the statement adapters that project one model onto every view.
 ---
 
 import { StatementTable } from "ibcs-react";
 import { StatementViews } from "@/components/demos/statement-views";
 
 A handful of small types describe everything the components render. They all
-share one idea — a bag of values keyed by scenario — so the same figures flow
+share one idea - a bag of values keyed by scenario - so the same figures flow
 into tables, charts and cards unchanged.
 
 ## ScenarioKey and ScenarioDatum
@@ -32,7 +32,7 @@ interface ScenarioDatum {
 ```
 
 A scenario is optional because real data is ragged: a forecast period has no
-AC, a new product has no PY. Missing means "not drawn" — never zero.
+AC, a new product has no PY. Missing means "not drawn" - never zero.
 
 ## StatementLine
 
@@ -196,12 +196,12 @@ const quarterly: ColumnDatum[] = [
 // (drawn hatched). PY / PL ride along as reference lines.
 interface TrendDatum extends ScenarioDatum {
   // Set off as a total (e.g. a full-year column): divider, emphasis colour,
-  // and its OWN scale treatment — a total that dwarfs the periods is drawn
+  // and its OWN scale treatment - a total that dwarfs the periods is drawn
   // capped with a marked scale break instead of crushing the months.
   summary?: boolean;
 }
 
-// StructureChart components — same `category` key as every other datum
+// StructureChart components - same `category` key as every other datum
 // (`label` is accepted as a legacy alias from v1.0).
 interface StructureDatum {
   category: string; // "North America", "Europe", …
@@ -249,13 +249,13 @@ and `higherIsBetter`, so the bridge tells the same story as the statement's own
 waterfall lane. Group values resolve through the tree, so a collapsed group
 still carries its children's sum. With `expandGroups: true`, a group that has
 children, is not `defaultCollapsed` and is not a `"result"` hands the flow to
-its children — exactly what the table shows on first paint. An `add` or
+its children - exactly what the table shows on first paint. An `add` or
 `subtract` line with no value for that scenario is skipped rather than drawn as
 a zero column; `"result"` lines are always emitted, because a result is drawn
 to the running total.
 
 `statementToStructure` emits one datum per top-level line with every scenario
-it has data for. It drops `flow: "result"` lines by default — a composition
+it has data for. It drops `flow: "result"` lines by default - a composition
 shows the parts of a whole, and charting a subtotal next to the lines it
 already contains double-counts the total and shrinks every real component's
 share. Pass `{ skipResults: false }` when the subtotals themselves are the
@@ -280,7 +280,7 @@ const columns = [
 ```
 
 Below, one `StatementLine[]` powers two views at once: the statement table
-reads the model directly, and the bridge is projected from the same array —
+reads the model directly, and the bridge is projected from the same array -
 twice, once per scenario, so the AC bridge can be compared against the PY one.
 
 <Frame>
@@ -309,6 +309,6 @@ Keep your model internally consistent: children should sum to their parent, and
 every `flow: "result"` line should equal the running total of the steps above
 it. The waterfall geometry and the share percentages depend on it.
 
-- [IBCS & ISO 24896](/docs/ibcs) — what `higherIsBetter` and the scenario keys
+- [IBCS & ISO 24896](/docs/ibcs) - what `higherIsBetter` and the scenario keys
   mean visually.
-- [Components](/docs/components) — which component eats which shape.
+- [Components](/docs/components) - which component eats which shape.

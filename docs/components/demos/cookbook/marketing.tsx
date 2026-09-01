@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Report cookbook — Marketing. One component per recipe; each renders the
+ * Report cookbook - Marketing. One component per recipe; each renders the
  * exact snippet printed next to it in `content/docs/cookbook.mdx`.
  */
 import {
@@ -16,7 +16,7 @@ import {
 import { CARD_W, fK, fN, fN1, C, L, S } from "@/lib/demo-data/cookbook";
 import { KpiStrip } from "./shared";
 
-/** Marketing funnel — Lumen Media · count · impressions → won */
+/** Marketing funnel - Lumen Media · count · impressions → won */
 export function MarketingFunnel() {
   return (
     <StructureChart
@@ -39,7 +39,7 @@ export function MarketingFunnel() {
   );
 }
 
-/** MQL → SQL conversion — Lumen Media · % · monthly AC vs PY */
+/** MQL → SQL conversion - Lumen Media · % · monthly AC vs PY */
 export function MQLSQLConversion() {
   return (
     <VarianceColumnChart
@@ -59,7 +59,7 @@ export function MQLSQLConversion() {
   );
 }
 
-/** CAC by channel — Lumen Media · € · cost per acquisition (lower better) */
+/** CAC by channel - Lumen Media · € · cost per acquisition (lower better) */
 export function CACByChannel() {
   return (
     <StructureChart
@@ -80,7 +80,7 @@ export function CACByChannel() {
   );
 }
 
-/** LTV : CAC & payback — Lumen Media · ratio / months · AC vs PY */
+/** LTV : CAC & payback - Lumen Media · ratio / months · AC vs PY */
 export function LTVCACAndPayback() {
   return (
     <KpiStrip
@@ -110,7 +110,7 @@ export function LTVCACAndPayback() {
   );
 }
 
-/** Channel ROI — Lumen Media · € k · spend vs return (sortable) */
+/** Channel ROI - Lumen Media · € k · spend vs return (sortable) */
 export function ChannelROI() {
   return (
     <DataTable
@@ -153,7 +153,7 @@ export function ChannelROI() {
   );
 }
 
-/** Web traffic trend — Lumen Media · k sessions · AC vs PY */
+/** Web traffic trend - Lumen Media · k sessions · AC vs PY */
 export function WebTrafficTrend() {
   return (
     <AreaChart
@@ -169,7 +169,7 @@ export function WebTrafficTrend() {
   );
 }
 
-/** Campaign performance — Lumen Media · multi-metric · current month */
+/** Campaign performance - Lumen Media · multi-metric · current month */
 export function CampaignPerformance() {
   return (
     <DataTable
@@ -216,7 +216,7 @@ export function CampaignPerformance() {
   );
 }
 
-/** Email engagement — Lumen Media · % · open vs click, 8 weeks */
+/** Email engagement - Lumen Media · % · open vs click, 8 weeks */
 export function EmailEngagement() {
   return (
     <LineChart
@@ -231,7 +231,7 @@ export function EmailEngagement() {
   );
 }
 
-/** Spend & cost-per-lead — Lumen Media · € k / € · monthly combo */
+/** Spend & cost-per-lead - Lumen Media · € k / € · monthly combo */
 export function SpendAndCostPerLead() {
   return (
     <ComboChart
@@ -254,7 +254,7 @@ export function SpendAndCostPerLead() {
   );
 }
 
-/** Channel mix of MQLs — Lumen Media · count · quarter-over-quarter */
+/** Channel mix of MQLs - Lumen Media · count · quarter-over-quarter */
 export function ChannelMixOfMQLs() {
   return (
     <StackedChart
@@ -286,7 +286,7 @@ export function ChannelMixOfMQLs() {
   );
 }
 
-/** Brand vs performance spend — Lumen Media · € k · split by half */
+/** Brand vs performance spend - Lumen Media · € k · split by half */
 export function BrandVsPerformanceSpend() {
   return (
     <StackedChart
@@ -307,7 +307,7 @@ export function BrandVsPerformanceSpend() {
   );
 }
 
-/** SEO vs paid sessions — Lumen Media · k · two-series line */
+/** SEO vs paid sessions - Lumen Media · k · two-series line */
 export function SEOVsPaidSessions() {
   return (
     <LineChart
@@ -322,7 +322,7 @@ export function SEOVsPaidSessions() {
   );
 }
 
-/** Landing-page conversion — Lumen Media · % · AC vs PL target */
+/** Landing-page conversion - Lumen Media · % · AC vs PL target */
 export function LandingPageConversion() {
   return (
     <VarianceColumnChart

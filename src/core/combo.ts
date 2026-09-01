@@ -8,13 +8,13 @@ import { computeVariance } from "./variance";
  * independent right-hand axis, drawn as a line. Classic use: revenue columns +
  * a margin-% line.
  *
- * Framework-agnostic and JSON-serializable in and out — the React `ComboChart`
+ * Framework-agnostic and JSON-serializable in and out - the React `ComboChart`
  * is just a renderer over this. Both axes are zero-based (ISO 24896) and scaled
  * independently so the two measures, in different units, can share one plot.
  */
 
 /**
- * One category's primary measure, one value per scenario — the canonical
+ * One category's primary measure, one value per scenario - the canonical
  * {@link ScenarioDatum}. (A `secondaryKey` row simply carries the secondary
  * measure as an extra property; excess-property checks only bite on object
  * literals typed directly as `ComboDatum`.)
@@ -40,7 +40,7 @@ export interface ComboCell {
   comparison: number | undefined;
   PL: number | undefined;
   FC: number | undefined;
-  /** Secondary-axis value for this category (null when absent — the line breaks). */
+  /** Secondary-axis value for this category (null when absent - the line breaks). */
   secondary: number | null;
   /** AC vs the comparison scenario, colored by favorability. */
   variance: Variance | null;
@@ -48,10 +48,10 @@ export interface ComboCell {
 
 export interface ComboLayout {
   cells: ComboCell[];
-  /** Primary (left) axis domain — always includes 0. */
+  /** Primary (left) axis domain - always includes 0. */
   primaryMin: number;
   primaryMax: number;
-  /** Secondary (right) axis domain — always includes 0. */
+  /** Secondary (right) axis domain - always includes 0. */
   secondaryMin: number;
   secondaryMax: number;
   comparison: ScenarioKey;
@@ -70,7 +70,7 @@ export interface ComputeComboOptions {
  * zero-based axis domains.
  *
  * `secondary[i]` is the secondary measure for `data[i]` (null/undefined where a
- * category has no secondary point — the renderer breaks the line there).
+ * category has no secondary point - the renderer breaks the line there).
  *
  * Both domains are zero-seeded and repaired the same way the other layouts are:
  * non-finite values are MISSING (they never widen an axis), and an all-negative

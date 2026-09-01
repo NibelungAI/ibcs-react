@@ -26,7 +26,7 @@ function isComponentLike(value: unknown): boolean {
 
 /**
  * The component surface, derived from the PUBLIC barrel rather than a hardcoded
- * count — a new export shows up here the moment it is added. A non-component
+ * count - a new export shows up here the moment it is added. A non-component
  * capitalized export (a class, a helper) would land here too; add it to
  * `NOT_SMOKE_TESTED` with a reason if that ever happens.
  */
@@ -46,7 +46,7 @@ describe("component render smoke tests", () => {
   for (const { name, element } of cases) {
     it(`${name} mounts and renders non-empty DOM`, () => {
       const { container } = render(element);
-      // A real rendered surface — chart (svg), table, or a container div.
+      // A real rendered surface - chart (svg), table, or a container div.
       // Portaled components (ChartTooltip) mount into document.body instead
       // of the container, so fall back to the document when it is empty.
       const root = container.innerHTML.length > 0 ? container : document.body;
@@ -60,7 +60,7 @@ describe("component render smoke tests", () => {
     const missing = exportedComponents.filter((name) => !fixtured.has(name));
     expect(
       missing,
-      `no smoke fixture for exported component(s): ${missing.join(", ")} — add one to src/react/__tests__/fixtures.tsx`,
+      `no smoke fixture for exported component(s): ${missing.join(", ")} - add one to src/react/__tests__/fixtures.tsx`,
     ).toEqual([]);
   });
 

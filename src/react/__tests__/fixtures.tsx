@@ -173,7 +173,7 @@ export const cases: SmokeCase[] = [
   { name: "TrendChart", element: <TrendChart data={series} width={400} height={260} /> },
   {
     name: "StructureChart",
-    // Same `category` key as `series` itself — the point of the alias is that
+    // Same `category` key as `series` itself - the point of the alias is that
     // no renaming map is needed; this one keeps the subset explicit.
     element: (
       <StructureChart

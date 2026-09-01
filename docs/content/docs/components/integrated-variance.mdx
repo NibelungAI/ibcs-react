@@ -6,21 +6,22 @@ description: Δ% pins, Δ absolute bars and AC columns stacked on one shared tim
 import { IntegratedVarianceChart } from "ibcs-react";
 
 The signature integrated variance column chart: three tiers over one time axis
-— relative deviation as pins on top, absolute deviation as bars in the middle,
-and the AC columns with the comparison overlaid at the bottom. Forecast periods
-are hatched, and an optional full-year total column is set apart on the right.
+
+- relative deviation as pins on top, absolute deviation as bars in the middle,
+  and the AC columns with the comparison overlaid at the bottom. Forecast periods
+  are hatched, and an optional full-year total column is set apart on the right.
 
 ## When to use
 
 A monthly actual-vs-plan (or vs previous year) story where you want the values,
-the absolute deviation and the relative deviation read together — with a
+the absolute deviation and the relative deviation read together - with a
 hatched forecast tail and an optional full-year total.
 
 ## Example
 
 <Frame center>
   <IntegratedVarianceChart
-    title="Contribution margin — AC vs PY"
+    title="Contribution margin - AC vs PY"
     comparison="PY"
     width={760}
     height={420}
@@ -53,7 +54,7 @@ hatched forecast tail and an optional full-year total.
 import { IntegratedVarianceChart } from "ibcs-react";
 
 <IntegratedVarianceChart
-  title="Contribution margin — AC vs PY"
+  title="Contribution margin - AC vs PY"
   comparison="PY" // or "PL" (plan renders as a hollow frame)
   data={[
     { category: "Jan", AC: 128, PY: 115 },

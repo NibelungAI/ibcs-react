@@ -24,7 +24,7 @@ const btn: React.CSSProperties = {
 /**
  * Stand-in for a real API call: resolves a jittered copy of the sample data
  * after a short delay and honours the AbortSignal, so a refetch or an unmount
- * mid-flight cancels cleanly — exactly like `fetch(url, { signal })`.
+ * mid-flight cancels cleanly - exactly like `fetch(url, { signal })`.
  */
 function fakeFetchRevenue(signal?: AbortSignal): Promise<ColumnDatum[]> {
   return new Promise<ColumnDatum[]>((resolve, reject) => {

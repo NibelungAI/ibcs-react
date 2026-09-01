@@ -70,7 +70,7 @@ function centered(
 /**
  * A small state machine for any chart or table: show a loading **skeleton**, an
  * **error** message (optionally with a retry button), an **empty** state, or the
- * real content — and override any of them with your own node. Pairs directly
+ * real content - and override any of them with your own node. Pairs directly
  * with `useAsyncData` (`{ data, loading, error, refetch }`).
  *
  * Resolution order: `error` → `loading` → `empty` → `children`. Zero-dependency

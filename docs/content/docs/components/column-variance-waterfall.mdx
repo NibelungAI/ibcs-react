@@ -1,6 +1,6 @@
 ---
 title: ColumnVarianceWaterfallChart
-description: IBCS C05 — grouped AC/PL columns under a horizontal waterfall of the period variances.
+description: IBCS C05 - grouped AC/PL columns under a horizontal waterfall chart of the period variances.
 ---
 
 import { ColumnVarianceWaterfallChart } from "ibcs-react";
@@ -13,13 +13,13 @@ forecast total on the right, with a relative deviation tier on top.
 
 A monthly plan-vs-actual build-up: see each period's columns, how the variances
 bridge from the plan total to the actual+forecast total, and the relative
-deviations — the flagship integrated period chart.
+deviations - the flagship integrated period chart.
 
 ## Example
 
 <Frame center>
   <ColumnVarianceWaterfallChart
-    title="Net sales in kEUR — 2025 (AC vs PL)"
+    title="Net sales in kEUR - 2025 (AC vs PL)"
     width={900}
     height={460}
     data={[
@@ -54,7 +54,7 @@ deviations — the flagship integrated period chart.
 import { ColumnVarianceWaterfallChart } from "ibcs-react";
 
 <ColumnVarianceWaterfallChart
-  title="Net sales in kEUR — 2025 (AC vs PL)"
+  title="Net sales in kEUR - 2025 (AC vs PL)"
   data={[
     { category: "Jan", ac: 15, pl: 11 },
     { category: "Sep", ac: 26, pl: 15, isForecast: true },

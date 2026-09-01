@@ -23,7 +23,7 @@ export function useVariance(
 }
 
 /**
- * The same comparison applied across two parallel arrays — one {@link Variance}
+ * The same comparison applied across two parallel arrays - one {@link Variance}
  * (or `null`) per index, computed `data[i]` vs `comparison[i]`. Lengths may
  * differ; the result has the length of `data` and pairs missing entries as
  * `null`. Memoized against the arrays and `higherIsBetter`.

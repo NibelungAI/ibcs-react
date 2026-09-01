@@ -1,12 +1,12 @@
 import { defineConfig, devices } from "@playwright/test";
 
 /**
- * Visual regression config — opt-in, never part of `npm test`.
+ * Visual regression config - opt-in, never part of `npm test`.
  *
  * `npm run test:visual` compares the fixture catalogue against committed PNG
  * baselines; `npm run test:visual:update` rewrites them. Baselines are stored
  * per platform (`tests/visual/__screenshots__/<platform>/`) because font
- * rasterization and antialiasing differ between Windows, macOS and Linux — only
+ * rasterization and antialiasing differ between Windows, macOS and Linux - only
  * the Linux set is committed, produced by `.github/workflows/visual.yml`. See
  * the "Visual regression" section of CONTRIBUTING.md.
  */
@@ -23,7 +23,7 @@ export default defineConfig({
   fullyParallel: false,
   forbidOnly: isCI,
   retries: 0,
-  // One worker: screenshots are the one thing worth serializing — parallel
+  // One worker: screenshots are the one thing worth serializing - parallel
   // Chromium instances share the GPU/compositor and produce flakier output.
   workers: 1,
   reporter: isCI ? [["list"], ["html", { open: "never" }]] : [["list"]],
@@ -43,7 +43,7 @@ export default defineConfig({
   use: {
     baseURL: `http://127.0.0.1:${PORT}`,
     // The charts honour `prefers-reduced-motion`, so this freezes every entrance
-    // animation at its final frame — no waiting, no half-drawn bars.
+    // animation at its final frame - no waiting, no half-drawn bars.
     reducedMotion: "reduce",
     colorScheme: "light",
     trace: "retain-on-failure",

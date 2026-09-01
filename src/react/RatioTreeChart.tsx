@@ -17,7 +17,7 @@ import { clampTo, svgSafeId } from "./internal/text";
 import { useIbcsTokens } from "./theme";
 
 // Local, CJK-aware text metrics: wide glyphs count ~1em where the shared
-// `./internal/text` heuristics assume a uniform 0.6em — node labels and values
+// `./internal/text` heuristics assume a uniform 0.6em - node labels and values
 // are packed tightly into a fixed box, so the finer estimate matters here.
 /** Approx. glyph width in px (CJK/full-width/emoji count as ~1em). SSR-safe. */
 function isWide(cp: number): boolean {
@@ -73,7 +73,7 @@ export interface RatioTreeChartProps {
   miniChart?: "column" | "line";
   /** Minimum SVG width; columns are spread to fill any extra. Height is derived. */
   width?: number;
-  /** Width of each node box in px (kept legible, ~120–160). Default 152. */
+  /** Width of each node box in px (kept legible, ~120-160). Default 152. */
   nodeWidth?: number;
   /** Height of each node box in px. Default 84. */
   nodeHeight?: number;
@@ -85,7 +85,7 @@ export interface RatioTreeChartProps {
   /** Inline style merged over the `<svg>`'s own layout style (your keys win). */
   style?: CSSProperties;
   /**
-   * Fired as the pointer moves over / leaves a node (`null` on leave) — for a
+   * Fired as the pointer moves over / leaves a node (`null` on leave) - for a
    * custom tooltip. Pairs naturally with `useChartHover`. Default undefined.
    */
   onHover?: (hover: ChartHover<RatioLayoutNode> | null) => void;
@@ -99,7 +99,7 @@ export interface RatioTreeChartProps {
 }
 
 /**
- * IBCS **chart-template C11** — a DuPont-style ratio tree where EACH node is a
+ * IBCS **chart-template C11** - a DuPont-style ratio tree where EACH node is a
  * small *time-series* chart, not a single value. Boxes hold a label, the latest
  * value, and a mini column (default) or line micro-chart of the node's `series`
  * with an optional faint PY reference overlay; links express how children
@@ -389,7 +389,7 @@ export const RatioTreeChart = forwardRef<SVGSVGElement, RatioTreeChartProps>(
       const rows: ChartTooltipRow[] = [
         {
           label: "Latest",
-          value: node.latest != null ? formatValue(node.latest, exact) : "—",
+          value: node.latest != null ? formatValue(node.latest, exact) : "-",
           strong: true,
         },
       ];
@@ -417,8 +417,8 @@ export const RatioTreeChart = forwardRef<SVGSVGElement, RatioTreeChartProps>(
 
     // Screen-reader data table: the tree flattened in document order (root first,
     // then each branch), depth shown as a "· " prefix the way the boxes indent.
-    // Each node reports the headline number its box prints — the latest point of
-    // its mini series — against the PY reference the overlay draws.
+    // Each node reports the headline number its box prints - the latest point of
+    // its mini series - against the PY reference the overlay draws.
     const hasPy = nodes.some((node) => node.latestPy != null);
     const a11yColumns = ["Latest", ...(hasPy ? ["PY", "ΔPY"] : [])];
     const a11yRows: ChartDataRow[] = nodes.map((node) => {
@@ -535,7 +535,7 @@ export const RatioTreeChart = forwardRef<SVGSVGElement, RatioTreeChartProps>(
             const isRoot = node.parentId == null;
             const x = p.x - nodeWidth / 2;
             const y = p.y - nodeHeight / 2;
-            const valueStr = node.latest != null ? formatValue(node.latest, format) : "—";
+            const valueStr = node.latest != null ? formatValue(node.latest, format) : "-";
             const valW = estTextW(valueStr, valueFont);
             const labelMax = nodeWidth - 10 - valW - 6;
             const info = { category: node.label, value: node.latest ?? 0, datum: node };
@@ -588,7 +588,7 @@ export const RatioTreeChart = forwardRef<SVGSVGElement, RatioTreeChartProps>(
           })}
         </svg>
         <ChartDataTable
-          caption={title ? `${title} — data table` : "Ratio tree data table"}
+          caption={title ? `${title} - data table` : "Ratio tree data table"}
           columns={a11yColumns}
           rows={a11yRows}
         />

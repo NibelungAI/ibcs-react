@@ -7,7 +7,7 @@ import {
   type StatementLine,
 } from "ibcs-react";
 
-/** ONE authored data set — every view below is derived from it. */
+/** ONE authored data set - every view below is derived from it. */
 const LINES: StatementLine[] = [
   {
     id: "rev-product",
@@ -47,7 +47,7 @@ const caption = {
 
 /**
  * The statement table reads the model directly; the bridge is projected from
- * the same array with `statementToWaterfall` — twice, once per scenario, so
+ * the same array with `statementToWaterfall` - twice, once per scenario, so
  * the AC bridge can be compared against the PY one.
  */
 export function StatementViews() {
@@ -70,7 +70,7 @@ export function StatementViews() {
         <WaterfallChart
           data={acBridge}
           comparisonData={pyBridge}
-          title="Revenue to gross margin — AC, Δ vs PY"
+          title="Revenue to gross margin - AC, Δ vs PY"
           width={560}
           height={320}
           format={{ compact: true, decimals: 1, currency: "€" }}

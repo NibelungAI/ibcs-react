@@ -92,7 +92,7 @@ export function ClickToFilterDemo() {
 
         {chosen.length === 0 ? (
           <div style={{ fontSize: 13, color: "#9a9992" }}>
-            Nothing selected yet — click a column.
+            Nothing selected yet - click a column.
           </div>
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>

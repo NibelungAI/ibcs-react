@@ -4,25 +4,25 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Agent skills",
   description:
-    "Installable SKILL.md skills that teach coding agents IBCS / ISO 24896 reporting: the ibcs-react component recipes, the notation rules, and ibcs-report — financial statements in, board-ready PDF out.",
+    "Installable SKILL.md skills that teach coding agents IBCS / ISO 24896 reporting: the ibcs-react component recipes, the notation rules, and ibcs-report - financial statements in, board-ready PDF out.",
 };
 
 const SKILLS = [
   {
     name: "ibcs-report",
     tagline: "Statements in, board pack out",
-    body: "Hand an agent a P&L, a balance sheet or a whole management pack (XLSX, CSV…) and get back a print-ready A4 PDF report — cover, contents, commentary, and every chart and table drawn with ibcs-react in IBCS notation. Page count follows the data, not a template.",
+    body: "Hand an agent a P&L, a balance sheet or a whole management pack (XLSX, CSV…) and get back a print-ready A4 PDF report - cover, contents, commentary, and every chart and table drawn with ibcs-react in IBCS notation. Page count follows the data, not a template.",
     detail: "/skills/ibcs-report",
   },
   {
     name: "ibcs-react",
     tagline: "Use the library correctly",
-    body: "Install and RSC/SSR setup, the scenario data model (AC / PY / PL / FC), canonical snippets for variance charts, waterfalls, statement tables, theming and export — plus reference sheets for every chart and table.",
+    body: "Install and RSC/SSR setup, the scenario data model (AC / PY / PL / FC), canonical snippets for variance charts, waterfalls, statement tables, theming and export - plus reference sheets for every chart and table.",
   },
   {
     name: "ibcs-notation",
     tagline: "The notation itself, tool-agnostic",
-    body: "Scenario fills, impact-based variance colouring, bars vs pins, zero-baseline and uniform scales, Who/What/When titles, templates C01–C13 / T01–T04. Useful with D3, Vega, Excel or PowerPoint too.",
+    body: "Scenario fills, impact-based variance colouring, bars vs pins, zero-baseline and uniform scales, Who/What/When titles, templates C01-C13 / T01-T04. Useful with D3, Vega, Excel or PowerPoint too.",
   },
 ];
 
@@ -32,7 +32,7 @@ export default function SkillsPage() {
       <h1 className="text-4xl font-semibold tracking-tight">Agent skills</h1>
       <p className="mt-4 max-w-2xl text-lg text-fd-muted-foreground">
         Portable <code>SKILL.md</code> skills that teach coding agents IBCS® / ISO&nbsp;24896
-        reporting — Claude Code, Cursor, Codex, Copilot, Gemini CLI and ~77 other agents.
+        reporting - Claude Code, Cursor, Codex, Copilot, Gemini CLI and ~77 other agents.
       </p>
 
       <div className="mt-8 rounded-xl border bg-fd-card p-5">

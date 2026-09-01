@@ -37,13 +37,13 @@ export interface UseLiveDataResult<T> {
 }
 
 /**
- * Emit a fresh value on an interval — a zero-dependency "live data" feed that
+ * Emit a fresh value on an interval - a zero-dependency "live data" feed that
  * mirrors the demo's randomize/live-data button. SSR-safe: the producer is
  * called once for the initial value, and the interval only ever runs inside
  * `useEffect` (never during render) and is cleared on unmount or when stopped.
  *
  * `enabled` is a live switch (a controlled prop), not just a seed: changing it
- * starts or stops the feed. `start()` / `stop()` still work on top of it — only
+ * starts or stops the feed. `start()` / `stop()` still work on top of it - only
  * an actual `enabled` transition overrides a manual pause.
  *
  * Pass a *fresh-data* producer (e.g. jitter your base dataset) and the value

@@ -157,7 +157,7 @@ describe("ExportMenu keyboard and focus behaviour", () => {
     renderMenu();
     const items = openMenu();
 
-    fireEvent.click(items[2]!); // CSV — a synchronous download that succeeds
+    fireEvent.click(items[2]!); // CSV - a synchronous download that succeeds
 
     expect(menuIsOpen()).toBe(false);
     expect(document.activeElement).toBe(trigger());

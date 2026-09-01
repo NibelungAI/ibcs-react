@@ -7,7 +7,7 @@ export type SkeletonVariant = "chart" | "table" | "card" | "block";
 export interface SkeletonProps {
   /** Shape of the placeholder. Default "chart". */
   variant?: SkeletonVariant;
-  /** Width — a px number or any CSS width. Default "100%". */
+  /** Width - a px number or any CSS width. Default "100%". */
   width?: number | string;
   /** Height in px. Default depends on the variant. */
   height?: number;
@@ -29,14 +29,14 @@ const DEFAULT_H: Record<SkeletonVariant, number> = {
   card: 120,
   block: 160,
 };
-// A deterministic, pleasant set of bar heights (0..1) — no Math.random (SSR-safe
+// A deterministic, pleasant set of bar heights (0..1) - no Math.random (SSR-safe
 // and stable between server and client renders).
 const HEIGHTS = [0.55, 0.8, 0.42, 0.95, 0.6, 0.72, 0.5, 0.88, 0.66, 0.78, 0.46, 0.7];
 
 /**
  * A lightweight loading placeholder that resembles a chart, table or card while
  * its data loads. Drawn as a single self-animating SVG (a gentle opacity pulse
- * via SMIL) — zero-dependency, SSR-safe, and no global CSS. Size it to match the
+ * via SMIL) - zero-dependency, SSR-safe, and no global CSS. Size it to match the
  * component it stands in for.
  */
 export function Skeleton({

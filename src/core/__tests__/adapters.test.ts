@@ -2,7 +2,7 @@
  * @vitest-environment jsdom
  *
  * The adapters themselves are pure core code, but the last block in this file
- * mounts `ConfiguredChart` to prove its merged-tokens memo actually holds — so
+ * mounts `ConfiguredChart` to prove its merged-tokens memo actually holds - so
  * the whole file runs in jsdom (harmless for the pure assertions).
  */
 import { createElement } from "react";
@@ -19,7 +19,7 @@ import { computeBridge } from "../waterfall";
 /**
  * A realistic small P&L: revenue, two cost groups with breakdowns (one expanded
  * by default, one collapsed), a result checkpoint, tax, and the final result.
- * `tax.PY` is NaN — upstream "no data", which must never become a zero.
+ * `tax.PY` is NaN - upstream "no data", which must never become a zero.
  */
 const statement: StatementLine[] = [
   { id: "rev", label: "Revenue", flow: "add", values: { AC: 1200, PY: 1050 } },
@@ -81,7 +81,7 @@ const statement: StatementLine[] = [
   { id: "net", label: "Net income", flow: "result", values: { AC: 140, PY: 120 } },
 ];
 
-/** Snapshot taken before every call, compared after — the adapters are pure. */
+/** Snapshot taken before every call, compared after - the adapters are pure. */
 const pristine = structuredClone(statement);
 
 afterEach(() => {
@@ -245,7 +245,7 @@ describe("statementToDataTableRows", () => {
   it("files own scenario values under the measure, letting the table aggregate parents", () => {
     const rows = statementToDataTableRows(statement);
     expect(rows[0]!.values.value).toEqual({ AC: 1200, PY: 1050 });
-    expect(rows[1]!.values.value).toEqual({}); // no own value — children carry it
+    expect(rows[1]!.values.value).toEqual({}); // no own value - children carry it
     expect(measureValue(rows[1]!, "value", "AC")).toBe(700);
     expect(measureValue(rows[1]!, "value", "PY")).toBe(650);
   });
@@ -298,7 +298,7 @@ describe("adapter purity", () => {
  * every render handed the chart a brand-new `tokens` object and defeated its
  * internal `useMemo(..., [tokens])`. Asserting that from the outside needs a
  * view of what actually reaches the child, so we stub ONE leaf chart component
- * and record its props — cheaper and far less flaky than trying to infer memo
+ * and record its props - cheaper and far less flaky than trying to infer memo
  * behaviour from rendered SVG.
  * -------------------------------------------------------------------------- */
 

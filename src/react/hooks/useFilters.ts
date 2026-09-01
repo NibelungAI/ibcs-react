@@ -3,7 +3,7 @@ import { useCallback, useMemo, useState } from "react";
 /**
  * The filter state + setters returned by {@link useFilters}.
  *
- * `F` is your filter shape — e.g.
+ * `F` is your filter shape - e.g.
  * `{ comparison: "PY" | "PL"; period: string; mode: "flow" | "stock" }`.
  */
 export interface UseFiltersResult<F> {
@@ -20,7 +20,7 @@ export interface UseFiltersResult<F> {
 /**
  * Generic report-filter state: scenario / comparison / period / dimension
  * selections, all in one typed object with ergonomic setters. Framework-free
- * logic, no schema — `F` is whatever you pass as `initial`.
+ * logic, no schema - `F` is whatever you pass as `initial`.
  *
  * ```tsx
  * const { filters, setFilter, patch, reset } = useFilters({ comparison: "PY", period: "FY", mode: "flow" });

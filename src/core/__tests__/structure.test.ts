@@ -5,11 +5,11 @@ import { computeStructure, type StructureDatum } from "../structure";
  * The `category` / `label` alias contract (consumer report D1).
  *
  * Every other datum in the library keys its name on `category`;
- * `StructureDatum` historically used `label` — the one break in "one data
+ * `StructureDatum` historically used `label` - the one break in "one data
  * model feeds every view". `category` is now the preferred key and `label`
  * stays as a permanent alias, so v1.0 data keeps computing identically.
  */
-describe("computeStructure — category/label alias", () => {
+describe("computeStructure - category/label alias", () => {
   const byCategory: StructureDatum[] = [
     { category: "North America", AC: 120, PY: 100 },
     { category: "Europe", AC: 80, PY: 90 },
@@ -40,7 +40,7 @@ describe("computeStructure — category/label alias", () => {
     expect(layout.segments[0]!.label).toBe("Canonical");
   });
 
-  it("handles a mixed array — migrated and unmigrated rows side by side", () => {
+  it("handles a mixed array - migrated and unmigrated rows side by side", () => {
     const layout = computeStructure(
       [
         { category: "New", AC: 60 },

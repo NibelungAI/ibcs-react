@@ -2,7 +2,7 @@
    container ref when INVOKED (interaction time, which React sanctions); oxc's
    compiler-derived dataflow flags them at the point the `actions` array is
    rendered, a known false-positive pattern. Refs are never read during render
-   here — `hasSvg` is probed in `setMenuOpen`, an event handler. */
+   here - `hasSvg` is probed in `setMenuOpen`, an event handler. */
 import {
   useCallback,
   useEffect,
@@ -42,7 +42,7 @@ export interface ExportMenuProps {
   /** Token overrides, so the control matches the chart's palette. */
   tokens?: IbcsTokensOverride;
   /**
-   * Called when an export action fails — rasterization errors, denied clipboard
+   * Called when an export action fails - rasterization errors, denied clipboard
    * permissions, blocked downloads. Without a handler the failure is logged to
    * the console; either way it never escapes as an unhandled rejection.
    */
@@ -68,7 +68,7 @@ function isPromiseLike(value: unknown): value is PromiseLike<unknown> {
  * The popup is a real menu: opening moves focus onto the first item, `ArrowUp`/
  * `ArrowDown` rove (wrapping) through the items, `Home`/`End` jump to the ends,
  * `Escape` closes and hands focus back to the trigger, and focus leaving the
- * control — or a pointer press outside it — dismisses it. Every action is
+ * control - or a pointer press outside it - dismisses it. Every action is
  * error-guarded: failures reach {@link ExportMenuProps.onError} (or the console)
  * instead of becoming unhandled rejections.
  */
@@ -115,7 +115,7 @@ export function ExportMenu({
   }, []);
 
   /**
-   * Close the popup. `restoreFocus` hands focus back to the trigger — right for
+   * Close the popup. `restoreFocus` hands focus back to the trigger - right for
    * keyboard dismissal and for activating an item, wrong when the user clicked
    * or tabbed somewhere else entirely.
    */
@@ -196,7 +196,7 @@ export function ExportMenu({
   }, [findSvg, filename, runAction]);
 
   // Move focus into the menu as it opens, so the keyboard never lands in a dead
-  // end (`role="menu"` promises arrow-key navigation — this is where it starts).
+  // end (`role="menu"` promises arrow-key navigation - this is where it starts).
   useEffect(() => {
     if (!open) return;
     menuItems()[0]?.focus();

@@ -29,7 +29,7 @@ export interface GroupedVarianceChartProps {
    */
   orientation?: "column" | "bar";
   /**
-   * Scenario the comparison bar represents — drives its IBCS notation (PY solid
+   * Scenario the comparison bar represents - drives its IBCS notation (PY solid
    * grey, PL a hollow white frame, FC hatched) and the Δ headers. Default "PL".
    */
   comparison?: GroupedComparison;
@@ -48,7 +48,7 @@ export interface GroupedVarianceChartProps {
   width?: number;
   height?: number;
   /**
-   * Categorical band layout — the gap between category groups and the
+   * Categorical band layout - the gap between category groups and the
    * lead-in/out gutter (vertical for the "bar" orientation). Omit for the
    * centred default; pass `{ outer: 0 }` to trim the side whitespace so the
    * first/last groups sit flush to the plot edges (fill edge-to-edge).
@@ -63,7 +63,7 @@ export interface GroupedVarianceChartProps {
   /** Styles merged *over* the chart's own layout styles. */
   style?: CSSProperties;
   /**
-   * Fired as the pointer moves over / leaves a category (`null` on leave) — for
+   * Fired as the pointer moves over / leaves a category (`null` on leave) - for
    * a custom tooltip. Pairs naturally with `useChartHover`. Default undefined.
    */
   onHover?: (hover: ChartHover<GroupedDatum> | null) => void;
@@ -77,15 +77,15 @@ export interface GroupedVarianceChartProps {
 }
 
 /**
- * GroupedVarianceChart — the classic IBCS grouped multi-tier chart (templates
+ * GroupedVarianceChart - the classic IBCS grouped multi-tier chart (templates
  * C03 column / C04 bar). For each category an ACTUAL bar is drawn ADJACENT to a
  * single comparison bar (PY solid grey, PL a hollow white frame, FC hatched),
  * NOT overlapped like {@link VarianceColumnChart}/IntegratedVarianceChart. On
  * top sit two optional variance tiers sharing the same category axis:
  *
- *  • Δ absolute — bars from a zero line, green when favorable / red when not,
+ *  • Δ absolute - bars from a zero line, green when favorable / red when not,
  *    hatched for forecast categories.
- *  • Δ% relative — pins (lollipops) from a zero line, off-scale percents pinned
+ *  • Δ% relative - pins (lollipops) from a zero line, off-scale percents pinned
  *    to the edge with an arrow.
  *
  * orientation "column" stacks the tiers vertically (Δ% top, Δabs middle,
@@ -96,7 +96,7 @@ export interface GroupedVarianceChartProps {
  * negative / huge / tiny data and long labels (truncated, clamped on-canvas).
  * Grows on mount. Zero-dependency, pure SVG, SSR-safe.
  *
- * The svg is the chart's root element in BOTH orientations — it takes
+ * The svg is the chart's root element in BOTH orientations - it takes
  * `className` / `style` and the forwarded ref, and carries the accessible name
  * (`role="img"` + `aria-label`; never `aria-hidden`, which would cancel it).
  * The sr-only {@link ChartDataTable} beneath it gives assistive tech the actual
@@ -127,7 +127,7 @@ export const GroupedVarianceChart = forwardRef<SVGSVGElement, GroupedVarianceCha
     ref,
   ) {
     const tokens = useIbcsTokens(tokenOverride);
-    // `useId()` values contain ":" in React 18 — sanitized so the `url(#…)` refs
+    // `useId()` values contain ":" in React 18 - sanitized so the `url(#…)` refs
     // survive serialization / querySelector after an SVG export.
     const hatchAC = svgSafeId(useId());
     const hatchCmp = svgSafeId(useId());
@@ -245,7 +245,7 @@ export const GroupedVarianceChart = forwardRef<SVGSVGElement, GroupedVarianceCha
       ...style,
     };
 
-    // Screen-reader data table: each category's AC, the comparison, and Δ / Δ% —
+    // Screen-reader data table: each category's AC, the comparison, and Δ / Δ% -
     // shared by both orientations, so SR users read values, not the svg.
     const a11yColumns = ["AC", comparison, `Δ${comparison}`, `Δ${comparison}%`];
     const a11yRows: ChartDataRow[] = cells.map((c) => ({
@@ -261,7 +261,7 @@ export const GroupedVarianceChart = forwardRef<SVGSVGElement, GroupedVarianceCha
     }));
     const a11yTable = (
       <ChartDataTable
-        caption={title ? `${title} — data table` : `Grouped AC versus ${comparison} — data table`}
+        caption={title ? `${title} - data table` : `Grouped AC versus ${comparison} - data table`}
         columns={a11yColumns}
         rows={a11yRows}
       />

@@ -34,7 +34,7 @@ const toHex = (n: number) =>
 
 /**
  * Linearly mix two hex colours (`t` 0→a, 1→b). Used to derive the muted IBCS
- * grey RAMP for slice fills from the theme tokens — never a rainbow palette.
+ * grey RAMP for slice fills from the theme tokens - never a rainbow palette.
  * Falls back to `a` (then `b`) if either colour isn't plain hex. SSR-safe/pure.
  */
 function mixHex(a: string, b: string, t: number): string {
@@ -62,7 +62,7 @@ export interface PieShare {
   value: number;
   /** The whole it is a part of. */
   total: number;
-  /** Change vs the prior period — drives the favorability-coloured growth slice. */
+  /** Change vs the prior period - drives the favorability-coloured growth slice. */
   delta?: number;
   /** Higher is better (false for cost shares). Default true. */
   higherIsBetter?: boolean;
@@ -75,7 +75,7 @@ export interface PieChartProps {
   share?: PieShare;
   /** Draw a donut (inner radius ≈ 0.6·R) instead of a full pie. Default false. */
   donut?: boolean;
-  /** Square edge length in px. Default 160 (tiles cleanly at 110–170). */
+  /** Square edge length in px. Default 160 (tiles cleanly at 110-170). */
   size?: number;
   /** Override the square box width. Default `size`. */
   width?: number;
@@ -120,10 +120,10 @@ interface RenderSlice {
 
 /**
  * Part-to-whole pie / donut, designed to tile as IBCS "pie multiples" at small
- * sizes (110–170 px): a tiny pie showing a share, an optional green/red growth
- * sliver, and the absolute size number — Andrej Lapajne's reference exhibit.
+ * sizes (110-170 px): a tiny pie showing a share, an optional green/red growth
+ * sliver, and the absolute size number - Andrej Lapajne's reference exhibit.
  *
- * ⚠️ AGENT CONTEXT — PIE CHARTS ARE DISCOURAGED IN IBCS / ISO 24896. Angle and
+ * ⚠️ AGENT CONTEXT - PIE CHARTS ARE DISCOURAGED IN IBCS / ISO 24896. Angle and
  * area are hard to compare precisely, so part-to-whole is almost always better
  * shown as a stacked/structure column or a bar. The library's `checkIbcs`
  * linter still FLAGS pie usage. This component exists only for (a) the
@@ -132,16 +132,16 @@ interface RenderSlice {
  * (`VarianceColumnChart`, `StackedChart`, `StructureChart`) wherever you can.
  *
  * Two input modes:
- *  1. `data` — a full multi-slice pie. Fills default to a muted grey ramp
+ *  1. `data` - a full multi-slice pie. Fills default to a muted grey ramp
  *     derived from the theme (NOT a rainbow); `emphasisIndex` darkens one slice.
- *  2. `share` — one emphasis slice of the whole, plus (with `delta`/`growth`) a
+ *  2. `share` - one emphasis slice of the whole, plus (with `delta`/`growth`) a
  *     thin growth slice coloured by favorability and a signed variance label.
  *
  * Pure SVG, zero dependencies, SSR-safe. Negative inputs are clamped to 0 (a
  * slice has no negative area) and noted. A subtle outer ring keeps empty / 0
  * slices legible at small sizes.
  *
- * A forwarded `ref` lands on the chart `<svg>` — the useful handle for export /
+ * A forwarded `ref` lands on the chart `<svg>` - the useful handle for export /
  * serialization.
  */
 export const PieChart = forwardRef<SVGSVGElement, PieChartProps>(function PieChart(
@@ -505,7 +505,7 @@ export const PieChart = forwardRef<SVGSVGElement, PieChartProps>(function PieCha
             );
           })()}
 
-        {/* Growth variance label — set out beyond the ring (not on it) and
+        {/* Growth variance label - set out beyond the ring (not on it) and
             anchored away from the pie so it never overlaps the sliver. */}
         {growthGeom &&
           (() => {
@@ -596,7 +596,7 @@ export const PieChart = forwardRef<SVGSVGElement, PieChartProps>(function PieCha
         )}
       </svg>
       <ChartDataTable
-        caption={title ? `${title} — data table` : "Part-to-whole data table"}
+        caption={title ? `${title} - data table` : "Part-to-whole data table"}
         columns={a11yColumns}
         rows={a11yRows}
       />

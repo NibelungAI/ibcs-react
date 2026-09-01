@@ -1,5 +1,5 @@
 /**
- * The `ibcs-react/core` entry — the framework-agnostic maths surface.
+ * The `ibcs-react/core` entry - the framework-agnostic maths surface.
  *
  * This barrel is CURATED, not a mirror of `src/core/*`: every name below is a
  * public API promise (semver, docs, deprecation cycles), so it lists exports
@@ -8,17 +8,17 @@
  *  - IN: every `compute*` layout function and the input/result types it needs
  *    (the "core for Vue/Svelte/plain SVG" story), plus config, validation,
  *    tokens, formatting, conformance, report and statement adapters.
- *  - OUT: internal plumbing a renderer happens to share — tiny geometry/array
+ *  - OUT: internal plumbing a renderer happens to share - tiny geometry/array
  *    helpers, value-resolution utilities, parsers and layout intermediates.
  *    They stay exported from their own module, so `src/react` (and anything
  *    else in-repo) keeps importing them by path; they are simply not part of
  *    the package's public contract.
  *
- * `src/core/__tests__/surface.test.ts` snapshots the runtime names below — a
+ * `src/core/__tests__/surface.test.ts` snapshots the runtime names below - a
  * failure there means the public surface changed, which should be deliberate.
  */
 
-/* ./types — statement model: scenario keys, lines, flat + waterfall rows */
+/* ./types - statement model: scenario keys, lines, flat + waterfall rows */
 export { SCENARIO_KEYS } from "./types";
 export type {
   FlatRow,
@@ -33,7 +33,7 @@ export type {
   WaterfallRow,
 } from "./types";
 
-/* ./tokens — IBCS design tokens and the built-in theme presets */
+/* ./tokens - IBCS design tokens and the built-in theme presets */
 export {
   azureTokens,
   cvdTokens,
@@ -49,25 +49,25 @@ export {
 } from "./tokens";
 export type { IbcsScenarioStyle, IbcsTokens, IbcsTokensOverride, TokenPresetId } from "./tokens";
 
-/* ./format — number, percent and signed-value formatting */
+/* ./format - number, percent and signed-value formatting */
 export { formatPercent, formatPercentPlain, formatSigned, formatValue } from "./format";
 export type { CompactSuffixes, FormatOptions } from "./format";
 
-/* ./bandScale — categorical band placement (padding-based, D3-compatible) */
+/* ./bandScale - categorical band placement (padding-based, D3-compatible) */
 export { bandScale, resolveBandPadding } from "./bandScale";
 export type { BandPadding, BandScale } from "./bandScale";
 
-/* ./variance — variance maths over the statement model */
+/* ./variance - variance maths over the statement model */
 export { computeVariance, lineVariance, resolveValue } from "./variance";
 
-/* ./layout — statement layouts: flatten, then flow (waterfall) or stock (levels) */
+/* ./layout - statement layouts: flatten, then flow (waterfall) or stock (levels) */
 export { computeLevels, computeWaterfall, flattenVisible } from "./layout";
 
-/* ./trend — time-series column layout with a comparison scenario */
+/* ./trend - time-series column layout with a comparison scenario */
 export { computeTrend } from "./trend";
 export type { ComputeTrendOptions, TrendCell, TrendDatum, TrendLayout } from "./trend";
 
-/* ./structure — part-to-whole (100%) bar layout */
+/* ./structure - part-to-whole (100%) bar layout */
 export { computeStructure } from "./structure";
 export type {
   ComputeStructureOptions,
@@ -77,15 +77,15 @@ export type {
   StructureSegment,
 } from "./structure";
 
-/* ./virtualize — windowing maths for long tables */
+/* ./virtualize - windowing maths for long tables */
 export { computeWindow } from "./virtualize";
 export type { WindowOptions, WindowRange } from "./virtualize";
 
-/* ./export — statement to CSV / matrix serialization */
+/* ./export - statement to CSV / matrix serialization */
 export { statementToCSV, statementToMatrix, toCSV } from "./export";
 export type { StatementCsvOptions } from "./export";
 
-/* ./config — serializable chart configs, their defaults and validation */
+/* ./config - serializable chart configs, their defaults and validation */
 export {
   CHART_TYPES,
   defaultStructureConfig,
@@ -112,11 +112,11 @@ export type {
   WaterfallChartConfig,
 } from "./config";
 
-/* ./kpi — KPI value + delta maths and config validation */
+/* ./kpi - KPI value + delta maths and config validation */
 export { computeKpi, validateKpiConfig } from "./kpi";
 export type { KpiConfig, KpiDelta, KpiResult, KpiValues } from "./kpi";
 
-/* ./report — declarative report configs, validation and shared scales */
+/* ./report - declarative report configs, validation and shared scales */
 export { resolveSharedScales, validateReportConfig } from "./report";
 export type {
   ChartBlock,
@@ -133,11 +133,11 @@ export type {
   TextBlock,
 } from "./report";
 
-/* ./waterfall — standalone bridge (waterfall) layout */
+/* ./waterfall - standalone bridge (waterfall) layout */
 export { computeBridge } from "./waterfall";
 export type { BridgeBar, BridgeLayout, ComputeBridgeOptions, WaterfallDatum } from "./waterfall";
 
-/* ./smallMultiples — shared scales and mini variance panels */
+/* ./smallMultiples - shared scales and mini variance panels */
 export {
   computeMiniVariances,
   computeSharedScale,
@@ -157,7 +157,7 @@ export type {
   SharedScale,
 } from "./smallMultiples";
 
-/* ./datatable — the data-table model (rows, columns, variance cells) */
+/* ./datatable - the data-table model (rows, columns, variance cells) */
 export { buildDataTableModel, computeVarianceCell, resolveMark } from "./datatable";
 export type {
   ColumnModel,
@@ -173,7 +173,7 @@ export type {
   VarianceCellData,
 } from "./datatable";
 
-/* ./adapters — one statement model into the other views' inputs */
+/* ./adapters - one statement model into the other views' inputs */
 export { statementToDataTableRows, statementToStructure, statementToWaterfall } from "./adapters";
 export type {
   StatementToDataTableRowsOptions,
@@ -181,7 +181,7 @@ export type {
   StatementToWaterfallOptions,
 } from "./adapters";
 
-/* ./comparisonTable — side-by-side comparison table model */
+/* ./comparisonTable - side-by-side comparison table model */
 export { buildComparisonModel } from "./comparisonTable";
 export type {
   ComparisonColumnModel,
@@ -192,11 +192,11 @@ export type {
   ComparisonViewRow,
 } from "./comparisonTable";
 
-/* ./conformance — the IBCS / ISO 24896 rule set and linter */
+/* ./conformance - the IBCS / ISO 24896 rule set and linter */
 export { checkIbcs, checkIbcsProps, IBCS_RULES } from "./conformance";
 export type { IbcsFinding, IbcsRule, LintableComponentName } from "./conformance";
 
-/* ./stacked — stacked column layout */
+/* ./stacked - stacked column layout */
 export { computeStacked } from "./stacked";
 export type {
   ComputeStackedOptions,
@@ -207,7 +207,7 @@ export type {
   StackedSeries,
 } from "./stacked";
 
-/* ./lineArea — line / area series layout and the actual-forecast split */
+/* ./lineArea - line / area series layout and the actual-forecast split */
 export { computeLines, splitForecast } from "./lineArea";
 export type {
   ComputeLinesOptions,
@@ -219,7 +219,7 @@ export type {
   VariancePoint,
 } from "./lineArea";
 
-/* ./xy — cartesian scales, ticks, bubble radii and iso-lines */
+/* ./xy - cartesian scales, ticks, bubble radii and iso-lines */
 export {
   bubbleRadius,
   computeIsoLines,
@@ -238,7 +238,7 @@ export type {
   XyScale,
 } from "./xy";
 
-/* ./combo — column + line combination layout */
+/* ./combo - column + line combination layout */
 export { computeCombo } from "./combo";
 export type {
   ComboCell,
@@ -248,11 +248,11 @@ export type {
   ComputeComboOptions,
 } from "./combo";
 
-/* ./tree — hierarchy (org / driver tree) layout */
+/* ./tree - hierarchy (org / driver tree) layout */
 export { computeTree } from "./tree";
 export type { ComputeTreeOptions, TreeLayout, TreeLayoutNode, TreeLink, TreeNode } from "./tree";
 
-/* ./matrixTable — matrix (rows x periods x scenarios) table model */
+/* ./matrixTable - matrix (rows x periods x scenarios) table model */
 export {
   buildColumnLayout,
   cellRefOf,
@@ -274,11 +274,11 @@ export type {
   ScenarioHeaderCell,
 } from "./matrixTable";
 
-/* ./pie — pie / donut slice layout (discouraged by IBCS; here for completeness) */
+/* ./pie - pie / donut slice layout (discouraged by IBCS; here for completeness) */
 export { computePieSlices } from "./pie";
 export type { ComputePieOptions, PieLayout, PieSlice } from "./pie";
 
-/* ./varianceArea — actual-vs-plan area layout with signed fill segments */
+/* ./varianceArea - actual-vs-plan area layout with signed fill segments */
 export { computeVarianceArea } from "./varianceArea";
 export type {
   VarianceAreaDatum,
@@ -291,7 +291,7 @@ export type {
   XY,
 } from "./varianceArea";
 
-/* ./integratedVariance — year-to-date variance with full-year totals */
+/* ./integratedVariance - year-to-date variance with full-year totals */
 export { computeIntegratedVariance } from "./integratedVariance";
 export type {
   ComputeIntegratedOptions,
@@ -304,7 +304,7 @@ export type {
   IntegratedLayout,
 } from "./integratedVariance";
 
-/* ./rankingVariance — ranked bars with their variance lane */
+/* ./rankingVariance - ranked bars with their variance lane */
 export { computeRankingVariance } from "./rankingVariance";
 export type {
   RankingDatum,
@@ -314,7 +314,7 @@ export type {
   RankingVarianceOptions,
 } from "./rankingVariance";
 
-/* ./groupedVariance — grouped (clustered) columns with variance */
+/* ./groupedVariance - grouped (clustered) columns with variance */
 export { computeGroupedVariance } from "./groupedVariance";
 export type {
   ComputeGroupedOptions,
@@ -324,7 +324,7 @@ export type {
   GroupedLayout,
 } from "./groupedVariance";
 
-/* ./reference — reference lines / bands resolved against a plot box */
+/* ./reference - reference lines / bands resolved against a plot box */
 export { isReferenceBand, isReferenceLine, resolveReference, resolveReferences } from "./reference";
 export type {
   AxisScales,
@@ -337,7 +337,7 @@ export type {
   ResolvedReferenceLine,
 } from "./reference";
 
-/* ./waterfallStatement — a statement rendered as lane-by-lane waterfall rows */
+/* ./waterfallStatement - a statement rendered as lane-by-lane waterfall rows */
 export { computeWaterfallStatement } from "./waterfallStatement";
 export type {
   ComputeWaterfallStatementOptions,
@@ -347,7 +347,7 @@ export type {
   WsLaneBar,
 } from "./waterfallStatement";
 
-/* ./barVarianceWaterfall — horizontal variance bridge over categories */
+/* ./barVarianceWaterfall - horizontal variance bridge over categories */
 export { computeBarVarianceWaterfall } from "./barVarianceWaterfall";
 export type {
   BarVarianceDatum,
@@ -357,7 +357,7 @@ export type {
   BarVarianceWaterfallOptions,
 } from "./barVarianceWaterfall";
 
-/* ./columnVarianceWaterfall — vertical variance bridge with end totals */
+/* ./columnVarianceWaterfall - vertical variance bridge with end totals */
 export { computeColumnVarianceWaterfall } from "./columnVarianceWaterfall";
 export type {
   ColumnVarianceCell,
@@ -371,7 +371,7 @@ export type {
   ResolvedEndTotal,
 } from "./columnVarianceWaterfall";
 
-/* ./ratioTree — driver / ratio tree layout (KPI decomposition) */
+/* ./ratioTree - driver / ratio tree layout (KPI decomposition) */
 export { computeRatioTree } from "./ratioTree";
 export type {
   ComputeRatioTreeOptions,
@@ -382,6 +382,6 @@ export type {
   RatioTreeLayout,
 } from "./ratioTree";
 
-/* ./horizontalWaterfall — row bands for the horizontal bridge (rest is ./waterfall) */
+/* ./horizontalWaterfall - row bands for the horizontal bridge (rest is ./waterfall) */
 export { rowBands } from "./horizontalWaterfall";
 export type { RowBand, RowBandLayout } from "./horizontalWaterfall";

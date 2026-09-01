@@ -1,6 +1,6 @@
 ---
 title: Export
-description: ExportMenu and the download/serialize helpers — SVG, PNG, CSV, JSON, clipboard and print.
+description: ExportMenu and the download/serialize helpers - SVG, PNG, CSV, JSON, clipboard and print.
 ---
 
 import { ExportMenu, VarianceColumnChart } from "ibcs-react";
@@ -20,7 +20,7 @@ exported too if you want your own UI.
     ]}
   >
     <VarianceColumnChart
-      title="Net sales — AC vs PY, mEUR"
+      title="Net sales - AC vs PY, mEUR"
       data={[
         { category: "Q1", AC: 92.1, PY: 86.7 },
         { category: "Q2", AC: 87.4, PY: 89.2 },
@@ -52,7 +52,7 @@ import { ExportMenu, TrendChart } from "ibcs-react";
 - The popup is fully keyboard-operable: arrows rove, `Home`/`End` jump,
   `Escape` closes and returns focus.
 - Failures (denied clipboard, blocked downloads, rasterization errors) call
-  `onError(error, action)` — the `action` is an `ExportMenuAction`
+  `onError(error, action)` - the `action` is an `ExportMenuAction`
   (`"svg" | "png" | "csv" | "json" | "copy-svg" | "copy-png" | "print"`) so
   you can tailor the message. Without a handler they log to the console;
   they never escape as unhandled rejections.

@@ -4,7 +4,7 @@
  * "Resolved" means the model after the same computation the views use:
  * every line flattened with its values resolved per scenario (groups summing
  * their children) and its variances computed. The result is a plain matrix of
- * numbers — no formatting, no React — so a spreadsheet can re-aggregate it.
+ * numbers - no formatting, no React - so a spreadsheet can re-aggregate it.
  */
 
 import { SCENARIO_KEYS, type ScenarioKey, type StatementLine } from "./types";
@@ -91,7 +91,7 @@ export function statementToMatrix(
 /**
  * A leading `=`, `+`, `-`, `@`, TAB or CR makes Excel / Sheets / LibreOffice
  * treat a cell as a FORMULA (`=HYPERLINK(...)`, `=cmd|'…'!A1`) rather than as
- * text — the classic "CSV injection" vector, since RFC-4180 quoting does not
+ * text - the classic "CSV injection" vector, since RFC-4180 quoting does not
  * stop it.
  */
 const FORMULA_LEAD = /^[=+\-@\t\r]/;
@@ -99,7 +99,7 @@ const FORMULA_LEAD = /^[=+\-@\t\r]/;
 /**
  * True when a text cell would be parsed as a formula. Indentation is ignored
  * for the test (a nested statement label is prefixed with spaces) but kept in
- * the output — the apostrophe goes in front of it.
+ * the output - the apostrophe goes in front of it.
  */
 function isFormulaText(s: string): boolean {
   return FORMULA_LEAD.test(s) || FORMULA_LEAD.test(s.trimStart());
@@ -110,7 +110,7 @@ function isFormulaText(s: string): boolean {
  *
  * `guardFormulas` (default TRUE) prefixes a single apostrophe to any TEXT cell
  * that opens with a formula lead character, so a label like `"=HYPERLINK(...)"`
- * lands in the sheet as inert text. NUMBER cells are never touched — a negative
+ * lands in the sheet as inert text. NUMBER cells are never touched - a negative
  * value stays a negative number, and the sheet can still re-aggregate the
  * export. Pass `false` to get the raw, unguarded text.
  */

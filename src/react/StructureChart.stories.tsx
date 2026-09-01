@@ -14,7 +14,7 @@ const meta: Meta<typeof StructureChart> = {
     variance: "abs",
     showComparison: true,
     showShare: true,
-    title: "Revenue by region — AC vs PY",
+    title: "Revenue by region - AC vs PY",
   },
   argTypes: {
     comparison: { control: "select", options: ["PY", "PL", "FC"] },

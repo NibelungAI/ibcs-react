@@ -21,13 +21,13 @@
     // The demo app imports the library by name (mirroring the `ibcs-react`
     // alias in vite.config.ts). Point that at SOURCE: `typecheck` runs before
     // `build`, so resolving it through package.json `exports` would check the
-    // demo against a stale — or missing — `dist/`.
+    // demo against a stale - or missing - `dist/`.
     "paths": {
       "ibcs-react": ["./src/index.ts"],
       "ibcs-react/core": ["./src/core/index.ts"]
     }
   },
-  // `demo/` is the dev playground — type-check it like the library.
+  // `demo/` is the dev playground - type-check it like the library.
   "include": ["src", "demo"],
   "exclude": ["dist", "node_modules"]
 }

@@ -11,9 +11,9 @@ import { svgSafeId } from "./internal/text";
 import { useIbcsTokens } from "./theme";
 
 // Local, CJK-aware text metrics: wide glyphs count ~1.05em where the shared
-// `./internal/text` heuristic assumes a uniform 0.6em — kept for label fitting.
+// `./internal/text` heuristic assumes a uniform 0.6em - kept for label fitting.
 /**
- * Approximate rendered width of `s` in px at `fontSize` — wide glyphs (CJK,
+ * Approximate rendered width of `s` in px at `fontSize` - wide glyphs (CJK,
  * fullwidth, emoji) ~1.05·em, normal ~0.62·em. SSR-safe (no DOM measuring).
  */
 function textWidthPx(s: string, fontSize: number): number {
@@ -63,9 +63,9 @@ export interface ComboChartProps {
    * row to read the secondary value from (e.g. `secondaryKey="marginPct"`).
    */
   secondaryKey?: string;
-  /** Axis title for the primary (left) measure — include its unit, e.g. "Revenue (€m)". */
+  /** Axis title for the primary (left) measure - include its unit, e.g. "Revenue (€m)". */
   primaryLabel?: string;
-  /** Axis title for the secondary (right) measure — include its unit, e.g. "Margin (%)". */
+  /** Axis title for the secondary (right) measure - include its unit, e.g. "Margin (%)". */
   secondaryLabel?: string;
   /** Number formatting for the secondary axis + line labels (defaults to `format`). */
   secondaryFormat?: FormatOptions;
@@ -82,7 +82,7 @@ export interface ComboChartProps {
   width?: number;
   height?: number;
   /**
-   * Horizontal band layout — the gap between columns and the lead-in/out gutter.
+   * Horizontal band layout - the gap between columns and the lead-in/out gutter.
    * Omit for the centred default; pass `{ outer: 0 }` to trim the side whitespace
    * so the first/last columns sit flush to the plot edges (fill edge-to-edge).
    */
@@ -151,7 +151,7 @@ export const ComboChart = forwardRef<SVGSVGElement, ComboChartProps>(function Co
   const lineClipId = svgSafeId(useId());
   const hatchId = svgSafeId(useId());
   // Comparison column drawn in its own IBCS notation: PY solid, PL hollow white
-  // frame, FC hatched — not always solid grey.
+  // frame, FC hatched - not always solid grey.
   const cmpStyle = tokens.scenario[comparison];
   const data = useDataTween(dataProp);
   const secondary = useDataTween(secondaryProp);
@@ -189,7 +189,7 @@ export const ComboChart = forwardRef<SVGSVGElement, ComboChartProps>(function Co
   const plotTop = padT;
   // Reserve headroom below the axis titles for column / marker value labels
   // (and, when present, the Δ label that sits above the value), plus room below
-  // for negative-column labels — which sit below the column end, and need extra
+  // for negative-column labels - which sit below the column end, and need extra
   // space when a Δ label stacks under the value so they clear the category axis.
   const labelTopH = showVariance ? 24 : 14;
   const labelBotH = showVariance ? 26 : 14;
@@ -228,8 +228,8 @@ export const ComboChart = forwardRef<SVGSVGElement, ComboChartProps>(function Co
 
   // When columns get narrow OR the plot gets short, the per-column value / Δ /
   // secondary labels collide (with neighbours horizontally, or with each other
-  // vertically when value+Δ+marker stack on one column). Drop those labels —
-  // keeping columns, line, axes and category ticks — so nothing overlaps.
+  // vertically when value+Δ+marker stack on one column). Drop those labels -
+  // keeping columns, line, axes and category ticks - so nothing overlaps.
   const denseLabels = band < 38 || plotH < 60;
   const catLabelStep = Math.max(1, Math.ceil(n / Math.max(1, Math.floor(innerW / 30))));
 
@@ -272,7 +272,7 @@ export const ComboChart = forwardRef<SVGSVGElement, ComboChartProps>(function Co
 
   // Screen-reader data table: the primary scenario columns the chart actually
   // draws, the Δ label when it is shown, and the secondary series (named by its
-  // own axis caption, formatted with its own options) — the second axis is the
+  // own axis caption, formatted with its own options) - the second axis is the
   // part a single aria-label can never convey.
   const a11yColumns = [
     "AC",
@@ -331,7 +331,7 @@ export const ComboChart = forwardRef<SVGSVGElement, ComboChartProps>(function Co
           </text>
         )}
 
-        {/* Axis titles with units — both axes must be labelled (ISO 24896).
+        {/* Axis titles with units - both axes must be labelled (ISO 24896).
           Each gets half the inner width so a long unit caption can't overflow
           the SVG or collide with the opposite axis title. */}
         {primaryLabel && (
@@ -521,7 +521,7 @@ export const ComboChart = forwardRef<SVGSVGElement, ComboChartProps>(function Co
           if (!p || !cell) return null;
           // The value + Δ labels of this column share the marker's x. Place the
           // secondary label above its marker; if that collides, try below; if both
-          // collide (column label sits where the marker is), drop it — never
+          // collide (column label sits where the marker is), drop it - never
           // overlap. Clamp the below position inside the plot.
           const ac = cell.AC;
           const occupied: number[] = [];
@@ -547,7 +547,7 @@ export const ComboChart = forwardRef<SVGSVGElement, ComboChartProps>(function Co
         })}
       </svg>
       <ChartDataTable
-        caption={title ? `${title} — data table` : "Combination chart data table"}
+        caption={title ? `${title} - data table` : "Combination chart data table"}
         columns={a11yColumns}
         rows={a11yRows}
       />

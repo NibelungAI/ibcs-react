@@ -1,17 +1,17 @@
 ---
 title: RankingVarianceChart
-description: A sorted horizontal variance chart — AC bars with a plan overlay, a ΔPL bar panel and a ΔPL% pin panel.
+description: A sorted horizontal variance chart - AC bars with a plan overlay, a ΔPL bar panel and a ΔPL% pin panel.
 ---
 
 import { RankingVarianceChart } from "ibcs-react";
 
 Rows sorted by deviation: AC bars with the comparison overlaid, then the
-absolute variance as bars, then the relative variance as pins — with a bold
+absolute variance as bars, then the relative variance as pins - with a bold
 total row underneath.
 
 ## When to use
 
-Rank entities (regions, states, products) by their variance vs plan — see who
+Rank entities (regions, states, products) by their variance vs plan - see who
 beats and who misses, with absolute and relative deviation side by side and a
 bold total.
 
@@ -19,7 +19,7 @@ bold total.
 
 <Frame center>
   <RankingVarianceChart
-    title="Net sales by state — AC vs Plan"
+    title="Net sales by state - AC vs Plan"
     baseLabel="PL"
     width={680}
     format={{ compact: true }}
@@ -40,7 +40,7 @@ bold total.
 import { RankingVarianceChart } from "ibcs-react";
 
 <RankingVarianceChart
-  title="Net sales by state — AC vs Plan"
+  title="Net sales by state - AC vs Plan"
   baseLabel="PL"
   sortBy="variance" // "variance" | "value" | "none"
   data={[
@@ -56,7 +56,7 @@ double while contributing almost nothing in absolute terms. Percentages beyond
 `clampPct` draw an off-scale arrow instead of stretching the whole scale for
 one outlier.
 
-`baseLabel` is what the headers say — set it to `"PY"` when the base values are
+`baseLabel` is what the headers say - set it to `"PY"` when the base values are
 last year's.
 
 ## Props

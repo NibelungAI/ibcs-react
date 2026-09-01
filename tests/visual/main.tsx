@@ -5,7 +5,7 @@
  * `render.test.tsx` / `ssr.test.tsx` / `markup.test.tsx`) into one fixed-width
  * cell per fixture, tagged `data-fixture="<name>"`. `visual.pw.ts` discovers the
  * cells from the DOM and screenshots them individually, so adding a fixture to
- * the catalogue automatically adds a screenshot — nothing to keep in sync here.
+ * the catalogue automatically adds a screenshot - nothing to keep in sync here.
  *
  * Not part of the published package: `files` ships `dist` only.
  */
@@ -17,7 +17,7 @@ import { cases } from "../../src/react/__tests__/fixtures";
 /**
  * Width of every fixture cell. Charts that measure their container
  * (ResponsiveChart, ChartFrame, SmallMultiples, …) resolve against this, so it
- * must stay fixed — changing it invalidates every baseline.
+ * must stay fixed - changing it invalidates every baseline.
  */
 const CELL_WIDTH = 480;
 

@@ -63,7 +63,7 @@ const matrixValues: MatrixValues = {
 
 /**
  * Activate an element the way a browser would for a key press. jsdom dispatches
- * the `keydown` faithfully but implements none of the *default actions* — so
+ * the `keydown` faithfully but implements none of the *default actions* - so
  * Enter/Space on a focused `<button>` never turns into the click a real browser
  * synthesizes. The helper spells that out, and only for real buttons: a control
  * that is a `<div onClick>` or a `<th onClick>` gets nothing, exactly as a
@@ -158,7 +158,7 @@ describe("form safety", () => {
     expect(screen.queryByText("Services")).toBeNull();
     expect(onSubmit).not.toHaveBeenCalled();
 
-    // Control: a button WITHOUT type='button' in the same form does submit —
+    // Control: a button WITHOUT type='button' in the same form does submit -
     // proving the assertion above is not vacuous in this environment.
     fireEvent.click(document.getElementById("control")!);
     expect(onSubmit).toHaveBeenCalledTimes(1);
@@ -315,7 +315,7 @@ describe("controlled tables", () => {
     // Seeded from the prop: the group is collapsed, its child hidden.
     expect(screen.queryByText("Services")).toBeNull();
 
-    // The chevron reports the NEXT set — and changes nothing on its own, because
+    // The chevron reports the NEXT set - and changes nothing on its own, because
     // the parent (this test) has not applied it.
     fireEvent.click(screen.getByRole("button", { name: "Expand" }));
     expect(onCollapsedChange).toHaveBeenCalledTimes(1);
@@ -324,7 +324,7 @@ describe("controlled tables", () => {
     expect(screen.getByRole("button", { name: "Expand" })).toBeTruthy();
 
     // The toolbar goes through the same write path, so it cannot drift either
-    // — including its disabled state, which reads the controlled value.
+    // - including its disabled state, which reads the controlled value.
     expect(screen.getByRole("button", { name: "Collapse all" })).toHaveProperty("disabled", true);
     fireEvent.click(screen.getByRole("button", { name: "Expand all" }));
     expect(onCollapsedChange).toHaveBeenCalledTimes(2);
@@ -512,7 +512,7 @@ describe("uncontrolled seeds", () => {
       />,
     );
 
-    // Period open on mount, row closed on mount — both straight from the seeds.
+    // Period open on mount, row closed on mount - both straight from the seeds.
     expect(screen.getByText("Q1")).toBeTruthy();
     expect(screen.queryByText("Services")).toBeNull();
 
@@ -542,7 +542,7 @@ describe("StatementTable virtualization", () => {
     fireEvent.scroll(scroller, { target: { scrollTop: 200 } });
     fireEvent.scroll(scroller, { target: { scrollTop: 500 } });
     fireEvent.scroll(scroller, { target: { scrollTop: 800 } });
-    // Three scroll events, one scheduled frame — and nothing re-rendered yet.
+    // Three scroll events, one scheduled frame - and nothing re-rendered yet.
     expect(frames.length - before).toBe(1);
     expect(screen.getByText("Line 0")).toBeTruthy();
 

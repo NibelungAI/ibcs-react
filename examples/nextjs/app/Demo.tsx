@@ -30,7 +30,7 @@ const monthlyTrend: TrendDatum[] = [
   { category: "Jul", AC: 2_700_000, PY: 2_450_000, PL: 2_650_000 },
   { category: "Aug", AC: 2_900_000, PY: 2_500_000, PL: 2_750_000 },
   { category: "Sep", AC: 3_050_000, PY: 2_600_000, PL: 2_900_000 },
-  // Forecast tail — no AC, carried by FC (drawn hatched).
+  // Forecast tail - no AC, carried by FC (drawn hatched).
   { category: "Oct", FC: 3_150_000, PY: 2_700_000, PL: 3_000_000 },
   { category: "Nov", FC: 3_250_000, PY: 2_800_000, PL: 3_100_000 },
   { category: "Dec", FC: 3_400_000, PY: 2_950_000, PL: 3_250_000 },
@@ -84,7 +84,7 @@ export default function Demo() {
 
       {/* Variance column chart: AC vs PY with a Δ panel --------------------- */}
       <section style={card}>
-        <h2 style={{ fontSize: 16, margin: "0 0 12px" }}>Revenue by quarter — AC vs PY</h2>
+        <h2 style={{ fontSize: 16, margin: "0 0 12px" }}>Revenue by quarter - AC vs PY</h2>
         <VarianceColumnChart
           data={quarterlyRevenue}
           comparison="PY"
@@ -99,7 +99,7 @@ export default function Demo() {
       {/* Trend chart with a forecast tail ---------------------------------- */}
       <section style={card}>
         <h2 style={{ fontSize: 16, margin: "0 0 12px" }}>
-          Monthly trend — actual ▸ forecast ▸ FY total
+          Monthly trend - actual ▸ forecast ▸ FY total
         </h2>
         <TrendChart
           data={monthlyTrend}

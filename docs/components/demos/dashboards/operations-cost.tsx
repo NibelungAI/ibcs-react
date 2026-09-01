@@ -37,9 +37,9 @@ const opsCostColumns: DataTableColumn[] = [
 ];
 
 /**
- * 6 · Operations and cost — Helios Plants.
+ * 6 · Operations and cost - Helios Plants.
  * A cost bridge from PY to AC, the ranked cost categories and a cost-centre
- * table — all on the "lower is better" polarity.
+ * table - all on the "lower is better" polarity.
  */
 export function OperationsCost() {
   return (
@@ -100,7 +100,7 @@ export function OperationsCost() {
         </Panel>
         <Panel title="Cost categories · ranked ΔPY (higher is worse)">
           <RankingVarianceChart
-            title="Cost by category — AC vs PY"
+            title="Cost by category - AC vs PY"
             baseLabel="PY"
             width={560}
             rowHeight={26}

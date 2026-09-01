@@ -10,9 +10,9 @@
  *
  * With the per-module ("unbundle") dist, that means:
  *
- * - `dist/index.js` + `dist/index.cjs` — the root barrels establish the
+ * - `dist/index.js` + `dist/index.cjs` - the root barrels establish the
  *   client boundary for `import { … } from "ibcs-react"`.
- * - every module under `dist/react/` — so the boundary survives bundlers that
+ * - every module under `dist/react/` - so the boundary survives bundlers that
  *   follow the barrel's re-exports into individual modules, and any future
  *   per-component subpath exports are correct by construction.
  * - `dist/core/*` and `dist/_virtual/*` stay directive-free so
@@ -47,7 +47,7 @@ const rootEntries = ["dist/index.js", "dist/index.cjs"].map((t) => join(root, t)
 for (const entry of rootEntries) {
   if (!existsSync(entry)) {
     console.error(
-      `[postbuild] missing build output: ${relative(root, entry)} — run the build first.`,
+      `[postbuild] missing build output: ${relative(root, entry)} - run the build first.`,
     );
     process.exit(1);
   }

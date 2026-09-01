@@ -8,7 +8,7 @@ import { toIdSet } from "../internal/ids";
  */
 export interface UseStatementOptions {
   /**
-   * Statement kind. "flow" (default) is the integrated waterfall — each line
+   * Statement kind. "flow" (default) is the integrated waterfall - each line
    * moves a running total (a P&L). "stock" is the balance-sheet view: each line
    * is an absolute level (ending balance), no running total.
    */
@@ -16,14 +16,14 @@ export interface UseStatementOptions {
   /** Scenario laid out as the waterfall / levels. Default "AC". */
   scenario?: ScenarioKey;
   /**
-   * Group ids collapsed on mount — the uncontrolled seed. When provided this is
+   * Group ids collapsed on mount - the uncontrolled seed. When provided this is
    * used verbatim; otherwise each line's `defaultCollapsed` flag seeds the set.
    * Ignored once `collapsed` is provided.
    */
   defaultCollapsed?: readonly string[];
   /**
    * Collapsed group ids as a CONTROLLED value: when provided the hook stops
-   * owning the state and simply reflects this set — `toggle` / `expandAll` /
+   * owning the state and simply reflects this set - `toggle` / `expandAll` /
    * `collapseAll` report the next set through `onCollapsedChange` for the
    * caller to apply (URL sync, persistence, two views kept in step).
    */
@@ -57,7 +57,7 @@ export interface UseStatementResult {
   collapseAll: () => void;
   /**
    * Ids of every collapsible group (a line with children, at any depth), in
-   * document order — what `collapseAll` collapses. Empty when the statement is
+   * document order - what `collapseAll` collapses. Empty when the statement is
    * flat, which is the cue to hide an expand/collapse toolbar entirely.
    */
   groupIds: string[];
@@ -98,7 +98,7 @@ function seedCollapsed(lines: StatementLine[], defaultCollapsed?: readonly strin
 
 /**
  * Owns a statement's collapse/expand state and derives its waterfall (or stock
- * levels) layout — literally the engine {@link StatementTable} runs on, so a
+ * levels) layout - literally the engine {@link StatementTable} runs on, so a
  * custom statement view behaves exactly like the built-in one. Flatten +
  * waterfall/levels are memoized against the model, the collapsed set, the
  * scenario and the mode, so re-renders are cheap.

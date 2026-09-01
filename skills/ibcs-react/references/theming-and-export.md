@@ -30,12 +30,12 @@ interface IbcsTokens {
 
 Defaults encode the notation: `AC` solid dark, `PY` solid light grey, `PL`
 transparent + stroke (`variant: "frame"`), `FC` hatched. Change hues, not the
-grammar — scenarios are distinguished by _fill_, so a report stays readable in
+grammar - scenarios are distinguished by _fill_, so a report stays readable in
 greyscale.
 
 ## Presets
 
-`tokenPresets` holds all eight under stable ids (the `TokenPresetId` union —
+`tokenPresets` holds all eight under stable ids (the `TokenPresetId` union -
 full autocomplete, typos fail to compile); `tokenPresetLabels` maps each id to
 its display name for pickers. Each preset is also exported by name.
 
@@ -51,7 +51,7 @@ its display name for pickers. Each preset is also exported by name.
 | `dark`                  | Dark         | `darkTokens`     | dark `color.surface` + `onFill`, cards/tooltips included |
 
 (v1.0 keyed the record by the display strings; those keys still resolve at
-runtime but are absent from the type — use the ids.)
+runtime but are absent from the type - use the ids.)
 
 ## Provider and resolution order
 
@@ -67,7 +67,7 @@ import {
 <div style={{ background: darkTokens.color.surface }}>
   <IbcsThemeProvider tokens={darkTokens}>
     <StatementTable lines={lines} />
-    {/* nearest wins — this one chart departs from the theme */}
+    {/* nearest wins - this one chart departs from the theme */}
     <TrendChart data={monthly} tokens={{ color: { bad: "#c62828" } }} />
   </IbcsThemeProvider>
 </div>;
@@ -82,7 +82,7 @@ resolve, so custom marks join the same theme.
 
 ## Sizing
 
-Charts draw at explicit pixel sizes — nothing measures itself — and the wrappers
+Charts draw at explicit pixel sizes - nothing measures itself - and the wrappers
 re-render the chart at the resolved size (text and strokes stay crisp; no
 bitmap scaling). All are SSR-safe: nothing draws before the container is
 measured, so a chart never gets `0` / `NaN`.
@@ -95,17 +95,17 @@ measured, so a chart never gets `0` / `NaN`.
 // render-prop form `{(w, h) => …}` remains when you need the numbers.
 ```
 
-- `ChartBox` — **the one to reach for**. `fit`: `"scale"` (default: fill the
+- `ChartBox` - **the one to reach for**. `fit`: `"scale"` (default: fill the
   available width at the chart's aspect ratio, stop shrinking at `minWidth` and
   scroll) · `"fixed"` (intrinsic size + scroll) · `"contain"` (letterbox) ·
   `"fill"` (stretch). Plus `minWidth`/`maxWidth`/`maxHeight`, `align`
   (`left|center|right`), `verticalAlign` (`top|middle|bottom`), `padding`,
   `background`, `scroll` (`auto|none`).
-- `ResponsiveChart` — minimal ResizeObserver render-prop: `aspect`, `minWidth`,
+- `ResponsiveChart` - minimal ResizeObserver render-prop: `aspect`, `minWidth`,
   `minHeight`, `maxHeight`, `debounce`.
-- `ScrollChart` — one dimension fills, the other scrolls (`height` **or**
+- `ScrollChart` - one dimension fills, the other scrolls (`height` **or**
   `width`, `minWidth`, `maxHeight`). Good for a 13-period trend on a phone.
-- `ChartFrame` — deprecated preset of `ChartBox`; just swap the tag name.
+- `ChartFrame` - deprecated preset of `ChartBox`; just swap the tag name.
 - `useElementSize` sizes a chart from its container directly.
 
 ### bandPadding
@@ -135,7 +135,7 @@ flush to the plot edge.
 - CSV / JSON entries appear only when `csv` / `data` are passed.
 - Also Copy SVG / Copy PNG / Print. Failures call
   `onError(error, action: ExportMenuAction)` (`"svg" | "png" | "csv" | "json" |
-"copy-svg" | "copy-png" | "print"`) — never an unhandled rejection.
+"copy-svg" | "copy-png" | "print"`) - never an unhandled rejection.
 - Fully keyboard-operable menu (arrows rove, Home/End, Escape returns focus).
   All DOM work happens in click handlers, so it is SSR-safe.
 

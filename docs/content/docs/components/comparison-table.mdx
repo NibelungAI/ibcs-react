@@ -1,6 +1,6 @@
 ---
 title: ComparisonTable
-description: The centre-label flanking table of IBCS templates T01 and T02 — two period column groups either side of the row labels.
+description: The IBCS table with hierarchical rows and integrated bar charts (templates T01/T02) - two period column groups either side of the centre row labels.
 ---
 
 import { ComparisonTable } from "ibcs-react";
@@ -9,8 +9,8 @@ import { comparisonRows, comparisonLeft, comparisonRight } from "@/lib/demo-data
 The flanking layout of the IBCS table templates **T01** and **T02**: the row
 labels sit in the centre of the table, with one column group to their left
 (here the current month) and a second, structurally identical group to their
-right (year to date). Each group carries its own scenario columns — PY, PL,
-AC — followed by the variances against a chosen base, either as numeric
+right (year to date). Each group carries its own scenario columns - PY, PL,
+AC - followed by the variances against a chosen base, either as numeric
 figures (T01) or as embedded bars and pins (T02).
 
 Rows are hierarchical: a top-level row with `children` renders as a bold
@@ -19,15 +19,15 @@ grand total under a double rule.
 
 ## When to use
 
-A period-over-period comparison where the same measures are read twice — a
-month against the year to date, a quarter against the full year — and the
+A period-over-period comparison where the same measures are read twice - a
+month against the year to date, a quarter against the full year - and the
 reader should scan both without the labels drifting to one edge. If you only
 need one column group, use [DataTable](/docs/components/data-table); if the
 rows build up to a result through add/subtract steps, use
 [StatementTable](/docs/components/statement-table).
 
 This component is a **static layout**: it holds no interactive state. There is
-no sorting, and no collapse or expand — what you pass is what is rendered.
+no sorting, and no collapse or expand - what you pass is what is rendered.
 Hierarchy comes from the row tree, and everything else is computed from the
 columns. Only a horizontal scroll wrapper is added when the two groups do not
 fit their container.
@@ -37,7 +37,7 @@ fit their container.
 Profit after tax by region, in kEUR. The left group prints numeric AC-PY
 variances (`mark: "none"`, the T01 notation, with the pair centred under a
 shared `subgroup` header); the right group embeds the same variance as a bar
-plus a percentage pin (T02). `gapBefore` opens the IBCS group gap — whitespace,
+plus a percentage pin (T02). `gapBefore` opens the IBCS group gap - whitespace,
 never a rule.
 
 <Frame>
@@ -46,7 +46,7 @@ never a rule.
     leftColumns={comparisonLeft}
     rightColumns={comparisonRight}
     leftGroupLabel="November"
-    rightGroupLabel="January–November"
+    rightGroupLabel="January-November"
     showTotals
     totalsLabel="World"
     format={{ compact: false }}
@@ -116,7 +116,7 @@ const right = [
   leftColumns={left}
   rightColumns={right}
   leftGroupLabel="November"
-  rightGroupLabel="January–November"
+  rightGroupLabel="January-November"
   showTotals
   totalsLabel="World"
   format={{ compact: false }}
@@ -131,7 +131,7 @@ with off-scale arrows). Column widths are derived from the widest formatted
 figure per side, so each group stays internally aligned while the two sides may
 differ in width. Sparkline columns are not drawn in this layout.
 
-See [table templates](/docs/table-templates) for the full T01–T04 set.
+See [table templates](/docs/table-templates) for the full T01-T04 set.
 
 ## Props
 

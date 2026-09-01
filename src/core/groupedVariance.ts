@@ -4,7 +4,7 @@ import { computeVariance } from "./variance";
 
 /**
  * One category in a grouped variance chart: a single actual (`AC`) drawn next
- * to ONE comparison value (`comparisonValue`) as two ADJACENT bars — the
+ * to ONE comparison value (`comparisonValue`) as two ADJACENT bars - the
  * classic IBCS grouped column/bar (templates C03 / C04). The comparison's IBCS
  * notation (PY solid grey, PL hollow frame, FC hatched) is chosen by the chart,
  * not stored here. `isForecast` renders the actual as an expected (hatched) bar.
@@ -20,7 +20,7 @@ export interface GroupedDatum {
   isForecast?: boolean;
 }
 
-/** Which scenario the comparison bar represents — drives its IBCS notation + headers. */
+/** Which scenario the comparison bar represents - drives its IBCS notation + headers. */
 export type GroupedComparison = "PY" | "PL" | "FC";
 
 /** One category enriched with its AC-vs-comparison variance. */
@@ -49,13 +49,13 @@ export interface GroupedLayout {
   /** Scenario the comparison bar represents. */
   comparison: GroupedComparison;
   higherIsBetter: boolean;
-  /** Most negative value across AC + comparison (≤ 0) — the value-axis floor. */
+  /** Most negative value across AC + comparison (≤ 0) - the value-axis floor. */
   domainMin: number;
-  /** Most positive value across AC + comparison (≥ 0) — the value-axis ceiling. */
+  /** Most positive value across AC + comparison (≥ 0) - the value-axis ceiling. */
   domainMax: number;
-  /** Largest |Δ| — the half-scale of the absolute variance tier. */
+  /** Largest |Δ| - the half-scale of the absolute variance tier. */
   absMax: number;
-  /** Largest in-scale |Δ%| as a fraction — the half-scale of the percent tier. */
+  /** Largest in-scale |Δ%| as a fraction - the half-scale of the percent tier. */
   pctMax: number;
   /** A |Δ%| at or beyond this fraction is drawn off-scale (arrow tip). */
   pctClamp: number;
@@ -72,7 +72,7 @@ export interface GroupedLayout {
  * the renderer pins them to the tier edge with an arrow. `absMax` and `pctMax`
  * are floored at a positive value, and the value domain is repaired to a
  * non-empty extent, so a renderer never divides by zero on empty / all-zero
- * data (all-negative data keeps `domainMax === 0`). Framework agnostic — the
+ * data (all-negative data keeps `domainMax === 0`). Framework agnostic - the
  * React `GroupedVarianceChart` (orientation "column" = C03 / "bar" = C04) is
  * just a renderer over this.
  */
@@ -91,7 +91,7 @@ export function computeGroupedVariance(
 
   const cells: GroupedCell[] = data.map((d) => {
     // Missing (absent OR non-finite) values never widen the domain, never
-    // accumulate and never produce a variance — see ./domain.
+    // accumulate and never produce a variance - see ./domain.
     const ac = isFiniteNumber(d.AC) ? d.AC : undefined;
     const cmp = isFiniteNumber(d.comparisonValue) ? d.comparisonValue : undefined;
     for (const v of [ac, cmp]) {

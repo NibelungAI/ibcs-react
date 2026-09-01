@@ -1,5 +1,5 @@
 /**
- * Framework-agnostic pie / donut slice geometry — pure math, fully SSR-safe
+ * Framework-agnostic pie / donut slice geometry - pure math, fully SSR-safe
  * (no `window`, `Date`, or `Math.random`; deterministic for the same input).
  *
  * AGENT CONTEXT: this is the geometry engine behind `react/PieChart.tsx`. It
@@ -15,7 +15,7 @@
  *
  * with screen coordinates `x = cx + r·sin(angle)`, `y = cy − r·cos(angle)`.
  *
- * NOTE: pie charts are DISCOURAGED in IBCS / ISO 24896 — see `PieChart` for the
+ * NOTE: pie charts are DISCOURAGED in IBCS / ISO 24896 - see `PieChart` for the
  * rationale. This module exists to serve that one component faithfully.
  */
 
@@ -28,7 +28,7 @@ export interface Point {
 /**
  * One computed slice. Angles are radians, clockwise from 12 o'clock.
  * `value` is the non-negative magnitude used for the geometry; `rawValue`
- * preserves the original input (which may be negative — those are clamped to 0
+ * preserves the original input (which may be negative - those are clamped to 0
  * for the pie, since a slice cannot have negative area).
  */
 export interface PieSlice {
@@ -44,7 +44,7 @@ export interface PieSlice {
   startAngle: number;
   /** Slice end angle (radians, clockwise from top); always ≥ `startAngle`. */
   endAngle: number;
-  /** `(startAngle + endAngle) / 2` — handy for label / leader placement. */
+  /** `(startAngle + endAngle) / 2` - handy for label / leader placement. */
   midAngle: number;
 }
 
@@ -70,7 +70,7 @@ const TAU = Math.PI * 2;
 
 /**
  * Point on a circle in the module's angle convention (clockwise from top).
- * SSR-safe pure trig — never returns NaN for finite inputs.
+ * SSR-safe pure trig - never returns NaN for finite inputs.
  */
 export function pointOnCircle(cx: number, cy: number, r: number, angle: number): Point {
   return { x: cx + r * Math.sin(angle), y: cy - r * Math.cos(angle) };
@@ -78,7 +78,7 @@ export function pointOnCircle(cx: number, cy: number, r: number, angle: number):
 
 /**
  * Lay out pie slices for a list of values. Negative values are clamped to 0
- * (a slice has no negative area — `hadNegative` flags this so the caller can
+ * (a slice has no negative area - `hadNegative` flags this so the caller can
  * note it). An all-zero / empty input yields slices with `fraction` 0 and zero
  * angular width, so the renderer can still draw an empty ring.
  */

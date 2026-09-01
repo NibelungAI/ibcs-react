@@ -41,7 +41,7 @@ export function ScenarioShowcase() {
       <VarianceColumnChart
         data={DATA}
         comparison={base}
-        title={base === "PL" ? "Revenue — Actual vs Plan" : "Revenue — Actual vs Previous year"}
+        title={base === "PL" ? "Revenue - Actual vs Plan" : "Revenue - Actual vs Previous year"}
         width={520}
         height={300}
         format={{ compact: true, currency: "€" }}

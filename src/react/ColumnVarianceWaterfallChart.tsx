@@ -53,7 +53,7 @@ export interface ColumnVarianceWaterfallChartProps {
   /** Styles merged *over* the chart's own layout styles. */
   style?: CSSProperties;
   /**
-   * Fired as the pointer moves over / leaves a period band (`null` on leave) —
+   * Fired as the pointer moves over / leaves a period band (`null` on leave) -
    * pairs naturally with `useChartHover`. Default undefined.
    */
   onHover?: (hover: ChartHover<ColumnVarianceDatum> | null) => void;
@@ -66,32 +66,32 @@ export interface ColumnVarianceWaterfallChartProps {
 }
 
 /**
- * ColumnVarianceWaterfallChart — IBCS chart-template **C05**: grouped AC/PL
+ * ColumnVarianceWaterfallChart - IBCS chart-template **C05**: grouped AC/PL
  * columns combined with a HORIZONTAL waterfall of the absolute period
  * variances, over one shared period x-band, in three stacked tiers:
  *
- *  1. TOP — ΔPL% pins (lollipops): up & favorable / down & unfavorable from a
+ *  1. TOP - ΔPL% pins (lollipops): up & favorable / down & unfavorable from a
  *     zero axis, forecast periods get a hollow tip, off-scale percents pin to
  *     the edge with an arrow. A circled pin over the end column carries the
  *     grand Δ%.
- *  2. MIDDLE — the variance BRIDGE: each period's `ac − pl` as a small floating
+ *  2. MIDDLE - the variance BRIDGE: each period's `ac − pl` as a small floating
  *     bar, walking the running total from ΣPL (tied to the left columns) to ΣAC
  *     (tied to the right column). Forecast bars are hatched; the grand variance
  *     is circled. Step connectors run at the leaving level between periods.
- *  3. BOTTOM — grouped columns: AC solid (hatched when forecast) in front of a
+ *  3. BOTTOM - grouped columns: AC solid (hatched when forecast) in front of a
  *     hollow PL frame, value-labelled.
  *
  * Set apart on the LEFT are reference total columns (`priorTotals`, each in its
  * scenario's notation); set apart on the RIGHT is a stacked `endTotal` (AC+FC).
  * Crucially the bridge, the grouped columns, and ALL the set-apart totals share
  * ONE value→pixel scale, so a small monthly column and a 178-unit year total
- * read at comparable heights — exactly the IBCS C05 exhibit.
+ * read at comparable heights - exactly the IBCS C05 exhibit.
  *
  * Variance is coloured by IMPACT (good/bad/zero, respecting `higherIsBetter`),
  * never raw sign; every tier carries a zero baseline. Pure SVG, zero-dep,
  * SSR-safe; robust to empty / single / negative / long-label inputs.
  *
- * The svg is the chart's root element — it takes `className` / `style` and the
+ * The svg is the chart's root element - it takes `className` / `style` and the
  * forwarded ref, and carries the accessible name (`role="img"` + `aria-label`);
  * the built-in tooltip portals to `document.body` and flips at the viewport
  * edges.
@@ -120,7 +120,7 @@ export const ColumnVarianceWaterfallChart = forwardRef<
   ref,
 ) {
   const tokens = useIbcsTokens(tokenOverride);
-  // `useId()` values contain ":" in React 18 — sanitized so the `url(#…)` refs
+  // `useId()` values contain ":" in React 18 - sanitized so the `url(#…)` refs
   // survive serialization / querySelector after an SVG export.
   const hatchFc = svgSafeId(useId());
   const hatchGood = svgSafeId(useId());
@@ -376,7 +376,7 @@ export const ColumnVarianceWaterfallChart = forwardRef<
   };
 
   // Screen-reader data table: per period the two columns the chart draws (AC in
-  // front of PL), the bridge step between them and — while the pin tier is on —
+  // front of PL), the bridge step between them and - while the pin tier is on -
   // the relative variance those pins encode. A closing Total row carries the
   // bridge's anchors (ΣPL → ΣAC) and the circled grand variance.
   const a11yColumns = ["AC", "PL", "ΔPL", ...(showPct ? ["ΔPL%"] : [])];
@@ -813,7 +813,7 @@ export const ColumnVarianceWaterfallChart = forwardRef<
         ))}
       </svg>
       <ChartDataTable
-        caption={title ? `${title} — data table` : "AC versus PL with variance bridge — data table"}
+        caption={title ? `${title} - data table` : "AC versus PL with variance bridge - data table"}
         columns={a11yColumns}
         rows={a11yRows}
       />

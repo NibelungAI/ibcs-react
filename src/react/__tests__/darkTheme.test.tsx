@@ -16,7 +16,7 @@ import { defaultTokens, tokenPresets } from "../../core/tokens";
 /**
  * The Dark preset has to actually reach the pixels. Components used to hardcode
  * `#fff` for every card, menu, tooltip and sticky cell, so selecting `Dark`
- * produced white chrome with light-on-dark ink — unreadable. `color.surface` /
+ * produced white chrome with light-on-dark ink - unreadable. `color.surface` /
  * `color.surfaceMuted` / `color.onFill` and `font.family` exist to close that
  * hole; these tests fail the moment a component paints a background from a
  * literal again.
@@ -57,7 +57,7 @@ function scene() {
 }
 
 /**
- * Every white background in the markup — from both `style="…"` attributes and
+ * Every white background in the markup - from both `style="…"` attributes and
  * the `<style>` blocks the tables inject. Scoped to background declarations on
  * purpose: an in-bar label (`color` / `fill`) may legitimately be near-white in
  * a light theme, a surface may not be white in a dark one.
@@ -75,7 +75,7 @@ const darkHtml = renderToString(
 const lightHtml = renderToString(scene());
 
 describe("the Dark preset themes the component chrome", () => {
-  it("paints no white background anywhere — inline styles or injected CSS", () => {
+  it("paints no white background anywhere - inline styles or injected CSS", () => {
     expect(whiteBackgrounds(darkHtml)).toEqual([]);
   });
 

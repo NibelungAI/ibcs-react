@@ -23,7 +23,7 @@ describe("finiteOr", () => {
     expect(finiteOr(NaN, 7)).toBe(7);
     expect(finiteOr(undefined, 7)).toBe(7);
     expect(finiteOr(3, 7)).toBe(3);
-    // A legitimate 0 is NOT missing — it must not fall back.
+    // A legitimate 0 is NOT missing - it must not fall back.
     expect(finiteOr(0, 7)).toBe(0);
   });
 });
@@ -107,7 +107,7 @@ describe("valueDomain", () => {
     expect(valueDomain([0, 0, 0])).toEqual({ domainMin: 0, domainMax: 1 });
   });
 
-  it("keeps an all-negative stream at [min, 0] — zero stays the baseline", () => {
+  it("keeps an all-negative stream at [min, 0] - zero stays the baseline", () => {
     expect(valueDomain([-5, -1, -3])).toEqual({ domainMin: -5, domainMax: 0 });
   });
 

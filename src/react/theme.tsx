@@ -8,7 +8,7 @@
  *
  * Resolution order (nearest wins): a component's own `tokens` prop, merged on
  * top of the nearest provider's theme, merged on top of `defaultTokens`.
- * Providers nest — an inner provider's override composes onto the outer theme.
+ * Providers nest - an inner provider's override composes onto the outer theme.
  */
 
 import { createContext, useContext, useMemo, type ReactNode } from "react";
@@ -38,7 +38,7 @@ export function IbcsThemeProvider({ tokens, children }: IbcsThemeProviderProps) 
 }
 
 /**
- * The active theme with an optional per-component override applied — what
+ * The active theme with an optional per-component override applied - what
  * every component calls internally to resolve its `tokens` prop. Public so
  * custom charts built on `ibcs-react/core` can participate in the same theme.
  */

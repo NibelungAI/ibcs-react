@@ -19,11 +19,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # 22 / 24 — the maintained LTS lines. Node 20 went EOL in April 2026
-        # and the build toolchain (tsdown/rolldown) requires >= 22.18 — on 20
+        # 22 / 24 - the maintained LTS lines. Node 20 went EOL in April 2026
+        # and the build toolchain (tsdown/rolldown) requires >= 22.18 - on 20
         # it cannot even load its config (the native TS loader is missing and
         # the `unrun` fallback isn't installed). The PACKAGE still declares
-        # `engines.node >= 18`: dist is plain transpiled JS — the matrix here
+        # `engines.node >= 18`: dist is plain transpiled JS - the matrix here
         # gates the toolchain, not consumers. setup-node resolves the latest
         # minor of each major, which satisfies tsdown's ^22.18.
         node: [22, 24]
@@ -70,7 +70,7 @@ jobs:
         if: matrix.node == 22
         run: npx --yes publint
 
-      # "Are the types wrong?" — checks the ESM/CJS type conditions resolve for
+      # "Are the types wrong?" - checks the ESM/CJS type conditions resolve for
       # every module resolution mode a consumer might use.
       - name: Check type resolution (attw)
         if: matrix.node == 22

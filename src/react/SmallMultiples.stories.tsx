@@ -39,7 +39,7 @@ const meta: Meta<typeof MiniVarianceMultiples> = {
     groups,
     comparison: "PY",
     columns: 3,
-    title: "Regional ΔPY — shared scale",
+    title: "Regional ΔPY - shared scale",
   },
   argTypes: {
     comparison: { control: "select", options: ["PY", "PL", "FC"] },

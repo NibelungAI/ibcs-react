@@ -26,7 +26,7 @@ import { svgSafeId } from "./internal/text";
 export type { SharedScale, MiniGroupInput, MiniDatum } from "../core/smallMultiples";
 
 export interface SmallMultiplesProps<T> {
-  /** The panels to render — one per item. */
+  /** The panels to render - one per item. */
   items: readonly T[];
   /** Render one panel. Receives the SHARED scale so every panel matches. */
   renderItem: (item: T, scale: SharedScale, index: number) => ReactNode;
@@ -45,7 +45,7 @@ export interface SmallMultiplesProps<T> {
    */
   nice?: boolean;
   /**
-   * Opt in to outlier clamping of the shared domain — a fraction in (0,1), e.g.
+   * Opt in to outlier clamping of the shared domain - a fraction in (0,1), e.g.
    * `0.95`. See {@link sharedDomain}. Stops one giant panel flattening the rest.
    * Default undefined (no clamp).
    */
@@ -53,7 +53,7 @@ export interface SmallMultiplesProps<T> {
   /** Force the shared domain symmetric about 0 (e.g. for variance). Default false. */
   symmetric?: boolean;
   /**
-   * Stable React key per panel. Default: the array index — fine for a static
+   * Stable React key per panel. Default: the array index - fine for a static
    * grid, but pass e.g. `(item) => item.id` when panels are inserted, removed
    * or reordered so React keeps each panel's DOM (and its mount animation)
    * attached to its own datum.
@@ -131,7 +131,7 @@ interface SmallMultiplesA11y {
 /**
  * INTERNAL props. `a11y` lets a built-in mode ({@link MiniVarianceMultiples})
  * substitute its own screen-reader table for the generic `valuesOf`-derived one,
- * so the grid never exposes two tables for the same numbers. Not public API —
+ * so the grid never exposes two tables for the same numbers. Not public API -
  * the exported {@link SmallMultiples} is typed with {@link SmallMultiplesProps}.
  */
 interface SmallMultiplesInnerProps<T> extends SmallMultiplesProps<T> {
@@ -190,7 +190,7 @@ function SmallMultiplesInner<T>(
   }, [items, valuesOf, useSolver, nice, symmetric, clampPercentile]);
 
   // Screen-reader data table for the whole grid: one row per panel, holding the
-  // numbers that panel contributes (`valuesOf` — by contract the panel's own
+  // numbers that panel contributes (`valuesOf` - by contract the panel's own
   // series). A caller-supplied `a11y` wins; without either there is nothing the
   // grid knows about opaque panels, so the panels' own tables stand alone.
   const derived = useMemo<SmallMultiplesA11y | undefined>(() => {
@@ -200,7 +200,7 @@ function SmallMultiplesInner<T>(
     const width = values.reduce((m, v) => Math.max(m, v.length), 0);
     if (width === 0) return undefined;
     return {
-      caption: title ? `${title} — data table` : "Small multiples data table",
+      caption: title ? `${title} - data table` : "Small multiples data table",
       columns: Array.from({ length: width }, (_, i) => (width === 1 ? "Value" : `Value ${i + 1}`)),
       rows: items.map((item, i) => ({
         label: panelLabel(item, i),
@@ -241,7 +241,7 @@ function SmallMultiplesInner<T>(
 }
 
 /**
- * IBCS small multiples (the "CHECK" principle — consistent scaling). Renders an
+ * IBCS small multiples (the "CHECK" principle - consistent scaling). Renders an
  * array of items in a responsive grid, computing ONE shared value domain across
  * all of them and passing it to every panel via `renderItem`, so the panels are
  * visually comparable at a glance. The grid is responsive through an injected
@@ -251,7 +251,7 @@ function SmallMultiplesInner<T>(
  * {@link MiniVarianceMultiples}.
  *
  * The forwarded ref lands on the ROOT `<div>` (the grid wrapper) rather than on
- * an svg — a small-multiples surface is MANY svgs, so the div is the element a
+ * an svg - a small-multiples surface is MANY svgs, so the div is the element a
  * caller can measure, scroll or export. `forwardRef` erases generics, so the
  * wrapper is re-typed to keep `T` inferred from `items` / `renderItem` exactly
  * as before.
@@ -271,7 +271,7 @@ const SmallMultiplesGrid = SmallMultiples as <T>(
 /* ---------------- Built-in: a mini variance column per group ---------------- */
 
 export interface MiniVarianceMultiplesProps {
-  /** Grouped CategoryDatum-like rows — one panel per group. */
+  /** Grouped CategoryDatum-like rows - one panel per group. */
   groups: MiniGroupInput[];
   /** Scenario each category is compared against. Default "PY". */
   comparison?: ScenarioKey;
@@ -285,7 +285,7 @@ export interface MiniVarianceMultiplesProps {
    * Run the shared-scale solver across ALL groups so every panel's bars are
    * directly comparable at a glance (IBCS "same scale = same meaning"). The
    * shared variance half-scale is rounded to a "nice" symmetric bound. Default
-   * false — without it, panels already share the raw `varMax` (unchanged
+   * false - without it, panels already share the raw `varMax` (unchanged
    * behaviour), but the bound is the exact data max rather than a rounded one.
    */
   sharedScale?: boolean;
@@ -316,7 +316,7 @@ export interface MiniVarianceMultiplesProps {
  * groups) so the panels are directly comparable. Columns are colored by
  * favorability with explicit +/- value labels and a zero baseline.
  *
- * Like {@link SmallMultiples}, the forwarded ref lands on the ROOT `<div>` —
+ * Like {@link SmallMultiples}, the forwarded ref lands on the ROOT `<div>` -
  * the grid (and, with `sharedScale` + `showScaleHint`, the caption above it)
  * is the surface, not any single svg.
  */
@@ -375,7 +375,7 @@ export const MiniVarianceMultiples = forwardRef<HTMLDivElement, MiniVarianceMult
         const current = d ? (d.AC ?? d.FC) : undefined;
         const base = d ? d[comparison] : undefined;
         return {
-          label: `${g.label} — ${b.category}`,
+          label: `${g.label} - ${b.category}`,
           cells: [
             current != null ? formatValue(current, format) : "n/a",
             base != null ? formatValue(base, format) : "n/a",
@@ -394,7 +394,7 @@ export const MiniVarianceMultiples = forwardRef<HTMLDivElement, MiniVarianceMult
       <SmallMultiplesGrid
         items={layout.groups}
         a11y={{
-          caption: title ? `${title} — data table` : `Variance versus ${comparison} — data table`,
+          caption: title ? `${title} - data table` : `Variance versus ${comparison} - data table`,
           columns: a11yColumns,
           rows: a11yRows,
         }}
@@ -439,7 +439,7 @@ export const MiniVarianceMultiples = forwardRef<HTMLDivElement, MiniVarianceMult
           </div>
         )}
         <div style={{ fontSize: 11, color: tokens.color.textMuted, marginBottom: 8 }}>
-          Shared scale — full bar height ≈ ±{formatValue(varMax, format)} vs {comparison}
+          Shared scale - full bar height ≈ ±{formatValue(varMax, format)} vs {comparison}
         </div>
         {grid}
       </div>

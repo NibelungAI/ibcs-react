@@ -13,7 +13,7 @@ import { expect, test } from "@playwright/test";
  * fixture, each with its expected/actual/diff attachment.
  *
  * File suffix is `.pw.ts`, not `.spec.ts`, because Vitest globs `*.spec.*`
- * repo-wide — this file must belong to exactly one runner.
+ * repo-wide - this file must belong to exactly one runner.
  */
 test("every fixture matches its baseline screenshot", async ({ page }) => {
   await page.goto("/");

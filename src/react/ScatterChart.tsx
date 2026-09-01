@@ -18,7 +18,7 @@ import { clampTo } from "./internal/text";
 import { useIbcsTokens } from "./theme";
 
 // Local, CJK-aware text metrics: wide glyphs count ~1em where the shared
-// `./internal/text` heuristic assumes a uniform 0.6em — kept for label fitting.
+// `./internal/text` heuristic assumes a uniform 0.6em - kept for label fitting.
 /** Approx. glyph width in px (CJK/full-width/emoji count as ~1em). SSR-safe. */
 function isWide(cp: number): boolean {
   return (
@@ -56,13 +56,13 @@ function fitText(s: string, maxPx: number, fontSize: number): string {
 export type { ScatterDatum } from "../core/xy";
 
 /**
- * Configuration for the C09 iso-lines — the thin "equal gross profit"
+ * Configuration for the C09 iso-lines - the thin "equal gross profit"
  * reference curves drawn behind the points.
  */
 export interface IsoLineConfig {
   /**
    * Explicit constant-product levels to draw. Omit (or leave empty) to
-   * auto-pick ~4–6 "nice" round levels spanning the data's product range.
+   * auto-pick ~4-6 "nice" round levels spanning the data's product range.
    */
   values?: number[];
   /** Format the level label. Default reuses the chart's number {@link FormatOptions}. */
@@ -84,7 +84,7 @@ export interface ScatterChartProps {
   yLabel?: string;
   /**
    * Constant-product reference curves (x·y = k by default) drawn as thin
-   * hyperbolas behind the points — the C09 "equal gross profit" iso-lines.
+   * hyperbolas behind the points - the C09 "equal gross profit" iso-lines.
    *
    * Pass a bare `number[]` of levels for the simple case, or an
    * {@link IsoLineConfig} to auto-pick nice levels (`{}` / `{ values: [] }`),
@@ -320,7 +320,7 @@ export const ScatterChart = forwardRef<SVGSVGElement, ScatterChartProps>(functio
           />
         ))}
 
-        {/* Constant-product hyperbolas (iso-lines) — subtle reference scaffolding
+        {/* Constant-product hyperbolas (iso-lines) - subtle reference scaffolding
           drawn UNDER the points: thin, faint, dashed, clearly secondary. */}
         {isoPaths.map((iso) => (
           <g key={`iso${iso.level}`}>
@@ -431,7 +431,7 @@ export const ScatterChart = forwardRef<SVGSVGElement, ScatterChartProps>(functio
           </text>
         )}
 
-        {/* Points — grow via a subtle group fade/scale */}
+        {/* Points - grow via a subtle group fade/scale */}
         <g
           opacity={grow}
           style={{
@@ -490,7 +490,7 @@ export const ScatterChart = forwardRef<SVGSVGElement, ScatterChartProps>(functio
               >
                 <rect x={0} y={-7} width={9} height={9} rx={1.5} fill={colorMap[g]} />
                 <text x={13} y={1} fontSize={10} fill={tokens.color.textMuted}>
-                  {fitText(g || "—", 95, 10)}
+                  {fitText(g || "-", 95, 10)}
                 </text>
               </g>
             ))}
@@ -521,7 +521,7 @@ export const ScatterChart = forwardRef<SVGSVGElement, ScatterChartProps>(functio
         )}
       </svg>
       <ChartDataTable
-        caption={title ? `${title} — data table` : "Scatter plot data table"}
+        caption={title ? `${title} - data table` : "Scatter plot data table"}
         columns={a11yColumns}
         rows={a11yRows}
       />

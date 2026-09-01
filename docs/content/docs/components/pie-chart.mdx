@@ -1,6 +1,6 @@
 ---
 title: PieChart
-description: A part-to-whole pie / donut — and pie multiples — for the occasional valid share.
+description: A part-to-whole pie / donut - and pie multiples - for the occasional valid share.
 ---
 
 import { PieChart } from "ibcs-react";
@@ -12,12 +12,12 @@ multiple exhibits.
 
 ## When to use
 
-Reach for a column or bar chart first — angles and areas are hard to compare.
+Reach for a column or bar chart first - angles and areas are hard to compare.
 Use a pie only for a single, simple part-to-whole share (or to reproduce an
 IBCS "pie multiples" layout), never for trends or precise comparison.
 
 <Callout type="warn" title="checkIbcs flags every pie">
-  `checkIbcs` is the library's own check against IBCS notation rules — pass it a chart or report
+  `checkIbcs` is the library's own check against IBCS notation rules - pass it a chart or report
   config and it returns rule violations. Its `linear-chart-type` rule permits only linear charts
   (column, bar, line, area, scatter, bubble, waterfall), so a pie trips the linter by design. Prefer
   a bar or column unless the pie is truly the point.
@@ -70,7 +70,7 @@ IBCS "pie multiples" layout), never for trends or precise comparison.
 ```tsx
 import { PieChart } from "ibcs-react";
 
-// Multi-slice (one emphasised slice, muted greys — not a rainbow)
+// Multi-slice (one emphasised slice, muted greys - not a rainbow)
 <PieChart
   data={[
     { label: "Software", value: 50 },

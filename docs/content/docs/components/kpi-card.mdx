@@ -5,13 +5,13 @@ description: A headline figure (count-up animated) with impact-coloured deltas v
 
 import { KpiCard } from "ibcs-react";
 
-A single headline number with one or more IBCS impact-coloured deltas — the
-colour follows favorability, not the sign — and an optional sparkline under the
+A single headline number with one or more IBCS impact-coloured deltas - the
+colour follows favorability, not the sign - and an optional sparkline under the
 figure. Built to drop into a report grid as a `kpi` block.
 
 ## When to use
 
-A single KPI in a dashboard strip — revenue, margin, headcount — with its
+A single KPI in a dashboard strip - revenue, margin, headcount - with its
 variance and trend at a glance.
 
 ## Example
@@ -119,15 +119,15 @@ the headline instead of repeating it on every delta.
 />
 ```
 
-Set `animate={false}` to render the headline outright — no frame loop, no
-re-renders — which is what you want in tests, print and SSR-heavy pages.
+Set `animate={false}` to render the headline outright - no frame loop, no
+re-renders - which is what you want in tests, print and SSR-heavy pages.
 Users with `prefers-reduced-motion` set never see the count-up either way:
 the default consults the OS preference and renders the final value
 immediately, and SSR always emits the finished figure.
 
 ## Ratio measures: percentage-point deltas
 
-A percentage MEASURE — a margin, a rate, a share — moves in percentage
+A percentage MEASURE - a margin, a rate, a share - moves in percentage
 points. Declare it with `unit="ratio"` and the delta renders as `+0.6pp`,
 while the relative delta is dropped: "+0.9%" beside "18.4%" invites reading
 a relative change as points, the exact confusion ISO 24896 separates the two

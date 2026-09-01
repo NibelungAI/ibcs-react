@@ -54,7 +54,7 @@ const STATEMENT_SETS = [
     label: "Drill-down",
     lines: sampleStatement,
     subtitle:
-      "Same model, nested: Revenue and Operating expenses are groups — click the chevron to expand.",
+      "Same model, nested: Revenue and Operating expenses are groups - click the chevron to expand.",
   },
   {
     value: "loss",
@@ -91,7 +91,7 @@ export function App() {
           IBCS reporting components
         </h1>
         <p style={{ fontSize: 13, color: "#6b6a64", margin: "6px 0 0" }}>
-          One model, many views. Switch the comparison base or retheme — every table and chart
+          One model, many views. Switch the comparison base or retheme - every table and chart
           re-renders from the same data.
         </p>
       </header>
@@ -114,7 +114,7 @@ export function App() {
       <StatementExplorer comparison={comparison} replay={replay} tokens={tokens} />
 
       <BudgetSection
-        title="Budget vs actual — income statement"
+        title="Budget vs actual - income statement"
         subtitle="Actual against plan (PL / budget): the PL column is the budget, ΔBudget (bar) and ΔBudget% (pin) show the gap. Over-budget costs read red regardless of the comparison toggle above."
         lines={sampleStatementFlat}
         replay={replay}
@@ -122,7 +122,7 @@ export function App() {
       />
 
       <BudgetSection
-        title="Budget vs actual — by quarter"
+        title="Budget vs actual - by quarter"
         subtitle="The same comparison on the quarterly build-up to full-year revenue. Q4 beat budget by the most; the full-year total lands 1.6M over plan."
         lines={sampleQuarterlyStatement}
         replay={replay}
@@ -130,7 +130,7 @@ export function App() {
       />
 
       <StatementSection
-        title="Balance sheet — stock view"
+        title="Balance sheet - stock view"
         subtitle="A stock statement: each line is an ending balance (a level), not a period movement. Assets balance against liabilities + equity at 37.0M. Expand Non-current assets."
         lines={sampleBalanceSheet}
         mode="stock"
@@ -140,7 +140,7 @@ export function App() {
       />
 
       <StatementSection
-        title="Consolidation — virtualized"
+        title="Consolidation - virtualized"
         subtitle="~250 rows (10 divisions × 24 accounts). The body scrolls with a sticky header and only the rows in view are mounted, so big consolidations and transaction drill-downs stay smooth. Scroll inside the table."
         lines={sampleConsolidation}
         maxHeight={440}
@@ -370,7 +370,7 @@ function CsvButton({ onClick }: { onClick: () => void }) {
   );
 }
 
-/** Two Δ columns (bar + pin) for a comparison base — the IBCS reference pair. */
+/** Two Δ columns (bar + pin) for a comparison base - the IBCS reference pair. */
 function comparisonColumns(base: Comparison) {
   return [
     { base, mode: "abs" as const, mark: "bar" as const },
@@ -545,7 +545,7 @@ function RevenueCard({
   const [mark, setMark] = useState<"bar" | "pin">("bar");
   return (
     <Section
-      title={`Revenue by quarter — AC vs ${comparison}`}
+      title={`Revenue by quarter - AC vs ${comparison}`}
       subtitle="AC columns with the comparison overlapped behind and an impact-coloured variance panel beneath. Switch the mark to pin for the lollipop variant."
       action={<MarkToggle mark={mark} onChange={setMark} />}
     >
@@ -577,8 +577,8 @@ function TrendSection({
   const [mode, setMode] = useState<"abs" | "pct">("abs");
   return (
     <Section
-      title="Revenue trend — 13 periods"
-      subtitle="P1–P9 actual, P10–P13 forecast (hatched). PY/PL ride along as reference lines; the panel beneath shows AC/FC vs the comparison."
+      title="Revenue trend - 13 periods"
+      subtitle="P1-P9 actual, P10-P13 forecast (hatched). PY/PL ride along as reference lines; the panel beneath shows AC/FC vs the comparison."
       action={
         <Segmented
           value={mode}
@@ -617,7 +617,7 @@ function StructureSection({
 }) {
   return (
     <Section
-      title="Revenue by region — composition"
+      title="Revenue by region - composition"
       subtitle="The structure of the revenue total: each region's bar, share of the whole, and Δ vs the comparison. Ranked largest-first; AC solid, comparison faded behind."
     >
       <StructureChart

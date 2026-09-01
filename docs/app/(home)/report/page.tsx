@@ -15,7 +15,7 @@ export default function ReportPage() {
         <h1 className="text-2xl font-semibold tracking-tight">Example report</h1>
         <p className="mt-2 max-w-2xl text-fd-muted-foreground">
           Every block below comes from one JSON <code>ReportConfig</code> rendered by the{" "}
-          <code>Report</code> component — KPI cards, the income statement, charts and a table on one
+          <code>Report</code> component - KPI cards, the income statement, charts and a table on one
           responsive grid. See the{" "}
           <Link href="/docs" className="underline underline-offset-4">
             documentation

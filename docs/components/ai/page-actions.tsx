@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 
 /**
- * "Copy page" split button under every docs title — the pattern the better
+ * "Copy page" split button under every docs title - the pattern the better
  * libraries use: primary action copies the page as Markdown, the attached
  * chevron opens a menu with View as Markdown / Open in ChatGPT / Open in
  * Claude. Hand-rolled (no popover deps), fumadocs design tokens.
@@ -14,7 +14,7 @@ const SEGMENT =
   "transition-colors hover:bg-fd-accent hover:text-fd-accent-foreground";
 
 function absoluteUrl(path: string) {
-  // Prompts open in the visitor's browser — always target the public site.
+  // Prompts open in the visitor's browser - always target the public site.
   return `https://ibcs-react.com${path}`;
 }
 
@@ -80,11 +80,11 @@ export function PageActions({ markdownUrl }: { markdownUrl: string }) {
       clearTimeout(timer.current);
       timer.current = setTimeout(() => setCopied(false), 1600);
     } catch {
-      /* ignore — button label simply stays put */
+      /* ignore - button label simply stays put */
     }
   }
 
-  const prompt = `Read ${absoluteUrl(markdownUrl)} — the ibcs-react docs page — so I can ask questions about it.`;
+  const prompt = `Read ${absoluteUrl(markdownUrl)} - the ibcs-react docs page - so I can ask questions about it.`;
   const items = [
     {
       label: "View as Markdown",

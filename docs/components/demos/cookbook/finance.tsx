@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Report cookbook — Finance & accounting. One component per recipe; each renders the
+ * Report cookbook - Finance & accounting. One component per recipe; each renders the
  * exact snippet printed next to it in `content/docs/cookbook.mdx`.
  */
 import {
@@ -28,21 +28,21 @@ import {
 import { CARD_W, fM, fK, fN, fN1, fPct1, C, L, S, W, varCols } from "@/lib/demo-data/cookbook";
 import { KpiStrip } from "./shared";
 
-/** Income statement (waterfall) — Northwind Materials · € m · FY26 vs PY/PL */
+/** Income statement (waterfall) - Northwind Materials · € m · FY26 vs PY/PL */
 export function IncomeStatementWaterfall() {
   return (
     <StatementTable lines={sampleStatementFlat.slice(0, 11)} waterfallWidth={150} format={fM} />
   );
 }
 
-/** Balance sheet — Northwind Materials · € m · point-in-time */
+/** Balance sheet - Northwind Materials · € m · point-in-time */
 export function BalanceSheet() {
   return (
     <StatementTable lines={sampleBalanceSheet} mode="stock" waterfallWidth={140} format={fM} />
   );
 }
 
-/** Cash flow bridge — Helios Foods · € m · opening → closing cash */
+/** Cash flow bridge - Helios Foods · € m · opening → closing cash */
 export function CashFlowBridge() {
   return (
     <WaterfallChart
@@ -62,7 +62,7 @@ export function CashFlowBridge() {
   );
 }
 
-/** P&L bridge — PY → AC operating income — Helios Foods · € m · effect decomposition */
+/** P&L bridge - PY → AC operating income - Helios Foods · € m · effect decomposition */
 export function PAndLBridgePYACOperatingIncome() {
   return (
     <WaterfallChart
@@ -83,7 +83,7 @@ export function PAndLBridgePYACOperatingIncome() {
   );
 }
 
-/** Budget vs actual — quarterly revenue — Aurora Retail · € m · AC vs PL */
+/** Budget vs actual - quarterly revenue - Aurora Retail · € m · AC vs PL */
 export function BudgetVsActualQuarterlyRevenue() {
   return (
     <VarianceColumnChart
@@ -101,14 +101,14 @@ export function BudgetVsActualQuarterlyRevenue() {
   );
 }
 
-/** Revenue variance analysis — Aurora Retail · € m · 13 periods, AC vs PY */
+/** Revenue variance analysis - Aurora Retail · € m · 13 periods, AC vs PY */
 export function RevenueVarianceAnalysis() {
   return (
     <TrendChart data={sampleMonthlyTrend} comparison="PY" width={CARD_W} height={236} format={fK} />
   );
 }
 
-/** Gross-margin walk — Cobalt Devices · € m · PY → AC */
+/** Gross-margin walk - Cobalt Devices · € m · PY → AC */
 export function GrossMarginWalk() {
   return (
     <WaterfallChart
@@ -128,7 +128,7 @@ export function GrossMarginWalk() {
   );
 }
 
-/** Operating-expense breakdown — Cobalt Devices · € m · AC vs PY share */
+/** Operating-expense breakdown - Cobalt Devices · € m · AC vs PY share */
 export function OperatingExpenseBreakdown() {
   return (
     <StructureChart
@@ -149,7 +149,7 @@ export function OperatingExpenseBreakdown() {
   );
 }
 
-/** Working-capital metrics — Northwind Materials · days · AC vs PY */
+/** Working-capital metrics - Northwind Materials · days · AC vs PY */
 export function WorkingCapitalMetrics() {
   return (
     <KpiStrip
@@ -186,7 +186,7 @@ export function WorkingCapitalMetrics() {
   );
 }
 
-/** AR aging by segment — Aurora Retail · € k · open receivables */
+/** AR aging by segment - Aurora Retail · € k · open receivables */
 export function ARAgingBySegment() {
   return (
     <StackedChart
@@ -203,8 +203,8 @@ export function ARAgingBySegment() {
       ]}
       series={[
         { key: "cur", label: "Current" },
-        { key: "d30", label: "1–30" },
-        { key: "d60", label: "31–60" },
+        { key: "d30", label: "1-30" },
+        { key: "d60", label: "31-60" },
         { key: "d90", label: "61+" },
       ]}
       orientation="bar"
@@ -215,7 +215,7 @@ export function ARAgingBySegment() {
   );
 }
 
-/** Revenue by region — Northwind Materials · € m · AC vs PY */
+/** Revenue by region - Northwind Materials · € m · AC vs PY */
 export function RevenueByRegion() {
   return (
     <StructureChart
@@ -229,7 +229,7 @@ export function RevenueByRegion() {
   );
 }
 
-/** EBITDA trend — Helios Foods · € m · monthly, AC vs PL line */
+/** EBITDA trend - Helios Foods · € m · monthly, AC vs PL line */
 export function EBITDATrend() {
   return (
     <LineChart
@@ -252,7 +252,7 @@ export function EBITDATrend() {
   );
 }
 
-/** Multi-year P&L statement — Vector Software · € m · 2012–2015 (wide → scroll) */
+/** Multi-year P&L statement - Vector Software · € m · 2012-2015 (wide → scroll) */
 export function MultiYearPAndLStatement() {
   return (
     <div style={{ minWidth: 560 }}>
@@ -261,7 +261,7 @@ export function MultiYearPAndLStatement() {
   );
 }
 
-/** Cost-centre variance — Cobalt Devices · € k · AC vs PY */
+/** Cost-centre variance - Cobalt Devices · € k · AC vs PY */
 export function CostCentreVariance() {
   return (
     <DataTable
@@ -296,7 +296,7 @@ export function CostCentreVariance() {
   );
 }
 
-/** Capex vs depreciation — Northwind Materials · € m · invest vs D&A % */
+/** Capex vs depreciation - Northwind Materials · € m · invest vs D&A % */
 export function CapexVsDepreciation() {
   return (
     <ComboChart
@@ -318,7 +318,7 @@ export function CapexVsDepreciation() {
   );
 }
 
-/** Free cash flow — Helios Foods · € m · monthly with PY baseline */
+/** Free cash flow - Helios Foods · € m · monthly with PY baseline */
 export function FreeCashFlow() {
   return (
     <AreaChart
@@ -339,7 +339,7 @@ export function FreeCashFlow() {
   );
 }
 
-/** Return-on-assets driver tree — Northwind Materials · ratio decomposition */
+/** Return-on-assets driver tree - Northwind Materials · ratio decomposition */
 export function ReturnOnAssetsDriverTree() {
   return (
     <TreeChart
@@ -362,7 +362,7 @@ export function ReturnOnAssetsDriverTree() {
   );
 }
 
-/** Interest-coverage & leverage — Northwind Materials · ratios · AC vs PY */
+/** Interest-coverage & leverage - Northwind Materials · ratios · AC vs PY */
 export function InterestCoverageAndLeverage() {
   return (
     <KpiStrip

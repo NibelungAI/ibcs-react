@@ -1,12 +1,12 @@
 /**
- * Categorical band scale — the horizontal placement of bars/columns/markers
+ * Categorical band scale - the horizontal placement of bars/columns/markers
  * across N categories, with explicit control over the gap between bands and the
  * lead-in/out gutter at the chart edges.
  *
  * This is the mechanism behind a chart's "fill" behaviour: by default a column
  * chart centres each bar in its band and leaves a half-band gutter on the left
  * and right (the classic look). Setting the *outer* padding to `0` trims those
- * gutters so the first and last bars sit flush against the plot edges — the
+ * gutters so the first and last bars sit flush against the plot edges - the
  * chart fills its box edge-to-edge with no dead whitespace.
  *
  * Follows the same maths as D3's `scaleBand`, so it is predictable and matches
@@ -19,8 +19,8 @@
  * (the centre-to-centre distance between adjacent bands), in `[0, 1)` for
  * `inner` and `[0, ∞)` for `outer`.
  *
- * - `inner` — gap between adjacent bands (higher → thinner bars / more air).
- * - `outer` — gutter before the first and after the last band. `0` makes the
+ * - `inner` - gap between adjacent bands (higher → thinner bars / more air).
+ * - `outer` - gutter before the first and after the last band. `0` makes the
  *   bars flush to the edges (fill); a larger value insets them.
  */
 export type BandPadding = number | { inner?: number; outer?: number };
@@ -49,7 +49,7 @@ function clamp(v: number, lo: number, hi: number): number {
  * @param padding {@link BandPadding}. Defaults to `{ inner: 0.2 }`, and when
  *               `outer` is omitted it mirrors `inner` (D3's convention), giving a
  *               balanced gutter. Pass `{ outer: 0 }` to trim the side whitespace.
- * @param offset added to every coordinate — pass the plot's left inset (`padL`)
+ * @param offset added to every coordinate - pass the plot's left inset (`padL`)
  *               so `start`/`center` come back in absolute SVG units.
  */
 export function bandScale(
@@ -90,7 +90,7 @@ export function legacyBandPadding(barWidthRatio: number): { inner: number; outer
  * half-band of dead space on each side; that reads as wasted whitespace, so the
  * default now keeps only a slice of it (a touch of breathing room, not a full
  * half-band) while the bar spacing is untouched. Callers can still set any
- * `outer` explicitly — `0` for flush-to-edge, the legacy value for the old look.
+ * `outer` explicitly - `0` for flush-to-edge, the legacy value for the old look.
  */
 const DEFAULT_GUTTER_SCALE = 0.4;
 
@@ -100,7 +100,7 @@ const DEFAULT_GUTTER_SCALE = 0.4;
  *
  * - With **no override** the inter-bar spacing is the chart's historical value,
  *   but the edge gutter is trimmed to {@link DEFAULT_GUTTER_SCALE} of its old
- *   width — so every chart fills its box better out of the box, with no dead
+ *   width - so every chart fills its box better out of the box, with no dead
  *   whitespace on the sides.
  * - A **bare number** sets both inner and outer.
  * - An **object** overrides only the keys it sets, so `{ outer: 0 }` makes the

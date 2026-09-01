@@ -5,7 +5,7 @@ import { computeVariance } from "./variance";
 /**
  * One period in a trend series. A period carries up to four scenario values.
  * The "current" series is the actual (`AC`) when present, otherwise the
- * forecast (`FC`) — so a 13-period year naturally splits into actual months
+ * forecast (`FC`) - so a 13-period year naturally splits into actual months
  * followed by forecast months. `PY`/`PL` ride along as reference overlays.
  */
 export interface TrendDatum extends ScenarioDatum {
@@ -14,8 +14,8 @@ export interface TrendDatum extends ScenarioDatum {
   /**
    * Render this period as a visually separated summary (e.g. a full-year
    * total): a divider + the emphasis color, set off from the running months
-   * to its left. Summary values are EXCLUDED from the period scale — a total
-   * ~12× the months would crush them to slivers — so a summary that exceeds
+   * to its left. Summary values are EXCLUDED from the period scale - a total
+   * ~12× the months would crush them to slivers - so a summary that exceeds
    * the period domain is drawn capped, with a marked scale break and its
    * value label; a same-magnitude summary (an average, say) shares the scale
    * unchanged. Summaries are also left out of the PY/PL reference lines: a
@@ -38,7 +38,7 @@ export interface TrendCell extends TrendDatum {
   variance: Variance | null;
   /**
    * True when this is a `summary` period whose value lies outside the period
-   * domain — the renderer draws it capped with a marked scale break instead
+   * domain - the renderer draws it capped with a marked scale break instead
    * of letting it flatten every other column.
    */
   offScale: boolean;
@@ -51,7 +51,7 @@ export interface TrendLayout {
   /** Most positive point across the PERIOD scenarios (≥ 0; summaries excluded). */
   domainMax: number;
   /**
-   * Largest |variance| in the active mode across the PERIOD cells — the
+   * Largest |variance| in the active mode across the PERIOD cells - the
    * variance-panel half-scale. Summary variances are excluded for the same
    * reason summary values are: a full-year Δ would crush the monthly Δs.
    */
@@ -72,7 +72,7 @@ export interface ComputeTrendOptions {
 /**
  * Pure trend layout: resolve each period's current value, its variance against
  * the comparison scenario, and the shared value/variance domains. Framework
- * agnostic — the React `TrendChart` is just a renderer over this.
+ * agnostic - the React `TrendChart` is just a renderer over this.
  *
  * The value domain always includes 0 so the zero baseline sits inside the
  * plot even for an all-positive series, mirroring {@link computeWaterfall}; an
@@ -82,7 +82,7 @@ export interface ComputeTrendOptions {
  *
  * `summary` periods (a full-year total, say) contribute to NEITHER the value
  * domain NOR `varMax`: a total is typically an order of magnitude above the
- * periods, and one shared linear scale would render every month a sliver —
+ * periods, and one shared linear scale would render every month a sliver -
  * the exact failure the first consumer integration report demonstrated with
  * twelve ~2.5M months against a 30M total. A summary outside the resulting
  * domain is flagged `offScale`; the renderer caps it and marks the break.
@@ -106,7 +106,7 @@ export function computeTrend(data: TrendDatum[], opts: ComputeTrendOptions = {})
     const current = AC ?? FC;
     const base = { AC, PY, PL, FC }[comparison];
 
-    // Summary periods are set off visually AND scale-wise — they must not
+    // Summary periods are set off visually AND scale-wise - they must not
     // define the domain the running periods are read against.
     if (!d.summary) {
       for (const v of [AC, PY, PL, FC]) {

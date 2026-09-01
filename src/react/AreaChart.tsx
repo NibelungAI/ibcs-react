@@ -26,7 +26,7 @@ export interface AreaChartProps {
   width?: number;
   height?: number;
   /**
-   * Horizontal point spacing — the lead-in/out gutter at the plot edges. Omit
+   * Horizontal point spacing - the lead-in/out gutter at the plot edges. Omit
    * for the centred default; pass `{ outer: 0 }` to anchor the first/last points
    * to the edges so the series fills the plot width (no side whitespace).
    */
@@ -79,7 +79,7 @@ function buildArea(
 }
 
 /**
- * Approximate rendered width of `s` in px at `fontSize` — wide glyphs (CJK,
+ * Approximate rendered width of `s` in px at `fontSize` - wide glyphs (CJK,
  * fullwidth, emoji) ~1.05·em, normal ~0.62·em. SSR-safe (no DOM measuring).
  *
  * Deliberately local: the shared `internal/text` heuristic is width-agnostic,
@@ -127,8 +127,8 @@ function fitText(s: string, maxPx: number, fontSize: number): string {
  * positive and negative values against a zero value axis; markers appear on the
  * area's top line only when the series is sparse enough to read as connectors.
  *
- * A forwarded `ref` lands on the chart `<svg>` — the useful handle for export /
- * serialization — even though the component also renders a screen-reader table
+ * A forwarded `ref` lands on the chart `<svg>` - the useful handle for export /
+ * serialization - even though the component also renders a screen-reader table
  * beside it.
  */
 export const AreaChart = forwardRef<SVGSVGElement, AreaChartProps>(function AreaChart(
@@ -244,7 +244,7 @@ export const AreaChart = forwardRef<SVGSVGElement, AreaChartProps>(function Area
     resolve();
   }
 
-  // Screen-reader data table: each period's area value and the reference value —
+  // Screen-reader data table: each period's area value and the reference value -
   // so SR users read the actual numbers, not the decorative svg.
   const a11yColumns = [scenario, ...(baseSeries ? [baseSeries.scenario] : [])];
   const areaByIndex = new Map(points.map((p) => [p.index, p.value]));
@@ -267,7 +267,7 @@ export const AreaChart = forwardRef<SVGSVGElement, AreaChartProps>(function Area
         height={height}
         viewBox={`0 0 ${width} ${height}`}
         className={className}
-        // A single labelled image — no `aria-hidden`, which would cancel the
+        // A single labelled image - no `aria-hidden`, which would cancel the
         // label out and leave assistive tech with nothing but the sr-only table.
         role="img"
         aria-label={
@@ -366,7 +366,7 @@ export const AreaChart = forwardRef<SVGSVGElement, AreaChartProps>(function Area
         )}
       </svg>
       <ChartDataTable
-        caption={title ? `${title} — data table` : `Area chart of ${scenario} — data table`}
+        caption={title ? `${title} - data table` : `Area chart of ${scenario} - data table`}
         columns={a11yColumns}
         rows={a11yRows}
       />

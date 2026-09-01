@@ -1,5 +1,5 @@
 /**
- * Reference lines, target markers, and tolerance bands — a small, framework-
+ * Reference lines, target markers, and tolerance bands - a small, framework-
  * agnostic spec plus a pure resolver that maps each reference onto pixel
  * geometry given a chart's axis scales and plot box.
  *
@@ -7,8 +7,8 @@
  * in the value→pixel scales it already uses for its data, and gets back plain
  * numbers (line endpoints / band rectangles) it can draw however it likes. That
  * keeps it SSR-safe (no DOM, no measuring) and lets every chart in the library
- * adopt the same reference vocabulary — a budget target line, a min/max
- * tolerance band, a "today" divider — without re-implementing the math.
+ * adopt the same reference vocabulary - a budget target line, a min/max
+ * tolerance band, a "today" divider - without re-implementing the math.
  *
  * Axis convention (matches the visual result, not the scale used):
  *  - `axis: "y"` → a HORIZONTAL line / band at a value on the value axis
@@ -21,8 +21,8 @@
 /** A single straight reference line or target marker. */
 export interface ReferenceLine {
   /**
-   * Explicit discriminator. Optional for backward compatibility — omit it and
-   * the kind is inferred from the shape ({@link isReferenceBand}) — but set it
+   * Explicit discriminator. Optional for backward compatibility - omit it and
+   * the kind is inferred from the shape ({@link isReferenceBand}) - but set it
    * whenever an object carries both a `value` and `from`/`to` fields, where
    * structural inference would otherwise have to guess.
    */
@@ -42,7 +42,7 @@ export interface ReferenceLine {
 /** A shaded tolerance / target band spanning `from`..`to` on one axis. */
 export interface ReferenceBand {
   /**
-   * Explicit discriminator. Optional for backward compatibility — omit it and
+   * Explicit discriminator. Optional for backward compatibility - omit it and
    * the kind is inferred from the shape ({@link isReferenceBand}).
    */
   kind?: "band";
@@ -78,7 +78,7 @@ export function isReferenceBand(r: Reference): r is ReferenceBand {
 }
 
 /**
- * Narrow a {@link Reference} to a {@link ReferenceLine} — the exact complement
+ * Narrow a {@link Reference} to a {@link ReferenceLine} - the exact complement
  * of {@link isReferenceBand}, so every reference is one or the other.
  */
 export function isReferenceLine(r: Reference): r is ReferenceLine {
@@ -140,11 +140,11 @@ function clamp(v: number, lo: number, hi: number): number {
  * `null` when the input is degenerate (non-finite value, or a scale that maps
  * it off to infinity) so callers can simply skip it. Pure & SSR-safe.
  *
- * NOTE — clamping: a reference whose value falls OUTSIDE the current value
+ * NOTE - clamping: a reference whose value falls OUTSIDE the current value
  * domain is not dropped; it is clamped to the nearest plot edge (a band is
  * clipped to the visible slice, and can therefore collapse to zero width/height
  * when it lies entirely off-scale). Renderers rely on this to keep an
- * off-scale target visible as an edge marker — label the edge case in the UI if
+ * off-scale target visible as an edge marker - label the edge case in the UI if
  * that matters.
  */
 export function resolveReference(

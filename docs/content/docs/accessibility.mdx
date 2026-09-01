@@ -1,6 +1,6 @@
 ---
 title: Accessibility
-description: Screen-reader data tables, keyboard interaction, dismissible tooltips and reduced motion — what ibcs-react does out of the box.
+description: Screen-reader data tables, keyboard interaction, dismissible tooltips and reduced motion - what ibcs-react does out of the box.
 ---
 
 ibcs-react treats accessibility as part of the component contract, not an
@@ -10,15 +10,15 @@ what you should still do on your side.
 ## Screen readers: a real table behind every chart
 
 Every chart renders a visually-hidden `<table>` next to its `<svg>` with the
-same numbers the chart draws — row and column headers, a `caption`, and values
+same numbers the chart draws - row and column headers, a `caption`, and values
 formatted exactly as the chart labels them. Screen-reader users read actual
 values instead of a picture description. (The hiding style sits on a wrapper
-`<div>`, not on the table — CSS table boxes treat the 1×1 clamp as a minimum,
+`<div>`, not on the table - CSS table boxes treat the 1×1 clamp as a minimum,
 so styling the table directly would leave a full-height invisible box that
 inflates ancestor scrollbars.)
 
 The `<svg>` itself carries an accessible name (`role="img"` plus a descriptive
-`aria-label`) when the chart is non-interactive. It is never `aria-hidden` —
+`aria-label`) when the chart is non-interactive. It is never `aria-hidden` -
 the label and the data table complement each other.
 
 ```tsx
@@ -27,7 +27,7 @@ the label and the data table complement each other.
   width={640}
   height={300}
   // The caption of the hidden data table (and part of the svg label):
-  title="Net sales — AC vs PY, mEUR"
+  title="Net sales - AC vs PY, mEUR"
 />
 ```
 
@@ -38,10 +38,10 @@ semantic HTML tables with `scope` attributes and an optional visually-hidden
 ## Keyboard
 
 - **Selectable marks are buttons.** When a chart gets an `onSelect` handler,
-  its marks become focusable with `role="button"` — `Tab` reaches them,
+  its marks become focusable with `role="button"` - `Tab` reaches them,
   `Enter`/`Space` activates, and focusing a mark shows the same tooltip hover
   shows, anchored to the mark (WCAG 1.4.13 hover-content-on-focus).
-- **Tables** — sorting headers, expand/collapse chevrons and matrix cells are
+- **Tables** - sorting headers, expand/collapse chevrons and matrix cells are
   keyboard-operable; internal buttons are `type="button"` so they never
   submit an enclosing form.
 - **ExportMenu** is a real menu: focus moves into it on open, arrow keys rove
@@ -53,7 +53,7 @@ Built-in tooltips appear on hover **near the mark**, on keyboard focus of a
 selectable mark, and on tap (touch). They are dismissible with `Escape`
 without moving the pointer or focus, and they never trap the pointer (the
 panel is `pointer-events: none`). For charts without `onSelect`, the hidden
-data table carries the same values the tooltip shows — keyboard users are not
+data table carries the same values the tooltip shows - keyboard users are not
 locked out of information.
 
 ## Color and motion
@@ -68,7 +68,7 @@ locked out of information.
 
 ## What remains your job
 
-- Give charts meaningful `title`s — they become the svg label and the data
+- Give charts meaningful `title`s - they become the svg label and the data
   table caption.
 - Keep text contrast in your surrounding page; the default themes are tuned
   for their own surfaces.

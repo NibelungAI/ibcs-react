@@ -1,6 +1,6 @@
 ---
 title: IBCS templates
-description: The ibcs.com chart-template catalogue (C01–C13) mapped to the ibcs-react component that draws each one, with a live preview per code.
+description: The ibcs.com chart-template catalogue (C01-C13) mapped to the ibcs-react component that draws each one, with a live preview per code.
 ---
 
 import {
@@ -35,7 +35,7 @@ import {
 } from "@/lib/demo-data/templates";
 import { sampleMonthlyTrend, sampleStatementFlat } from "@/lib/demo-data/sample-data";
 
-The components on this page reproduce the **ibcs.com template set** — the
+The components on this page reproduce the **ibcs.com template set** - the
 catalogue of standard chart and table layouts described by the IBCS notation,
 the basis of ISO 24896:2026, "Notation for business reporting". Each template
 carries a code (`C01`…`C13` for charts, `T01`…`T04` for tables); below, every
@@ -48,9 +48,9 @@ examples, the code and the prop table.
 
 ## Chart templates
 
-### C01 · Stacked columns
+### C01 · Stacked column charts
 
-Vertical columns split into their parts — the composition of a total per
+Vertical columns split into their parts - the composition of a total per
 period.
 
 <Frame center>
@@ -66,7 +66,7 @@ period.
 
 Component: [StackedChart](/docs/components/stacked-chart)
 
-### C02 · Stacked bars
+### C02 · Stacked bar charts
 
 The same composition rotated: horizontal bars, so long category labels stay
 readable.
@@ -84,7 +84,7 @@ readable.
 
 Component: [StackedChart](/docs/components/stacked-chart)
 
-### C03 · Multi-tier columns
+### C03 · Multi-tier column chart
 
 Actual next to its comparison, with the absolute and relative variance stacked
 above as separate tiers.
@@ -102,7 +102,7 @@ above as separate tiers.
 
 Component: [GroupedVarianceChart](/docs/components/grouped-variance)
 
-### C04 · Multi-tier bars
+### C04 · Multi-tier bar charts
 
 The horizontal reading of the same chart: grouped bars with the variance tiers
 as side-by-side panels.
@@ -120,7 +120,7 @@ as side-by-side panels.
 
 Component: [GroupedVarianceChart](/docs/components/grouped-variance)
 
-### C05 · Columns plus horizontal waterfall
+### C05 · Horizontal waterfall chart
 
 Monthly actual against plan, with the period variances carried into a
 horizontal waterfall that bridges the gap for the year.
@@ -136,7 +136,7 @@ horizontal waterfall that bridges the gap for the year.
 
 Component: [ColumnVarianceWaterfallChart](/docs/components/column-variance-waterfall)
 
-### C06 · Bars plus vertical waterfall
+### C06 · Vertical waterfall chart
 
 The bar counterpart: grouped rows on the left, a vertical waterfall on the
 right accumulating each row's contribution to the total variance.
@@ -155,7 +155,7 @@ Component: [BarVarianceWaterfallChart](/docs/components/bar-variance-waterfall)
 
 ### C07 · Line charts
 
-A time series with its comparison scenario as a reference line — the standard
+A time series with its comparison scenario as a reference line - the standard
 trend reading.
 
 <Frame center>
@@ -225,7 +225,7 @@ A scattergram with a third measure carried by the area of each mark.
 
 Component: [BubbleChart](/docs/components/bubble-chart)
 
-### C11 · Calculation and ratio trees
+### C11 · Tree charts (calculation and ratio trees)
 
 A ratio decomposed into its drivers, each node carrying its own small trend.
 
@@ -244,7 +244,7 @@ Components: [RatioTreeChart](/docs/components/ratio-tree) ·
 
 ### C12 · Vertical waterfalls
 
-A result built from its add and subtract steps — the bridge from one figure to
+A result built from its add and subtract steps - the bridge from one figure to
 another.
 
 <Frame center>
@@ -280,7 +280,7 @@ Component: [MiniVarianceMultiples](/docs/components/small-multiples)
 
 ## Table templates
 
-### T01 · Hierarchical table with variance columns
+### T01 · Table with hierarchical rows and variance columns
 
 Rows of a hierarchy with their figures, then the variance against a base as an
 embedded bar plus a percentage pin.
@@ -300,7 +300,7 @@ embedded bar plus a percentage pin.
 Component: [DataTable](/docs/components/data-table)
 
 The table codes have a page of their own: [Table templates](/docs/table-templates)
-builds `T01`–`T04` at full size, with the flanking layout, the multi-year
+builds `T01`-`T04` at full size, with the flanking layout, the multi-year
 profit and loss statement and the integrated statement.
 
 ## C12 as an integrated statement
@@ -322,12 +322,12 @@ Component: [StatementTable](/docs/components/statement-table)
 
 The same scenario-keyed values (AC / PY / PL / FC) feed all of these. Switching
 template is mostly a matter of choosing the component and its orientation, not
-reshaping the data — see [The data model](/docs/data-model) for the shape every
+reshaping the data - see [The data model](/docs/data-model) for the shape every
 component expects.
 
 ## Where to next
 
-- [Table templates](/docs/table-templates) — `T01`–`T04` at full size.
-- [Examples](/docs/examples) — the templates composed into complete dashboards.
-- [IBCS and ISO 24896](/docs/ibcs) — the notation the templates encode.
-- [Components](/docs/components) — the full reference.
+- [Table templates](/docs/table-templates) - `T01`-`T04` at full size.
+- [Examples](/docs/examples) - the templates composed into complete dashboards.
+- [IBCS and ISO 24896](/docs/ibcs) - the notation the templates encode.
+- [Components](/docs/components) - the full reference.

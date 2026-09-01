@@ -1,6 +1,6 @@
 /**
  * Pure layout for an IBCS *ratio / calculation tree* where every node is a
- * **time series** rather than a single value — template **C11** (the "ROI tree":
+ * **time series** rather than a single value - template **C11** (the "ROI tree":
  * Return on investment = Return on sales × Capital turnover, Return on sales =
  * Return ÷ Net sales, …). It is the time-aware sibling of {@link computeTree}:
  * instead of one number per box, each node carries `series` (the periods, e.g.
@@ -8,10 +8,10 @@
  * small column/line micro-chart inside every box.
  *
  * Framework-agnostic and JSON-serializable: the React `RatioTreeChart` is just a
- * renderer over the positions computed here. Layout is deterministic — every
+ * renderer over the positions computed here. Layout is deterministic - every
  * node gets a `depth` (distance from the root) and a `row` (vertical slot in
  * leaf units): leaves take successive integer slots in traversal order and each
- * parent is centered on its children. The renderer maps (depth, row) to pixels —
+ * parent is centered on its children. The renderer maps (depth, row) to pixels -
  * left-to-right for "horizontal", or top-down for "vertical".
  */
 
@@ -47,7 +47,7 @@ export interface RatioLayoutNode {
   latest: number | undefined;
   /** Last finite value of `py`, aligned with `latest`, or undefined. */
   latestPy: number | undefined;
-  /** Column index — 0 is the root. */
+  /** Column index - 0 is the root. */
   depth: number;
   /** Vertical slot in leaf units (float; parents are centered on children). */
   row: number;
@@ -68,7 +68,7 @@ export interface RatioTreeLayout {
   links: RatioLink[];
   /** Number of columns (max depth + 1). */
   depthCount: number;
-  /** Number of leaf rows — the vertical extent in slot units. */
+  /** Number of leaf rows - the vertical extent in slot units. */
   rowCount: number;
   /** Longest `series` across all nodes (handy for a shared period axis). */
   maxPeriods: number;

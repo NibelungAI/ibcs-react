@@ -1,6 +1,6 @@
 ---
 name: ibcs-notation
-description: IBCS® / ISO 24896 notation rules for business and management reporting — scenario notation (AC actual, PY previous year, PL plan/budget, FC forecast), variance charts coloured by business impact rather than arithmetic sign, absolute vs percent deviation panels, zero-baseline and uniformly scaled axes, Who/What/When titles, waterfall/bridge conventions and the C01–C13 / T01–T04 templates. Use when building, reviewing or styling business reports, KPI dashboards, variance or waterfall charts, P&L and balance-sheet tables in any tool (React, D3, Vega, Excel, PowerPoint, matplotlib) so the output follows management-reporting conventions.
+description: IBCS® / ISO 24896 notation rules for business and management reporting - scenario notation (AC actual, PY previous year, PL plan/budget, FC forecast), variance charts coloured by business impact rather than arithmetic sign, absolute vs percent deviation panels, zero-baseline and uniformly scaled axes, Who/What/When titles, waterfall/bridge conventions and the C01-C13 / T01-T04 templates. Use when building, reviewing or styling business reports, KPI dashboards, variance or waterfall charts, P&L and balance-sheet tables in any tool (React, D3, Vega, Excel, PowerPoint, matplotlib) so the output follows management-reporting conventions.
 license: MIT
 metadata:
   author: NibelungAI
@@ -11,7 +11,7 @@ metadata:
 
 IBCS® is the notation for business communication standardised as **ISO 24896**.
 It fixes _how_ business figures are drawn so a report is comparable across
-periods, departments and companies — the way sheet music or circuit diagrams are
+periods, departments and companies - the way sheet music or circuit diagrams are
 readable without a legend. Apply these rules with any charting tool.
 
 Rule of thumb: **fill carries the scenario · colour carries favorability ·
@@ -20,21 +20,21 @@ the point.**
 
 ## 1. Scenario notation
 
-Four scenarios, distinguished by **fill, not hue** — so the report survives
+Four scenarios, distinguished by **fill, not hue** - so the report survives
 greyscale printing and never confuses "what happened" with "what we planned":
 
 | Key  | Scenario                     | Notation                                                                              |
 | ---- | ---------------------------- | ------------------------------------------------------------------------------------- |
 | `AC` | Actual                       | **solid dark** fill                                                                   |
 | `PY` | Previous year (prior period) | **solid light grey** fill                                                             |
-| `PL` | Plan / budget (`BU`)         | **outlined / hollow** — a frame with an opaque background, because it hasn't happened |
-| `FC` | Forecast                     | **hatched** (diagonal lines) — expected, not yet real                                 |
+| `PL` | Plan / budget (`BU`)         | **outlined / hollow** - a frame with an opaque background, because it hasn't happened |
+| `FC` | Forecast                     | **hatched** (diagonal lines) - expected, not yet real                                 |
 
 - Never encode a scenario with a brand colour or a different chart type.
 - Comparison columns **overlap** the actual (AC in front, PY behind) rather than
   standing side-by-side, so the deviation is visible as an offset.
 - In a time series, the actual periods are solid and the forecast tail is
-  hatched in the _same_ chart — one continuous story.
+  hatched in the _same_ chart - one continuous story.
 
 ## 2. Variances are coloured by IMPACT, not by sign
 
@@ -50,7 +50,7 @@ bad**, whatever the arithmetic sign.
   direction, the colour tells whether that direction is good. They are
   independent on purpose.
 - Strict houses use black/red instead of green/red ("only bad stands out");
-  colour-vision-safe palettes (teal/orange) are acceptable — but never drop the
+  colour-vision-safe palettes (teal/orange) are acceptable - but never drop the
   impact semantics or the sign.
 
 ## 3. Absolute vs relative deviations
@@ -65,7 +65,7 @@ Show the comparison, not just the value. A chart of AC alone has no yardstick.
   panels beneath the value chart: values on top, Δ bars, Δ% pins.
 - Clamp extreme percentages (e.g. |Δ%| ≥ 100) to an off-scale arrow and exclude
   them from the panel's scale, so one outlier doesn't flatten the rest.
-- Percent deviations are meaningless on a base near zero or of opposite sign —
+- Percent deviations are meaningless on a base near zero or of opposite sign -
   print `n/a` instead of a giant number.
 
 ## 4. Axes, scales and outliers
@@ -82,15 +82,15 @@ Show the comparison, not just the value. A chart of AC alone has no yardstick.
   outlier indicator (a break / arrow) and label its true value.
 - Time runs **left→right** on columns (period comparison); structures/entities
   run **top→bottom** on horizontal bars (usually ranked by size).
-- Keep the unit out of every data label — declare it once in the title.
+- Keep the unit out of every data label - declare it once in the title.
 
 ## 5. Titles and messages
 
 A descriptive title answers, kept apart from the interpretation:
 
-- **Who** — entity / organisational unit ("ACME Group, EMEA").
-- **What** — measure **and unit** ("Revenue — € thousands", "Headcount — FTE").
-- **When** — period and comparison ("FY 2026 vs PY", "Jan–Nov 2026, AC/FC").
+- **Who** - entity / organisational unit ("ACME Group, EMEA").
+- **What** - measure **and unit** ("Revenue - € thousands", "Headcount - FTE").
+- **When** - period and comparison ("FY 2026 vs PY", "Jan-Nov 2026, AC/FC").
 
 The **key message** ("Up 17.5% on prior year, led by Service revenue") is an
 interpretation and belongs in its own line/field, visually distinct from the
@@ -107,19 +107,19 @@ which bar is which.
 - Contribution columns are neutral-toned; favorability colouring belongs to the
   _variance_ panel, not to the bridge bars themselves.
 - Keep the statement order (P&L order, or largest-contribution order for a
-  variance bridge) — a bridge is a story, not a ranking.
+  variance bridge) - a bridge is a story, not a ranking.
 - A bridge of _deviations_ (AC vs PL per driver, summing to the total variance)
   is the standard "why did we miss plan" chart.
 
 ## 7. Templates in brief
 
-**Charts C01–C13:** C01/C02 stacked columns / bars · C03/C04 multi-tier grouped
+**Charts C01-C13:** C01/C02 stacked columns / bars · C03/C04 multi-tier grouped
 columns / bars · C05 columns + horizontal waterfall · C06 bars + vertical
 waterfall · C07 line · C08 area · C09 scattergram · C10 bubble · C11
 calculation / ratio (DuPont) tree · C12 vertical waterfall(s) with variance ·
 C13 small multiples (shared scale).
 
-**Tables T01–T04:**
+**Tables T01-T04:**
 
 | Template | Layout                                                                            |
 | -------- | --------------------------------------------------------------------------------- |
@@ -133,7 +133,7 @@ hierarchy, bold the subtotals, and put a double rule above final results.
 
 ## 8. Forbidden or discouraged
 
-Pie, donut, gauge, radar, funnel and 3-D charts — area and angle encodings
+Pie, donut, gauge, radar, funnel and 3-D charts - area and angle encodings
 distort comparison. Also avoid: truncated axes, rainbow palettes for scenarios,
 dual value axes without a stated scale, decorative shadows/gradients, and
 "more decimals than the decision needs".
@@ -142,7 +142,7 @@ dual value axes without a stated scale, decorative shadows/gradients, and
 
 `ibcs-react` (`npm install ibcs-react`) implements all of the above by default:
 scenario fills, impact colouring, signed labels, zero baselines, bar/pin
-panels, bridges and the full C01–C13 / T01–T04 template set. Set
+panels, bridges and the full C01-C13 / T01-T04 template set. Set
 `higherIsBetter: false` on cost-like lines and the colouring follows. Lint any
 chart / KPI / report config with the built-in notation linter:
 

@@ -89,7 +89,7 @@ describe("tokenPresets", () => {
     }
   });
 
-  it("still resolves the v1.0 display-string keys at runtime — without duplicating iteration", () => {
+  it("still resolves the v1.0 display-string keys at runtime - without duplicating iteration", () => {
     // Old lookups keep working (JS callers)…
     const legacy = tokenPresets as unknown as Record<string, IbcsTokens>;
     expect(legacy["Default"]).toBe(tokenPresets.default);
@@ -148,7 +148,7 @@ describe("tokenPresets", () => {
 
   it("inverts the dark preset: dark surfaces, and in-bar ink dark enough for its light bars", () => {
     const dark = tokenPresets.dark;
-    // Its chrome is not white — that was the whole bug.
+    // Its chrome is not white - that was the whole bug.
     expect(dark.color.surface).not.toBe("#fff");
     expect(dark.color.surfaceMuted).not.toBe("#fff");
     expect(luminance(dark.color.surface)).toBeLessThan(0.25);

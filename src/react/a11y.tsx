@@ -2,16 +2,16 @@ import type { CSSProperties, KeyboardEvent, SVGProps } from "react";
 
 /**
  * The standard "visually hidden" (screen-reader-only) style. The node stays in
- * the DOM and the accessibility tree — so assistive tech reads it — but is
+ * the DOM and the accessibility tree - so assistive tech reads it - but is
  * clipped out of visual layout. This is deliberately NOT `display: none`, which
  * would hide the node from screen readers too. SSR-safe (plain inline style,
  * no measuring or browser APIs).
  *
- * Apply it to a BLOCK-level element (`<div>`, `<span>`) — never directly to a
+ * Apply it to a BLOCK-level element (`<div>`, `<span>`) - never directly to a
  * `<table>`. CSS table layout treats `height`/`width` as a MINIMUM, so a table
  * ignores the 1×1 clamp and keeps its full layout box: invisible (the clip
  * still suppresses painting) but inflating every scroll container above it by
- * hundreds of phantom pixels. Wrap the table instead — see {@link ChartDataTable}.
+ * hundreds of phantom pixels. Wrap the table instead - see {@link ChartDataTable}.
  */
 export const srOnly: CSSProperties = {
   position: "absolute",
@@ -76,14 +76,14 @@ export interface ChartDataTableProps {
 /**
  * A visually-hidden `<table>` that exposes a chart's underlying numbers to
  * screen-reader users. Rendered as a sibling of the chart `<svg>`, which itself
- * carries an accessible name (`role="img"` + `aria-label`) — never
+ * carries an accessible name (`role="img"` + `aria-label`) - never
  * `aria-hidden`; the table supplements that label with the real values,
- * row/column headers and a caption. Zero-dependency and SSR-safe — it renders
+ * row/column headers and a caption. Zero-dependency and SSR-safe - it renders
  * identically on the server.
  *
  * The hiding style sits on a WRAPPER `<div>`, not on the table: a `<div>`
  * honours the 1×1 clamp, while a CSS table box treats it as a minimum and
- * keeps a full-size (clipped, invisible) layout box — which used to add its
+ * keeps a full-size (clipped, invisible) layout box - which used to add its
  * entire height to the scrollable overflow of any ancestor with `overflow`
  * set, growing phantom scrollbars around every chart.
  */

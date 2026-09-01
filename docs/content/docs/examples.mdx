@@ -1,6 +1,6 @@
 ---
 title: Examples
-description: Three complete dashboards — an executive overview, a sales review and a finance pack — assembled entirely from ibcs-react components.
+description: Three complete dashboards - an executive overview, a sales review and a finance pack - assembled entirely from ibcs-react components.
 ---
 
 import {
@@ -11,7 +11,7 @@ import {
 
 Three complete dashboards, each assembled **entirely** from library components
 and driven by the shared sample model (AC / PY / PL / FC). They show how the
-building blocks — KPI cards, charts, statements and tables — compose into a
+building blocks - KPI cards, charts, statements and tables - compose into a
 finished report in the IBCS notation. Each one is contained: it scrolls inside
 its frame, and the grids stack to a single column on narrow screens.
 
@@ -36,7 +36,7 @@ const acTrend = sampleMonthlyTrend.filter((d) => d.AC != null).map((d) => d.AC a
 const executiveConfig: ReportConfig = {
   title: {
     who: "Contoso Group",
-    what: "Performance summary — € thousands",
+    what: "Performance summary - € thousands",
     when: "FY 2026 · Actual vs Previous year",
   },
   message: "Revenue +17.5% on PY; margin expansion lifts net income to €8.9M.",
@@ -248,15 +248,15 @@ Components: [StatementTable](/docs/components/statement-table) ·
 
 ## One model, many reports
 
-Nothing here reshapes data per view — the same scenario-keyed figures feed
+Nothing here reshapes data per view - the same scenario-keyed figures feed
 cards, charts, statements and tables alike. Swap the `tokens` prop on a
 `Report` and every block re-themes at once.
 
 ## Where to next
 
-- [Report](/docs/components/report) — the config-driven layout used above, and
+- [Report](/docs/components/report) - the config-driven layout used above, and
   the live [report demo](/report).
 - [IBCS templates](/docs/templates) and
-  [Table templates](/docs/table-templates) — the individual layouts these
+  [Table templates](/docs/table-templates) - the individual layouts these
   dashboards are built from.
-- [Theming](/docs/theming) — one `tokens` prop re-themes a whole report.
+- [Theming](/docs/theming) - one `tokens` prop re-themes a whole report.

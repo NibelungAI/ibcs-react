@@ -1,7 +1,7 @@
 /**
  * Shared value-domain helpers for the layout modules.
  *
- * POLICY — non-finite values (NaN, ±Infinity) are treated as MISSING data:
+ * POLICY - non-finite values (NaN, ±Infinity) are treated as MISSING data:
  * they never widen a domain, never accumulate into a running total, and format
  * as "n/a" at the presentation layer. Every layout module routes its domain
  * tracking through these helpers so degenerate input (empty, all-zero,
@@ -32,7 +32,7 @@ export function isFiniteNumber(v: unknown): v is number {
  *  - an EMPTY domain (`0/0` after zero-seeded tracking) widens to `[0, 1]`
  *
  * This replaces the old `domainMax || 1` idiom, which mangled all-negative
- * data: a legitimate `[-500, 0]` was "rescued" to `[-500, 1]` — harmless — but
+ * data: a legitimate `[-500, 0]` was "rescued" to `[-500, 1]` - harmless - but
  * `[-0.5, 0]` (losses, ratios) became `[-0.5, 1]`, wasting most of the plot.
  */
 export function normalizeDomain(domainMin: number, domainMax: number): ValueDomain {

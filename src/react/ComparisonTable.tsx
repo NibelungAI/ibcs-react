@@ -29,7 +29,7 @@ export interface ComparisonTableProps {
   rightColumns: DataTableColumn[];
   /** Centred super-header over the left group (e.g. "November"). */
   leftGroupLabel: string;
-  /** Centred super-header over the right group (e.g. "January–November"). */
+  /** Centred super-header over the right group (e.g. "January-November"). */
   rightGroupLabel: string;
   /** Append a bold grand-total row with a heavier (double) rule. Default false. */
   showTotals?: boolean;
@@ -46,13 +46,13 @@ export interface ComparisonTableProps {
 }
 
 const ROW_H = 26;
-const GROUP_GAP = 16; // IBCS group gap — whitespace, never a rule
+const GROUP_GAP = 16; // IBCS group gap - whitespace, never a rule
 
 // Per-column geometry, in CSS px. `content` is the visible figure/mark width;
 // `gap` is the IBCS whitespace that sets a column block apart from the previous
 // one; `col` is what the <col>/table layout reserves. The gap lives INSIDE the
 // fixed column width: right-aligned figures push the gap to the left as empty
-// space, mark (bar/pin) cells get an equal left padding — so the header bands
+// space, mark (bar/pin) cells get an equal left padding - so the header bands
 // and the body share exactly the same column edges.
 interface ColWidth {
   content: number;
@@ -61,7 +61,7 @@ interface ColWidth {
 }
 
 // Tabular figures are monospaced, so a column's pixel width can be derived from
-// its widest formatted string — no DOM measurement (SSR-safe). 7.3px/char at the
+// its widest formatted string - no DOM measurement (SSR-safe). 7.3px/char at the
 // 12px cell size, plus slack for the 6px+6px cell padding (rounded up so a stray
 // comma/sign never clips a right-aligned figure).
 const CHAR_W = 7.3;
@@ -104,7 +104,7 @@ export function ComparisonTable({
 
   // Resolve every column's geometry from the data. Within a side, all value
   // columns share one width and all numeric-variance columns share another (IBCS:
-  // columns of one type are identical in width) — sized to the side's widest
+  // columns of one type are identical in width) - sized to the side's widest
   // figure so the two flanking groups can differ (November is narrower than the
   // year-to-date) yet each stays internally aligned.
   const widths = useMemo(() => {
@@ -459,7 +459,7 @@ function CellView({
   );
 }
 
-/** Embedded variance bar (abs) / pin (pct) — the IBCS T02 marks. */
+/** Embedded variance bar (abs) / pin (pct) - the IBCS T02 marks. */
 function VarianceCell({
   data,
   domain,

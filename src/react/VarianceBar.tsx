@@ -23,11 +23,11 @@ export interface VarianceBarProps {
 
 /**
  * A pin/needle bar growing from a centre baseline: right when positive, left
- * when negative, colored by favorability — not by sign. This is the single
+ * when negative, colored by favorability - not by sign. This is the single
  * most important IBCS habit: "+376K" on a cost line is red because more cost
  * is bad, even though the number is positive.
  *
- * **Accessibility:** this is a decorative-by-design embedded mark — it always
+ * **Accessibility:** this is a decorative-by-design embedded mark - it always
  * sits beside the signed number it visualises (a table cell, a KPI line), so
  * it carries `aria-hidden="true"` and NO `role`. Announcing it would make a
  * screen reader read the same delta twice; the visible value is the a11y

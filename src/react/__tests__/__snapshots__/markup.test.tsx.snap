@@ -27,7 +27,7 @@ exports[`component markup snapshots > AreaChart renders stable markup 1`] = `
 </svg>
 <div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
 <table>
-<caption>Area chart of AC — data table</caption>
+<caption>Area chart of AC - data table</caption>
 <thead>
 <tr>
 <th scope="col">
@@ -172,7 +172,7 @@ exports[`component markup snapshots > BarVarianceWaterfallChart renders stable m
 </svg>
 <div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
 <table>
-<caption>AC versus PL bridge — data table</caption>
+<caption>AC versus PL bridge - data table</caption>
 <thead>
 <tr>
 <th scope="col">
@@ -589,7 +589,7 @@ exports[`component markup snapshots > ColumnVarianceWaterfallChart renders stabl
 </svg>
 <div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
 <table>
-<caption>AC versus PL with variance bridge — data table</caption>
+<caption>AC versus PL with variance bridge - data table</caption>
 <thead>
 <tr>
 <th scope="col">
@@ -905,7 +905,7 @@ exports[`component markup snapshots > ConfiguredChart renders stable markup 1`] 
 </svg>
 <div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
 <table>
-<caption>Revenue vs PY — data table</caption>
+<caption>Revenue vs PY - data table</caption>
 <thead>
 <tr>
 <th scope="col">
@@ -951,7 +951,7 @@ exports[`component markup snapshots > ConfiguredChart renders stable markup 1`] 
 </div>"
 `;
 
-exports[`component markup snapshots > ConformanceReport renders stable markup 1`] = `"<div style="font-family:ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;font-size:13px;color:#3f8f4f;padding:8px 12px">Conforms to IBCS / ISO 24896 — no findings.</div>"`;
+exports[`component markup snapshots > ConformanceReport renders stable markup 1`] = `"<div style="font-family:ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;font-size:13px;color:#3f8f4f;padding:8px 12px">Conforms to IBCS / ISO 24896 - no findings.</div>"`;
 
 exports[`component markup snapshots > DataTable renders stable markup 1`] = `
 "<div style="position:relative;min-width:0;font-family:ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif">
@@ -1156,7 +1156,7 @@ exports[`component markup snapshots > GroupedVarianceChart renders stable markup
 </svg>
 <div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
 <table>
-<caption>Grouped AC versus PL — data table</caption>
+<caption>Grouped AC versus PL - data table</caption>
 <thead>
 <tr>
 <th scope="col">
@@ -1246,7 +1246,7 @@ exports[`component markup snapshots > HorizontalWaterfallChart renders stable ma
 </svg>
 <div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
 <table>
-<caption>Horizontal bridge of actual contributions — data table</caption>
+<caption>Horizontal bridge of actual contributions - data table</caption>
 <thead>
 <tr>
 <th scope="col">
@@ -1394,7 +1394,7 @@ exports[`component markup snapshots > IntegratedVarianceChart renders stable mar
 </svg>
 <div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
 <table>
-<caption>Integrated variance of AC versus PY — data table</caption>
+<caption>Integrated variance of AC versus PY - data table</caption>
 <thead>
 <tr>
 <th scope="col">
@@ -1518,7 +1518,7 @@ exports[`component markup snapshots > LineChart renders stable markup 1`] = `
 </svg>
 <div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
 <table>
-<caption>Line chart of 4 series — data table</caption>
+<caption>Line chart of 4 series - data table</caption>
 <thead>
 <tr>
 <th scope="col">
@@ -1678,7 +1678,7 @@ exports[`component markup snapshots > MiniVarianceMultiples renders stable marku
 </div>
 <div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
 <table>
-<caption>Variance versus PY — data table</caption>
+<caption>Variance versus PY - data table</caption>
 <thead>
 <tr>
 <th scope="col">
@@ -1690,37 +1690,37 @@ exports[`component markup snapshots > MiniVarianceMultiples renders stable marku
 </thead>
 <tbody>
 <tr>
-<th scope="row">EMEA — Q1</th>
+<th scope="row">EMEA - Q1</th>
 <td>120</td>
 <td>100</td>
 <td>+20</td>
 </tr>
 <tr>
-<th scope="row">EMEA — Q2</th>
+<th scope="row">EMEA - Q2</th>
 <td>135</td>
 <td>118</td>
 <td>+17</td>
 </tr>
 <tr>
-<th scope="row">EMEA — Q3</th>
+<th scope="row">EMEA - Q3</th>
 <td>128</td>
 <td>130</td>
 <td>-2</td>
 </tr>
 <tr>
-<th scope="row">Americas — Q1</th>
+<th scope="row">Americas - Q1</th>
 <td>90</td>
 <td>95</td>
 <td>-5</td>
 </tr>
 <tr>
-<th scope="row">Americas — Q2</th>
+<th scope="row">Americas - Q2</th>
 <td>104</td>
 <td>99</td>
 <td>+5</td>
 </tr>
 <tr>
-<th scope="row">Americas — Q3</th>
+<th scope="row">Americas - Q3</th>
 <td>98</td>
 <td>101</td>
 <td>-3</td>
@@ -1891,7 +1891,7 @@ exports[`component markup snapshots > RankingVarianceChart renders stable markup
 </svg>
 <div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
 <table>
-<caption>Ranked variance versus PL — data table</caption>
+<caption>Ranked variance versus PL - data table</caption>
 <thead>
 <tr>
 <th scope="col">
@@ -2374,7 +2374,7 @@ exports[`component markup snapshots > StackedChart renders stable markup 1`] = `
 </svg>
 <div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
 <table>
-<caption>Stacked columns — data table</caption>
+<caption>Stacked columns - data table</caption>
 <thead>
 <tr>
 <th scope="col">
@@ -2642,7 +2642,7 @@ exports[`component markup snapshots > StructureChart renders stable markup 1`] =
 </svg>
 <div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
 <table>
-<caption>Composition versus PY — data table</caption>
+<caption>Composition versus PY - data table</caption>
 <thead>
 <tr>
 <th scope="col">
@@ -2853,7 +2853,7 @@ exports[`component markup snapshots > TrendChart renders stable markup 1`] = `
 </svg>
 <div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
 <table>
-<caption>Trend versus PY — data table</caption>
+<caption>Trend versus PY - data table</caption>
 <thead>
 <tr>
 <th scope="col">
@@ -2958,7 +2958,7 @@ exports[`component markup snapshots > VarianceAreaChart renders stable markup 1`
 </svg>
 <div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
 <table>
-<caption>Actual versus Ø — data table</caption>
+<caption>Actual versus Ø - data table</caption>
 <thead>
 <tr>
 <th scope="col">
@@ -3096,7 +3096,7 @@ exports[`component markup snapshots > VarianceColumnChart renders stable markup 
 </svg>
 <div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
 <table>
-<caption>AC versus PY — data table</caption>
+<caption>AC versus PY - data table</caption>
 <thead>
 <tr>
 <th scope="col">
@@ -3186,7 +3186,7 @@ exports[`component markup snapshots > WaterfallChart renders stable markup 1`] =
 </svg>
 <div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
 <table>
-<caption>Bridge of actual contributions — data table</caption>
+<caption>Bridge of actual contributions - data table</caption>
 <thead>
 <tr>
 <th scope="col">
@@ -3338,7 +3338,7 @@ exports[`component markup snapshots > WaterfallStatementChart renders stable mar
 </svg>
 <div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
 <table>
-<caption>P&amp;L calculation scheme, AC versus PY — data table</caption>
+<caption>P&amp;L calculation scheme, AC versus PY - data table</caption>
 <thead>
 <tr>
 <th scope="col">

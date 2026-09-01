@@ -6,7 +6,7 @@ const rulesOf = (f: IbcsFinding[]) => f.map((x) => x.rule);
 
 /**
  * A minimal, fully CONFORMANT tree chart: a calculation tree carries `root`,
- * not `data`. The structured title is added past the type — `ChartConfigBase`
+ * not `data`. The structured title is added past the type - `ChartConfigBase`
  * types `title` as a plain string today (the components draw it inside the
  * svg), while the linter's ideal is the Who/What/When object that report
  * blocks accept. Widening the config type is a tracked follow-up.
@@ -29,7 +29,7 @@ const treeConfig = {
   title: { who: "ACME", what: "Return on assets (%)", when: "2026" },
 };
 
-describe("checkIbcs — chart configs", () => {
+describe("checkIbcs - chart configs", () => {
   it("passes a compliant linear chart (no findings)", () => {
     const findings = checkIbcs({
       type: "column",
@@ -70,7 +70,7 @@ describe("checkIbcs — chart configs", () => {
       const findings = checkIbcs({ type, data: [{ x: 1 }] });
       expect(rulesOf(findings)).not.toContain("linear-chart-type");
     }
-    // The tree chart carries `root` instead of `data` — checked with its real shape.
+    // The tree chart carries `root` instead of `data` - checked with its real shape.
     expect(rulesOf(checkIbcs(treeConfig))).not.toContain("linear-chart-type");
   });
 
@@ -140,9 +140,9 @@ describe("checkIbcs — chart configs", () => {
     );
   });
 
-  it("flags a chart with NO title at all — omitting the title must not read cleaner than a bare one", () => {
+  it("flags a chart with NO title at all - omitting the title must not read cleaner than a bare one", () => {
     // Regression (consumer report B4): `{type, data}` with no title returned []
-    // while the same chart WITH a title warned — the linter rewarded deleting it.
+    // while the same chart WITH a title warned - the linter rewarded deleting it.
     const findings = checkIbcs({
       type: "varianceColumn",
       data: [{ category: "Q1", AC: 100, PY: 90 }],
@@ -178,7 +178,7 @@ describe("checkIbcs — chart configs", () => {
     expect(rulesOf(findings)).not.toContain("cost-favorability");
   });
 
-  it("detects cost measures inside STRUCTURED titles — the recommended form must not bypass the rule", () => {
+  it("detects cost measures inside STRUCTURED titles - the recommended form must not bypass the rule", () => {
     const findings = checkIbcs({
       type: "column",
       data: [{ x: 1 }],
@@ -211,13 +211,13 @@ describe("checkIbcs — chart configs", () => {
   });
 });
 
-describe("checkIbcs — chart type messages", () => {
+describe("checkIbcs - chart type messages", () => {
   const messageOf = (type: unknown): string =>
     checkIbcs({ type, data: [{ x: 1 }] }).find((f) => f.rule === "linear-chart-type")!.message;
 
   it("suggests the canonical name for a near-miss and lists only REAL type values", () => {
     // Regression (consumer report B5): the old message suggested "column" and
-    // "bar", which the config vocabulary does not accept — following the hint
+    // "bar", which the config vocabulary does not accept - following the hint
     // failed again. It must name valid values and offer a did-you-mean.
     const msg = messageOf("variance-column");
     expect(msg).toContain("unknown chart type");
@@ -240,7 +240,7 @@ describe("checkIbcs — chart type messages", () => {
   });
 
   it("explains a missing type (reachable through a report's chart block)", () => {
-    // A bare `checkIbcs({data})` can't dispatch to the chart checker at all —
+    // A bare `checkIbcs({data})` can't dispatch to the chart checker at all -
     // but a report block DECLARES chartness, so a config with no `type` is
     // checked and told what the valid values are.
     const findings = checkIbcs({
@@ -253,7 +253,7 @@ describe("checkIbcs — chart type messages", () => {
   });
 });
 
-describe("checkIbcs — KPI configs", () => {
+describe("checkIbcs - KPI configs", () => {
   it("passes a compliant KPI with a comparison", () => {
     const findings = checkIbcs({
       label: "Revenue",
@@ -281,7 +281,7 @@ describe("checkIbcs — KPI configs", () => {
   });
 });
 
-describe("checkIbcs — report configs", () => {
+describe("checkIbcs - report configs", () => {
   it("flags an unknown block type and a bare report title", () => {
     const findings = checkIbcs({
       title: "Q1 Report",
@@ -303,7 +303,7 @@ describe("checkIbcs — report configs", () => {
     expect(r!.path).toBe("title");
   });
 
-  it("lets a BLOCK title satisfy an untitled chart config — and still carry the cost signal", () => {
+  it("lets a BLOCK title satisfy an untitled chart config - and still carry the cost signal", () => {
     const report = {
       title: { who: "ACME", what: "Q1", when: "2026" },
       blocks: [
@@ -372,7 +372,7 @@ describe("checkIbcs — report configs", () => {
   });
 });
 
-describe("checkIbcsProps — the JSX authoring path", () => {
+describe("checkIbcsProps - the JSX authoring path", () => {
   it("lints component props exactly like the equivalent config", () => {
     const props = {
       data: [{ category: "Q1", AC: 6_300_000, PY: 5_100_000 }],
@@ -385,7 +385,7 @@ describe("checkIbcsProps — the JSX authoring path", () => {
     );
   });
 
-  it("makes the report's dashboard line lintable — and flags its missing title", () => {
+  it("makes the report's dashboard line lintable - and flags its missing title", () => {
     // <VarianceColumnChart data={productLines} comparison="PY" variance="abs" />
     const findings = checkIbcsProps("VarianceColumnChart", {
       data: [{ category: "Q1", AC: 100, PY: 90 }],
@@ -396,7 +396,7 @@ describe("checkIbcsProps — the JSX authoring path", () => {
     expect(rulesOf(findings)).not.toContain("linear-chart-type");
   });
 
-  it("flags a PieChart as non-linear — the component name says what it is", () => {
+  it("flags a PieChart as non-linear - the component name says what it is", () => {
     const findings = checkIbcsProps("PieChart", {
       data: [{ label: "A", value: 40 }],
       title: { who: "ACME", what: "Share (%)", when: "2026" },
@@ -414,7 +414,7 @@ describe("checkIbcsProps — the JSX authoring path", () => {
     expect(findings).toEqual([]);
   });
 
-  it("lints KpiCard props directly — they already are a KpiConfig", () => {
+  it("lints KpiCard props directly - they already are a KpiConfig", () => {
     const findings = checkIbcsProps("KpiCard", {
       label: "Cost of sales",
       values: { AC: 1, PY: 1 },
@@ -449,7 +449,7 @@ describe("checkIbcsProps — the JSX authoring path", () => {
   });
 });
 
-describe("checkIbcs — ratio KPIs", () => {
+describe("checkIbcs - ratio KPIs", () => {
   it('nudges a %-formatted KPI toward unit:"ratio"', () => {
     const findings = checkIbcs({
       label: "EBIT margin",
@@ -478,7 +478,7 @@ describe("checkIbcs — ratio KPIs", () => {
   });
 });
 
-describe("checkIbcs — unrecognized input", () => {
+describe("checkIbcs - unrecognized input", () => {
   it("returns an input-shape info for a non-object", () => {
     expect(checkIbcs(42)[0]!.rule).toBe("input-shape");
     expect(checkIbcs(null)[0]!.rule).toBe("input-shape");

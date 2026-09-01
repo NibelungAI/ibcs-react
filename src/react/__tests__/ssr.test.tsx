@@ -32,7 +32,7 @@ function rectHeights(html: string): number[] {
  * Server markup must carry the FINISHED geometry, not the first frame of the
  * entrance animation. The mount-grow hook used to seed its progress at 0 (it
  * only learned about reduced motion in an effect, which never runs on the
- * server), so every server-rendered chart shipped collapsed `height="0"` bars —
+ * server), so every server-rendered chart shipped collapsed `height="0"` bars -
  * an empty chart for crawlers, print, and everyone before hydration.
  */
 describe("server-rendered chart geometry", () => {
@@ -47,7 +47,7 @@ describe("server-rendered chart geometry", () => {
 
     const heights = rectHeights(html);
     expect(heights.length).toBeGreaterThan(0);
-    // One bar per category, plus the variance-panel bars — all non-zero here.
+    // One bar per category, plus the variance-panel bars - all non-zero here.
     expect(heights.filter((h) => h > 0).length).toBeGreaterThanOrEqual(3);
     // No collapsed geometry at all: not a single zero-height rect.
     expect(heights.filter((h) => h === 0)).toEqual([]);
@@ -76,16 +76,16 @@ describe("TrendChart summary scale", () => {
   it("keeps the months legible next to an FY total and marks the break", () => {
     const html = renderToString(<TrendChart data={year} width={720} height={360} />);
 
-    // Every month column still spans most of the plot (~135–180px of a 180px
+    // Every month column still spans most of the plot (~135-180px of a 180px
     // scale here). Before the fix the total owned the domain and the months
-    // collapsed to ~13px — this band is empty exactly when the bug is back.
+    // collapsed to ~13px - this band is empty exactly when the bug is back.
     // The only other rects in this range would be the full-band hit targets
     // (336px) and legend swatches (9px), both far outside the band.
     const columns = rectHeights(html).filter((h) => h >= 100 && h <= 200);
     expect(columns.length).toBeGreaterThanOrEqual(13); // 12 months + capped FY
 
     // The capped column and its capped variance bar both carry the marked
-    // scale break — the IBCS-legible "drawn shorter than its value" signal.
+    // scale break - the IBCS-legible "drawn shorter than its value" signal.
     expect((html.match(/data-scale-break/g) ?? []).length).toBeGreaterThanOrEqual(2);
 
     // The value label still states the real figure.

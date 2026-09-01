@@ -12,7 +12,7 @@ const meta: Meta<typeof TrendChart> = {
     height: 360,
     variance: "abs",
     referenceLines: ["PY", "PL"],
-    title: "Revenue by period — AC / FC vs PY, plan as a band",
+    title: "Revenue by period - AC / FC vs PY, plan as a band",
   },
   argTypes: {
     comparison: { control: "select", options: ["PY", "PL", "FC"] },
