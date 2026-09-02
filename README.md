@@ -423,6 +423,16 @@ the same operation. Building your own visual on `ibcs-react/core`?
 `useIbcsTokens(override?)` resolves exactly what the built-ins resolve, so it
 joins the same theme.
 
+How cards and report blocks are framed is a token group as well (`card`):
+`framedCard` is the default hairline card, `flatCard` is whitespace alone - the
+IBCS SIMPLIFY look, and what a printed page wants:
+
+```tsx
+import { Report, flatCard } from "ibcs-react";
+
+<Report config={report} tokens={{ card: flatCard }} />;
+```
+
 The eight ship presets are collected in `tokenPresets`, keyed by stable ids
 (`TokenPresetId`) with display names in `tokenPresetLabels` - a typed theme
 switcher is one map over `Object.keys(tokenPresets)` - and also exported one by

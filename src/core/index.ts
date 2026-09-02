@@ -39,6 +39,8 @@ export {
   cvdTokens,
   darkTokens,
   defaultTokens,
+  flatCard,
+  framedCard,
   greenRedTokens,
   mergeTokens,
   monoTokens,

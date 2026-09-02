@@ -108,8 +108,25 @@ then selects the renderer and the shape of `config`:
 | `table`     | [DataTable](/docs/components/data-table)           | `TableBlockConfig` - columns, rows, totals, initial sort, format              |
 | `text`      | Prose                                              | the block's own `title`, `message` and `body` (blank lines split paragraphs)  |
 
-Below 760px the grid collapses to a single column, so every block spans the
-full width.
+On screens narrower than 760px the grid collapses to a single column, so every
+block spans the full width; `collapseBelow` moves that breakpoint or, with
+`false`, removes it. It is a screen rule only - when printed (or rendered to
+PDF) the authored spans hold whatever the paper width, so an A4 page does not
+turn a 12-column report into a stack.
+
+How blocks are framed is the theme's `card` tokens: the default is a hairline
+card, `flatCard` is whitespace alone - the IBCS SIMPLIFY look and what paper
+wants. See [Theming](/docs/theming#cards-and-blocks). For the CSS a theme
+cannot express, the parts have stable selectors: `.ibcs-report` (root, before
+your `className`), `.ibcs-report-grid`, and one `.ibcs-report-block` per block
+carrying `data-block-type` and `data-block-id`.
+
+```tsx
+import { Report, flatCard } from "ibcs-react";
+
+// print / PDF: no frames, spans kept
+<Report config={report} tokens={{ card: flatCard }} collapseBelow={false} />;
+```
 
 Chart blocks go through `ConfiguredChart`, which validates the config and
 renders a readable message instead of throwing when it is invalid - 11 of the

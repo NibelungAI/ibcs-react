@@ -52,10 +52,55 @@ export interface IbcsTokens {
     /** Font stack for every component's own chrome and SVG text. */
     family: string;
   };
+  /**
+   * How a card or report block is framed: the theme-level default behind
+   * every `appearance` prop, so one theme decides whether blocks are cards
+   * (border, rounded, lifted) or plain areas separated by whitespace - the
+   * IBCS SIMPLIFY ideal, and what paper wants. A component's own
+   * `appearance` overrides these per instance.
+   */
+  card: {
+    /** Corner radius in px. `0` for square corners. */
+    radius: number;
+    /** `true` draws a hairline in `color.rowBorder`, a string sets the colour, `false` none. */
+    border: boolean | string;
+    /** Border width in px when `border` is on. */
+    borderWidth: number;
+    /** Lift the card with a soft drop shadow. */
+    shadow: boolean;
+    /** Padding - a px number or any CSS padding string. */
+    padding: number | string;
+  };
 }
 
 /** The system UI stack the components have always drawn with. */
 const UI_FONT_FAMILY = "ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif";
+
+/**
+ * The framed look every preset ships with: a hairline border, gently rounded,
+ * not lifted. Reads on a screen where blocks sit on a coloured page.
+ */
+export const framedCard: IbcsTokens["card"] = {
+  radius: 8,
+  border: true,
+  borderWidth: 1,
+  shadow: false,
+  padding: "15px 17px",
+};
+
+/**
+ * No frame at all - blocks are separated by whitespace, nothing is rounded,
+ * bordered or lifted. IBCS SIMPLIFY lists frames, backgrounds and shadows
+ * among the things to leave out; this is that, and what a printed page
+ * wants. Composes with any palette: `tokens={{ card: flatCard }}`.
+ */
+export const flatCard: IbcsTokens["card"] = {
+  radius: 0,
+  border: false,
+  borderWidth: 0,
+  shadow: false,
+  padding: 0,
+};
 
 export const defaultTokens: IbcsTokens = {
   color: {
@@ -86,6 +131,7 @@ export const defaultTokens: IbcsTokens = {
     FC: { fill: "transparent", stroke: "#54534e", variant: "hatch" },
   },
   font: { family: UI_FONT_FAMILY },
+  card: framedCard,
 };
 
 /**
@@ -144,6 +190,7 @@ export const oceanTokens: IbcsTokens = {
     FC: { fill: "transparent", stroke: "#233549", variant: "hatch" },
   },
   font: { family: UI_FONT_FAMILY },
+  card: framedCard,
 };
 
 /** "Azure" - a monochromatic bright-blue alternative. */
@@ -170,6 +217,7 @@ export const azureTokens: IbcsTokens = {
     FC: { fill: "transparent", stroke: "#003B72", variant: "hatch" },
   },
   font: { family: UI_FONT_FAMILY },
+  card: framedCard,
 };
 
 /**
@@ -214,6 +262,7 @@ export const monoTokens: IbcsTokens = {
     FC: { fill: "transparent", stroke: "#2b2b2b", variant: "hatch" },
   },
   font: { family: UI_FONT_FAMILY },
+  card: framedCard,
 };
 
 /**
@@ -253,6 +302,7 @@ export const darkTokens: IbcsTokens = {
     FC: { fill: "transparent", stroke: "#d7d7d2", variant: "hatch" },
   },
   font: { family: UI_FONT_FAMILY },
+  card: framedCard,
 };
 
 /**
@@ -338,6 +388,7 @@ export function mergeTokens(
       FC: { ...base.scenario.FC, ...override.scenario?.FC },
     },
     font: { ...base.font, ...override.font },
+    card: { ...base.card, ...override.card },
   };
 }
 

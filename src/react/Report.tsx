@@ -3,6 +3,7 @@ import type { ReportConfig, ReportBlock, StructuredTitle } from "../core/report"
 import { defaultSpan, resolveSharedScales } from "../core/report";
 import type { IbcsTokens, IbcsTokensOverride } from "../core/tokens";
 import { useIbcsTokens } from "./theme";
+import { cardSurface } from "./appearance";
 import { ConfiguredChart } from "./ConfiguredChart";
 import { StatementTable } from "./StatementTable";
 import { KpiCard } from "./KpiCard";
@@ -26,12 +27,24 @@ export interface ReportProps {
   sharedScales?: boolean;
   /** With `sharedScales`, clamp outliers via this percentile (0,1). Default off. */
   sharedScaleClampPercentile?: number;
+  /**
+   * Viewport width in px below which the grid collapses to a single column
+   * (every block full width). Default 760. `false` never collapses. A screen
+   * rule only: print keeps the authored spans whatever the paper width.
+   */
+  collapseBelow?: number | false;
 }
 
-const RESPONSIVE_CSS = `
-@media (max-width: 760px) {
-  .ibcs-report-grid { grid-template-columns: 1fr !important; }
-  .ibcs-report-grid > * { grid-column: auto !important; }
+/**
+ * The single-column rule, scoped to grids that declared this breakpoint so
+ * two reports with different breakpoints on one page do not fight. `screen`
+ * on purpose: an A4 page area is narrower than a laptop and must not turn a
+ * 12-column report into a stack of full-width blocks.
+ */
+const collapseCss = (px: number) => `
+@media screen and (max-width: ${px}px) {
+  .ibcs-report-grid[data-collapse="${px}"] { grid-template-columns: 1fr !important; }
+  .ibcs-report-grid[data-collapse="${px}"] > * { grid-column: auto !important; }
 }
 `;
 
@@ -39,6 +52,14 @@ const RESPONSIVE_CSS = `
  * Render a JSON `ReportConfig` as a responsive grid of blocks (KPI cards,
  * charts, statements, text). One theme flows to every block. Titles follow the
  * ISO 24896 Who/What/When convention with the key message kept separate.
+ *
+ * How blocks are framed comes from the theme's `card` tokens - `framedCard`
+ * (the default: hairline border, rounded) or `flatCard` (nothing but
+ * whitespace, the IBCS SIMPLIFY look and what paper wants):
+ * `<Report config={c} tokens={{ card: flatCard }} />`.
+ *
+ * Stable selectors for the CSS a theme cannot express: `.ibcs-report` (root),
+ * `.ibcs-report-grid`, `.ibcs-report-block[data-block-type][data-block-id]`.
  */
 export function Report({
   config,
@@ -47,9 +68,13 @@ export function Report({
   style,
   sharedScales = false,
   sharedScaleClampPercentile,
+  collapseBelow = 760,
 }: ReportProps) {
   const tokens = useIbcsTokens(tokenOverride);
   const columns = config.columns ?? 12;
+  // Every block is framed the same way, by the theme; the accent colour is
+  // irrelevant here because a block never draws the KPI accent bar.
+  const blockSurface = cardSurface(undefined, tokens, tokens.color.neutral);
 
   // Resolve shared-scale groups once (opt-in). We publish the resolved domain on
   // each tagged chart's wrapper so the info is addressable without yet forcing
@@ -67,14 +92,14 @@ export function Report({
 
   return (
     <div
-      className={className}
+      className={className ? `ibcs-report ${className}` : "ibcs-report"}
       style={{
         fontFamily: tokens.font.family,
         color: tokens.color.text,
         ...style,
       }}
     >
-      <style>{RESPONSIVE_CSS}</style>
+      {collapseBelow !== false && <style>{collapseCss(collapseBelow)}</style>}
 
       {(config.title || config.message) && (
         <header style={{ marginBottom: 16 }}>
@@ -89,6 +114,7 @@ export function Report({
 
       <div
         className="ibcs-report-grid"
+        data-collapse={collapseBelow === false ? undefined : collapseBelow}
         style={{
           display: "grid",
           gridTemplateColumns: `repeat(${columns}, 1fr)`,
@@ -102,16 +128,15 @@ export function Report({
           return (
             <section
               key={block.id}
+              className="ibcs-report-block"
+              data-block-type={block.type}
+              data-block-id={block.id}
               data-shared-scale-group={shared?.group}
               data-shared-scale-domain={shared ? JSON.stringify(shared.domain) : undefined}
               style={{
+                ...blockSurface,
                 gridColumn: `span ${span}`,
                 minWidth: 0,
-                background: tokens.color.surface,
-                border: `1px solid ${tokens.color.rowBorder}`,
-                borderRadius: 10,
-                padding: block.type === "kpi" ? 0 : "14px 16px",
-                boxShadow: "0 1px 2px rgba(0,0,0,0.03)",
                 display: "flex",
                 flexDirection: "column",
               }}
@@ -147,11 +172,20 @@ function BlockBody({
 }) {
   switch (block.type) {
     case "kpi":
+      // The block is the frame; the card inside draws none of its own, or a
+      // KPI would sit in two borders while every other block sits in one.
       return (
         <KpiCard
           {...block.config}
           tokens={tokens}
-          style={{ flex: 1, boxShadow: "none", borderRadius: 10 }}
+          appearance={{
+            border: false,
+            shadow: false,
+            radius: 0,
+            background: "transparent",
+            padding: 0,
+          }}
+          style={{ flex: 1 }}
         />
       );
     case "chart":

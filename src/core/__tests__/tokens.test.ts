@@ -2,6 +2,8 @@ import { describe, it, expect } from "vitest";
 import {
   mergeTokens,
   defaultTokens,
+  flatCard,
+  framedCard,
   tokenPresets,
   tokenPresetLabels,
   type TokenPresetId,
@@ -26,6 +28,18 @@ describe("mergeTokens", () => {
     expect(merged.font.family).toBe("Iosevka Etoile");
     // the other groups are untouched
     expect(merged.color).toEqual(defaultTokens.color);
+  });
+
+  it("merges a partial card override onto the defaults", () => {
+    const merged = mergeTokens({ card: { radius: 0, shadow: true } });
+    expect(merged.card).toEqual({ ...framedCard, radius: 0, shadow: true });
+    expect(merged.color).toEqual(defaultTokens.color);
+  });
+
+  it("composes a flat card with any palette", () => {
+    const merged = mergeTokens({ card: flatCard }, tokenPresets.ocean);
+    expect(merged.card).toEqual(flatCard);
+    expect(merged.color).toEqual(tokenPresets.ocean.color);
   });
 
   it("keeps the base font when only colors are overridden", () => {
@@ -104,11 +118,12 @@ describe("tokenPresets", () => {
     expect(JSON.stringify(tokenPresets)).not.toContain("Green / Red");
   });
 
-  it("gives every preset the full token shape: colors, scenarios and a font", () => {
+  it("gives every preset the full token shape: colors, scenarios, a font and a card", () => {
     // Derived from the defaults, so a new token key is automatically demanded of
     // every preset instead of silently shipping `undefined` in one of them.
     const colorKeys = Object.keys(defaultTokens.color) as Array<keyof IbcsTokens["color"]>;
     const fontKeys = Object.keys(defaultTokens.font) as Array<keyof IbcsTokens["font"]>;
+    const cardKeys = Object.keys(defaultTokens.card) as Array<keyof IbcsTokens["card"]>;
     for (const [name, tokens] of Object.entries(tokenPresets) as Array<
       [TokenPresetId, IbcsTokens]
     >) {
@@ -118,6 +133,9 @@ describe("tokenPresets", () => {
       }
       for (const k of fontKeys) {
         expect(typeof tokens.font[k], `${name}.font.${k}`).toBe("string");
+      }
+      for (const k of cardKeys) {
+        expect(tokens.card[k], `${name}.card.${k}`).toBeDefined();
       }
       for (const scn of ["AC", "PY", "PL", "FC"] as const) {
         expect(tokens.scenario[scn], `${name}.scenario.${scn}`).toBeDefined();

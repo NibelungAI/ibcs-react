@@ -183,22 +183,45 @@ import { IbcsThemeProvider, KpiCard, StatementTable, darkTokens } from "ibcs-rea
 </div>;
 ```
 
+## Cards and blocks
+
+How a KPI card or a `Report` block is framed is a theme decision too. The
+`card` group is the default behind every `appearance` prop: `framedCard` (what
+every preset ships with - a hairline border, gently rounded, not lifted) or
+`flatCard` - no border, no rounding, no shadow, no padding; blocks separated
+by whitespace alone. That is the IBCS SIMPLIFY ideal, and what a printed page
+wants. It composes with any palette, so paper is one override:
+
+```tsx
+import { Report, flatCard, tokenPresets } from "ibcs-react";
+
+<Report config={report} tokens={{ card: flatCard }} />;
+
+// flat blocks in the Ocean palette
+<Report config={report} tokens={{ ...tokenPresets.ocean, card: flatCard }} />;
+```
+
+A component's own `appearance` prop still wins per instance:
+`<KpiCard appearance={{ shadow: true }} />` lifts one card in an otherwise
+flat theme.
+
 ## What each token controls
 
-| Token                                 | Type                | What it drives                                                                                      |
-| ------------------------------------- | ------------------- | --------------------------------------------------------------------------------------------------- |
-| `color.neutral`                       | `string`            | Actual step bars (add / subtract waterfall steps).                                                  |
-| `color.total`                         | `string`            | Emphasised actual bars - subtotals and results.                                                     |
-| `color.good`                          | `string`            | Favorable variance (impact, not sign).                                                              |
-| `color.bad`                           | `string`            | Unfavorable variance.                                                                               |
-| `color.zero`                          | `string`            | Zero / no-change marks.                                                                             |
-| `color.axis`, `color.gridline`        | `string`            | Axis line and gridlines.                                                                            |
-| `color.text`, `color.textMuted`       | `string`            | Labels and secondary text.                                                                          |
-| `color.rowBorder`                     | `string`            | Table row rules and hairlines.                                                                      |
-| `color.surface`, `color.surfaceMuted` | `string`            | Opaque component background (cards, tooltips, sticky cells, hollow plan fills) and its subtle tint. |
-| `color.onFill`                        | `string`            | Ink drawn on a solid scenario bar - in-bar value labels.                                            |
-| `scenario.AC` / `PY` / `PL` / `FC`    | `IbcsScenarioStyle` | Per-scenario `fill`, `stroke` and `variant` (`"solid"`, `"frame"`, `"hatch"`).                      |
-| `font.family`                         | `string`            | Font stack for component chrome and SVG text.                                                       |
+| Token                                                                           | Type                                                                   | What it drives                                                                                                                       |
+| ------------------------------------------------------------------------------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `color.neutral`                                                                 | `string`                                                               | Actual step bars (add / subtract waterfall steps).                                                                                   |
+| `color.total`                                                                   | `string`                                                               | Emphasised actual bars - subtotals and results.                                                                                      |
+| `color.good`                                                                    | `string`                                                               | Favorable variance (impact, not sign).                                                                                               |
+| `color.bad`                                                                     | `string`                                                               | Unfavorable variance.                                                                                                                |
+| `color.zero`                                                                    | `string`                                                               | Zero / no-change marks.                                                                                                              |
+| `color.axis`, `color.gridline`                                                  | `string`                                                               | Axis line and gridlines.                                                                                                             |
+| `color.text`, `color.textMuted`                                                 | `string`                                                               | Labels and secondary text.                                                                                                           |
+| `color.rowBorder`                                                               | `string`                                                               | Table row rules and hairlines.                                                                                                       |
+| `color.surface`, `color.surfaceMuted`                                           | `string`                                                               | Opaque component background (cards, tooltips, sticky cells, hollow plan fills) and its subtle tint.                                  |
+| `color.onFill`                                                                  | `string`                                                               | Ink drawn on a solid scenario bar - in-bar value labels.                                                                             |
+| `scenario.AC` / `PY` / `PL` / `FC`                                              | `IbcsScenarioStyle`                                                    | Per-scenario `fill`, `stroke` and `variant` (`"solid"`, `"frame"`, `"hatch"`).                                                       |
+| `font.family`                                                                   | `string`                                                               | Font stack for component chrome and SVG text.                                                                                        |
+| `card.radius`, `card.border`, `card.borderWidth`, `card.shadow`, `card.padding` | `number`, `boolean \| string`, `number`, `boolean`, `number \| string` | How cards and report blocks are framed - the defaults behind every `appearance` prop. `framedCard` / `flatCard` are ready-made sets. |
 
 ## Where to next
 

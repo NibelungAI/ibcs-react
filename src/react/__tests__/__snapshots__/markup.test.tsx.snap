@@ -2056,25 +2056,25 @@ exports[`component markup snapshots > RatioTreeChart renders stable markup 1`] =
 `;
 
 exports[`component markup snapshots > Report renders stable markup 1`] = `
-"<div style="font-family:ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;color:#2b2b29">
+"<div class="ibcs-report" style="font-family:ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;color:#2b2b29">
 <style>
-@media (max-width: 760px) {
-  .ibcs-report-grid { grid-template-columns: 1fr !important; }
-  .ibcs-report-grid > * { grid-column: auto !important; }
+@media screen and (max-width: 760px) {
+  .ibcs-report-grid[data-collapse="760"] { grid-template-columns: 1fr !important; }
+  .ibcs-report-grid[data-collapse="760"] > * { grid-column: auto !important; }
 }
 </style>
 <header style="margin-bottom:16px">
 <div style="font-size:20px;font-weight:600">Q4 review</div>
 </header>
-<div class="ibcs-report-grid" style="display:grid;grid-template-columns:repeat(12, 1fr);gap:14px;align-items:stretch">
-<section style="grid-column:span 12;min-width:0;background:#fff;border:1px solid #e6e5e0;border-radius:10px;padding:14px 16px;box-shadow:0 1px 2px rgba(0,0,0,0.03);display:flex;flex-direction:column">
+<div class="ibcs-report-grid" data-collapse="760" style="display:grid;grid-template-columns:repeat(12, 1fr);gap:14px;align-items:stretch">
+<section class="ibcs-report-block" data-block-type="text" data-block-id="intro" style="background:#fff;border-radius:8px;padding:15px 17px;box-sizing:border-box;border:1px solid #e6e5e0;grid-column:span 12;min-width:0;display:flex;flex-direction:column">
 <div style="margin-bottom:12px">
 <div style="font-size:15px;font-weight:600">Summary</div>
 <p style="margin:4px 0 0;font-size:12.5px;color:#6b6a64">Revenue ahead of plan.</p>
 </div>
 </section>
-<section style="grid-column:span 3;min-width:0;background:#fff;border:1px solid #e6e5e0;border-radius:10px;padding:0;box-shadow:0 1px 2px rgba(0,0,0,0.03);display:flex;flex-direction:column">
-<div style="display:flex;flex-direction:column;gap:7px;font-family:ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;min-width:0;background:#fff;border-radius:10px;padding:15px 17px;box-sizing:border-box;border:1px solid #e6e5e0;flex:1;box-shadow:none">
+<section class="ibcs-report-block" data-block-type="kpi" data-block-id="kpi" style="background:#fff;border-radius:8px;padding:15px 17px;box-sizing:border-box;border:1px solid #e6e5e0;grid-column:span 3;min-width:0;display:flex;flex-direction:column">
+<div style="display:flex;flex-direction:column;gap:7px;font-family:ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;min-width:0;background:transparent;border-radius:0;padding:0;box-sizing:border-box;flex:1">
 <div style="font-size:12.5px;font-weight:600;color:#6b6a64;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%" title="Revenue">Revenue</div>
 <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap;min-width:0">
 <span style="font-size:28px;font-weight:700;color:#2b2b29;font-variant-numeric:tabular-nums;letter-spacing:-0.5px;line-height:1.05;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">500</span>
