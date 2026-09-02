@@ -1,6 +1,6 @@
 {
   "name": "ibcs-react",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "IBCS / ISO 24896:2026 business reporting components for React: statement tables, variance and waterfall charts, KPI cards and a conformance linter. One data model, many views.",
   "keywords": [
     "actual-vs-budget",
