@@ -184,6 +184,9 @@ template set** - every standard chart (C01-C13) and table (T01-T04):
   collapse-all, optional virtualization (`maxHeight`) for large consolidations.
 - **`DataTable`** - the general cross-entity comparison table (**T01**): rows =
   entities, columns = measures (values, embedded variance bars/pins, sparklines).
+  A value column can draw the value itself as a magnitude bar or pin
+  (`mark: "bar"`), rows can carry intervals (`errors`, drawn as error bars) and
+  columns can shade value bands (`bands`).
 - **`ComparisonTable`** - the centre-label flanking layout (**T01/T02**): one
   measure with column groups (e.g. month vs YTD), each PY/PL/AC + variance.
 - **`MatrixTable`** - a budget / control matrix: a P&L row tree crossed with an
@@ -212,7 +215,8 @@ uncontrolled mode, as observers.
 ### Charts
 
 - **`VarianceColumnChart`** - AC vs a comparison as overlapped columns (or pins)
-  with an absolute/relative variance panel beneath.
+  with an absolute/relative variance panel beneath; optional vertical error bars
+  (`acError`, `absError`, `pctError`).
 - **`TrendChart`** - a many-period time series (built for 13): AC solid / FC
   hatched columns, PY & PL reference lines, variance panel.
 - **`StructureChart`** - ranked horizontal bars for composition / contribution,
@@ -237,7 +241,8 @@ uncontrolled mode, as observers.
 - **`IntegratedVarianceChart`** - the signature vertical 3-tier chart: Δ% pins /
   Δ bars / AC columns with a PY-solid or PL-frame reference + FY total.
 - **`RankingVarianceChart`** - a sorted horizontal AC + plan-overlay chart with
-  ΔPL bar and ΔPL% pin columns and a total row.
+  ΔPL bar and ΔPL% pin columns and a total row; optional error bars on every
+  mark and shaded value bands (e.g. a group tied with the best).
 - **`HorizontalWaterfallChart`** - the IBCS horizontal waterfall chart
   (**C05**); plus the
   composites **`ColumnVarianceWaterfallChart`** (**C05**),
@@ -251,6 +256,8 @@ uncontrolled mode, as observers.
   repeated by a dimension (**C13**), with an opt-in shared scale (the IBCS CHECK rule).
 - **`VarianceBar`** - the standalone variance bar/pin primitive used inside the
   tables and charts.
+- **`ErrorBar`** - value ± half-width as a whisker with caps, horizontal or
+  vertical, for bars and points; the mark names itself with its interval.
 
 <table>
 <tr>
@@ -452,6 +459,46 @@ one:
 `mergeTokens(override, base?)` resolves a partial override into a full token set
 (`base` defaults to `defaultTokens`, so presets compose), and `IbcsTokensOverride`
 is the partial-token type to annotate your own theme objects with.
+
+## Numbers and words
+
+`format.fractionDigits` fixes the digits of every value a component writes
+(trailing zeros kept, in the format's `locale`); `percentFractionDigits` does
+the same for its percentages, which then follow the locale too. The words a
+component writes itself - scenario codes, "Total", "vs", button names - come
+from one replaceable dictionary, set for a subtree with `IbcsThemeProvider` or
+per component with `labels`; a chart's generated description is replaced with
+its `ariaLabel`:
+
+```tsx
+import { IbcsThemeProvider, RankingVarianceChart } from "ibcs-react";
+
+<IbcsThemeProvider labels={{ total: "Ukupno", scenario: { AC: "Ostvareno", PL: "Plan" } }}>
+  <RankingVarianceChart
+    data={variants} // { label, AC, base, acError?, absError? }
+    format={{ compact: false, locale: "sr-Latn", fractionDigits: 2 }}
+    ariaLabel="Varijante po odstupanju od plana"
+  />
+</IbcsThemeProvider>;
+```
+
+The defaults are 1.4's output, byte for byte. `formatValue`, `formatPercent`
+and `formatInterval` ("910,79 ± 0,76") write your own text the same way, and
+`useIbcsLabels(override?)` gives a custom chart the same words.
+
+Error bars, value bands and magnitude bars, here in `sr-Latn` with exact
+digits and the caller's words:
+
+<table>
+<tr>
+<td width="50%" valign="top"><img src="assets/ranking-error-bars.png" alt="RankingVarianceChart with error bars and a tied band" width="100%"/><br/><sub><b>RankingVarianceChart</b> - error bars on the AC and ΔPL marks, a band over the variants tied with the best.</sub></td>
+<td width="50%" valign="top"><img src="assets/column-error-bars.png" alt="VarianceColumnChart with vertical error bars" width="100%"/><br/><sub><b>VarianceColumnChart</b> - vertical error bars; a Δ whose interval straddles zero shows it.</sub></td>
+</tr>
+<tr>
+<td width="50%" valign="top"><img src="assets/data-table-magnitude-bars.png" alt="DataTable with magnitude bars" width="100%"/><br/><sub><b>DataTable</b> - a value column drawn as magnitude bars (<code>mark: "bar"</code>), one digit throughout.</sub></td>
+<td width="50%" valign="top"><img src="assets/data-table-intervals.png" alt="DataTable with intervals and a band" width="100%"/><br/><sub><b>DataTable</b> - "value ± half-width" text, Δ pins with error bars, a band over the tied rows.</sub></td>
+</tr>
+</table>
 
 ## Next.js & React Server Components
 

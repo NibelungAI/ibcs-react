@@ -21,6 +21,7 @@
  */
 
 import {
+  RankingVarianceChart,
   ChartBox,
   ConfiguredChart,
   ConformanceReport,
@@ -33,7 +34,13 @@ import {
   validateChartConfig,
   validateReportConfig,
 } from "../index";
-import type { ReportConfig, StatementLine, TrendDatum, VarianceColumnChartConfig } from "../index";
+import type {
+  RankingDatum,
+  ReportConfig,
+  StatementLine,
+  TrendDatum,
+  VarianceColumnChartConfig,
+} from "../index";
 import { computeVariance, formatValue, statementToCSV, checkIbcs, defaultTokens } from "../core";
 
 /* ------------------------------------------------------------------ *
@@ -185,6 +192,28 @@ export function ThemedSubtree() {
       <StatementTable lines={statement} />
       {/* nearest wins - this one chart departs from the theme */}
       <TrendChart data={monthly} tokens={{ color: { bad: "#c62828" } }} />
+    </IbcsThemeProvider>
+  );
+}
+
+/* ------------------------------------------------------------------ *
+ * README § Numbers and words
+ * ------------------------------------------------------------------ */
+
+const variants: RankingDatum[] = [
+  { label: "Best set", AC: 914.3013, base: 910.8441, acError: 0.4682, absError: 0.4621 },
+  { label: "Trinket swap", AC: 907.9623, base: 910.8441, acError: 0.4793, absError: 0.5439 },
+];
+
+/** Exact decimals in a locale, and the components' own words for a subtree. */
+export function LocalizedRanking() {
+  return (
+    <IbcsThemeProvider labels={{ total: "Ukupno", scenario: { AC: "Ostvareno", PL: "Plan" } }}>
+      <RankingVarianceChart
+        data={variants} // { label, AC, base, acError?, absError? }
+        format={{ compact: false, locale: "sr-Latn", fractionDigits: 2 }}
+        ariaLabel="Varijante po odstupanju od plana"
+      />
     </IbcsThemeProvider>
   );
 }

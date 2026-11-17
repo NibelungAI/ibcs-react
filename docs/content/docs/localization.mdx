@@ -1,0 +1,140 @@
+---
+title: Numbers and words
+description: Exact decimals in any locale, percentages written one way, intervals as "value ± half-width", and the components' own words - scenario codes, "Total", "vs" - replaceable for any language.
+---
+
+import { LineChart } from "ibcs-react";
+
+A report reads as one voice when every number on it carries the same digits
+and separators, and when the words the charts add are the reader's. Both are
+options of the components; left alone, they write exactly what 1.4 wrote.
+
+## Exact decimals
+
+`fractionDigits` in a component's `format` fixes the number of fraction digits
+of every value it writes - labels, tooltip and screen-reader table - and keeps
+trailing zeros, so "10" never stands beside "10.0" in one column:
+
+| `format`                                                   | 9.996 | 914.3013 | 6847.09  |
+| ---------------------------------------------------------- | ----- | -------- | -------- |
+| `{ compact: false, fractionDigits: 1 }`                    | 10.0  | 914.3    | 6,847.1  |
+| `{ compact: false, fractionDigits: 2, locale: "sr-Latn" }` | 10,00 | 914,30   | 6.847,09 |
+| `{ fractionDigits: 2 }` (compact)                          | 10.00 | 914.30   | 6.85K    |
+
+Set it where the numbers live:
+
+- **per component** - the `format` prop of every chart, table and card;
+- **per column** - a `DataTable` column's own `format`;
+- **per series** - `LineChart`'s `seriesFormat` (keyed by scenario) and
+  `ComboChart`'s `secondaryFormat`.
+
+Rounding is `Intl.NumberFormat`'s: half away from zero, on the number as
+written - 1.005 → "1.01", 2.5 → "3", -2.5 → "-3" (`Number#toFixed` would give
+"1.00" for the first, since it rounds the binary value). A value that rounds to
+zero carries no sign: "0.00", never "-0.00". `fractionDigits` takes an integer
+from 0 to 20.
+
+Without `fractionDigits` nothing changes: compact values under 1,000 still
+round to whole numbers, and other values drop their trailing zeros.
+
+## Percentages, written one way
+
+The percentages a component writes itself - Δ% labels, shares, growth rates -
+take `percentFractionDigits` (default 1). Once a format sets any of `locale`,
+`fractionDigits`, `percentFractionDigits` or `notAvailable`, they also follow
+the locale's own separators and percent sign: "+17,5%" in `sr-Latn`, "+17,5 %"
+in `de-DE`. With none of the four set, they are byte-identical to 1.4
+("+17.5%").
+
+Write your own text with the same functions, and the page and the chart can
+never disagree:
+
+```ts
+import { formatInterval, formatPercent, formatValue } from "ibcs-react";
+
+const sr = { compact: false, locale: "sr-Latn", fractionDigits: 2 };
+
+formatValue(914.3013, sr); // "914,30"
+formatPercent(0.0014, { locale: "sr-Latn", fractionDigits: 2 }); // "+0,14%"
+formatInterval(910.7916, 0.7605, sr); // "910,79 ± 0,76"
+formatInterval(-2.8818, 0.5439, sr, true); // "-2,88 ± 0,54" (signed: a difference)
+```
+
+`formatInterval` holds the "±" to its numbers with no-break spaces, so the pair
+never wraps apart. The text for a missing number - "n/a" by default - is the
+format's `notAvailable`.
+
+## The components' own words
+
+Every word a component writes by itself - the scenario codes in headers and
+line end labels, "Total", "vs", "pp", the column names of a screen-reader
+table, button and menu names, empty and error states - comes from one
+dictionary, `IbcsLabels`. Replace any part of it for a whole subtree with
+`IbcsThemeProvider`, or for one component with its `labels` prop:
+
+```tsx
+import { IbcsThemeProvider } from "ibcs-react";
+
+<IbcsThemeProvider
+  labels={{
+    total: "Ukupno",
+    versus: "u odnosu na",
+    scenario: { AC: "Ostvareno", PY: "PG", PL: "Plan" },
+  }}
+>
+  <App />
+</IbcsThemeProvider>;
+```
+
+Nearest wins: a component's own word prop (`totalsLabel`, `baseLabel`,
+`emptyMessage`, `Skeleton`'s `label`), then its `labels`, then the nearest
+provider's, then `defaultLabels` - the library's IBCS English. Entries such as
+`"Point {n}"` or `"+{count} more"` are templates: keep the placeholders in your
+words and the component fills them in.
+
+An empty word drops a scenario code where it prefixes a value. This error
+narrowing reads "0,14%" at the end of its line, not "AC 0,14%":
+
+<Frame center>
+  <LineChart
+    width={560}
+    height={220}
+    labels={{ scenario: { AC: "" } }}
+    format={{ compact: false, locale: "sr-Latn", fractionDigits: 2, suffix: "%" }}
+    references={[{ axis: "y", value: 0.1, label: "cilj ±0,10%" }]}
+    data={[
+      { category: "1", AC: 0.2416 },
+      { category: "2", AC: 0.1693 },
+      { category: "3", AC: 0.138 },
+    ]}
+  />
+</Frame>
+
+```tsx
+<LineChart
+  labels={{ scenario: { AC: "" } }}
+  format={{ compact: false, locale: "sr-Latn", fractionDigits: 2, suffix: "%" }}
+  references={[{ axis: "y", value: 0.1, label: "cilj ±0,10%" }]}
+  data={[
+    { category: "1", AC: 0.2416 },
+    { category: "2", AC: 0.1693 },
+    { category: "3", AC: 0.138 },
+  ]}
+/>
+```
+
+## Accessible names
+
+A chart's generated description ("Line chart of 3 periods across 1 series") is
+an English sentence, not a word, so it is not in the dictionary: pass the
+chart's `ariaLabel` to replace it. It also becomes the caption of the chart's
+screen-reader table.
+
+## What stays as written
+
+- The conformance linter's findings - developer diagnostics, in English.
+- `ConfiguredChart`'s invalid-config message - pass `renderError` to show your
+  own.
+- `statementToCSV`'s column headers - machine-readable IBCS codes.
+- The "X" / "Y" notation of scatter and bubble tables - name the axes with
+  `xLabel` / `yLabel`.

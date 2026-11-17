@@ -1,0 +1,81 @@
+---
+title: ErrorBar
+description: The interval of a value as a whisker with caps - value ± half-width - a mark for bars and points, horizontal or vertical, with its interval as accessible text.
+---
+
+import { ErrorBar } from "ibcs-react";
+
+An error bar shows the interval around a value - a 95% confidence interval, a
+tolerance - as a whisker with a cap at each end: `value - halfWidth` to
+`value + halfWidth`. `RankingVarianceChart`, `VarianceColumnChart` and
+`DataTable` draw it from their data (`acError`, `absError`, `pctError`,
+`row.errors`); `ErrorBar` is the same mark for a chart of your own.
+
+## When to use
+
+Whenever a figure is an estimate - a simulation's mean, a survey's share, a
+forecast's range - and the reader must see how far it may be off before
+comparing two of them. Two intervals that overlap a lot are not a ranking.
+
+## Example
+
+A horizontal bar and a vertical column, each with its error bar on its own
+scale, and a point whose interval runs past the top of its plot (its open end
+has no cap):
+
+<Frame center>
+  <svg width={480} height={140} viewBox="0 0 480 140">
+    <rect x={20} y={28} width={186} height={14} fill="#54534e" />
+    <ErrorBar value={62} halfWidth={9} scale={(v) => 20 + v * 3} cross={35} capSize={10} />
+    <rect x={340} y={25} width={24} height={105} fill="#54534e" />
+    <ErrorBar
+      value={70}
+      halfWidth={12}
+      orientation="vertical"
+      scale={(v) => 130 - v * 1.5}
+      cross={352}
+      capSize={12}
+    />
+    <ErrorBar
+      value={48}
+      halfWidth={20}
+      orientation="vertical"
+      scale={(v) => 130 - v * 1.5}
+      cross={420}
+      clip={[130, 40]}
+    />
+    <circle cx={420} cy={58} r={3.5} fill="#2b2b29" />
+  </svg>
+</Frame>
+
+```tsx
+import { ErrorBar } from "ibcs-react";
+
+const x = (v: number) => 20 + v * 3; // the bar's own scale
+
+<svg width={480} height={60}>
+  <rect x={20} y={28} width={x(62) - 20} height={14} fill="#54534e" />
+  <ErrorBar value={62} halfWidth={9} scale={x} cross={35} capSize={10} />
+</svg>;
+```
+
+Pass the scale of the mark the error bar belongs to - any monotonic value →
+pixel function, so a two-sided pin axis or a magnitude axis works as well as a
+linear one - and `cross`, the mark's centre line. `clip` keeps the whisker
+inside a plot; an end cut there loses its cap, so the reader sees the interval
+goes on.
+
+The whisker is drawn over a thin halo in the theme's `surface` colour, so the
+half that crosses a solid bar stays visible on any fill, light or dark: draw
+the error bar after a bar, and before a point, so the point stays whole. The
+mark names itself (`role="img"`, `aria-label`, and a `<title>` tooltip) with its
+interval, written by `formatInterval` with your `format` - pass `signed` for a
+difference ("+3.46 ± 0.46") or a `label` of your own. It renders nothing for a
+zero half-width: an exact value has no interval.
+
+The geometry alone is `computeErrorBar` in `ibcs-react/core`, for renderers
+that are not React.
+
+## Props
+
+<AutoTypeTable path="../src/react/ErrorBar.tsx" name="ErrorBarProps" />
