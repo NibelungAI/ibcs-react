@@ -1,14 +1,15 @@
 import { forwardRef, useId, useMemo, type CSSProperties } from "react";
 import type { ScenarioKey } from "../core/types";
 import type { IbcsTokensOverride } from "../core/tokens";
+import type { IbcsLabelsOverride } from "../core/labels";
 import { computeCombo, type ComboDatum, type ComboSecondaryDatum } from "../core/combo";
 import { computeTicks } from "../core/xy";
 import { bandScale, resolveBandPadding, type BandPadding } from "../core/bandScale";
-import { formatValue, formatSigned, type FormatOptions } from "../core/format";
+import { formatValue, formatSigned, notAvailableOf, type FormatOptions } from "../core/format";
 import { useMountGrow, useDataTween } from "./hooks";
 import { ChartDataTable, type ChartDataRow } from "./a11y";
 import { svgSafeId } from "./internal/text";
-import { useIbcsTokens } from "./theme";
+import { useIbcsLabels, useIbcsTokens } from "./theme";
 
 // Local, CJK-aware text metrics: wide glyphs count ~1.05em where the shared
 // `./internal/text` heuristic assumes a uniform 0.6em - kept for label fitting.
@@ -89,7 +90,17 @@ export interface ComboChartProps {
   bandPadding?: BandPadding;
   format?: FormatOptions;
   tokens?: IbcsTokensOverride;
+  /**
+   * The component's own words (the scenario codes and the "Secondary" column of its table) merged onto `IbcsThemeProvider`'s.
+   * See `IbcsLabels`.
+   */
+  labels?: IbcsLabelsOverride;
   title?: string;
+  /**
+   * The chart's accessible name, in place of the generated English
+   * description; also the caption of its screen-reader table.
+   */
+  ariaLabel?: string;
   /** Class name for the chart's root `<svg>`. */
   className?: string;
   /** Inline style merged over the root `<svg>`'s own layout style (your keys win). */
@@ -140,13 +151,16 @@ export const ComboChart = forwardRef<SVGSVGElement, ComboChartProps>(function Co
     bandPadding,
     format = {},
     tokens: tokenOverride,
+    labels,
     title,
+    ariaLabel,
     className,
     style,
   },
   ref,
 ) {
   const tokens = useIbcsTokens(tokenOverride);
+  const words = useIbcsLabels(labels);
   // Sanitised so the ids stay valid selectors after an SVG export/serialization.
   const lineClipId = svgSafeId(useId());
   const hatchId = svgSafeId(useId());
@@ -274,17 +288,19 @@ export const ComboChart = forwardRef<SVGSVGElement, ComboChartProps>(function Co
   // draws, the Δ label when it is shown, and the secondary series (named by its
   // own axis caption, formatted with its own options) - the second axis is the
   // part a single aria-label can never convey.
+  const S = words.scenario;
+  const na = notAvailableOf(format);
   const a11yColumns = [
-    "AC",
-    ...(showComparison ? [comparison] : []),
-    ...(showVariance ? [`Δ${comparison}`] : []),
-    secondaryLabel ?? "Secondary",
+    S.AC,
+    ...(showComparison ? [S[comparison]] : []),
+    ...(showVariance ? [`Δ${S[comparison]}`] : []),
+    secondaryLabel ?? words.secondary,
   ];
   const a11yRows: ChartDataRow[] = cells.map((c) => {
-    const row: Array<string | number> = [c.AC != null ? formatValue(c.AC, format) : "n/a"];
-    if (showComparison) row.push(c.comparison != null ? formatValue(c.comparison, format) : "n/a");
-    if (showVariance) row.push(c.variance ? formatSigned(c.variance.abs, format) : "n/a");
-    row.push(c.secondary != null ? formatValue(c.secondary, secFmt) : "n/a");
+    const row: Array<string | number> = [c.AC != null ? formatValue(c.AC, format) : na];
+    if (showComparison) row.push(c.comparison != null ? formatValue(c.comparison, format) : na);
+    if (showVariance) row.push(c.variance ? formatSigned(c.variance.abs, format) : na);
+    row.push(c.secondary != null ? formatValue(c.secondary, secFmt) : notAvailableOf(secFmt));
     return { label: c.category, cells: row };
   });
 
@@ -297,9 +313,10 @@ export const ComboChart = forwardRef<SVGSVGElement, ComboChartProps>(function Co
         viewBox={`0 0 ${width} ${height}`}
         role="img"
         aria-label={
-          title
-            ? `${title}. ${primaryLabel ?? "Primary"} columns versus ${comparison} with a ${secondaryLabel ?? "secondary"} line on a second axis.`
-            : `${primaryLabel ?? "Primary"} columns with a ${secondaryLabel ?? "secondary"} line`
+          ariaLabel ??
+          (title
+            ? `${title}. ${primaryLabel ?? "Primary"} columns versus ${S[comparison]} with a ${secondaryLabel ?? "secondary"} line on a second axis.`
+            : `${primaryLabel ?? "Primary"} columns with a ${secondaryLabel ?? "secondary"} line`)
         }
         className={className}
         style={{
@@ -547,7 +564,7 @@ export const ComboChart = forwardRef<SVGSVGElement, ComboChartProps>(function Co
         })}
       </svg>
       <ChartDataTable
-        caption={title ? `${title} - data table` : "Combination chart data table"}
+        caption={ariaLabel ?? (title ? `${title} - data table` : "Combination chart data table")}
         columns={a11yColumns}
         rows={a11yRows}
       />

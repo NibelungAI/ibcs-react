@@ -1,6 +1,8 @@
 import { forwardRef, useMemo, type CSSProperties } from "react";
 import type { IbcsTokensOverride } from "../core/tokens";
-import { formatValue, type FormatOptions } from "../core/format";
+import type { IbcsLabelsOverride } from "../core/labels";
+import { formatValue, notAvailableOf, type FormatOptions } from "../core/format";
+import { fillLabel } from "../core/labels";
 import {
   computeXyScale,
   computeTicks,
@@ -15,7 +17,7 @@ import {
 import { useMountGrow, useDataTween } from "./hooks";
 import { ChartDataTable, type ChartDataRow } from "./a11y";
 import { clampTo } from "./internal/text";
-import { useIbcsTokens } from "./theme";
+import { useIbcsLabels, useIbcsTokens } from "./theme";
 
 // Local, CJK-aware text metrics: wide glyphs count ~1em where the shared
 // `./internal/text` heuristic assumes a uniform 0.6em - kept for label fitting.
@@ -116,7 +118,17 @@ export interface ScatterChartProps {
   height?: number;
   format?: FormatOptions;
   tokens?: IbcsTokensOverride;
+  /**
+   * The component's own words (the group column and row names of its table, the legend's "+N more" and the down-sampling note) merged onto `IbcsThemeProvider`'s.
+   * See `IbcsLabels`.
+   */
+  labels?: IbcsLabelsOverride;
   title?: string;
+  /**
+   * The chart's accessible name, in place of the generated English
+   * description; also the caption of its screen-reader table.
+   */
+  ariaLabel?: string;
   /** Class name for the chart's root `<svg>`. */
   className?: string;
   /** Inline style merged over the root `<svg>`'s own layout style (your keys win). */
@@ -146,13 +158,16 @@ export const ScatterChart = forwardRef<SVGSVGElement, ScatterChartProps>(functio
     height = 360,
     format = {},
     tokens: tokenOverride,
+    labels,
     title,
+    ariaLabel,
     className,
     style,
   },
   ref,
 ) {
   const tokens = useIbcsTokens(tokenOverride);
+  const words = useIbcsLabels(labels);
   const data = useDataTween(dataProp);
   const grow = useMountGrow(600, 0, data);
 
@@ -262,10 +277,10 @@ export const ScatterChart = forwardRef<SVGSVGElement, ScatterChartProps>(functio
   // Screen-reader data table: the plotted points' coordinates (and their group
   // when the chart colors by one) as real numbers, not the decorative svg. Rows
   // follow the points actually drawn, so a down-sampled set stays truthful.
-  const a11yColumns = [xLabel ?? "X", yLabel ?? "Y", ...(hasGroups ? ["Group"] : [])];
+  const a11yColumns = [xLabel ?? "X", yLabel ?? "Y", ...(hasGroups ? [words.group] : [])];
   const a11yRows: ChartDataRow[] = drawn.map((p, i) => ({
-    label: p.label ?? `Point ${i + 1}`,
-    cells: [fmt(p.x), fmt(p.y), ...(hasGroups ? [p.group ?? "n/a"] : [])],
+    label: p.label ?? fillLabel(words.point, { n: i + 1 }),
+    cells: [fmt(p.x), fmt(p.y), ...(hasGroups ? [p.group ?? notAvailableOf(format)] : [])],
   }));
 
   return (
@@ -277,9 +292,10 @@ export const ScatterChart = forwardRef<SVGSVGElement, ScatterChartProps>(functio
         viewBox={`0 0 ${width} ${height}`}
         role="img"
         aria-label={
-          title
+          ariaLabel ??
+          (title
             ? `${title}. Scatter plot of ${data.length} points${xLabel && yLabel ? ` of ${yLabel} versus ${xLabel}` : ""}.`
-            : `Scatter plot of ${data.length} points`
+            : `Scatter plot of ${data.length} points`)
         }
         className={className}
         style={{
@@ -501,7 +517,7 @@ export const ScatterChart = forwardRef<SVGSVGElement, ScatterChartProps>(functio
                 fontSize={10}
                 fill={tokens.color.textMuted}
               >
-                {`+${legendMore} more`}
+                {fillLabel(words.more, { count: legendMore })}
               </text>
             )}
           </g>
@@ -516,12 +532,15 @@ export const ScatterChart = forwardRef<SVGSVGElement, ScatterChartProps>(functio
             fill={tokens.color.textMuted}
             textAnchor="end"
           >
-            {`showing ${drawn.length.toLocaleString()} of ${clean.length.toLocaleString()} (sampled)`}
+            {fillLabel(words.sampled, {
+              shown: drawn.length.toLocaleString(),
+              total: clean.length.toLocaleString(),
+            })}
           </text>
         )}
       </svg>
       <ChartDataTable
-        caption={title ? `${title} - data table` : "Scatter plot data table"}
+        caption={ariaLabel ?? (title ? `${title} - data table` : "Scatter plot data table")}
         columns={a11yColumns}
         rows={a11yRows}
       />

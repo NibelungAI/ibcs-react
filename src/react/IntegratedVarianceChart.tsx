@@ -1,12 +1,20 @@
 import { forwardRef, useId, useMemo, type CSSProperties } from "react";
 import type { ScenarioKey } from "../core/types";
 import type { IbcsTokensOverride } from "../core/tokens";
+import type { IbcsLabelsOverride } from "../core/labels";
 import {
   computeIntegratedVariance,
   type IntegratedDatum,
   type FyTotalInput,
 } from "../core/integratedVariance";
-import { formatValue, formatSigned, formatPercent, type FormatOptions } from "../core/format";
+import {
+  formatPercent,
+  formatSigned,
+  formatValue,
+  notAvailableOf,
+  percentFormatOf,
+  type FormatOptions,
+} from "../core/format";
 import { bandScale, resolveBandPadding, type BandPadding } from "../core/bandScale";
 import { useMountGrow, useDataTween, useChartHover } from "./hooks";
 import type { ChartHover } from "./hooks";
@@ -14,7 +22,7 @@ import { markInteraction, type MarkRect } from "./internal/hover";
 import { ChartTooltip, type ChartTooltipRow } from "./ChartTooltip";
 import { ChartDataTable, type ChartDataRow } from "./a11y";
 import { clampTo, estTextW, fitLabel, svgSafeId } from "./internal/text";
-import { useIbcsTokens } from "./theme";
+import { useIbcsLabels, useIbcsTokens } from "./theme";
 
 export type { IntegratedDatum, FyTotalInput } from "../core/integratedVariance";
 
@@ -44,7 +52,17 @@ export interface IntegratedVarianceChartProps {
   bandPadding?: BandPadding;
   format?: FormatOptions;
   tokens?: IbcsTokensOverride;
+  /**
+   * The component's own words (the scenario codes of its tooltip and table, and the "(FC)" mark) merged onto `IbcsThemeProvider`'s.
+   * See `IbcsLabels`.
+   */
+  labels?: IbcsLabelsOverride;
   title?: string;
+  /**
+   * The chart's accessible name, in place of the generated English
+   * description; also the caption of its screen-reader table.
+   */
+  ariaLabel?: string;
   /** Class name for the chart's `<svg>`. */
   className?: string;
   /** Inline style merged over the `<svg>`'s own layout style (your keys win). */
@@ -99,7 +117,9 @@ export const IntegratedVarianceChart = forwardRef<SVGSVGElement, IntegratedVaria
       bandPadding,
       format = {},
       tokens: tokenOverride,
+      labels,
       title,
+      ariaLabel,
       className,
       style,
       onHover,
@@ -108,6 +128,11 @@ export const IntegratedVarianceChart = forwardRef<SVGSVGElement, IntegratedVaria
     ref,
   ) {
     const tokens = useIbcsTokens(tokenOverride);
+    const words = useIbcsLabels(labels);
+    const S = words.scenario;
+    const cmpName = S[comparison];
+    const pctFmt = percentFormatOf(format);
+    const na = notAvailableOf(format);
     // Sanitised so the ids stay valid selectors after an SVG export/serialization.
     const hatchAC = svgSafeId(useId());
     const hatchGood = svgSafeId(useId());
@@ -196,17 +221,21 @@ export const IntegratedVarianceChart = forwardRef<SVGSVGElement, IntegratedVaria
       if (!c) return null;
       const exact = { ...format, compact: false };
       const rows: ChartTooltipRow[] = [
-        { label: c.isForecast ? "AC (FC)" : "AC", value: formatValue(c.AC, exact), strong: true },
+        {
+          label: c.isForecast ? `${S.AC} (${S.FC})` : S.AC,
+          value: formatValue(c.AC, exact),
+          strong: true,
+        },
       ];
       if (c.comparisonValue != null && isFinite(c.comparisonValue)) {
-        rows.push({ label: comparison, value: formatValue(c.comparisonValue, exact) });
+        rows.push({ label: cmpName, value: formatValue(c.comparisonValue, exact) });
       }
       const v = c.variance;
       if (v) {
         const color =
           v.abs === 0 ? tokens.color.zero : v.favorable ? tokens.color.good : tokens.color.bad;
-        rows.push({ label: `Δ${comparison}`, value: formatSigned(v.abs, exact), color });
-        rows.push({ label: `Δ${comparison}%`, value: formatPercent(v.pct), color });
+        rows.push({ label: `Δ${cmpName}`, value: formatSigned(v.abs, exact), color });
+        rows.push({ label: `Δ${cmpName}%`, value: formatPercent(v.pct, pctFmt), color });
       }
       return (
         <ChartTooltip
@@ -222,22 +251,22 @@ export const IntegratedVarianceChart = forwardRef<SVGSVGElement, IntegratedVaria
 
     // Screen-reader data table: each period's AC, the comparison, and the Δ / Δ%
     // (plus the full-year total) - values, not the decorative svg.
-    const a11yColumns = ["AC", comparison, `Δ${comparison}`, `Δ${comparison}%`];
+    const a11yColumns = [S.AC, cmpName, `Δ${cmpName}`, `Δ${cmpName}%`];
     const a11yRows: ChartDataRow[] = cells.map((c) => ({
-      label: c.isForecast ? `${c.category} (FC)` : c.category,
+      label: c.isForecast ? `${c.category} (${S.FC})` : c.category,
       cells: [
         formatValue(c.AC, format),
         c.comparisonValue != null && isFinite(c.comparisonValue)
           ? formatValue(c.comparisonValue, format)
-          : "n/a",
-        c.variance ? formatSigned(c.variance.abs, format) : "n/a",
-        c.variance ? formatPercent(c.variance.pct) : "n/a",
+          : na,
+        c.variance ? formatSigned(c.variance.abs, format) : na,
+        c.variance ? formatPercent(c.variance.pct, pctFmt) : na,
       ],
     }));
     if (fy) {
       a11yRows.push({
         label: fy.label,
-        cells: [formatValue(fy.total, format), "n/a", "n/a", "n/a"],
+        cells: [formatValue(fy.total, format), na, na, na],
       });
     }
 
@@ -250,9 +279,10 @@ export const IntegratedVarianceChart = forwardRef<SVGSVGElement, IntegratedVaria
           viewBox={`0 0 ${width} ${height}`}
           role="img"
           aria-label={
-            title
-              ? `${title}. Integrated variance: Δ${comparison}% pins, Δ${comparison} bars, and AC versus ${comparison} columns.`
-              : `Integrated variance of AC versus ${comparison}`
+            ariaLabel ??
+            (title
+              ? `${title}. Integrated variance: Δ${cmpName}% pins, Δ${cmpName} bars, and ${S.AC} versus ${cmpName} columns.`
+              : `Integrated variance of ${S.AC} versus ${cmpName}`)
           }
           className={className}
           style={{
@@ -326,7 +356,7 @@ export const IntegratedVarianceChart = forwardRef<SVGSVGElement, IntegratedVaria
                       : tokens.color.bad;
                 const up = v.favorable;
                 const tipY = up ? pctMid - len : pctMid + len;
-                const label = formatPercent(v.pct);
+                const label = formatPercent(v.pct, pctFmt);
                 return (
                   <g key={`pct-${c.category}`}>
                     <line x1={cx} y1={pctMid} x2={cx} y2={tipY} stroke={color} strokeWidth={2} />
@@ -643,9 +673,10 @@ export const IntegratedVarianceChart = forwardRef<SVGSVGElement, IntegratedVaria
         </svg>
         <ChartDataTable
           caption={
-            title
+            ariaLabel ??
+            (title
               ? `${title} - data table`
-              : `Integrated variance of AC versus ${comparison} - data table`
+              : `Integrated variance of ${S.AC} versus ${cmpName} - data table`)
           }
           columns={a11yColumns}
           rows={a11yRows}

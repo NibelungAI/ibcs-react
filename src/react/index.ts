@@ -64,7 +64,9 @@ export type {
   FyTotalInput,
 } from "./IntegratedVarianceChart";
 export { RankingVarianceChart } from "./RankingVarianceChart";
-export type { RankingVarianceChartProps, RankingDatum } from "./RankingVarianceChart";
+export type { RankingVarianceChartProps, RankingDatum, RankingBand } from "./RankingVarianceChart";
+export { ErrorBar } from "./ErrorBar";
+export type { ErrorBarProps } from "./ErrorBar";
 export { HorizontalWaterfallChart } from "./HorizontalWaterfallChart";
 export type { HorizontalWaterfallChartProps } from "./HorizontalWaterfallChart";
 export { GroupedVarianceChart } from "./GroupedVarianceChart";
@@ -98,7 +100,7 @@ export { Skeleton } from "./Skeleton";
 export type { SkeletonProps, SkeletonVariant } from "./Skeleton";
 export { ChartState } from "./ChartState";
 export type { ChartStateProps } from "./ChartState";
-export { IbcsThemeProvider, useIbcsTokens } from "./theme";
+export { IbcsThemeProvider, useIbcsLabels, useIbcsTokens } from "./theme";
 export type { IbcsThemeProviderProps } from "./theme";
 export { ChartDataTable, srOnly } from "./a11y";
 export type { ChartDataTableProps, ChartDataRow } from "./a11y";

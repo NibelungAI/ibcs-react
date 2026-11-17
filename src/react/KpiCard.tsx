@@ -2,14 +2,21 @@ import { useMemo } from "react";
 import type { KpiConfig } from "../core/kpi";
 import { computeKpi } from "../core/kpi";
 import type { IbcsTokensOverride } from "../core/tokens";
-import { useIbcsTokens } from "./theme";
-import { formatValue, formatSigned, formatPercent } from "../core/format";
+import type { IbcsLabelsOverride } from "../core/labels";
+import { useIbcsLabels, useIbcsTokens } from "./theme";
+import { formatPercent, formatSigned, formatValue, percentFormatOf } from "../core/format";
 import { useCountUp } from "./hooks";
 import { Sparkline } from "./Sparkline";
 import { cardSurface, type CardAppearance } from "./appearance";
 
 export interface KpiCardProps extends KpiConfig {
   tokens?: IbcsTokensOverride;
+  /**
+   * The card's own words - "vs" before each comparison, the comparison's
+   * scenario code, "pp" on a ratio's delta - merged onto `IbcsThemeProvider`'s.
+   * See `IbcsLabels`.
+   */
+  labels?: IbcsLabelsOverride;
   /**
    * Count up the headline number (from `0` on mount, then tweening on every
    * change). Default true - and `prefers-reduced-motion` is respected
@@ -53,12 +60,14 @@ export function KpiCard({
   sparkline,
   sparklineType = "area",
   tokens: tokenOverride,
+  labels,
   animate = true,
   appearance,
   className,
   style,
 }: KpiCardProps) {
   const tokens = useIbcsTokens(tokenOverride);
+  const words = useIbcsLabels(labels);
   const result = useMemo(
     () => computeKpi({ label, values, comparisons, higherIsBetter }),
     [label, values, comparisons, higherIsBetter],
@@ -125,11 +134,20 @@ export function KpiCard({
         </span>
         <strong style={{ fontWeight: 700 }}>
           {formatSigned(v.abs, numberFormat)}
-          {ratio && <span style={{ fontWeight: 600, fontSize: "0.85em", marginLeft: 1 }}>pp</span>}
+          {ratio && (
+            <span style={{ fontWeight: 600, fontSize: "0.85em", marginLeft: 1 }}>
+              {words.percentagePoints}
+            </span>
+          )}
         </strong>
-        {!ratio && <span style={{ fontWeight: 600, opacity: 0.85 }}>{formatPercent(v.pct)}</span>}
+        {!ratio && (
+          <span style={{ fontWeight: 600, opacity: 0.85 }}>
+            {formatPercent(v.pct, percentFormatOf(numberFormat))}
+          </span>
+        )}
         <span style={{ color: tokens.color.textMuted, fontWeight: 500, fontSize: "0.85em" }}>
-          vs {d.base}
+          {`${words.versus} `}
+          {words.scenario[d.base]}
         </span>
       </span>
     );

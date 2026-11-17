@@ -21,6 +21,8 @@
 import { SCENARIO_KEYS, type ScenarioKey } from "./types";
 import { computeVariance } from "./variance";
 import type { FormatOptions } from "./format";
+import { halfWidthOf } from "./errorBar";
+import type { ValueBand } from "./reference";
 
 /**
  * One measure's value inside a row. Either:
@@ -32,7 +34,8 @@ export type DataTableCell = number | Partial<Record<ScenarioKey, number>> | unde
 
 /**
  * A column. `kind` decides how the addressed measure is rendered:
- *  - "value"     - the scenario number (right-aligned, tabular).
+ *  - "value"     - the scenario number (right-aligned, tabular), optionally
+ *                  drawn as a magnitude bar or pin of the value itself (`mark`).
  *  - "variance"  - an embedded AC-vs-`base` bar (abs) or pin (pct).
  *  - "sparkline" - a micro-chart from `row.spark[measure]`.
  */
@@ -60,6 +63,13 @@ export interface DataTableColumn {
    * variance: filled "bar" or "pin" (dot), or "none" for a plain signed,
    * impact-coloured number (no embedded mark - the IBCS T01 "numeric variance"
    * treatment). Default bar for abs, pin for pct.
+   *
+   * value: "bar" draws the value ITSELF as a magnitude bar (an IBCS integrated
+   * bar chart - its length is the size, not a difference to a base) and "pin"
+   * as a dot on a stem, each with the number beside it, on a scale shared by
+   * the column's detail rows. The bar wears its scenario's IBCS fill (AC
+   * solid, PY grey, PL frame, FC hatch). The totals row shows the number
+   * alone. Default "none" - the plain number, as before.
    */
   mark?: "bar" | "pin" | "none";
   /**
@@ -76,6 +86,15 @@ export interface DataTableColumn {
   clampPct?: number;
   /** Per-column number-format override (falls back to the table `format`). */
   format?: FormatOptions;
+  /**
+   * Shaded value ranges drawn beneath the marks across the column's body rows
+   * (not the totals row) - e.g. a "tied with the best" band - on a bar or pin
+   * column: a value column with a `mark`, or a variance column. In the units
+   * the mark is drawn in: the value (value columns), the Δ (an abs pin), the
+   * Δ% (a pct pin), or the bar's LENGTH |Δ| (an abs variance bar, which grows
+   * from 0 at its left axis whatever the sign). Ignored on other columns.
+   */
+  bands?: ValueBand[];
   /** Header + cell alignment. Default "left" for the first column, else "right". */
   align?: "left" | "right" | "center";
   /** Explicit pixel width (variance/sparkline columns get a sensible default). */
@@ -132,6 +151,16 @@ export interface DataTableRow {
   /** Force bold/emphasis on this row. */
   emphasis?: boolean;
   /**
+   * Half-widths of an interval (e.g. a 95% confidence interval), keyed by
+   * COLUMN key - not measure, since a value and its variance each have their
+   * own. A value column writes "value ± half-width" and a variance column, or a
+   * value column with a `mark`, draws an error bar on its mark (the half-width
+   * is then the cell's accessible text and its tooltip). In the cell's own
+   * units: percent points on a pct variance column. A missing, negative or
+   * non-finite entry means no interval. Never summed into parents or totals.
+   */
+  errors?: Record<string, number>;
+  /**
    * Statement-style marker for P&L / build-up tables (IBCS T03). When set, a
    * marker glyph is drawn before the label: `"add"` → `+`, `"subtract"` → `−`,
    * `"result"` → `=`. A `"result"` row is emphasised (bold) with a 1px top rule,
@@ -164,10 +193,14 @@ export interface DataTableOptions {
   totalsLabel?: string;
 }
 
-/** A resolved cell, discriminated by the column kind. */
+/**
+ * A resolved cell, discriminated by the column kind. `error` is the row's
+ * half-width for this column (`row.errors[column.key]`), present only when
+ * valid.
+ */
 export type ResolvedCell =
-  | { kind: "value"; value: number | undefined }
-  | { kind: "variance"; variance: VarianceCellData | null }
+  | { kind: "value"; value: number | undefined; error?: number }
+  | { kind: "variance"; variance: VarianceCellData | null; error?: number }
   | { kind: "sparkline"; data: number[] };
 
 /** Per-row variance result for one variance column. */
@@ -188,9 +221,24 @@ export interface ColumnModel {
    * variance: shared axis domain - max |Δ| over the DETAIL (leaf) rows of the
    * whole tree, outliers excluded. Parent aggregates are deliberately left out
    * (they would dominate the scale) and the collapsed set is ignored, so
-   * expanding or collapsing a group never moves the bars.
+   * expanding or collapsing a group never moves the bars. A row's error bar
+   * (`row.errors`) widens it so the whisker fits (pct: up to `clampPct`).
+   *
+   * value column with a bar/pin `mark`: max(|extent.min|, |extent.max|).
    */
   domain: number;
+  /**
+   * value column with a bar/pin `mark` only: the value range of the detail
+   * rows, error whiskers included, always containing 0 - the column's shared
+   * scale. Absent on every other column.
+   */
+  extent?: { min: number; max: number };
+  /**
+   * Set when any row of the tree carries a half-width for this column
+   * (`row.errors[column.key]`), so the renderer can lay the whole column out
+   * for error bars at once - every row keeps one shared axis.
+   */
+  errors?: true;
   /**
    * Draw a subtle left divider before this column - true at the start of a new
    * column group (or when the column forces `borderLeft`). Always false when no
@@ -248,6 +296,22 @@ function columnKind(col: DataTableColumn): "value" | "variance" | "sparkline" {
 
 function measureOf(col: DataTableColumn): string {
   return col.measure ?? col.key;
+}
+
+/**
+ * A value column's mark: "bar" or "pin" draw the value itself; anything else
+ * (unset, "none") is the plain number. Variance columns use {@link resolveMark}.
+ */
+export function valueMarkOf(col: DataTableColumn): "bar" | "pin" | null {
+  if (columnKind(col) !== "value") return null;
+  return col.mark === "bar" || col.mark === "pin" ? col.mark : null;
+}
+
+/** The row's valid half-width for a column (`row.errors[column.key]`), else undefined. */
+export function cellError(row: DataTableRow, col: DataTableColumn): number | undefined {
+  const errors = row.errors;
+  if (!errors || !hasOwn(errors, col.key)) return undefined;
+  return halfWidthOf(errors[col.key]);
 }
 
 /**
@@ -326,11 +390,14 @@ export function computeVarianceCell(
 /** Resolve a single cell for a column against a row. */
 function resolveCell(row: DataTableRow, col: DataTableColumn): ResolvedCell {
   const kind = columnKind(col);
+  const error = cellError(row, col);
   if (kind === "value") {
-    return { kind: "value", value: measureValue(row, measureOf(col), col.scenario ?? "AC") };
+    const value = measureValue(row, measureOf(col), col.scenario ?? "AC");
+    return error == null ? { kind: "value", value } : { kind: "value", value, error };
   }
   if (kind === "variance") {
-    return { kind: "variance", variance: computeVarianceCell(row, col) };
+    const variance = computeVarianceCell(row, col);
+    return error == null ? { kind: "variance", variance } : { kind: "variance", variance, error };
   }
   return { kind: "sparkline", data: measureSeries(row, measureOf(col)) };
 }
@@ -496,20 +563,44 @@ export function buildDataTableModel(
   //    column. Totals/parents simply clamp to the detail scale when drawn.
   const detailRows = collectDetailRows(rows);
   const grouped = hasColumnGroups(columns);
+  const allRows = flattenRows(rows, new Set());
   const columnModels: ColumnModel[] = columns.map((column, i) => {
     const kind = columnKind(column);
     let domain = 0;
+    let extent: ColumnModel["extent"];
     if (kind === "variance") {
+      const pct = (column.mode ?? "abs") === "pct";
+      const clamp = column.clampPct ?? 100;
       for (const r of detailRows) {
         const vc = computeVarianceCell(r, column);
-        if (vc && !vc.outlier) domain = Math.max(domain, Math.abs(vc.value));
+        if (!vc || vc.outlier) continue;
+        // The error whisker must fit too (a pct one only up to the clamp).
+        const reach = Math.abs(vc.value) + (cellError(r, column) ?? 0);
+        domain = Math.max(domain, pct ? Math.min(reach, clamp) : reach);
       }
-      domain = domain || ((column.mode ?? "abs") === "pct" ? (column.clampPct ?? 100) : 1);
+      domain = domain || (pct ? clamp : 1);
+    } else if (valueMarkOf(column)) {
+      let min = 0;
+      let max = 0;
+      for (const r of detailRows) {
+        const v = measureValue(r, measureOf(column), column.scenario ?? "AC");
+        if (v == null) continue;
+        const e = cellError(r, column) ?? 0;
+        min = Math.min(min, v - e);
+        max = Math.max(max, v + e);
+      }
+      // Nothing to scale (empty or all zero): a unit range, so nothing divides by zero.
+      if (min === max) max = 1;
+      extent = { min, max };
+      domain = Math.max(-min, max);
     }
     const prev = columns[i - 1];
     const auto = grouped && prev != null && (column.group ?? "") !== (prev.group ?? "");
     const borderLeft = column.borderLeft ?? auto;
-    return { column, kind, domain, borderLeft };
+    const model: ColumnModel = { column, kind, domain, borderLeft };
+    if (extent) model.extent = extent;
+    if (allRows.some((f) => cellError(f.row, column) != null)) model.errors = true;
+    return model;
   });
 
   // 4. Resolve cells per visible row.

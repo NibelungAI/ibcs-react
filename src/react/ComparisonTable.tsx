@@ -13,8 +13,16 @@ import {
   type VarianceCellData,
 } from "../core/datatable";
 import type { IbcsTokens, IbcsTokensOverride } from "../core/tokens";
-import { useIbcsTokens } from "./theme";
-import { formatValue, formatSigned, formatPercentPlain, type FormatOptions } from "../core/format";
+import type { IbcsLabelsOverride } from "../core/labels";
+import { useIbcsLabels, useIbcsTokens } from "./theme";
+import {
+  formatPercent,
+  formatPercentPlain,
+  formatSigned,
+  formatValue,
+  percentFormatOf,
+  type FormatOptions,
+} from "../core/format";
 
 export interface ComparisonTableProps {
   /**
@@ -33,12 +41,17 @@ export interface ComparisonTableProps {
   rightGroupLabel: string;
   /** Append a bold grand-total row with a heavier (double) rule. Default false. */
   showTotals?: boolean;
-  /** Grand-total label (the centre cell). Default "Total". */
+  /** Grand-total label (the centre cell). Wins over `labels.total`; default "Total". */
   totalsLabel?: string;
   /** Number formatting (compact, decimals, currency, locale). */
   format?: FormatOptions;
   /** Theme overrides (colors, scenario fills). */
   tokens?: IbcsTokensOverride;
+  /**
+   * The component's own words (the grand-total row's "Total") merged onto `IbcsThemeProvider`'s.
+   * See `IbcsLabels`.
+   */
+  labels?: IbcsLabelsOverride;
   /** Pixel width of the centre label column. Default 116. */
   labelWidth?: number;
   className?: string;
@@ -89,14 +102,17 @@ export function ComparisonTable({
   leftGroupLabel,
   rightGroupLabel,
   showTotals = false,
-  totalsLabel = "Total",
+  totalsLabel: totalsLabelProp,
   format = {},
   tokens: tokenOverride,
+  labels,
   labelWidth = 116,
   className,
   style,
 }: ComparisonTableProps) {
   const tokens = useIbcsTokens(tokenOverride);
+  const words = useIbcsLabels(labels);
+  const totalsLabel = totalsLabelProp ?? words.total;
   const model = useMemo(
     () => buildComparisonModel(rows, leftColumns, rightColumns, { showTotals, totalsLabel }),
     [rows, leftColumns, rightColumns, showTotals, totalsLabel],
@@ -131,9 +147,7 @@ export function ComparisonTable({
           ) {
             const v = cell.variance.value;
             const s =
-              (cm.column.mode ?? "abs") === "pct"
-                ? formatPercentPlain(v / 100, 0) + "%"
-                : formatSigned(v, fmt);
+              (cm.column.mode ?? "abs") === "pct" ? pctText(v, fmt, true) : formatSigned(v, fmt);
             numChars = Math.max(numChars, s.length);
           }
         }
@@ -377,6 +391,21 @@ function ComparisonRow({
   );
 }
 
+/**
+ * This table's Δ% as text, with or without its "%": whole percents (its own
+ * convention), until the format opts into exact digits or a locale - then
+ * `percentFractionDigits` (default 0) and the locale's separators and sign.
+ */
+function pctText(value: number, fmt: FormatOptions, withPercentSign: boolean): string {
+  const opts = percentFormatOf(fmt);
+  if (typeof opts === "number")
+    return formatPercentPlain(value / 100, 0) + (withPercentSign ? "%" : "");
+  const exact = { ...opts, fractionDigits: fmt.percentFractionDigits ?? 0 };
+  return withPercentSign
+    ? formatPercent(value / 100, exact)
+    : formatPercentPlain(value / 100, exact);
+}
+
 /* ---------------- per-kind cell rendering (mirrors DataTable) ---------------- */
 
 function CellView({
@@ -425,8 +454,7 @@ function CellView({
     const { value, favorable } = cell.variance;
     const color =
       value === 0 ? tokens.color.zero : favorable ? tokens.color.good : tokens.color.bad;
-    const label =
-      mode === "pct" ? formatPercentPlain(value / 100, 0) + "%" : formatSigned(value, fmt);
+    const label = mode === "pct" ? pctText(value, fmt, true) : formatSigned(value, fmt);
     return (
       <div
         style={{
@@ -485,7 +513,7 @@ function VarianceCell({
   const labelColor = mode === "pct" ? color : tokens.color.text;
   const weight = emphasis ? 700 : 400;
   const italic = mode === "pct" ? "italic" : "normal";
-  const label = mode === "pct" ? formatPercentPlain(value / 100, 0) : formatSigned(value, format);
+  const label = mode === "pct" ? pctText(value, format, false) : formatSigned(value, format);
 
   // Absolute: a magnitude bar growing from a centred zero axis (signed), with
   // the value in an aligned right-hand column.

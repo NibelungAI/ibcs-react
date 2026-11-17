@@ -1,19 +1,27 @@
 import { forwardRef, useId, useMemo, type CSSProperties } from "react";
 import type { ScenarioKey } from "../core/types";
 import type { IbcsTokensOverride } from "../core/tokens";
+import type { IbcsLabelsOverride } from "../core/labels";
 import {
   computeGroupedVariance,
   type GroupedDatum,
   type GroupedComparison,
 } from "../core/groupedVariance";
 import { bandScale, resolveBandPadding, type BandPadding } from "../core/bandScale";
-import { formatValue, formatSigned, formatPercent, type FormatOptions } from "../core/format";
+import {
+  formatPercent,
+  formatSigned,
+  formatValue,
+  notAvailableOf,
+  percentFormatOf,
+  type FormatOptions,
+} from "../core/format";
 import { useMountGrow, useDataTween, useChartHover } from "./hooks";
 import type { ChartHover } from "./hooks";
 import { markInteraction, type MarkRect } from "./internal/hover";
 import { ChartTooltip, type ChartTooltipRow } from "./ChartTooltip";
 import { ChartDataTable, type ChartDataRow } from "./a11y";
-import { useIbcsTokens } from "./theme";
+import { useIbcsLabels, useIbcsTokens } from "./theme";
 import { clampTo, estTextW, fitLabel, svgSafeId } from "./internal/text";
 
 export type { GroupedDatum, GroupedComparison } from "../core/groupedVariance";
@@ -57,7 +65,17 @@ export interface GroupedVarianceChartProps {
   format?: FormatOptions;
   /** Token override merged over the nearest {@link IbcsThemeProvider} theme. */
   tokens?: IbcsTokensOverride;
+  /**
+   * The component's own words (the scenario codes of its headers, tooltip and table, and the "(FC)" mark) merged onto `IbcsThemeProvider`'s.
+   * See `IbcsLabels`.
+   */
+  labels?: IbcsLabelsOverride;
   title?: string;
+  /**
+   * The chart's accessible name, in place of the generated English
+   * description; also the caption of its screen-reader table.
+   */
+  ariaLabel?: string;
   /** Class applied to the chart `<svg>` (the root element). */
   className?: string;
   /** Styles merged *over* the chart's own layout styles. */
@@ -118,7 +136,9 @@ export const GroupedVarianceChart = forwardRef<SVGSVGElement, GroupedVarianceCha
       bandPadding,
       format = {},
       tokens: tokenOverride,
+      labels,
       title,
+      ariaLabel,
       onHover,
       tooltip = true,
       className,
@@ -127,6 +147,12 @@ export const GroupedVarianceChart = forwardRef<SVGSVGElement, GroupedVarianceCha
     ref,
   ) {
     const tokens = useIbcsTokens(tokenOverride);
+    const words = useIbcsLabels(labels);
+    const S = words.scenario;
+    // The comparison as the chart writes it (its scenario word).
+    const cmpName = S[comparison];
+    const pctFmt = percentFormatOf(format);
+    const na = notAvailableOf(format);
     // `useId()` values contain ":" in React 18 - sanitized so the `url(#…)` refs
     // survive serialization / querySelector after an SVG export.
     const hatchAC = svgSafeId(useId());
@@ -171,17 +197,21 @@ export const GroupedVarianceChart = forwardRef<SVGSVGElement, GroupedVarianceCha
       if (!c) return null;
       const exact = { ...format, compact: false };
       const rows: ChartTooltipRow[] = [
-        { label: c.isForecast ? "AC (FC)" : "AC", value: formatValue(c.AC, exact), strong: true },
+        {
+          label: c.isForecast ? `${S.AC} (${S.FC})` : S.AC,
+          value: formatValue(c.AC, exact),
+          strong: true,
+        },
       ];
       if (c.comparisonValue != null && isFinite(c.comparisonValue)) {
-        rows.push({ label: comparison, value: formatValue(c.comparisonValue, exact) });
+        rows.push({ label: cmpName, value: formatValue(c.comparisonValue, exact) });
       }
       const v = c.variance;
       if (v) {
         const color =
           v.abs === 0 ? tokens.color.zero : v.favorable ? tokens.color.good : tokens.color.bad;
-        rows.push({ label: `Δ${comparison}`, value: formatSigned(v.abs, exact), color });
-        rows.push({ label: `Δ${comparison}%`, value: formatPercent(v.pct), color });
+        rows.push({ label: `Δ${cmpName}`, value: formatSigned(v.abs, exact), color });
+        rows.push({ label: `Δ${cmpName}%`, value: formatPercent(v.pct, pctFmt), color });
       }
       return (
         <ChartTooltip
@@ -247,21 +277,24 @@ export const GroupedVarianceChart = forwardRef<SVGSVGElement, GroupedVarianceCha
 
     // Screen-reader data table: each category's AC, the comparison, and Δ / Δ% -
     // shared by both orientations, so SR users read values, not the svg.
-    const a11yColumns = ["AC", comparison, `Δ${comparison}`, `Δ${comparison}%`];
+    const a11yColumns = [S.AC, cmpName, `Δ${cmpName}`, `Δ${cmpName}%`];
     const a11yRows: ChartDataRow[] = cells.map((c) => ({
-      label: c.isForecast ? `${c.category} (FC)` : c.category,
+      label: c.isForecast ? `${c.category} (${S.FC})` : c.category,
       cells: [
         formatValue(c.AC, format),
         c.comparisonValue != null && isFinite(c.comparisonValue)
           ? formatValue(c.comparisonValue, format)
-          : "n/a",
-        c.variance ? formatSigned(c.variance.abs, format) : "n/a",
-        c.variance ? formatPercent(c.variance.pct) : "n/a",
+          : na,
+        c.variance ? formatSigned(c.variance.abs, format) : na,
+        c.variance ? formatPercent(c.variance.pct, pctFmt) : na,
       ],
     }));
     const a11yTable = (
       <ChartDataTable
-        caption={title ? `${title} - data table` : `Grouped AC versus ${comparison} - data table`}
+        caption={
+          ariaLabel ??
+          (title ? `${title} - data table` : `Grouped ${S.AC} versus ${cmpName} - data table`)
+        }
         columns={a11yColumns}
         rows={a11yRows}
       />
@@ -328,9 +361,10 @@ export const GroupedVarianceChart = forwardRef<SVGSVGElement, GroupedVarianceCha
             viewBox={`0 0 ${width} ${height}`}
             role="img"
             aria-label={
-              title
-                ? `${title}. Grouped columns: AC versus ${comparison}, with Δ${comparison} and Δ${comparison}% tiers.`
-                : `Grouped columns of AC versus ${comparison}`
+              ariaLabel ??
+              (title
+                ? `${title}. Grouped columns: ${S.AC} versus ${cmpName}, with Δ${cmpName} and Δ${cmpName}% tiers.`
+                : `Grouped columns of ${S.AC} versus ${cmpName}`)
             }
             className={className}
             style={svgStyle}
@@ -370,7 +404,7 @@ export const GroupedVarianceChart = forwardRef<SVGSVGElement, GroupedVarianceCha
                         : tokens.color.bad;
                   const up = v.favorable;
                   const tipY = up ? pctMid - len : pctMid + len;
-                  const label = formatPercent(v.pct);
+                  const label = formatPercent(v.pct, pctFmt);
                   return (
                     <g key={`pct-${c.category}`}>
                       <line x1={cx} y1={pctMid} x2={cx} y2={tipY} stroke={color} strokeWidth={2} />
@@ -695,9 +729,10 @@ export const GroupedVarianceChart = forwardRef<SVGSVGElement, GroupedVarianceCha
           viewBox={`0 0 ${width} ${height}`}
           role="img"
           aria-label={
-            title
-              ? `${title}. Grouped bars: AC versus ${comparison}, with Δ${comparison} and Δ${comparison}% panels.`
-              : `Grouped bars of AC versus ${comparison}`
+            ariaLabel ??
+            (title
+              ? `${title}. Grouped bars: ${S.AC} versus ${cmpName}, with Δ${cmpName} and Δ${cmpName}% panels.`
+              : `Grouped bars of ${S.AC} versus ${cmpName}`)
           }
           className={className}
           style={svgStyle}
@@ -718,7 +753,7 @@ export const GroupedVarianceChart = forwardRef<SVGSVGElement, GroupedVarianceCha
             fontWeight={600}
             fill={tokens.color.textMuted}
           >
-            {fitLabel(`AC / ${comparison}`, groupedW, 10.5)}
+            {fitLabel(`${S.AC} / ${cmpName}`, groupedW, 10.5)}
           </text>
           {showAbs && (
             <text
@@ -729,7 +764,7 @@ export const GroupedVarianceChart = forwardRef<SVGSVGElement, GroupedVarianceCha
               fill={tokens.color.textMuted}
               textAnchor="middle"
             >
-              {fitLabel(`Δ${comparison}`, absPanelW, 10.5)}
+              {fitLabel(`Δ${cmpName}`, absPanelW, 10.5)}
             </text>
           )}
           {showPct && (
@@ -741,7 +776,7 @@ export const GroupedVarianceChart = forwardRef<SVGSVGElement, GroupedVarianceCha
               fill={tokens.color.textMuted}
               textAnchor="middle"
             >
-              {fitLabel(`Δ${comparison}%`, pctPanelW, 10.5)}
+              {fitLabel(`Δ${cmpName}%`, pctPanelW, 10.5)}
             </text>
           )}
 
@@ -959,7 +994,7 @@ export const GroupedVarianceChart = forwardRef<SVGSVGElement, GroupedVarianceCha
                           : tokens.color.bad;
                     const right = v.favorable;
                     const tipX = right ? pctMidX + len : pctMidX - len;
-                    const label = formatPercent(v.pct);
+                    const label = formatPercent(v.pct, pctFmt);
                     return (
                       <g>
                         <line

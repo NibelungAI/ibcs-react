@@ -16,11 +16,12 @@ import {
   type SharedScale,
   type MiniGroupInput,
 } from "../core/smallMultiples";
-import { formatSigned, formatValue, type FormatOptions } from "../core/format";
+import { formatSigned, formatValue, notAvailableOf, type FormatOptions } from "../core/format";
+import { fillLabel, type IbcsLabelsOverride } from "../core/labels";
 import type { ScenarioKey } from "../core/types";
 import { useMountGrow, useDataTween } from "./hooks";
 import { ChartDataTable, type ChartDataRow } from "./a11y";
-import { useIbcsTokens } from "./theme";
+import { useIbcsLabels, useIbcsTokens } from "./theme";
 import { svgSafeId } from "./internal/text";
 
 export type { SharedScale, MiniGroupInput, MiniDatum } from "../core/smallMultiples";
@@ -60,8 +61,20 @@ export interface SmallMultiplesProps<T> {
    */
   keyOf?: (item: T, index: number) => string;
   title?: string;
+  /**
+   * The caption of the grid's screen-reader table (the `valuesOf` numbers), in
+   * place of the generated English one.
+   */
+  ariaLabel?: string;
+  /** Number formatting of the grid's screen-reader table (the `valuesOf` numbers). */
+  format?: FormatOptions;
   /** Token override merged over the nearest {@link IbcsThemeProvider} theme. */
   tokens?: IbcsTokensOverride;
+  /**
+   * The grid's own words - "Value" / "Value {n}" columns and "Panel {n}" rows of
+   * its table - merged onto `IbcsThemeProvider`'s. See `IbcsLabels`.
+   */
+  labels?: IbcsLabelsOverride;
   /** Class applied to the grid root `<div>`. */
   className?: string;
   /** Styles merged *over* the root's own layout styles. */
@@ -143,14 +156,14 @@ interface SmallMultiplesInnerProps<T> extends SmallMultiplesProps<T> {
  * item carries, else its 1-based position. Panels are opaque `T`s, so this is
  * the only honest label the grid itself can offer.
  */
-function panelLabel(item: unknown, index: number): string {
+function panelLabel(item: unknown, index: number, template: string): string {
   if (item && typeof item === "object") {
     for (const key of ["label", "category", "title", "name", "id"]) {
       const v = (item as Record<string, unknown>)[key];
       if (typeof v === "string" && v) return v;
     }
   }
-  return `Panel ${index + 1}`;
+  return fillLabel(template, { n: index + 1 });
 }
 
 /** Implementation of {@link SmallMultiples}; exported through the wrapper below. */
@@ -166,7 +179,10 @@ function SmallMultiplesInner<T>(
     symmetric = false,
     keyOf,
     title,
+    ariaLabel,
+    format,
     tokens: tokenOverride,
+    labels,
     className,
     style,
     a11y,
@@ -174,6 +190,7 @@ function SmallMultiplesInner<T>(
   ref: ForwardedRef<HTMLDivElement>,
 ) {
   const tokens = useIbcsTokens(tokenOverride);
+  const words = useIbcsLabels(labels);
   const cls = "ibcs-sm-" + svgSafeId(useId());
 
   // Use the solver only when a shaping option is set; otherwise keep the exact
@@ -200,17 +217,19 @@ function SmallMultiplesInner<T>(
     const width = values.reduce((m, v) => Math.max(m, v.length), 0);
     if (width === 0) return undefined;
     return {
-      caption: title ? `${title} - data table` : "Small multiples data table",
-      columns: Array.from({ length: width }, (_, i) => (width === 1 ? "Value" : `Value ${i + 1}`)),
+      caption: ariaLabel ?? (title ? `${title} - data table` : "Small multiples data table"),
+      columns: Array.from({ length: width }, (_, i) =>
+        width === 1 ? words.value : fillLabel(words.valueNumbered, { n: i + 1 }),
+      ),
       rows: items.map((item, i) => ({
-        label: panelLabel(item, i),
+        label: panelLabel(item, i, words.panel),
         cells: Array.from({ length: width }, (_, k) => {
           const v = values[i]?.[k];
-          return v != null && Number.isFinite(v) ? formatValue(v) : "n/a";
+          return v != null && Number.isFinite(v) ? formatValue(v, format) : notAvailableOf(format);
         }),
       })),
     };
-  }, [a11y, items, valuesOf, title]);
+  }, [a11y, items, valuesOf, title, ariaLabel, format, words]);
 
   return (
     <div
@@ -301,9 +320,20 @@ export interface MiniVarianceMultiplesProps {
    */
   showScaleHint?: boolean;
   title?: string;
+  /**
+   * The caption of the grid's screen-reader table, in place of the generated
+   * English one. (Each panel's own accessible name is `labels.miniPanel`.)
+   */
+  ariaLabel?: string;
   format?: FormatOptions;
   /** Token override merged over the nearest {@link IbcsThemeProvider} theme. */
   tokens?: IbcsTokensOverride;
+  /**
+   * The grid's own words - scenario codes of its table, each panel's
+   * accessible name (`miniPanel`) and the shared-scale caption
+   * (`sharedScaleHint`) - merged onto `IbcsThemeProvider`'s. See `IbcsLabels`.
+   */
+  labels?: IbcsLabelsOverride;
   /** Class applied to the root `<div>`. */
   className?: string;
   /** Styles merged *over* the root's own layout styles. */
@@ -332,14 +362,19 @@ export const MiniVarianceMultiples = forwardRef<HTMLDivElement, MiniVarianceMult
       clampPercentile,
       showScaleHint = true,
       title,
+      ariaLabel,
       format = {},
       tokens: tokenOverride,
+      labels,
       className,
       style,
     },
     ref,
   ) {
     const tokens = useIbcsTokens(tokenOverride);
+    const words = useIbcsLabels(labels);
+    const S = words.scenario;
+    const na = notAvailableOf(format);
     const groups = useDataTween(groupsProp);
     const grow = useMountGrow(700, 0, groups);
 
@@ -368,7 +403,7 @@ export const MiniVarianceMultiples = forwardRef<HTMLDivElement, MiniVarianceMult
     // straight off the input rows, exactly as `computeMiniVariances` resolves
     // them: AC, else FC) plus the variance the mini column actually draws. This
     // replaces the grid's generic table, so there is exactly one.
-    const a11yColumns = ["AC", comparison, `Δ${comparison}`];
+    const a11yColumns = [S.AC, S[comparison], `Δ${S[comparison]}`];
     const a11yRows: ChartDataRow[] = layout.groups.flatMap((g, gi) =>
       g.bars.map((b, bi) => {
         const d = groups[gi]?.data[bi];
@@ -377,9 +412,9 @@ export const MiniVarianceMultiples = forwardRef<HTMLDivElement, MiniVarianceMult
         return {
           label: `${g.label} - ${b.category}`,
           cells: [
-            current != null ? formatValue(current, format) : "n/a",
-            base != null ? formatValue(base, format) : "n/a",
-            b.variance ? formatSigned(b.variance.abs, format) : "n/a",
+            current != null ? formatValue(current, format) : na,
+            base != null ? formatValue(base, format) : na,
+            b.variance ? formatSigned(b.variance.abs, format) : na,
           ],
         };
       }),
@@ -394,13 +429,16 @@ export const MiniVarianceMultiples = forwardRef<HTMLDivElement, MiniVarianceMult
       <SmallMultiplesGrid
         items={layout.groups}
         a11y={{
-          caption: title ? `${title} - data table` : `Variance versus ${comparison} - data table`,
+          caption:
+            ariaLabel ??
+            (title ? `${title} - data table` : `Variance versus ${S[comparison]} - data table`),
           columns: a11yColumns,
           rows: a11yRows,
         }}
         columns={columns}
         title={captioned ? undefined : title}
         tokens={tokenOverride}
+        labels={labels}
         ref={captioned ? undefined : ref}
         className={captioned ? undefined : className}
         style={captioned ? undefined : style}
@@ -414,6 +452,7 @@ export const MiniVarianceMultiples = forwardRef<HTMLDivElement, MiniVarianceMult
             grow={grow}
             format={format}
             tokens={tokens}
+            name={fillLabel(words.miniPanel, { label: g.label })}
           />
         )}
       />
@@ -439,7 +478,10 @@ export const MiniVarianceMultiples = forwardRef<HTMLDivElement, MiniVarianceMult
           </div>
         )}
         <div style={{ fontSize: 11, color: tokens.color.textMuted, marginBottom: 8 }}>
-          Shared scale - full bar height ≈ ±{formatValue(varMax, format)} vs {comparison}
+          {fillLabel(words.sharedScaleHint, {
+            value: formatValue(varMax, format),
+            base: S[comparison],
+          })}
         </div>
         {grid}
       </div>
@@ -455,7 +497,10 @@ function MiniVariancePanel({
   grow,
   format,
   tokens,
+  name,
 }: {
+  /** The panel's accessible name. */
+  name: string;
   label: string;
   bars: ReturnType<typeof computeMiniVariances>["groups"][number]["bars"];
   varMax: number;
@@ -485,7 +530,7 @@ function MiniVariancePanel({
       viewBox={`0 0 ${width} ${height}`}
       preserveAspectRatio="xMidYMid meet"
       role="img"
-      aria-label={`${label}: variance by category, shared scale.`}
+      aria-label={name}
       style={{ display: "block" }}
     >
       <text x={padX} y={14} fontSize={11.5} fontWeight={600} fill={tokens.color.text}>

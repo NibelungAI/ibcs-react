@@ -1,13 +1,15 @@
 import { forwardRef, useMemo, type CSSProperties } from "react";
 import type { ScenarioKey } from "../core/types";
 import type { IbcsTokensOverride } from "../core/tokens";
+import type { IbcsLabelsOverride } from "../core/labels";
 import { computeLines, type LineDatum, type LinePoint } from "../core/lineArea";
 import { bandScale, resolveBandPadding, type BandPadding } from "../core/bandScale";
-import { formatValue, type FormatOptions } from "../core/format";
+import { formatValue, notAvailableOf, type FormatOptions } from "../core/format";
+import { prefixLabel } from "../core/labels";
 import { useMountGrow, useDataTween } from "./hooks";
 import { MARKER_DENSITY_THRESHOLD } from "./LineChart";
 import { ChartDataTable, type ChartDataRow } from "./a11y";
-import { useIbcsTokens } from "./theme";
+import { useIbcsLabels, useIbcsTokens } from "./theme";
 
 export type { LineDatum } from "../core/lineArea";
 
@@ -33,7 +35,17 @@ export interface AreaChartProps {
   bandPadding?: BandPadding;
   format?: FormatOptions;
   tokens?: IbcsTokensOverride;
+  /**
+   * The component's own words (the scenario codes of the end labels and table headers; an empty word drops the code from an end label) merged onto `IbcsThemeProvider`'s.
+   * See `IbcsLabels`.
+   */
+  labels?: IbcsLabelsOverride;
   title?: string;
+  /**
+   * The chart's accessible name, in place of the generated English
+   * description; also the caption of its screen-reader table.
+   */
+  ariaLabel?: string;
   /** Extra class name for the chart `<svg>` (the rendered root). */
   className?: string;
   /** Inline style merged OVER the chart `<svg>`'s own layout style. */
@@ -142,13 +154,16 @@ export const AreaChart = forwardRef<SVGSVGElement, AreaChartProps>(function Area
     bandPadding,
     format = {},
     tokens: tokenOverride,
+    labels,
     title,
+    ariaLabel,
     className,
     style,
   },
   ref,
 ) {
   const tokens = useIbcsTokens(tokenOverride);
+  const words = useIbcsLabels(labels);
   const data = useDataTween(dataProp);
   const grow = useMountGrow(700, 0, data);
 
@@ -209,7 +224,7 @@ export const AreaChart = forwardRef<SVGSVGElement, AreaChartProps>(function Area
       key: scenario,
       x: x(endPoint.index) + 6,
       y: yA(endPoint.value) + 3.5,
-      text: `${scenario} ${formatValue(endPoint.value, format)}`,
+      text: prefixLabel(words.scenario[scenario], formatValue(endPoint.value, format)),
       fill,
       weight: 600,
     });
@@ -219,7 +234,10 @@ export const AreaChart = forwardRef<SVGSVGElement, AreaChartProps>(function Area
       key: baseSeries.scenario,
       x: x(baseSeries.endPoint.index) + 6,
       y: yA(baseSeries.endPoint.value) + 3.5,
-      text: `${baseSeries.scenario} ${formatValue(baseSeries.endPoint.value, format)}`,
+      text: prefixLabel(
+        words.scenario[baseSeries.scenario],
+        formatValue(baseSeries.endPoint.value, format),
+      ),
       fill: baseColor,
       weight: 400,
     });
@@ -246,15 +264,19 @@ export const AreaChart = forwardRef<SVGSVGElement, AreaChartProps>(function Area
 
   // Screen-reader data table: each period's area value and the reference value -
   // so SR users read the actual numbers, not the decorative svg.
-  const a11yColumns = [scenario, ...(baseSeries ? [baseSeries.scenario] : [])];
+  const a11yColumns = [
+    words.scenario[scenario],
+    ...(baseSeries ? [words.scenario[baseSeries.scenario]] : []),
+  ];
+  const na = notAvailableOf(format);
   const areaByIndex = new Map(points.map((p) => [p.index, p.value]));
   const baseByIndex = new Map((baseSeries?.points ?? []).map((p) => [p.index, p.value]));
   const a11yRows: ChartDataRow[] = categories.map((c, i) => {
     const av = areaByIndex.get(i);
-    const cells: Array<string | number> = [av != null ? formatValue(av, format) : "n/a"];
+    const cells: Array<string | number> = [av != null ? formatValue(av, format) : na];
     if (baseSeries) {
       const bv = baseByIndex.get(i);
-      cells.push(bv != null ? formatValue(bv, format) : "n/a");
+      cells.push(bv != null ? formatValue(bv, format) : na);
     }
     return { label: c, cells };
   });
@@ -271,9 +293,10 @@ export const AreaChart = forwardRef<SVGSVGElement, AreaChartProps>(function Area
         // label out and leave assistive tech with nothing but the sr-only table.
         role="img"
         aria-label={
-          title
-            ? `${title}. Area chart of ${scenario} over ${n} periods.`
-            : `Area chart of ${scenario} over ${n} periods`
+          ariaLabel ??
+          (title
+            ? `${title}. Area chart of ${words.scenario[scenario]} over ${n} periods.`
+            : `Area chart of ${words.scenario[scenario]} over ${n} periods`)
         }
         style={{
           display: "block",
@@ -366,7 +389,12 @@ export const AreaChart = forwardRef<SVGSVGElement, AreaChartProps>(function Area
         )}
       </svg>
       <ChartDataTable
-        caption={title ? `${title} - data table` : `Area chart of ${scenario} - data table`}
+        caption={
+          ariaLabel ??
+          (title
+            ? `${title} - data table`
+            : `Area chart of ${words.scenario[scenario]} - data table`)
+        }
         columns={a11yColumns}
         rows={a11yRows}
       />

@@ -2,16 +2,23 @@ import { useMemo } from "react";
 import type { IbcsFinding } from "../core/conformance";
 import { checkIbcs } from "../core/conformance";
 import type { IbcsTokensOverride } from "../core/tokens";
-import { useIbcsTokens } from "./theme";
+import type { IbcsLabelsOverride } from "../core/labels";
+import { useIbcsLabels, useIbcsTokens } from "./theme";
 
 export interface ConformanceReportProps {
   /** Pre-computed findings. Provide this OR `target`. */
   findings?: IbcsFinding[];
   /** A config to lint with {@link checkIbcs}, when `findings` isn't supplied. */
   target?: unknown;
-  /** Text shown when there are zero findings. */
+  /** Text shown when there are zero findings. Wins over `labels.conformant`. */
   emptyLabel?: string;
   tokens?: IbcsTokensOverride;
+  /**
+   * The report's own words - the no-findings line (`conformant`) and the
+   * severity tags (`severity`) - merged onto `IbcsThemeProvider`'s. The
+   * findings' messages are the linter's English diagnostics. See `IbcsLabels`.
+   */
+  labels?: IbcsLabelsOverride;
   className?: string;
   style?: React.CSSProperties;
 }
@@ -24,12 +31,14 @@ export interface ConformanceReportProps {
 export function ConformanceReport({
   findings,
   target,
-  emptyLabel = "Conforms to IBCS / ISO 24896 - no findings.",
+  emptyLabel,
   tokens: tokenOverride,
+  labels,
   className,
   style,
 }: ConformanceReportProps) {
   const tokens = useIbcsTokens(tokenOverride);
+  const words = useIbcsLabels(labels);
   const items = useMemo(
     () => findings ?? (target !== undefined ? checkIbcs(target) : []),
     [findings, target],
@@ -56,7 +65,7 @@ export function ConformanceReport({
           ...style,
         }}
       >
-        {emptyLabel}
+        {emptyLabel ?? words.conformant}
       </div>
     );
   }
@@ -100,7 +109,7 @@ export function ConformanceReport({
                 minWidth: 56,
               }}
             >
-              {f.severity}
+              {words.severity[f.severity]}
             </span>
             <span style={{ fontSize: 13, color: tokens.color.text, lineHeight: 1.4 }}>
               {f.message}

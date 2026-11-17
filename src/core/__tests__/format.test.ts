@@ -1,5 +1,12 @@
 import { describe, it, expect } from "vitest";
-import { formatValue, formatSigned, formatPercent, formatPercentPlain } from "../format";
+import {
+  formatInterval,
+  formatPercent,
+  formatPercentPlain,
+  formatSigned,
+  formatValue,
+  percentFormatOf,
+} from "../format";
 
 describe("formatValue", () => {
   it("collapses to K / M / B with one decimal by default", () => {
@@ -158,5 +165,281 @@ describe("formatPercentPlain", () => {
 
   it("respects a custom decimals count", () => {
     expect(formatPercentPlain(0.12345, 2)).toBe("+12.35");
+  });
+});
+
+/* ------------------------------------------------------------------ *
+ * 1.5 - exact decimals, locale-correct percents, intervals.
+ * ------------------------------------------------------------------ */
+
+describe("formatValue - exact fractionDigits", () => {
+  it("keeps trailing zeros so one column never mixes 10 with 10.0 (en-US)", () => {
+    const one = { compact: false, fractionDigits: 1 };
+    expect(formatValue(10, one)).toBe("10.0");
+    expect(formatValue(9.996, one)).toBe("10.0");
+    expect(formatValue(23.609, one)).toBe("23.6");
+    const two = { compact: false, fractionDigits: 2 };
+    expect(formatValue(914.3013, two)).toBe("914.30");
+    expect(formatValue(914.3, two)).toBe("914.30");
+    expect(formatValue(6847.09, two)).toBe("6,847.09");
+  });
+
+  it("writes sr-Latn with a decimal comma and a thousands dot", () => {
+    const sr = { compact: false, locale: "sr-Latn", fractionDigits: 2 };
+    expect(formatValue(914.3013, sr)).toBe("914,30");
+    expect(formatValue(6847.09, sr)).toBe("6.847,09");
+    expect(formatValue(1234567.891, sr)).toBe("1.234.567,89");
+    expect(formatValue(10, { ...sr, fractionDigits: 1 })).toBe("10,0");
+    expect(formatValue(-2.8818, sr)).toBe("-2,88");
+  });
+
+  it("honours every digit count from 0 to 3", () => {
+    const v = 1234.5678;
+    expect(formatValue(v, { compact: false, fractionDigits: 0 })).toBe("1,235");
+    expect(formatValue(v, { compact: false, fractionDigits: 1 })).toBe("1,234.6");
+    expect(formatValue(v, { compact: false, fractionDigits: 2 })).toBe("1,234.57");
+    expect(formatValue(v, { compact: false, fractionDigits: 3 })).toBe("1,234.568");
+    const sr = { compact: false, locale: "sr-Latn" };
+    expect(formatValue(v, { ...sr, fractionDigits: 0 })).toBe("1.235");
+    expect(formatValue(v, { ...sr, fractionDigits: 1 })).toBe("1.234,6");
+    expect(formatValue(v, { ...sr, fractionDigits: 2 })).toBe("1.234,57");
+    expect(formatValue(v, { ...sr, fractionDigits: 3 })).toBe("1.234,568");
+  });
+
+  it("applies in compact mode: to scaled magnitudes and to values under 1,000", () => {
+    expect(formatValue(1200000, { fractionDigits: 2 })).toBe("1.20M");
+    expect(formatValue(30000000, { fractionDigits: 1 })).toBe("30.0M");
+    expect(formatValue(999, { fractionDigits: 2 })).toBe("999.00");
+    expect(formatValue(12.4, { fractionDigits: 1 })).toBe("12.4");
+    expect(formatValue(1200000, { fractionDigits: 2, locale: "sr-Latn" })).toBe("1,20M");
+    // fractionDigits wins over the compact `decimals` maximum.
+    expect(formatValue(1234567, { decimals: 0, fractionDigits: 2 })).toBe("1.23M");
+  });
+
+  it("rounds half away from zero, as Intl does, on the number as written", () => {
+    const d = (n: number, fractionDigits: number) =>
+      formatValue(n, { compact: false, fractionDigits });
+    // Exact binary ties.
+    expect(d(0.125, 2)).toBe("0.13");
+    expect(d(2.5, 0)).toBe("3");
+    expect(d(0.5, 0)).toBe("1");
+    expect(d(1.5, 0)).toBe("2");
+    expect(d(-2.5, 0)).toBe("-3");
+    expect(d(-0.125, 2)).toBe("-0.13");
+    // Decimal ties that are not exact in binary still round up, like Intl
+    // (Number#toFixed would give 1.00, 9.99, 914.30 and 1.4 here).
+    expect(d(1.005, 2)).toBe("1.01");
+    expect(d(9.995, 2)).toBe("10.00");
+    expect(d(914.305, 2)).toBe("914.31");
+    expect(d(1.45, 1)).toBe("1.5");
+    // Just below a tie rounds down.
+    expect(d(0.124999, 2)).toBe("0.12");
+    expect(d(2.4999, 0)).toBe("2");
+  });
+
+  it("writes a value that rounds to zero without a sign", () => {
+    const two = { compact: false, fractionDigits: 2 };
+    expect(formatValue(-0.001, two)).toBe("0.00");
+    expect(formatValue(-0.004999, two)).toBe("0.00");
+    expect(formatValue(-0.005, two)).toBe("-0.01");
+    expect(formatValue(-0, two)).toBe("0.00");
+    expect(formatValue(-0.4, { fractionDigits: 0 })).toBe("0");
+    // The 1.4 path is untouched: it has always written "-0" here.
+    expect(formatValue(-0.4)).toBe("-0");
+  });
+
+  it("keeps currency and suffix around the exact digits", () => {
+    expect(formatValue(-1500000, { currency: "€", fractionDigits: 2 })).toBe("-€1.50M");
+    expect(formatValue(0.14, { compact: false, suffix: "%", fractionDigits: 2 })).toBe("0.14%");
+    expect(
+      formatValue(0.14, { compact: false, suffix: "%", fractionDigits: 2, locale: "sr-Latn" }),
+    ).toBe("0,14%");
+  });
+
+  it("rounds and clamps a digit count outside 0-20; NaN means unset", () => {
+    expect(formatValue(1.23456, { compact: false, fractionDigits: 1.6 })).toBe("1.23");
+    expect(formatValue(1.5, { compact: false, fractionDigits: -3 })).toBe("2");
+    // Clamped to 20 digits; Intl pads the number as written (0.1), not its binary expansion.
+    expect(formatValue(0.1, { compact: false, fractionDigits: 99 })).toBe("0.10000000000000000000");
+    expect(formatValue(1.5, { compact: false, fractionDigits: NaN })).toBe("1.5");
+  });
+
+  it("writes notAvailable in place of a non-finite number", () => {
+    expect(formatValue(NaN, { notAvailable: "—" })).toBe("—");
+    expect(formatValue(Infinity, { fractionDigits: 2, notAvailable: "n/p" })).toBe("n/p");
+    expect(formatSigned(-Infinity, { notAvailable: "—" })).toBe("—");
+  });
+
+  it("leaves the 1.4 output unchanged when fractionDigits is unset", () => {
+    expect(formatValue(914.3)).toBe("914");
+    expect(formatValue(914.3, { compact: false })).toBe("914.3");
+    expect(formatValue(10, { compact: false })).toBe("10");
+    expect(formatValue(1234.5678, { compact: false, locale: "sr-Latn" })).toBe("1.234,568");
+  });
+});
+
+describe("formatSigned - exact fractionDigits", () => {
+  it("signs with exact digits in both locales", () => {
+    const two = { compact: false, fractionDigits: 2 };
+    expect(formatSigned(3.4573, two)).toBe("+3.46");
+    expect(formatSigned(-2.8818, two)).toBe("-2.88");
+    expect(formatSigned(0.0623, two)).toBe("+0.06");
+    expect(formatSigned(-2.8818, { ...two, locale: "sr-Latn" })).toBe("-2,88");
+    expect(formatSigned(1234.5, { ...two, locale: "sr-Latn" })).toBe("+1.234,50");
+  });
+
+  it("leaves a value that rounds to zero unsigned, and zero itself", () => {
+    const two = { compact: false, fractionDigits: 2 };
+    expect(formatSigned(0.001, two)).toBe("0.00");
+    expect(formatSigned(-0.001, two)).toBe("0.00");
+    expect(formatSigned(0, two)).toBe("0.00");
+    expect(formatSigned(0.005, two)).toBe("+0.01");
+    // 1.4 path: unchanged ("+0" for a small positive).
+    expect(formatSigned(0.4)).toBe("+0");
+  });
+
+  it("keeps the sign before the currency with exact digits", () => {
+    expect(formatSigned(-306000, { currency: "€", fractionDigits: 1 })).toBe("-€306.0K");
+  });
+});
+
+describe("formatInterval", () => {
+  const NB = "\u00a0";
+  it("writes value ± half-width with the same digits, joined by no-break spaces", () => {
+    const two = { compact: false, fractionDigits: 2 };
+    expect(formatInterval(910.7916, 0.7605, two)).toBe(`910.79${NB}±${NB}0.76`);
+    expect(formatInterval(914.3013, 0.4682, { ...two, locale: "sr-Latn" })).toBe(
+      `914,30${NB}±${NB}0,47`,
+    );
+  });
+
+  it("signs a difference when asked", () => {
+    const two = { compact: false, fractionDigits: 2 };
+    expect(formatInterval(-2.8818, 0.5439, two, true)).toBe(`-2.88${NB}±${NB}0.54`);
+    expect(formatInterval(3.4573, 0.4621, two, true)).toBe(`+3.46${NB}±${NB}0.46`);
+    expect(formatInterval(0, 0, two, true)).toBe(`0.00${NB}±${NB}0.00`);
+  });
+
+  it("drops a missing or invalid half-width and writes notAvailable for a missing value", () => {
+    const two = { compact: false, fractionDigits: 2, notAvailable: "—" };
+    expect(formatInterval(1.5, undefined, two)).toBe("1.50");
+    expect(formatInterval(1.5, -0.1, two)).toBe("1.50");
+    expect(formatInterval(1.5, NaN, two)).toBe("1.50");
+    expect(formatInterval(NaN, 0.1, two)).toBe("—");
+  });
+});
+
+describe("formatPercent - options form", () => {
+  it("writes the locale's separators and percent sign", () => {
+    expect(formatPercent(0.175, { locale: "en-US" })).toBe("+17.5%");
+    expect(formatPercent(0.175, { locale: "sr-Latn" })).toBe("+17,5%");
+    expect(formatPercent(0.175, { locale: "de-DE" })).toBe("+17,5\u00a0%");
+    expect(formatPercent(0.175, { locale: "tr-TR" })).toBe("+%17,5");
+    expect(formatPercent(-0.0014, { locale: "sr-Latn", fractionDigits: 2 })).toBe("-0,14%");
+    expect(formatPercent(17.279, { locale: "en-US" })).toBe("+1,727.9%");
+    expect(formatPercent(17.279, { locale: "sr-Latn" })).toBe("+1.727,9%");
+  });
+
+  it("keeps exactly the digits asked for, trailing zeros included", () => {
+    expect(formatPercent(0.1, { fractionDigits: 0 })).toBe("+10%");
+    expect(formatPercent(0.1, { fractionDigits: 1 })).toBe("+10.0%");
+    expect(formatPercent(0.1, { fractionDigits: 2 })).toBe("+10.00%");
+    expect(formatPercent(0.09996, { fractionDigits: 1 })).toBe("+10.0%");
+  });
+
+  it("rounds half away from zero, symmetric for losses", () => {
+    expect(formatPercent(0.0125, { fractionDigits: 1 })).toBe("+1.3%");
+    expect(formatPercent(-0.0125, { fractionDigits: 1 })).toBe("-1.3%");
+    expect(formatPercent(0.00125, { fractionDigits: 2 })).toBe("+0.13%");
+    expect(formatPercent(0.01249, { fractionDigits: 1 })).toBe("+1.2%");
+  });
+
+  it("leaves zero, and a value that rounds to zero, unsigned", () => {
+    expect(formatPercent(0, {})).toBe("0.0%");
+    expect(formatPercent(0.0004, {})).toBe("0.0%");
+    expect(formatPercent(-0.0004, {})).toBe("0.0%");
+    // The 1.4 numeric form still signs it.
+    expect(formatPercent(0.0004)).toBe("+0.0%");
+  });
+
+  it("writes only the minus with signDisplay auto (shares)", () => {
+    expect(formatPercent(0.4, { signDisplay: "auto" })).toBe("40.0%");
+    expect(formatPercent(-0.4, { signDisplay: "auto" })).toBe("-40.0%");
+  });
+
+  it("writes notAvailable for a missing ratio", () => {
+    expect(formatPercent(null, { notAvailable: "—" })).toBe("—");
+    expect(formatPercent(NaN, {})).toBe("n/a");
+  });
+});
+
+describe("formatPercentPlain - options form", () => {
+  it("follows the locale, keeps exact digits and leaves a rounded zero unsigned", () => {
+    expect(formatPercentPlain(0.069, { locale: "sr-Latn" })).toBe("+6,9");
+    expect(formatPercentPlain(17.279, { locale: "sr-Latn" })).toBe("+1.727,9");
+    expect(formatPercentPlain(0.069, { fractionDigits: 2 })).toBe("+6.90");
+    expect(formatPercentPlain(-0.0004, {})).toBe("0.0");
+    expect(formatPercentPlain(null, { notAvailable: "—" })).toBe("—");
+  });
+});
+
+describe("percentFormatOf", () => {
+  it("returns the 1.4 decimals when the format opts into nothing", () => {
+    expect(percentFormatOf({})).toBe(1);
+    expect(percentFormatOf({ compact: false, currency: "€", suffix: "x", decimals: 2 })).toBe(1);
+  });
+
+  it("returns options carrying the locale, percent digits and notAvailable otherwise", () => {
+    expect(percentFormatOf({ locale: "sr-Latn" })).toEqual({
+      locale: "sr-Latn",
+      fractionDigits: 1,
+      notAvailable: undefined,
+    });
+    expect(percentFormatOf({ fractionDigits: 2 })).toEqual({
+      locale: undefined,
+      fractionDigits: 1,
+      notAvailable: undefined,
+    });
+    expect(percentFormatOf({ percentFractionDigits: 2, notAvailable: "—" }, "auto")).toEqual({
+      locale: undefined,
+      fractionDigits: 2,
+      notAvailable: "—",
+      signDisplay: "auto",
+    });
+  });
+});
+
+describe("the 'Numbers and words' docs page, verbatim", () => {
+  it("its table of fractionDigits", () => {
+    const one = { compact: false, fractionDigits: 1 };
+    const sr2 = { compact: false, fractionDigits: 2, locale: "sr-Latn" };
+    const compact2 = { fractionDigits: 2 };
+    expect([9.996, 914.3013, 6847.09].map((v) => formatValue(v, one))).toEqual([
+      "10.0",
+      "914.3",
+      "6,847.1",
+    ]);
+    expect([9.996, 914.3013, 6847.09].map((v) => formatValue(v, sr2))).toEqual([
+      "10,00",
+      "914,30",
+      "6.847,09",
+    ]);
+    expect([9.996, 914.3013, 6847.09].map((v) => formatValue(v, compact2))).toEqual([
+      "10.00",
+      "914.30",
+      "6.85K",
+    ]);
+  });
+
+  it("its examples", () => {
+    const NB = "\u00a0";
+    const sr = { compact: false, locale: "sr-Latn", fractionDigits: 2 };
+    expect(formatValue(914.3013, sr)).toBe("914,30");
+    expect(formatPercent(0.0014, { locale: "sr-Latn", fractionDigits: 2 })).toBe("+0,14%");
+    expect(formatInterval(910.7916, 0.7605, sr)).toBe(`910,79${NB}±${NB}0,76`);
+    expect(formatInterval(-2.8818, 0.5439, sr, true)).toBe(`-2,88${NB}±${NB}0,54`);
+    expect(formatPercent(0.175, { locale: "sr-Latn" })).toBe("+17,5%");
+    expect(formatPercent(0.175, { locale: "de-DE" })).toBe(`+17,5${NB}%`);
+    expect(formatPercent(0.175)).toBe("+17.5%");
   });
 });

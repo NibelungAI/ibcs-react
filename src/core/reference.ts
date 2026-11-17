@@ -241,3 +241,56 @@ export function resolveReferences(
   }
   return out;
 }
+
+/**
+ * A shaded band across a range of ONE value axis - "tied with the best", a
+ * tolerance - for marks whose value axis is a single panel or table cell
+ * rather than a plot box: the panels of `RankingVarianceChart`, the bar and
+ * pin columns of `DataTable`. The chart draws it beneath its marks, across all
+ * of its data rows, so the rows whose mark ends inside it read as one group.
+ *
+ * `from` / `to` are in the axis's own value units, in either order. The band
+ * is purely a mark: which rows are "tied" is the caller's rule, not the
+ * library's.
+ */
+export interface ValueBand {
+  /** One edge of the band, in the axis's value units. */
+  from: number;
+  /** The other edge (order does not matter). */
+  to: number;
+  /** Caption: drawn where the chart has room, and the band's accessible text. */
+  label?: string;
+  /** Fill colour. Defaults to the chart's impact-neutral axis colour, drawn faint like a reference band. */
+  color?: string;
+}
+
+/** A {@link ValueBand} resolved to pixels along its axis, clamped to the axis's range. */
+export interface ResolvedValueBand {
+  /** The band's lower pixel edge. */
+  start: number;
+  /** The band's upper pixel edge (≥ `start`). */
+  end: number;
+  label?: string;
+  color?: string;
+}
+
+/**
+ * Resolve a {@link ValueBand} against a value→pixel `scale`, clamped to the
+ * pixel `range` (any order). Returns null for a non-finite edge or a scale that
+ * maps one off to infinity. As with {@link resolveReference}, a band outside
+ * the axis is clamped, not dropped: one wholly off-scale collapses to zero
+ * width at the nearest edge, which renderers skip.
+ */
+export function resolveValueBand(
+  band: ValueBand,
+  scale: (value: number) => number,
+  range: readonly [number, number],
+): ResolvedValueBand | null {
+  if (!Number.isFinite(band.from) || !Number.isFinite(band.to)) return null;
+  const a = scale(band.from);
+  const b = scale(band.to);
+  if (!Number.isFinite(a) || !Number.isFinite(b)) return null;
+  const ca = clamp(a, range[0], range[1]);
+  const cb = clamp(b, range[0], range[1]);
+  return { start: Math.min(ca, cb), end: Math.max(ca, cb), label: band.label, color: band.color };
+}

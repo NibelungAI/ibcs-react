@@ -1,7 +1,8 @@
 import type React from "react";
 import { Skeleton, type SkeletonVariant } from "./Skeleton";
-import { useIbcsTokens } from "./theme";
+import { useIbcsLabels, useIbcsTokens } from "./theme";
 import type { IbcsTokens } from "../core/tokens";
+import type { IbcsLabelsOverride } from "../core/labels";
 
 export interface ChartStateProps {
   /** Show the loading placeholder. */
@@ -24,8 +25,14 @@ export interface ChartStateProps {
   renderEmpty?: () => React.ReactNode;
   /** When set, the default error state shows a "Try again" button. */
   onRetry?: () => void;
-  /** Text for the default empty state. Default "No data". */
+  /** Text for the default empty state. Wins over `labels.noData`; default "No data". */
   emptyMessage?: string;
+  /**
+   * The states' own words - `loading`, `noData`, `loadError`, `error`,
+   * `retry` - merged onto `IbcsThemeProvider`'s; `emptyMessage` still wins for
+   * the empty state. See `IbcsLabels`.
+   */
+  labels?: IbcsLabelsOverride;
   className?: string;
   style?: React.CSSProperties;
   /** The real content, shown once not loading / error / empty. */
@@ -96,12 +103,14 @@ export function ChartState({
   renderError,
   renderEmpty,
   onRetry,
-  emptyMessage = "No data",
+  emptyMessage,
+  labels,
   className,
   style,
   children,
 }: ChartStateProps): React.ReactElement {
   const tokens = useIbcsTokens();
+  const words = useIbcsLabels(labels);
   const wrap = (node: React.ReactNode): React.ReactElement => (
     <div className={className} style={{ width, ...style }}>
       {node}
@@ -110,14 +119,14 @@ export function ChartState({
 
   if (error) {
     if (renderError) return wrap(renderError(error));
-    const message = error instanceof Error ? error.message : "Something went wrong";
+    const message = error instanceof Error ? error.message : words.error;
     return wrap(
       // An error that replaces the chart is an alert, not a status update.
       centered(
         tokens,
         height,
         <>
-          <div style={{ fontWeight: 600, color: tokens.color.textMuted }}>Couldn’t load data</div>
+          <div style={{ fontWeight: 600, color: tokens.color.textMuted }}>{words.loadError}</div>
           <div style={{ maxWidth: 360 }}>{message}</div>
           {onRetry && (
             <button
@@ -136,7 +145,7 @@ export function ChartState({
                 cursor: "pointer",
               }}
             >
-              Try again
+              {words.retry}
             </button>
           )}
         </>,
@@ -147,12 +156,12 @@ export function ChartState({
 
   if (loading) {
     if (renderLoading) return wrap(renderLoading());
-    return wrap(<Skeleton variant={variant} width="100%" height={height} />);
+    return wrap(<Skeleton variant={variant} width="100%" height={height} label={words.loading} />);
   }
 
   if (empty) {
     if (renderEmpty) return wrap(renderEmpty());
-    return wrap(centered(tokens, height, <div>{emptyMessage}</div>));
+    return wrap(centered(tokens, height, <div>{emptyMessage ?? words.noData}</div>));
   }
 
   return wrap(children);

@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { renderToString } from "react-dom/server";
 
 import { TrendChart, VarianceColumnChart } from "../index";
-import { cases } from "./fixtures";
+import { cases, featureCases } from "./fixtures";
 
 /**
  * Server-render smoke tests (Node env, no jsdom). Every exported component must
@@ -10,7 +10,7 @@ import { cases } from "./fixtures";
  * SSR safety: no `window` / `document` / ResizeObserver access during render.
  */
 describe("component SSR smoke tests", () => {
-  for (const { name, element } of cases) {
+  for (const { name, element } of [...cases, ...featureCases]) {
     it(`${name} renders to a non-empty string on the server`, () => {
       let html = "";
       expect(() => {

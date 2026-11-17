@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { ScenarioKey, StatementLine, WaterfallBar, VarianceColumnSpec } from "../core/types";
 import type { IbcsTokens, IbcsTokensOverride } from "../core/tokens";
+import type { IbcsLabels, IbcsLabelsOverride } from "../core/labels";
 import { computeWindow } from "../core/virtualize";
 import { lineVariance, resolveValue } from "../core/variance";
 import {
@@ -8,13 +9,14 @@ import {
   formatSigned,
   formatPercent,
   formatPercentPlain,
+  percentFormatOf,
   type FormatOptions,
 } from "../core/format";
 import { useMountGrow, useDataTween } from "./hooks";
 import { useStatement } from "./hooks/useStatement";
 import { useHoverDismissal } from "./internal/dismiss";
 import { srOnly } from "./a11y";
-import { useIbcsTokens } from "./theme";
+import { useIbcsLabels, useIbcsTokens } from "./theme";
 
 export interface StatementTableProps {
   /** The statement model (P&L or balance sheet). */
@@ -53,6 +55,11 @@ export interface StatementTableProps {
   mark?: "bar" | "pin";
   format?: FormatOptions;
   tokens?: IbcsTokensOverride;
+  /**
+   * The component's own words (scenario codes of its headers and tooltip, the expand / collapse buttons and toolbar) merged onto `IbcsThemeProvider`'s.
+   * See `IbcsLabels`.
+   */
+  labels?: IbcsLabelsOverride;
   /**
    * Group ids collapsed on mount - the uncontrolled seed (overrides each
    * line's `defaultCollapsed` flag). Ignored once `collapsed` is provided.
@@ -111,8 +118,6 @@ const RESULT_BAR_H = 18;
 const PIN_R = 3.5;
 const LANE_RPAD = 52; // room on the right for result value labels
 const LANE_LPAD = 8;
-
-const SCENARIO_LABEL: Record<ScenarioKey, string> = { AC: "AC", PY: "PY", PL: "PL", FC: "FC" };
 
 const DEFAULT_VARIANCE_COLUMNS: VarianceColumnSpec[] = [
   { base: "PY", mode: "abs", mark: "bar" },
@@ -181,6 +186,7 @@ export function StatementTable({
   mark = "bar",
   format = {},
   tokens: tokenOverride,
+  labels,
   defaultCollapsed,
   collapsed: collapsedProp,
   onCollapsedChange,
@@ -195,6 +201,7 @@ export function StatementTable({
   style,
 }: StatementTableProps) {
   const tokens = useIbcsTokens(tokenOverride);
+  const words = useIbcsLabels(labels);
   const [scrollTop, setScrollTop] = useState(0);
   // Live ticks tween the figures (the layout recomputes from the interpolated
   // lines); the row entrance replays only when the statement changes shape.
@@ -308,14 +315,14 @@ export function StatementTable({
         spec,
         header:
           spec.label ??
-          (isPct ? `Δ${SCENARIO_LABEL[spec.base]}%` : `Δ${SCENARIO_LABEL[spec.base]}`),
+          (isPct ? `Δ${words.scenario[spec.base]}%` : `Δ${words.scenario[spec.base]}`),
         values,
         domain: domain || (isPct ? clamp : 1),
         // Pins need room for the value + an off-scale arrow; abs bars are tighter.
         width: spec.mark === "pin" ? 150 : 108,
       };
     });
-  }, [rows, varianceColumns, scenario]);
+  }, [rows, varianceColumns, scenario, words]);
 
   // Waterfall value -> pixel, honouring negatives and reserving label room.
   // Clamp the lane geometry so a tiny `waterfallWidth` (or non-finite span)
@@ -394,7 +401,7 @@ export function StatementTable({
             disabled={allExpanded}
             style={expandBtn(allExpanded, tokens)}
           >
-            Expand all
+            {words.expandAll}
           </button>
           <button
             type="button"
@@ -402,7 +409,7 @@ export function StatementTable({
             disabled={allCollapsed}
             style={expandBtn(allCollapsed, tokens)}
           >
-            Collapse all
+            {words.collapseAll}
           </button>
         </div>
       )}
@@ -426,7 +433,7 @@ export function StatementTable({
               {showBaseValues &&
                 baseColumns.map((base) => (
                   <th key={`bh-${base}`} scope="col" style={{ ...headerCell, ...stickyHead }}>
-                    {SCENARIO_LABEL[base]}
+                    {words.scenario[base]}
                   </th>
                 ))}
               {showWaterfall ? (
@@ -440,11 +447,11 @@ export function StatementTable({
                     width: waterfallWidth,
                   }}
                 >
-                  {SCENARIO_LABEL[scenario]}
+                  {words.scenario[scenario]}
                 </th>
               ) : (
                 <th scope="col" style={{ ...headerCell, ...stickyHead }}>
-                  {SCENARIO_LABEL[scenario]}
+                  {words.scenario[scenario]}
                 </th>
               )}
               {columns.map((c, i) => (
@@ -547,7 +554,7 @@ export function StatementTable({
                         <button
                           type="button"
                           onClick={() => toggle(line.id)}
-                          aria-label={isExpanded ? "Collapse" : "Expand"}
+                          aria-label={isExpanded ? words.collapse : words.expand}
                           aria-expanded={isExpanded}
                           style={{
                             border: "none",
@@ -663,7 +670,7 @@ export function StatementTable({
                             mode={c.spec.mode}
                             label={
                               c.spec.mode === "pct"
-                                ? formatPercentPlain(cell.value / 100)
+                                ? formatPercentPlain(cell.value / 100, percentFormatOf(format))
                                 : formatSigned(cell.value, format)
                             }
                             emphasis={emphasis}
@@ -698,6 +705,7 @@ export function StatementTable({
           bases={baseColumns}
           format={format}
           tokens={tokens}
+          words={words}
         />
       )}
     </div>
@@ -996,8 +1004,11 @@ const RowTooltip = React.forwardRef<
     bases: ScenarioKey[];
     format: FormatOptions;
     tokens: IbcsTokens;
+    words: IbcsLabels;
   }
->(function RowTooltip({ x, y, line, scenario, bases, format, tokens }, ref) {
+>(function RowTooltip({ x, y, line, scenario, bases, format, tokens, words }, ref) {
+  // A missing figure: the format's own text, else the tooltip's dash.
+  const missing = format.notAvailable ?? "-";
   const ac = resolveValue(line, scenario);
   // Values at FULL precision (compact: false): the table cells print compact
   // figures, so the tooltip adds the exact number instead of echoing them.
@@ -1026,8 +1037,8 @@ const RowTooltip = React.forwardRef<
     >
       <div style={{ fontWeight: 600, marginBottom: 6 }}>{line.label}</div>
       <TipRow
-        k={SCENARIO_LABEL[scenario]}
-        val={ac == null ? "-" : formatValue(ac, exact)}
+        k={words.scenario[scenario]}
+        val={ac == null ? missing : formatValue(ac, exact)}
         surface={tokens.color.surface}
         strong
       />
@@ -1053,13 +1064,17 @@ const RowTooltip = React.forwardRef<
             }}
           >
             <TipRow
-              k={SCENARIO_LABEL[base]}
-              val={baseVal == null ? "-" : formatValue(baseVal, exact)}
+              k={words.scenario[base]}
+              val={baseVal == null ? missing : formatValue(baseVal, exact)}
               surface={tokens.color.surface}
             />
             <TipRow
-              k={`Δ ${SCENARIO_LABEL[base]}`}
-              val={v ? `${formatSigned(v.abs, exact)}  (${formatPercent(v.pct)})` : "-"}
+              k={`Δ ${words.scenario[base]}`}
+              val={
+                v
+                  ? `${formatSigned(v.abs, exact)}  (${formatPercent(v.pct, percentFormatOf(format))})`
+                  : missing
+              }
               surface={tokens.color.surface}
               color={color}
             />

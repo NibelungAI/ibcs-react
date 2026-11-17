@@ -1,9 +1,17 @@
 import { forwardRef, useId, useMemo, type CSSProperties } from "react";
 import type { ScenarioKey } from "../core/types";
 import type { IbcsTokensOverride } from "../core/tokens";
+import { fillLabel, type IbcsLabelsOverride } from "../core/labels";
 import { computeStructure, type StructureDatum } from "../core/structure";
 import { bandScale, resolveBandPadding, type BandPadding } from "../core/bandScale";
-import { formatValue, formatSigned, formatPercent, type FormatOptions } from "../core/format";
+import {
+  formatPercent,
+  formatSigned,
+  formatValue,
+  notAvailableOf,
+  percentFormatOf,
+  type FormatOptions,
+} from "../core/format";
 import { useMountGrow, useDataTween, useChartHover } from "./hooks";
 import type { ChartSelection, ChartHover } from "./hooks";
 import { markInteraction, type MarkRect } from "./internal/hover";
@@ -14,7 +22,7 @@ import {
   selectableMarkProps,
   type ChartDataRow,
 } from "./a11y";
-import { useIbcsTokens } from "./theme";
+import { useIbcsLabels, useIbcsTokens } from "./theme";
 import { fitLabel, svgSafeId } from "./internal/text";
 
 export type { StructureDatum } from "../core/structure";
@@ -50,7 +58,17 @@ export interface StructureChartProps {
   labelWidth?: number;
   format?: FormatOptions;
   tokens?: IbcsTokensOverride;
+  /**
+   * The component's own words ("Total", "Value", "Share", the comparison's scenario code and the segments' "Select …" names) merged onto `IbcsThemeProvider`'s.
+   * See `IbcsLabels`.
+   */
+  labels?: IbcsLabelsOverride;
   title?: string;
+  /**
+   * The chart's accessible name, in place of the generated English
+   * description; also the caption of its screen-reader table.
+   */
+  ariaLabel?: string;
   /** Extra class name for the chart `<svg>` (the rendered root). */
   className?: string;
   /** Inline style merged OVER the chart `<svg>`'s own layout style. */
@@ -102,7 +120,9 @@ export const StructureChart = forwardRef<SVGSVGElement, StructureChartProps>(
       labelWidth = 132,
       format = {},
       tokens: tokenOverride,
+      labels,
       title,
+      ariaLabel,
       className,
       style,
       onSelect,
@@ -115,6 +135,20 @@ export const StructureChart = forwardRef<SVGSVGElement, StructureChartProps>(
     // the gutter maths and the markup below stay exactly as they were.
     const showVariance = variance !== "none";
     const tokens = useIbcsTokens(tokenOverride);
+    const words = useIbcsLabels(labels);
+    const S = words.scenario;
+    const cmpName = S[comparison];
+    const pctFmt = percentFormatOf(format);
+    const na = notAvailableOf(format);
+    // Shares: whole percents (the 1.4 text) until the format opts into exact
+    // digits or a locale - then `percentFractionDigits` (default 0).
+    const shareOpts = percentFormatOf(format, "auto");
+    const shareExact =
+      typeof shareOpts === "number"
+        ? null
+        : { ...shareOpts, fractionDigits: format.percentFractionDigits ?? 0 };
+    const shareText = (fraction: number) =>
+      shareExact ? formatPercent(fraction, shareExact) : `${Math.round(fraction * 100)}%`;
     const data = useDataTween(dataProp);
     const grow = useMountGrow(700, 0, data);
     const hover = useChartHover<StructureDatum>();
@@ -185,21 +219,21 @@ export const StructureChart = forwardRef<SVGSVGElement, StructureChartProps>(
       if (!s) return null;
       const exact = { ...format, compact: false };
       const rows: ChartTooltipRow[] = [
-        { label: "Value", value: formatValue(s.current, exact), strong: true },
+        { label: words.value, value: formatValue(s.current, exact), strong: true },
       ];
-      if (s.base != null) rows.push({ label: comparison, value: formatValue(s.base, exact) });
+      if (s.base != null) rows.push({ label: cmpName, value: formatValue(s.base, exact) });
       const v = s.variance;
       if (v) {
         const color =
           v.abs === 0 ? tokens.color.zero : v.favorable ? tokens.color.good : tokens.color.bad;
-        const pct = v.pct != null ? ` (${formatPercent(v.pct)})` : "";
+        const pct = v.pct != null ? ` (${formatPercent(v.pct, pctFmt)})` : "";
         rows.push({
-          label: `Δ${comparison}`,
+          label: `Δ${cmpName}`,
           value: `${formatSigned(v.abs, exact)}${pct}`,
           color,
         });
       }
-      rows.push({ label: "Share", value: `${Math.round(s.share * 100)}%` });
+      rows.push({ label: words.share, value: shareText(s.share) });
       return (
         <ChartTooltip
           ref={hover.tooltipRef}
@@ -215,34 +249,32 @@ export const StructureChart = forwardRef<SVGSVGElement, StructureChartProps>(
     // Screen-reader data table: each component's value, the comparison, optional
     // variance and share, plus the total row - values, not the decorative svg.
     const a11yColumns = [
-      "Value",
-      comparison,
-      ...(showVariance ? [`Δ${comparison}`] : []),
-      ...(showShare ? ["Share"] : []),
+      words.value,
+      cmpName,
+      ...(showVariance ? [`Δ${cmpName}`] : []),
+      ...(showShare ? [words.share] : []),
     ];
     const a11yRows: ChartDataRow[] = segments.map((s) => {
-      const cells: Array<string | number> = [fmt(s.current), s.base != null ? fmt(s.base) : "n/a"];
+      const cells: Array<string | number> = [fmt(s.current), s.base != null ? fmt(s.base) : na];
       if (showVariance) {
         cells.push(
           s.variance
             ? variance === "pct"
-              ? formatPercent(s.variance.pct)
+              ? formatPercent(s.variance.pct, pctFmt)
               : formatSigned(s.variance.abs, format)
-            : "n/a",
+            : na,
         );
       }
-      if (showShare) cells.push(`${Math.round(s.share * 100)}%`);
+      if (showShare) cells.push(shareText(s.share));
       return { label: s.label, cells };
     });
     a11yRows.push({
-      label: "Total",
+      label: words.total,
       cells: [
         fmt(total),
-        baseTotal !== 0 ? fmt(baseTotal) : "n/a",
-        ...(showVariance
-          ? [baseTotal !== 0 ? formatSigned(total - baseTotal, format) : "n/a"]
-          : []),
-        ...(showShare ? ["100%"] : []),
+        baseTotal !== 0 ? fmt(baseTotal) : na,
+        ...(showVariance ? [baseTotal !== 0 ? formatSigned(total - baseTotal, format) : na] : []),
+        ...(showShare ? [shareText(1)] : []),
       ],
     });
 
@@ -262,9 +294,10 @@ export const StructureChart = forwardRef<SVGSVGElement, StructureChartProps>(
           aria-label={
             onSelect
               ? undefined
-              : title
-                ? `${title}. Composition of ${n} components versus ${comparison}, with shares and variance.`
-                : `Composition of ${n} components versus ${comparison}`
+              : (ariaLabel ??
+                (title
+                  ? `${title}. Composition of ${n} components versus ${cmpName}, with shares and variance.`
+                  : `Composition of ${n} components versus ${cmpName}`))
           }
           style={{
             display: "block",
@@ -321,7 +354,7 @@ export const StructureChart = forwardRef<SVGSVGElement, StructureChartProps>(
             const varLabel = !v
               ? ""
               : variance === "pct"
-                ? formatPercent(v.pct)
+                ? formatPercent(v.pct, pctFmt)
                 : formatSigned(v.abs, format);
 
             const info = {
@@ -344,7 +377,10 @@ export const StructureChart = forwardRef<SVGSVGElement, StructureChartProps>(
                 key={s.label}
                 {...selectableMarkProps(
                   onSelect ? () => onSelect(info) : undefined,
-                  `Select ${s.label}, ${info.scenario} ${formatValue(info.value, format)}`,
+                  fillLabel(words.selectMark, {
+                    label: s.label,
+                    value: `${S[info.scenario]} ${formatValue(info.value, format)}`,
+                  }),
                 )}
                 {...marks.forMark(info, markRects)}
                 style={onSelect ? { cursor: "pointer" } : undefined}
@@ -441,7 +477,7 @@ export const StructureChart = forwardRef<SVGSVGElement, StructureChartProps>(
                         fill={tokens.color.textMuted}
                         textAnchor="end"
                       >
-                        {Math.round(s.share * 100)}%
+                        {shareExact ? shareText(s.share) : <>{Math.round(s.share * 100)}%</>}
                       </text>
                     )}
                   </>
@@ -460,7 +496,7 @@ export const StructureChart = forwardRef<SVGSVGElement, StructureChartProps>(
             strokeWidth={1}
           />
           <text x={padL} y={baselineY + 17} fontSize={12} fontWeight={600} fill={tokens.color.text}>
-            Total
+            {words.total}
           </text>
           <text
             x={barX0 + 6}
@@ -505,7 +541,8 @@ export const StructureChart = forwardRef<SVGSVGElement, StructureChartProps>(
         </svg>
         <ChartDataTable
           caption={
-            title ? `${title} - data table` : `Composition versus ${comparison} - data table`
+            ariaLabel ??
+            (title ? `${title} - data table` : `Composition versus ${cmpName} - data table`)
           }
           columns={a11yColumns}
           rows={a11yRows}

@@ -1,19 +1,27 @@
 import { forwardRef, useMemo, type CSSProperties } from "react";
 import type { ScenarioKey } from "../core/types";
 import type { IbcsTokensOverride } from "../core/tokens";
+import type { IbcsLabelsOverride } from "../core/labels";
 import {
   computeWaterfallStatement,
   type WaterfallStatementLine,
   type WaterfallStatementRow,
   type WsLaneBar,
 } from "../core/waterfallStatement";
-import { formatValue, formatSigned, formatPercentPlain, type FormatOptions } from "../core/format";
+import {
+  formatPercent,
+  formatPercentPlain,
+  formatSigned,
+  formatValue,
+  percentFormatOf,
+  type FormatOptions,
+} from "../core/format";
 import { useMountGrow, useDataTween, useChartHover } from "./hooks";
 import type { ChartHover } from "./hooks";
 import { markInteraction, type MarkRect } from "./internal/hover";
 import { ChartTooltip, type ChartTooltipRow } from "./ChartTooltip";
 import { ChartDataTable, type ChartDataRow } from "./a11y";
-import { useIbcsTokens } from "./theme";
+import { useIbcsLabels, useIbcsTokens } from "./theme";
 import { clampTo, estTextW, fitLabel } from "./internal/text";
 
 export type {
@@ -50,7 +58,17 @@ export interface WaterfallStatementChartProps {
   format?: FormatOptions;
   /** Token override merged over the nearest {@link IbcsThemeProvider} theme. */
   tokens?: IbcsTokensOverride;
+  /**
+   * The component's own words (the scenario codes of its lane headers, tooltip and table) merged onto `IbcsThemeProvider`'s.
+   * See `IbcsLabels`.
+   */
+  labels?: IbcsLabelsOverride;
   title?: string;
+  /**
+   * The chart's accessible name, in place of the generated English
+   * description; also the caption of its screen-reader table.
+   */
+  ariaLabel?: string;
   /** Class applied to the chart `<svg>` (the root element). */
   className?: string;
   /** Styles merged *over* the chart's own layout styles. */
@@ -68,8 +86,6 @@ export interface WaterfallStatementChartProps {
    */
   tooltip?: boolean;
 }
-
-const SCENARIO_LABEL: Record<ScenarioKey, string> = { AC: "AC", PY: "PY", PL: "PL", FC: "FC" };
 
 /**
  * IBCS chart-template **C12** - a P&L calculation scheme as TWO side-by-side
@@ -116,7 +132,9 @@ export const WaterfallStatementChart = forwardRef<SVGSVGElement, WaterfallStatem
       clampAbs,
       format = {},
       tokens: tokenOverride,
+      labels,
       title,
+      ariaLabel,
       onHover,
       tooltip = true,
       className,
@@ -125,6 +143,7 @@ export const WaterfallStatementChart = forwardRef<SVGSVGElement, WaterfallStatem
     ref,
   ) {
     const tokens = useIbcsTokens(tokenOverride);
+    const words = useIbcsLabels(labels);
     const lines = useDataTween(linesProp);
     const grow = useMountGrow(700, 0, lines);
     const hover = useChartHover<WaterfallStatementRow>();
@@ -186,7 +205,12 @@ export const WaterfallStatementChart = forwardRef<SVGSVGElement, WaterfallStatem
     const pctNegRoom = Math.max(pctAxisX - pctX0 - 8, 6);
 
     const plotBottom = plotTop + n * rowH;
-    const compLabel = SCENARIO_LABEL[comparison];
+    const S = words.scenario;
+    const compLabel = S[comparison];
+    const pctFmt = percentFormatOf(format);
+    // A Δ% with its "%": the 1.4 "+6.9%" until the format opts in, then the locale's own.
+    const pctWithSign = (pct: number | null) =>
+      typeof pctFmt === "number" ? `${formatPercentPlain(pct)}%` : formatPercent(pct, pctFmt);
     const compStyle = tokens.scenario[comparison];
     const hollowBase = compStyle.variant !== "solid";
 
@@ -381,7 +405,7 @@ export const WaterfallStatementChart = forwardRef<SVGSVGElement, WaterfallStatem
               ? pctX0 + pctW - 8
               : pctX0 + 8
             : pctAxisX + dir * frac * room * grow;
-          const label = formatPercentPlain(pct);
+          const label = formatPercentPlain(pct, pctFmt);
           const tw = estTextW(label, 9.5);
           const labelX = outlier
             ? dir > 0
@@ -455,7 +479,7 @@ export const WaterfallStatementChart = forwardRef<SVGSVGElement, WaterfallStatem
       const r = h.datum;
       const exact = { ...format, compact: false };
       const rowsT: ChartTooltipRow[] = [
-        { label: "AC", value: formatValue(r.acValue, exact), strong: true },
+        { label: S.AC, value: formatValue(r.acValue, exact), strong: true },
         { label: compLabel, value: formatValue(r.baseValue, exact) },
         {
           label: `Δ${compLabel}`,
@@ -466,7 +490,7 @@ export const WaterfallStatementChart = forwardRef<SVGSVGElement, WaterfallStatem
       if (r.variance.pct != null && Number.isFinite(r.variance.pct)) {
         rowsT.push({
           label: `Δ${compLabel}%`,
-          value: `${formatPercentPlain(r.variance.pct)}%`,
+          value: pctWithSign(r.variance.pct),
           color: impactColor(r),
         });
       }
@@ -488,7 +512,7 @@ export const WaterfallStatementChart = forwardRef<SVGSVGElement, WaterfallStatem
     // tier labels are (`formatPercentPlain`, with the % in the column header).
     const a11yColumns = [
       compLabel,
-      "AC",
+      S.AC,
       `Δ${compLabel}`,
       ...(showPctPanel ? [`Δ${compLabel}%`] : []),
     ];
@@ -498,7 +522,7 @@ export const WaterfallStatementChart = forwardRef<SVGSVGElement, WaterfallStatem
         formatValue(r.baseValue, format),
         formatValue(r.acValue, format),
         formatSigned(r.variance.abs, format),
-        ...(showPctPanel ? [formatPercentPlain(r.variance.pct)] : []),
+        ...(showPctPanel ? [formatPercentPlain(r.variance.pct, pctFmt)] : []),
       ],
     }));
 
@@ -510,7 +534,10 @@ export const WaterfallStatementChart = forwardRef<SVGSVGElement, WaterfallStatem
           height={height}
           viewBox={`0 0 ${width} ${height}`}
           role="img"
-          aria-label={`${title ? title + ". " : ""}P&L calculation scheme: ${compLabel} and AC waterfalls with Δ${compLabel} absolute${showPctPanel ? " and relative" : ""} variance, ${n} lines.`}
+          aria-label={
+            ariaLabel ??
+            `${title ? title + ". " : ""}P&L calculation scheme: ${compLabel} and ${S.AC} waterfalls with Δ${compLabel} absolute${showPctPanel ? " and relative" : ""} variance, ${n} lines.`
+          }
           className={className}
           style={{
             display: "block",
@@ -528,7 +555,7 @@ export const WaterfallStatementChart = forwardRef<SVGSVGElement, WaterfallStatem
 
           {/* Headers + underline */}
           {header(lane1X0 + laneW / 2, compLabel)}
-          {header(lane2X0 + laneW / 2, "AC")}
+          {header(lane2X0 + laneW / 2, S.AC)}
           {header(absMidX, `Δ${compLabel}`)}
           {showPctPanel && header(pctX0 + pctW / 2, `Δ${compLabel}%`)}
           <line
@@ -636,9 +663,10 @@ export const WaterfallStatementChart = forwardRef<SVGSVGElement, WaterfallStatem
         </svg>
         <ChartDataTable
           caption={
-            title
+            ariaLabel ??
+            (title
               ? `${title} - data table`
-              : `P&L calculation scheme, AC versus ${compLabel} - data table`
+              : `P&L calculation scheme, ${S.AC} versus ${compLabel} - data table`)
           }
           columns={a11yColumns}
           rows={a11yRows}

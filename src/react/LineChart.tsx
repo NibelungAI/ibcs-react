@@ -1,6 +1,7 @@
 import { forwardRef, useMemo, type CSSProperties } from "react";
 import type { ScenarioKey } from "../core/types";
 import type { IbcsTokens, IbcsTokensOverride } from "../core/tokens";
+import { prefixLabel, type IbcsLabelsOverride } from "../core/labels";
 import {
   computeLines,
   splitForecast,
@@ -10,10 +11,17 @@ import {
 } from "../core/lineArea";
 import { resolveReferences, type ReferenceLine, type ReferenceBand } from "../core/reference";
 import { bandScale, resolveBandPadding, type BandPadding } from "../core/bandScale";
-import { formatValue, formatSigned, formatPercent, type FormatOptions } from "../core/format";
+import {
+  formatPercent,
+  formatSigned,
+  formatValue,
+  notAvailableOf,
+  percentFormatOf,
+  type FormatOptions,
+} from "../core/format";
 import { useMountGrow, useDataTween } from "./hooks";
 import { ChartDataTable, type ChartDataRow } from "./a11y";
-import { useIbcsTokens } from "./theme";
+import { useIbcsLabels, useIbcsTokens } from "./theme";
 
 export type { LineDatum } from "../core/lineArea";
 export type { Reference, ReferenceLine, ReferenceBand } from "../core/reference";
@@ -68,9 +76,31 @@ export interface LineChartProps {
    * to the edges so the series fills the plot width (no side whitespace).
    */
   bandPadding?: BandPadding;
+  /**
+   * Number formatting (`fractionDigits` for exact decimals); the variance
+   * panel's Δ% labels follow its `locale` and `percentFractionDigits`.
+   */
   format?: FormatOptions;
+  /**
+   * Per-series number formatting, keyed by scenario, for a series' own values
+   * (its end label and its column of the screen-reader table) - e.g.
+   * `{ AC: { fractionDigits: 2 } }`. A series without an entry uses `format`;
+   * the variance panel always uses `format`.
+   */
+  seriesFormat?: Partial<Record<ScenarioKey, FormatOptions>>;
   tokens?: IbcsTokensOverride;
+  /**
+   * The chart's own words - the scenario codes of the end labels ("AC 150")
+   * and table headers - merged onto `IbcsThemeProvider`'s. An empty word drops
+   * the code: `{ scenario: { AC: "" } }` labels the line "150". See `IbcsLabels`.
+   */
+  labels?: IbcsLabelsOverride;
   title?: string;
+  /**
+   * The chart's accessible name, in place of the generated English
+   * description; also the caption of its screen-reader table.
+   */
+  ariaLabel?: string;
   /** Extra class name for the chart `<svg>` (the rendered root). */
   className?: string;
   /** Inline style merged OVER the chart `<svg>`'s own layout style. */
@@ -197,14 +227,21 @@ export const LineChart = forwardRef<SVGSVGElement, LineChartProps>(function Line
     height = 360,
     bandPadding,
     format = {},
+    seriesFormat,
     tokens: tokenOverride,
+    labels,
     title,
+    ariaLabel,
     className,
     style,
   },
   ref,
 ) {
   const tokens = useIbcsTokens(tokenOverride);
+  const words = useIbcsLabels(labels);
+  /** A series' own number format (its `seriesFormat` entry, else the chart's). */
+  const formatOf = (scenario: ScenarioKey): FormatOptions => seriesFormat?.[scenario] ?? format;
+  const pctFmt = percentFormatOf(format);
   const data = useDataTween(dataProp);
   const grow = useMountGrow(700, 0, data);
 
@@ -300,21 +337,24 @@ export const LineChart = forwardRef<SVGSVGElement, LineChartProps>(function Line
   // Screen-reader data table: each period's value per scenario, plus the shown
   // variance - so SR users read the actual numbers, not the decorative svg.
   const hasVarTable = showVariancePanel && variancePoints.length > 0;
+  const comparisonName = words.scenario[comparison];
   const a11yColumns = [
-    ...lines.map((s) => s.scenario),
-    ...(hasVarTable ? [`Δ${comparison}`, `Δ${comparison}%`] : []),
+    ...lines.map((s) => words.scenario[s.scenario]),
+    ...(hasVarTable ? [`Δ${comparisonName}`, `Δ${comparisonName}%`] : []),
   ];
   const lineByIndex = lines.map((s) => new Map(s.points.map((p) => [p.index, p.value])));
   const varByIndex = new Map(variancePoints.map((vp) => [vp.index, vp.variance]));
+  const na = notAvailableOf(format);
   const a11yRows: ChartDataRow[] = categories.map((c, i) => {
-    const cells: Array<string | number> = lineByIndex.map((byIndex) => {
+    const cells: Array<string | number> = lineByIndex.map((byIndex, si) => {
       const val = byIndex.get(i);
-      return val != null ? formatValue(val, format) : "n/a";
+      const fmt = formatOf(lines[si]!.scenario);
+      return val != null ? formatValue(val, fmt) : notAvailableOf(fmt);
     });
     if (hasVarTable) {
       const v = varByIndex.get(i);
-      cells.push(v ? formatSigned(v.abs, format) : "n/a");
-      cells.push(v ? formatPercent(v.pct) : "n/a");
+      cells.push(v ? formatSigned(v.abs, format) : na);
+      cells.push(v ? formatPercent(v.pct, pctFmt) : na);
     }
     return { label: c, cells };
   });
@@ -331,9 +371,10 @@ export const LineChart = forwardRef<SVGSVGElement, LineChartProps>(function Line
         // label out and leave assistive tech with nothing but the sr-only table.
         role="img"
         aria-label={
-          title
+          ariaLabel ??
+          (title
             ? `${title}. Line chart of ${n} periods across ${lines.length} series.`
-            : `Line chart of ${n} periods across ${lines.length} series`
+            : `Line chart of ${n} periods across ${lines.length} series`)
         }
         style={{
           display: "block",
@@ -523,7 +564,10 @@ export const LineChart = forwardRef<SVGSVGElement, LineChartProps>(function Line
         {/* Integrated end labels beside each line's last point (no legend box) */}
         {endLabels.map((e) => {
           const st = lineStyle(e.scenario, tokens);
-          const label = `${e.scenario} ${formatValue(e.point.value, format)}`;
+          const label = prefixLabel(
+            words.scenario[e.scenario],
+            formatValue(e.point.value, formatOf(e.scenario)),
+          );
           // Clamp x so a wide value label never spills past the right edge.
           const estW = textWidthPx(label, 10);
           const tx = Math.max(padL, Math.min(x(e.point.index) + 6, width - 2 - estW));
@@ -584,7 +628,7 @@ export const LineChart = forwardRef<SVGSVGElement, LineChartProps>(function Line
               // centered labels can't collide (in addition to the point-density gate).
               const showLbl = maxPts <= MARKER_DENSITY_THRESHOLD && band >= 34;
               const label =
-                varianceMode === "pct" ? formatPercent(v.pct) : formatSigned(v.abs, format);
+                varianceMode === "pct" ? formatPercent(v.pct, pctFmt) : formatSigned(v.abs, format);
               return (
                 <g key={`var-${vp.index}`}>
                   <rect
@@ -613,7 +657,8 @@ export const LineChart = forwardRef<SVGSVGElement, LineChartProps>(function Line
       </svg>
       <ChartDataTable
         caption={
-          title ? `${title} - data table` : `Line chart of ${lines.length} series - data table`
+          ariaLabel ??
+          (title ? `${title} - data table` : `Line chart of ${lines.length} series - data table`)
         }
         columns={a11yColumns}
         rows={a11yRows}

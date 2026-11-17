@@ -1,10 +1,11 @@
 import { forwardRef, useMemo, type CSSProperties } from "react";
 import type { IbcsTokensOverride } from "../core/tokens";
+import type { IbcsLabelsOverride } from "../core/labels";
 import { computeTree, type TreeNode } from "../core/tree";
-import { formatValue, formatSigned, type FormatOptions } from "../core/format";
+import { formatValue, formatSigned, notAvailableOf, type FormatOptions } from "../core/format";
 import { useMountGrow, useDataTween } from "./hooks";
 import { ChartDataTable, type ChartDataRow } from "./a11y";
-import { useIbcsTokens } from "./theme";
+import { useIbcsLabels, useIbcsTokens } from "./theme";
 
 // Local, CJK-aware text metrics: wide glyphs count ~1em where the shared
 // `./internal/text` heuristic assumes a uniform 0.6em - kept for label fitting.
@@ -57,7 +58,17 @@ export interface TreeChartProps {
   height?: number;
   format?: FormatOptions;
   tokens?: IbcsTokensOverride;
+  /**
+   * The component's own words ("Value", "vs" and the PY code on its nodes and in its table) merged onto `IbcsThemeProvider`'s.
+   * See `IbcsLabels`.
+   */
+  labels?: IbcsLabelsOverride;
   title?: string;
+  /**
+   * The chart's accessible name, in place of the generated English
+   * description; also the caption of its screen-reader table.
+   */
+  ariaLabel?: string;
   /** Class name for the chart's root `<svg>`. */
   className?: string;
   /** Inline style merged over the root `<svg>`'s own layout style (your keys win). */
@@ -85,13 +96,16 @@ export const TreeChart = forwardRef<SVGSVGElement, TreeChartProps>(function Tree
     height = 360,
     format = {},
     tokens: tokenOverride,
+    labels,
     title,
+    ariaLabel,
     className,
     style,
   },
   ref,
 ) {
   const tokens = useIbcsTokens(tokenOverride);
+  const words = useIbcsLabels(labels);
   const root = useDataTween(rootProp);
   const grow = useMountGrow(500, 0, root);
 
@@ -160,12 +174,15 @@ export const TreeChart = forwardRef<SVGSVGElement, TreeChartProps>(function Tree
   // keeps its own `format` override, exactly as its box label does.
   const hasPy = nodes.some((node) => node.py != null);
   const showDelta = showVariance && hasPy;
-  const a11yColumns = ["Value", ...(hasPy ? ["PY"] : []), ...(showDelta ? ["ΔPY"] : [])];
+  const PY = words.scenario.PY;
+  const a11yColumns = [words.value, ...(hasPy ? [PY] : []), ...(showDelta ? [`Δ${PY}`] : [])];
   const a11yRows: ChartDataRow[] = nodes.map((node) => {
     const f = node.format ?? format;
     const cells: Array<string | number> = [formatValue(node.value, f)];
-    if (hasPy) cells.push(node.py != null ? formatValue(node.py, f) : "n/a");
-    if (showDelta) cells.push(node.variance ? formatSigned(node.variance.abs, f) : "n/a");
+    if (hasPy) cells.push(node.py != null ? formatValue(node.py, f) : notAvailableOf(f));
+    if (showDelta) {
+      cells.push(node.variance ? formatSigned(node.variance.abs, f) : notAvailableOf(f));
+    }
     return { label: `${"· ".repeat(node.depth)}${node.label}`, cells };
   });
 
@@ -178,9 +195,10 @@ export const TreeChart = forwardRef<SVGSVGElement, TreeChartProps>(function Tree
         viewBox={`0 0 ${width} ${height}`}
         role="img"
         aria-label={
-          title
+          ariaLabel ??
+          (title
             ? `${title}. Calculation tree of ${nodes.length} measures.`
-            : `Calculation tree of ${nodes.length} measures`
+            : `Calculation tree of ${nodes.length} measures`)
         }
         className={className}
         style={{
@@ -301,7 +319,7 @@ export const TreeChart = forwardRef<SVGSVGElement, TreeChartProps>(function Tree
                   textAnchor="middle"
                 >
                   {fitLabel(
-                    `${formatSigned(v.abs, node.format ?? format)} vs PY`,
+                    `${formatSigned(v.abs, node.format ?? format)} ${words.versus} ${PY}`,
                     boxW - 6,
                     varFont,
                   )}
@@ -312,7 +330,7 @@ export const TreeChart = forwardRef<SVGSVGElement, TreeChartProps>(function Tree
         })}
       </svg>
       <ChartDataTable
-        caption={title ? `${title} - data table` : "Calculation tree data table"}
+        caption={ariaLabel ?? (title ? `${title} - data table` : "Calculation tree data table")}
         columns={a11yColumns}
         rows={a11yRows}
       />

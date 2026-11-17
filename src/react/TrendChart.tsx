@@ -1,9 +1,17 @@
 import { forwardRef, useId, useMemo, type CSSProperties } from "react";
 import type { ScenarioKey } from "../core/types";
 import type { IbcsTokensOverride } from "../core/tokens";
+import { fillLabel, type IbcsLabelsOverride } from "../core/labels";
 import { computeTrend, type TrendDatum } from "../core/trend";
 import { bandScale, resolveBandPadding, type BandPadding } from "../core/bandScale";
-import { formatValue, formatSigned, formatPercent, type FormatOptions } from "../core/format";
+import {
+  formatPercent,
+  formatSigned,
+  formatValue,
+  notAvailableOf,
+  percentFormatOf,
+  type FormatOptions,
+} from "../core/format";
 import { useMountGrow, useDataTween, useChartHover } from "./hooks";
 import type { ChartSelection, ChartHover } from "./hooks";
 import { markInteraction, type MarkRect } from "./internal/hover";
@@ -14,7 +22,7 @@ import {
   selectableMarkProps,
   type ChartDataRow,
 } from "./a11y";
-import { useIbcsTokens } from "./theme";
+import { useIbcsLabels, useIbcsTokens } from "./theme";
 import { clampTo, estTextW, fitLabel, svgSafeId } from "./internal/text";
 
 export type { TrendDatum } from "../core/trend";
@@ -51,7 +59,17 @@ export interface TrendChartProps {
   bandPadding?: BandPadding;
   format?: FormatOptions;
   tokens?: IbcsTokensOverride;
+  /**
+   * The component's own words (the legend's scenario codes, "Current" and the scenario codes of its tooltip and table, the "(FC)" mark, the columns' "Select …" names) merged onto `IbcsThemeProvider`'s.
+   * See `IbcsLabels`.
+   */
+  labels?: IbcsLabelsOverride;
   title?: string;
+  /**
+   * The chart's accessible name, in place of the generated English
+   * description; also the caption of its screen-reader table.
+   */
+  ariaLabel?: string;
   /** Extra class name for the chart `<svg>` (the rendered root). */
   className?: string;
   /** Inline style merged OVER the chart `<svg>`'s own layout style. */
@@ -124,7 +142,9 @@ export const TrendChart = forwardRef<SVGSVGElement, TrendChartProps>(function Tr
     bandPadding,
     format = {},
     tokens: tokenOverride,
+    labels,
     title,
+    ariaLabel,
     className,
     style,
     onSelect,
@@ -134,6 +154,11 @@ export const TrendChart = forwardRef<SVGSVGElement, TrendChartProps>(function Tr
   ref,
 ) {
   const tokens = useIbcsTokens(tokenOverride);
+  const words = useIbcsLabels(labels);
+  const S = words.scenario;
+  const cmpName = S[comparison];
+  const pctFmt = percentFormatOf(format);
+  const na = notAvailableOf(format);
   const hatchId = svgSafeId(useId());
   const data = useDataTween(dataProp);
   const grow = useMountGrow(700, 0, data);
@@ -264,17 +289,17 @@ export const TrendChart = forwardRef<SVGSVGElement, TrendChartProps>(function Tr
     if (!c || c.current == null) return null;
     const exact = { ...format, compact: false };
     const rows: ChartTooltipRow[] = [
-      { label: c.isForecast ? "FC" : "AC", value: formatValue(c.current, exact), strong: true },
+      { label: c.isForecast ? S.FC : S.AC, value: formatValue(c.current, exact), strong: true },
     ];
     const cmpVal = c[comparison];
     if (cmpVal != null && isFinite(cmpVal))
-      rows.push({ label: comparison, value: formatValue(cmpVal, exact) });
+      rows.push({ label: cmpName, value: formatValue(cmpVal, exact) });
     const v = c.variance;
     if (v) {
       const color =
         v.abs === 0 ? tokens.color.zero : v.favorable ? tokens.color.good : tokens.color.bad;
-      const pct = v.pct != null ? ` (${formatPercent(v.pct)})` : "";
-      rows.push({ label: `Δ${comparison}`, value: `${formatSigned(v.abs, exact)}${pct}`, color });
+      const pct = v.pct != null ? ` (${formatPercent(v.pct, pctFmt)})` : "";
+      rows.push({ label: `Δ${cmpName}`, value: `${formatSigned(v.abs, exact)}${pct}`, color });
     }
     return (
       <ChartTooltip
@@ -291,23 +316,36 @@ export const TrendChart = forwardRef<SVGSVGElement, TrendChartProps>(function Tr
   // Screen-reader data table: each period's current value, the references, and
   // the shown variance as a real <table>, so SR users read values, not the svg.
   const a11yColumns = [
-    "Current",
-    ...(showPyLine ? ["PY"] : []),
-    ...(showPlLine ? ["PL"] : []),
-    ...(showVariancePanel ? [`Δ${comparison}`, `Δ${comparison}%`] : []),
+    words.current,
+    ...(showPyLine ? [S.PY] : []),
+    ...(showPlLine ? [S.PL] : []),
+    ...(showVariancePanel ? [`Δ${cmpName}`, `Δ${cmpName}%`] : []),
   ];
   const a11yRows: ChartDataRow[] = cells.map((c) => {
     const cells_: Array<string | number> = [
-      c.current != null ? formatValue(c.current, format) : "n/a",
+      c.current != null ? formatValue(c.current, format) : na,
     ];
-    if (showPyLine) cells_.push(c.PY != null ? formatValue(c.PY, format) : "n/a");
-    if (showPlLine) cells_.push(c.PL != null ? formatValue(c.PL, format) : "n/a");
+    if (showPyLine) cells_.push(c.PY != null ? formatValue(c.PY, format) : na);
+    if (showPlLine) cells_.push(c.PL != null ? formatValue(c.PL, format) : na);
     if (showVariancePanel) {
-      cells_.push(c.variance ? formatSigned(c.variance.abs, format) : "n/a");
-      cells_.push(c.variance ? formatPercent(c.variance.pct) : "n/a");
+      cells_.push(c.variance ? formatSigned(c.variance.abs, format) : na);
+      cells_.push(c.variance ? formatPercent(c.variance.pct, pctFmt) : na);
     }
-    return { label: c.isForecast ? `${c.category} (FC)` : c.category, cells: cells_ };
+    return { label: c.isForecast ? `${c.category} (${S.FC})` : c.category, cells: cells_ };
   });
+
+  // Legend positions, right to left, from each word's estimated width (at least
+  // the 14px a two-letter code takes, which reproduces the long-standing layout
+  // exactly). Every slot is placed as if all three were shown, as before.
+  const legendW = (s: string) => Math.max(14, estTextW(s, 10.5));
+  const acSwatchX = -(legendW(S.AC) + 16);
+  const pyTextX = acSwatchX - 14;
+  const pyLineX2 = pyTextX - legendW(S.PY);
+  const pyLineX1 = pyLineX2 - 16;
+  const plTextX = pyLineX1 - 14;
+  const plLineX2 = plTextX - legendW(S.PL);
+  const plLineX1 = plLineX2 - 16;
+  const legendReserve = -(showPlLine ? plLineX1 : showPyLine ? pyLineX1 : acSwatchX) + 6;
 
   return (
     <>
@@ -325,9 +363,10 @@ export const TrendChart = forwardRef<SVGSVGElement, TrendChartProps>(function Tr
         aria-label={
           onSelect
             ? undefined
-            : title
-              ? `${title}. Trend of ${n} periods, current series versus ${comparison}, with a variance panel.`
-              : `Trend of ${n} periods, current series versus ${comparison}`
+            : (ariaLabel ??
+              (title
+                ? `${title}. Trend of ${n} periods, current series versus ${cmpName}, with a variance panel.`
+                : `Trend of ${n} periods, current series versus ${cmpName}`))
         }
         style={{
           display: "block",
@@ -353,7 +392,7 @@ export const TrendChart = forwardRef<SVGSVGElement, TrendChartProps>(function Tr
         {title && (
           <text x={padL} y={20} fontSize={13} fontWeight={500} fill={tokens.color.text}>
             {/* Clip so the title can't run under the top-right legend or off-canvas. */}
-            {fitLabel(title, width - padL - padR - (showPlLine ? 124 : showPyLine ? 80 : 36), 13)}
+            {fitLabel(title, width - padL - padR - legendReserve, 13)}
           </text>
         )}
 
@@ -364,26 +403,33 @@ export const TrendChart = forwardRef<SVGSVGElement, TrendChartProps>(function Tr
           fill={tokens.color.textMuted}
         >
           <text x={0} y={0} textAnchor="end">
-            AC
+            {S.AC}
           </text>
-          <rect x={-30} y={-8} width={10} height={9} fill={tokens.scenario.AC.fill} />
+          <rect x={acSwatchX} y={-8} width={10} height={9} fill={tokens.scenario.AC.fill} />
           {showPyLine && (
             <>
-              <text x={-44} y={0} textAnchor="end">
-                PY
+              <text x={pyTextX} y={0} textAnchor="end">
+                {S.PY}
               </text>
-              <line x1={-74} y1={-4} x2={-58} y2={-4} stroke={pyLineColor} strokeWidth={1.75} />
+              <line
+                x1={pyLineX1}
+                y1={-4}
+                x2={pyLineX2}
+                y2={-4}
+                stroke={pyLineColor}
+                strokeWidth={1.75}
+              />
             </>
           )}
           {showPlLine && (
             <>
-              <text x={-88} y={0} textAnchor="end">
-                PL
+              <text x={plTextX} y={0} textAnchor="end">
+                {S.PL}
               </text>
               <line
-                x1={-118}
+                x1={plLineX1}
                 y1={-4}
-                x2={-102}
+                x2={plLineX2}
                 y2={-4}
                 stroke={plLineColor}
                 strokeWidth={1.25}
@@ -447,7 +493,10 @@ export const TrendChart = forwardRef<SVGSVGElement, TrendChartProps>(function Tr
               key={`col-${c.category}`}
               {...selectableMarkProps(
                 onSelect ? () => onSelect(info) : undefined,
-                `Select ${c.category}, ${info.scenario} ${formatValue(info.value, format)}`,
+                fillLabel(words.selectMark, {
+                  label: c.category,
+                  value: `${S[info.scenario]} ${formatValue(info.value, format)}`,
+                }),
               )}
               {...marks.forMark(info, markRects)}
               style={onSelect ? { cursor: "pointer" } : undefined}
@@ -588,7 +637,8 @@ export const TrendChart = forwardRef<SVGSVGElement, TrendChartProps>(function Tr
               const color =
                 val === 0 ? tokens.color.zero : v.favorable ? tokens.color.good : tokens.color.bad;
               const up = val >= 0;
-              const label = variance === "pct" ? formatPercent(v.pct) : formatSigned(v.abs, format);
+              const label =
+                variance === "pct" ? formatPercent(v.pct, pctFmt) : formatSigned(v.abs, format);
               const w = c.summary ? sumColW : colW;
               return (
                 <g key={`var-${c.category}`} opacity={c.isForecast ? 0.6 : 1}>
@@ -624,7 +674,9 @@ export const TrendChart = forwardRef<SVGSVGElement, TrendChartProps>(function Tr
         )}
       </svg>
       <ChartDataTable
-        caption={title ? `${title} - data table` : `Trend versus ${comparison} - data table`}
+        caption={
+          ariaLabel ?? (title ? `${title} - data table` : `Trend versus ${cmpName} - data table`)
+        }
         columns={a11yColumns}
         rows={a11yRows}
       />

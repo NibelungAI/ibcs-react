@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { renderToString } from "react-dom/server";
 
-import { cases } from "./fixtures";
+import { cases, featureCases } from "./fixtures";
 
 /**
  * Deterministic markup snapshots - the always-on half of the visual regression
@@ -64,7 +64,7 @@ function readable(html: string): string {
 }
 
 describe("component markup snapshots", () => {
-  for (const { name, element } of cases) {
+  for (const { name, element } of [...cases, ...featureCases]) {
     it(`${name} renders stable markup`, () => {
       expect(readable(normalizeIds(renderToString(element)))).toMatchSnapshot();
     });

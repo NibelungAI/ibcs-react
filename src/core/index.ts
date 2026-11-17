@@ -51,9 +51,29 @@ export {
 } from "./tokens";
 export type { IbcsScenarioStyle, IbcsTokens, IbcsTokensOverride, TokenPresetId } from "./tokens";
 
-/* ./format - number, percent and signed-value formatting */
-export { formatPercent, formatPercentPlain, formatSigned, formatValue } from "./format";
-export type { CompactSuffixes, FormatOptions } from "./format";
+/* ./format - number, percent, signed-value and interval formatting */
+export {
+  formatInterval,
+  formatPercent,
+  formatPercentPlain,
+  formatSigned,
+  formatValue,
+} from "./format";
+export type { CompactSuffixes, FormatOptions, PercentFormatOptions } from "./format";
+
+/* ./labels - the words components write themselves (i18n dictionary) */
+export { defaultLabels, fillLabel, mergeLabels } from "./labels";
+export type { IbcsExportLabels, IbcsLabels, IbcsLabelsOverride } from "./labels";
+
+/* ./errorBar - value ± half-width as whisker-and-cap geometry */
+export { computeErrorBar, errorBarExtent } from "./errorBar";
+export type {
+  ErrorBarExtent,
+  ErrorBarGeometry,
+  ErrorBarLayoutOptions,
+  ErrorBarOrientation,
+  ErrorBarSegment,
+} from "./errorBar";
 
 /* ./bandScale - categorical band placement (padding-based, D3-compatible) */
 export { bandScale, resolveBandPadding } from "./bandScale";
@@ -309,6 +329,7 @@ export type {
 /* ./rankingVariance - ranked bars with their variance lane */
 export { computeRankingVariance } from "./rankingVariance";
 export type {
+  RankingBand,
   RankingDatum,
   RankingRow,
   RankingTotalRow,
@@ -326,8 +347,14 @@ export type {
   GroupedLayout,
 } from "./groupedVariance";
 
-/* ./reference - reference lines / bands resolved against a plot box */
-export { isReferenceBand, isReferenceLine, resolveReference, resolveReferences } from "./reference";
+/* ./reference - reference lines / bands resolved against a plot box, and value bands */
+export {
+  isReferenceBand,
+  isReferenceLine,
+  resolveReference,
+  resolveReferences,
+  resolveValueBand,
+} from "./reference";
 export type {
   AxisScales,
   PlotBox,
@@ -337,6 +364,8 @@ export type {
   ResolvedReference,
   ResolvedReferenceBand,
   ResolvedReferenceLine,
+  ResolvedValueBand,
+  ValueBand,
 } from "./reference";
 
 /* ./waterfallStatement - a statement rendered as lane-by-lane waterfall rows */

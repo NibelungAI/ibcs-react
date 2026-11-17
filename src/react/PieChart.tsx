@@ -1,7 +1,15 @@
 import { forwardRef, useMemo, type CSSProperties } from "react";
 import type { IbcsTokensOverride } from "../core/tokens";
+import { fillLabel, type IbcsLabelsOverride } from "../core/labels";
 import { computeVariance } from "../core/variance";
-import { formatValue, formatSigned, formatPercent, type FormatOptions } from "../core/format";
+import {
+  formatPercent,
+  formatSigned,
+  formatValue,
+  notAvailableOf,
+  percentFormatOf,
+  type FormatOptions,
+} from "../core/format";
 import { computePieSlices, arcPath, pointOnCircle, type PieSlice } from "../core/pie";
 import { useMountGrow, useDataTween, useChartHover } from "./hooks";
 import type { ChartSelection, ChartHover } from "./hooks";
@@ -13,7 +21,7 @@ import {
   selectableMarkProps,
   type ChartDataRow,
 } from "./a11y";
-import { useIbcsTokens } from "./theme";
+import { useIbcsLabels, useIbcsTokens } from "./theme";
 import { clampTo, estTextW, fitLabel } from "./internal/text";
 
 /** Parse a `#rgb` / `#rrggbb` string to bytes, or null if not a plain hex. */
@@ -93,7 +101,17 @@ export interface PieChartProps {
   growth?: { delta: number; higherIsBetter?: boolean };
   format?: FormatOptions;
   tokens?: IbcsTokensOverride;
+  /**
+   * The component's own words ("Value", "Share", "Rest", "Total", the note on omitted negatives and the slices' "Select …" names) merged onto `IbcsThemeProvider`'s.
+   * See `IbcsLabels`.
+   */
+  labels?: IbcsLabelsOverride;
   title?: string;
+  /**
+   * The chart's accessible name, in place of the generated English
+   * description; also the caption of its screen-reader table.
+   */
+  ariaLabel?: string;
   /** Extra class name for the chart `<svg>` (the rendered root). */
   className?: string;
   /** Inline style merged OVER the chart `<svg>`'s own layout style. */
@@ -157,7 +175,9 @@ export const PieChart = forwardRef<SVGSVGElement, PieChartProps>(function PieCha
     growth,
     format = {},
     tokens: tokenOverride,
+    labels,
     title,
+    ariaLabel,
     className,
     style,
     tooltip = true,
@@ -167,6 +187,7 @@ export const PieChart = forwardRef<SVGSVGElement, PieChartProps>(function PieCha
   ref,
 ) {
   const tokens = useIbcsTokens(tokenOverride);
+  const words = useIbcsLabels(labels);
   const hover = useChartHover<PieDatum>();
   const marks = markInteraction(hover, tooltip, onHover);
   const data = useDataTween(dataProp);
@@ -196,7 +217,7 @@ export const PieChart = forwardRef<SVGSVGElement, PieChartProps>(function PieCha
           key: "share",
           slice: partSlice,
           color: tokens.color.total,
-          datum: { label: "Share", value: share.value },
+          datum: { label: words.share, value: share.value },
           emphasis: true,
         });
       }
@@ -205,7 +226,7 @@ export const PieChart = forwardRef<SVGSVGElement, PieChartProps>(function PieCha
           key: "rest",
           slice: restSlice,
           color: rampLight,
-          datum: { label: "Rest", value: rest },
+          datum: { label: words.rest, value: rest },
           emphasis: false,
         });
       }
@@ -243,7 +264,7 @@ export const PieChart = forwardRef<SVGSVGElement, PieChartProps>(function PieCha
       emphasisSlice: emph,
       shareFraction: 0,
     };
-  }, [data, share, emphasisIndex, tokens]);
+  }, [data, share, emphasisIndex, tokens, words.share, words.rest]);
 
   // Geometry: reserve room for outside labels so nothing spills the box.
   const needOutside = showValueLabels || (share != null && !donut);
@@ -287,6 +308,15 @@ export const PieChart = forwardRef<SVGSVGElement, PieChartProps>(function PieCha
   // Built-in tooltip for the hovered slice. The value renders at FULL precision
   // (compact: false): any printed label is compact, so the tooltip adds the
   // exact figure instead of echoing it.
+  // A share of the whole: unsigned, one decimal (the 1.4 text) until the format
+  // opts into exact digits or a locale.
+  const shareFmt = percentFormatOf(format, "auto");
+  const shareText = (frac: number | null) =>
+    typeof shareFmt === "number"
+      ? formatPercent(frac).replace("+", "")
+      : formatPercent(frac, shareFmt);
+  const na = notAvailableOf(format);
+
   const renderTooltip = () => {
     const h = hover.hovered;
     if (!tooltip || !h) return null;
@@ -294,8 +324,8 @@ export const PieChart = forwardRef<SVGSVGElement, PieChartProps>(function PieCha
     const frac = model.total > 0 ? d.value / model.total : 0;
     const exact = { ...format, compact: false };
     const rows: ChartTooltipRow[] = [
-      { label: "Value", value: formatValue(d.value, exact), strong: true },
-      { label: "Share", value: formatPercent(frac).replace("+", "") },
+      { label: words.value, value: formatValue(d.value, exact), strong: true },
+      { label: words.share, value: shareText(frac) },
     ];
     return (
       <ChartTooltip
@@ -311,26 +341,33 @@ export const PieChart = forwardRef<SVGSVGElement, PieChartProps>(function PieCha
 
   // Share-mode center / outside text.
   const shareFrac = model.shareFraction;
-  const pctText = `${(shareFrac * 100).toFixed(shareFrac > 0 && shareFrac < 0.1 ? 1 : 0)}%`;
+  const shareDigits = shareFrac > 0 && shareFrac < 0.1 ? 1 : 0;
+  const pctText =
+    typeof shareFmt === "number"
+      ? `${(shareFrac * 100).toFixed(shareDigits)}%`
+      : formatPercent(shareFrac, {
+          ...shareFmt,
+          fractionDigits: format.percentFractionDigits ?? shareDigits,
+        });
 
   // Screen-reader data table: every slice's value and the share of the whole its
   // ANGLE encodes (the part a screen reader can never see), plus the growth
   // delta on the slice it is anchored to, and the whole itself as a total row.
-  const a11yColumns = ["Value", "Share", ...(growthGeom ? ["Δ"] : [])];
+  const a11yColumns = [words.value, words.share, ...(growthGeom ? ["Δ"] : [])];
   const a11yRows: ChartDataRow[] = model.slices.map((rs) => ({
     label: rs.datum.label,
     cells: [
       formatValue(rs.datum.value, format),
-      formatPercent(rs.slice.fraction).replace("+", ""),
-      ...(growthGeom ? [rs.slice === model.emphasisSlice ? growthGeom.label : "n/a"] : []),
+      shareText(rs.slice.fraction),
+      ...(growthGeom ? [rs.slice === model.emphasisSlice ? growthGeom.label : na] : []),
     ],
   }));
   a11yRows.push({
-    label: "Total",
+    label: words.total,
     cells: [
       formatValue(model.total, format),
-      formatPercent(model.total > 0 ? 1 : null).replace("+", ""),
-      ...(growthGeom ? ["n/a"] : []),
+      shareText(model.total > 0 ? 1 : null),
+      ...(growthGeom ? [na] : []),
     ],
   });
 
@@ -349,9 +386,8 @@ export const PieChart = forwardRef<SVGSVGElement, PieChartProps>(function PieCha
         aria-label={
           onSelect
             ? undefined
-            : title
-              ? `${title}. Part-to-whole pie chart.`
-              : "Part-to-whole pie chart"
+            : (ariaLabel ??
+              (title ? `${title}. Part-to-whole pie chart.` : "Part-to-whole pie chart"))
         }
         style={{
           display: "block",
@@ -396,7 +432,10 @@ export const PieChart = forwardRef<SVGSVGElement, PieChartProps>(function PieCha
               strokeWidth={model.slices.length > 1 ? 1 : 0}
               {...selectableMarkProps<SVGPathElement>(
                 onSelect ? () => onSelect(info) : undefined,
-                `Select ${rs.datum.label}, ${formatValue(rs.datum.value, format)}`,
+                fillLabel(words.selectMark, {
+                  label: rs.datum.label,
+                  value: formatValue(rs.datum.value, format),
+                }),
               )}
               {...marks.forMark(info)}
               style={onSelect ? { cursor: "pointer" } : undefined}
@@ -591,12 +630,12 @@ export const PieChart = forwardRef<SVGSVGElement, PieChartProps>(function PieCha
         {/* Negatives clamped-to-zero note */}
         {model.hadNegative && (
           <text x={W / 2} y={H - 2} fontSize={9} fill={tokens.color.textMuted} textAnchor="middle">
-            {fitLabel("negative values omitted", W - 6, 9)}
+            {fitLabel(words.negativeOmitted, W - 6, 9)}
           </text>
         )}
       </svg>
       <ChartDataTable
-        caption={title ? `${title} - data table` : "Part-to-whole data table"}
+        caption={ariaLabel ?? (title ? `${title} - data table` : "Part-to-whole data table")}
         columns={a11yColumns}
         rows={a11yRows}
       />

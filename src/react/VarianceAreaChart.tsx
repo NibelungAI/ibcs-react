@@ -1,9 +1,17 @@
 import { forwardRef, useId, type CSSProperties } from "react";
 import type { ScenarioKey } from "../core/types";
 import type { IbcsTokensOverride } from "../core/tokens";
+import type { IbcsLabelsOverride } from "../core/labels";
 import { computeVariance } from "../core/variance";
 import { bandScale, resolveBandPadding, type BandPadding } from "../core/bandScale";
-import { formatValue, formatSigned, formatPercent, type FormatOptions } from "../core/format";
+import {
+  formatPercent,
+  formatSigned,
+  formatValue,
+  notAvailableOf,
+  percentFormatOf,
+  type FormatOptions,
+} from "../core/format";
 import { computeVarianceArea, type VarianceAreaDatum, type XY } from "../core/varianceArea";
 import { useMountGrow, useDataTween, useChartHover } from "./hooks";
 import type { ChartHover } from "./hooks";
@@ -11,7 +19,7 @@ import { markInteraction, type MarkRect } from "./internal/hover";
 import { ChartTooltip, type ChartTooltipRow } from "./ChartTooltip";
 import { ChartDataTable, type ChartDataRow } from "./a11y";
 import { clampTo, estTextW, fitLabel, svgSafeId } from "./internal/text";
-import { useIbcsTokens } from "./theme";
+import { useIbcsLabels, useIbcsTokens } from "./theme";
 
 export type { VarianceAreaDatum } from "../core/varianceArea";
 
@@ -50,7 +58,17 @@ export interface VarianceAreaChartProps {
   bandPadding?: BandPadding;
   format?: FormatOptions;
   tokens?: IbcsTokensOverride;
+  /**
+   * The component's own words (the AC code of its tooltip and table, "Total variance" and the "(FC)" mark) merged onto `IbcsThemeProvider`'s.
+   * See `IbcsLabels`.
+   */
+  labels?: IbcsLabelsOverride;
   title?: string;
+  /**
+   * The chart's accessible name, in place of the generated English
+   * description; also the caption of its screen-reader table.
+   */
+  ariaLabel?: string;
   /** Class name for the chart's `<svg>`. */
   className?: string;
   /** Inline style merged over the `<svg>`'s own layout style (your keys win). */
@@ -100,7 +118,9 @@ export const VarianceAreaChart = forwardRef<SVGSVGElement, VarianceAreaChartProp
       bandPadding,
       format = {},
       tokens: tokenOverride,
+      labels,
       title,
+      ariaLabel,
       className,
       style,
       onHover,
@@ -109,6 +129,10 @@ export const VarianceAreaChart = forwardRef<SVGSVGElement, VarianceAreaChartProp
     ref,
   ) {
     const tokens = useIbcsTokens(tokenOverride);
+    const words = useIbcsLabels(labels);
+    const S = words.scenario;
+    const pctFmt = percentFormatOf(format);
+    const na = notAvailableOf(format);
     // Sanitised so the id stays a valid selector after an SVG export/serialization.
     const hatchId = svgSafeId(useId());
     const hover = useChartHover<VarianceAreaDatum>();
@@ -190,7 +214,8 @@ export const VarianceAreaChart = forwardRef<SVGSVGElement, VarianceAreaChartProp
     const tTipRest = up ? zeroY - tMagRest : zeroY + tMagRest;
     const tColor =
       total.abs === 0 ? tokens.color.zero : total.favorable ? tokens.color.good : tokens.color.bad;
-    const tLabel = total.pct != null ? formatPercent(total.pct) : formatSigned(total.abs, format);
+    const tLabel =
+      total.pct != null ? formatPercent(total.pct, pctFmt) : formatSigned(total.abs, format);
     // Hover geometry for that end mark (a pin's line is widened to ±5px).
     const totalMarkRect: MarkRect =
       mark === "pin"
@@ -216,13 +241,13 @@ export const VarianceAreaChart = forwardRef<SVGSVGElement, VarianceAreaChartProp
       const v = computeVariance(h.value, reference, higherIsBetter);
       const exact = { ...format, compact: false };
       const rows: ChartTooltipRow[] = [
-        { label: h.scenario ?? "AC", value: formatValue(h.value, exact), strong: true },
+        { label: S[h.scenario ?? "AC"], value: formatValue(h.value, exact), strong: true },
         { label: referenceLabel, value: formatValue(reference, exact) },
       ];
       if (v) {
         const color =
           v.abs === 0 ? tokens.color.zero : v.favorable ? tokens.color.good : tokens.color.bad;
-        const pct = v.pct != null ? ` (${formatPercent(v.pct)})` : "";
+        const pct = v.pct != null ? ` (${formatPercent(v.pct, pctFmt)})` : "";
         rows.push({ label: "Δ", value: `${formatSigned(v.abs, exact)}${pct}`, color });
       }
       return (
@@ -243,9 +268,9 @@ export const VarianceAreaChart = forwardRef<SVGSVGElement, VarianceAreaChartProp
     // reference level the grey area fills to, and the gap the green/red band
     // between them shows. Forecast periods are tagged, mirroring the hatched
     // tail, and the closing row carries the right-hand total-variance mark.
-    const a11yColumns = ["AC", referenceLabel, "Δ"];
+    const a11yColumns = [S.AC, referenceLabel, "Δ"];
     const a11yRows: ChartDataRow[] = points.map((p) => ({
-      label: p.forecast ? `${p.category} (FC)` : p.category,
+      label: p.forecast ? `${p.category} (${S.FC})` : p.category,
       cells: [
         formatValue(p.value, format),
         formatValue(p.reference, format),
@@ -254,12 +279,12 @@ export const VarianceAreaChart = forwardRef<SVGSVGElement, VarianceAreaChartProp
     }));
     if (n > 0) {
       a11yRows.push({
-        label: "Total variance",
+        label: words.totalVariance,
         cells: [
-          "n/a",
-          "n/a",
+          na,
+          na,
           total.pct != null
-            ? `${formatSigned(total.abs, format)} (${formatPercent(total.pct)})`
+            ? `${formatSigned(total.abs, format)} (${formatPercent(total.pct, pctFmt)})`
             : formatSigned(total.abs, format),
         ],
       });
@@ -274,9 +299,10 @@ export const VarianceAreaChart = forwardRef<SVGSVGElement, VarianceAreaChartProp
           viewBox={`0 0 ${width} ${height}`}
           role="img"
           aria-label={
-            title
+            ariaLabel ??
+            (title
               ? `${title}. Actual versus reference area over ${n} periods.`
-              : `Actual versus reference area over ${n} periods`
+              : `Actual versus reference area over ${n} periods`)
           }
           className={className}
           style={{
@@ -534,7 +560,10 @@ export const VarianceAreaChart = forwardRef<SVGSVGElement, VarianceAreaChartProp
             })}
         </svg>
         <ChartDataTable
-          caption={title ? `${title} - data table` : `Actual versus ${referenceLabel} - data table`}
+          caption={
+            ariaLabel ??
+            (title ? `${title} - data table` : `Actual versus ${referenceLabel} - data table`)
+          }
           columns={a11yColumns}
           rows={a11yRows}
         />
