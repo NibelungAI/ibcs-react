@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import type { KpiConfig } from "../core/kpi";
 import { computeKpi } from "../core/kpi";
 import type { IbcsTokensOverride } from "../core/tokens";
-import type { IbcsLabelsOverride } from "../core/labels";
+import { scenarioHeadings, type IbcsLabelsOverride } from "../core/labels";
 import { useIbcsLabels, useIbcsTokens } from "./theme";
 import { formatPercent, formatSigned, formatValue, percentFormatOf } from "../core/format";
 import { useCountUp } from "./hooks";
@@ -147,7 +147,7 @@ export function KpiCard({
         )}
         <span style={{ color: tokens.color.textMuted, fontWeight: 500, fontSize: "0.85em" }}>
           {`${words.versus} `}
-          {words.scenario[d.base]}
+          {scenarioHeadings(words)[d.base]}
         </span>
       </span>
     );

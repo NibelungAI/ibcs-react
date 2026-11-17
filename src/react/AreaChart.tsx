@@ -1,11 +1,10 @@
 import { forwardRef, useMemo, type CSSProperties } from "react";
 import type { ScenarioKey } from "../core/types";
 import type { IbcsTokensOverride } from "../core/tokens";
-import type { IbcsLabelsOverride } from "../core/labels";
+import { endLabelText, scenarioHeadings, type IbcsLabelsOverride } from "../core/labels";
 import { computeLines, type LineDatum, type LinePoint } from "../core/lineArea";
 import { bandScale, resolveBandPadding, type BandPadding } from "../core/bandScale";
 import { formatValue, notAvailableOf, type FormatOptions } from "../core/format";
-import { prefixLabel } from "../core/labels";
 import { useMountGrow, useDataTween } from "./hooks";
 import { MARKER_DENSITY_THRESHOLD } from "./LineChart";
 import { ChartDataTable, type ChartDataRow } from "./a11y";
@@ -164,6 +163,8 @@ export const AreaChart = forwardRef<SVGSVGElement, AreaChartProps>(function Area
 ) {
   const tokens = useIbcsTokens(tokenOverride);
   const words = useIbcsLabels(labels);
+  // Headers never go blank; an end label takes the raw word (empty: the value alone).
+  const S = scenarioHeadings(words);
   const data = useDataTween(dataProp);
   const grow = useMountGrow(700, 0, data);
 
@@ -224,7 +225,7 @@ export const AreaChart = forwardRef<SVGSVGElement, AreaChartProps>(function Area
       key: scenario,
       x: x(endPoint.index) + 6,
       y: yA(endPoint.value) + 3.5,
-      text: prefixLabel(words.scenario[scenario], formatValue(endPoint.value, format)),
+      text: endLabelText(words, words.scenario[scenario], formatValue(endPoint.value, format)),
       fill,
       weight: 600,
     });
@@ -234,7 +235,8 @@ export const AreaChart = forwardRef<SVGSVGElement, AreaChartProps>(function Area
       key: baseSeries.scenario,
       x: x(baseSeries.endPoint.index) + 6,
       y: yA(baseSeries.endPoint.value) + 3.5,
-      text: prefixLabel(
+      text: endLabelText(
+        words,
         words.scenario[baseSeries.scenario],
         formatValue(baseSeries.endPoint.value, format),
       ),
@@ -264,10 +266,7 @@ export const AreaChart = forwardRef<SVGSVGElement, AreaChartProps>(function Area
 
   // Screen-reader data table: each period's area value and the reference value -
   // so SR users read the actual numbers, not the decorative svg.
-  const a11yColumns = [
-    words.scenario[scenario],
-    ...(baseSeries ? [words.scenario[baseSeries.scenario]] : []),
-  ];
+  const a11yColumns = [S[scenario], ...(baseSeries ? [S[baseSeries.scenario]] : [])];
   const na = notAvailableOf(format);
   const areaByIndex = new Map(points.map((p) => [p.index, p.value]));
   const baseByIndex = new Map((baseSeries?.points ?? []).map((p) => [p.index, p.value]));
@@ -295,8 +294,8 @@ export const AreaChart = forwardRef<SVGSVGElement, AreaChartProps>(function Area
         aria-label={
           ariaLabel ??
           (title
-            ? `${title}. Area chart of ${words.scenario[scenario]} over ${n} periods.`
-            : `Area chart of ${words.scenario[scenario]} over ${n} periods`)
+            ? `${title}. Area chart of ${S[scenario]} over ${n} periods.`
+            : `Area chart of ${S[scenario]} over ${n} periods`)
         }
         style={{
           display: "block",
@@ -391,9 +390,7 @@ export const AreaChart = forwardRef<SVGSVGElement, AreaChartProps>(function Area
       <ChartDataTable
         caption={
           ariaLabel ??
-          (title
-            ? `${title} - data table`
-            : `Area chart of ${words.scenario[scenario]} - data table`)
+          (title ? `${title} - data table` : `Area chart of ${S[scenario]} - data table`)
         }
         columns={a11yColumns}
         rows={a11yRows}

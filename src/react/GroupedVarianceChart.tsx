@@ -1,7 +1,7 @@
 import { forwardRef, useId, useMemo, type CSSProperties } from "react";
 import type { ScenarioKey } from "../core/types";
 import type { IbcsTokensOverride } from "../core/tokens";
-import type { IbcsLabelsOverride } from "../core/labels";
+import { deltaHeading, scenarioHeadings, type IbcsLabelsOverride } from "../core/labels";
 import {
   computeGroupedVariance,
   type GroupedDatum,
@@ -148,7 +148,7 @@ export const GroupedVarianceChart = forwardRef<SVGSVGElement, GroupedVarianceCha
   ) {
     const tokens = useIbcsTokens(tokenOverride);
     const words = useIbcsLabels(labels);
-    const S = words.scenario;
+    const S = scenarioHeadings(words);
     // The comparison as the chart writes it (its scenario word).
     const cmpName = S[comparison];
     const pctFmt = percentFormatOf(format);
@@ -210,8 +210,16 @@ export const GroupedVarianceChart = forwardRef<SVGSVGElement, GroupedVarianceCha
       if (v) {
         const color =
           v.abs === 0 ? tokens.color.zero : v.favorable ? tokens.color.good : tokens.color.bad;
-        rows.push({ label: `Δ${cmpName}`, value: formatSigned(v.abs, exact), color });
-        rows.push({ label: `Δ${cmpName}%`, value: formatPercent(v.pct, pctFmt), color });
+        rows.push({
+          label: deltaHeading(words, cmpName),
+          value: formatSigned(v.abs, exact),
+          color,
+        });
+        rows.push({
+          label: deltaHeading(words, cmpName, true),
+          value: formatPercent(v.pct, pctFmt),
+          color,
+        });
       }
       return (
         <ChartTooltip
@@ -277,7 +285,12 @@ export const GroupedVarianceChart = forwardRef<SVGSVGElement, GroupedVarianceCha
 
     // Screen-reader data table: each category's AC, the comparison, and Δ / Δ% -
     // shared by both orientations, so SR users read values, not the svg.
-    const a11yColumns = [S.AC, cmpName, `Δ${cmpName}`, `Δ${cmpName}%`];
+    const a11yColumns = [
+      S.AC,
+      cmpName,
+      deltaHeading(words, cmpName),
+      deltaHeading(words, cmpName, true),
+    ];
     const a11yRows: ChartDataRow[] = cells.map((c) => ({
       label: c.isForecast ? `${c.category} (${S.FC})` : c.category,
       cells: [
@@ -363,7 +376,7 @@ export const GroupedVarianceChart = forwardRef<SVGSVGElement, GroupedVarianceCha
             aria-label={
               ariaLabel ??
               (title
-                ? `${title}. Grouped columns: ${S.AC} versus ${cmpName}, with Δ${cmpName} and Δ${cmpName}% tiers.`
+                ? `${title}. Grouped columns: ${S.AC} versus ${cmpName}, with ${deltaHeading(words, cmpName)} and ${deltaHeading(words, cmpName, true)} tiers.`
                 : `Grouped columns of ${S.AC} versus ${cmpName}`)
             }
             className={className}
@@ -731,7 +744,7 @@ export const GroupedVarianceChart = forwardRef<SVGSVGElement, GroupedVarianceCha
           aria-label={
             ariaLabel ??
             (title
-              ? `${title}. Grouped bars: ${S.AC} versus ${cmpName}, with Δ${cmpName} and Δ${cmpName}% panels.`
+              ? `${title}. Grouped bars: ${S.AC} versus ${cmpName}, with ${deltaHeading(words, cmpName)} and ${deltaHeading(words, cmpName, true)} panels.`
               : `Grouped bars of ${S.AC} versus ${cmpName}`)
           }
           className={className}
@@ -764,7 +777,7 @@ export const GroupedVarianceChart = forwardRef<SVGSVGElement, GroupedVarianceCha
               fill={tokens.color.textMuted}
               textAnchor="middle"
             >
-              {fitLabel(`Δ${cmpName}`, absPanelW, 10.5)}
+              {fitLabel(deltaHeading(words, cmpName), absPanelW, 10.5)}
             </text>
           )}
           {showPct && (
@@ -776,7 +789,7 @@ export const GroupedVarianceChart = forwardRef<SVGSVGElement, GroupedVarianceCha
               fill={tokens.color.textMuted}
               textAnchor="middle"
             >
-              {fitLabel(`Δ${cmpName}%`, pctPanelW, 10.5)}
+              {fitLabel(deltaHeading(words, cmpName, true), pctPanelW, 10.5)}
             </text>
           )}
 

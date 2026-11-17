@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   formatInterval,
   formatPercent,
+  formatPercentInterval,
   formatPercentPlain,
   formatSigned,
   formatValue,
@@ -216,7 +217,7 @@ describe("formatValue - exact fractionDigits", () => {
     expect(formatValue(1234567, { decimals: 0, fractionDigits: 2 })).toBe("1.23M");
   });
 
-  it("rounds half away from zero, as Intl does, on the number as written", () => {
+  it("rounds half away from zero on the number as it reads (15 significant digits)", () => {
     const d = (n: number, fractionDigits: number) =>
       formatValue(n, { compact: false, fractionDigits });
     // Exact binary ties.
@@ -441,5 +442,145 @@ describe("the 'Numbers and words' docs page, verbatim", () => {
     expect(formatPercent(0.175, { locale: "sr-Latn" })).toBe("+17,5%");
     expect(formatPercent(0.175, { locale: "de-DE" })).toBe(`+17,5${NB}%`);
     expect(formatPercent(0.175)).toBe("+17.5%");
+    expect(formatInterval(914.3013, 0.004, sr)).toBe(`914,30${NB}±${NB}0,004`);
+    expect(formatInterval(914.3013, 0.4682)).toBe(`914.30${NB}±${NB}0.47`);
+    expect(formatInterval(12345, 234, { fractionDigits: 2 })).toBe(`12.35K${NB}±${NB}0.23K`);
+  });
+
+  it("its rounding paragraph", () => {
+    expect(formatValue(1.005, { compact: false, fractionDigits: 2 })).toBe("1.01");
+    expect(formatValue(2.5, { compact: false, fractionDigits: 0 })).toBe("3");
+    expect(formatValue(-2.5, { compact: false, fractionDigits: 0 })).toBe("-3");
+    expect(0.145 * 100).toBe(14.499999999999998);
+    expect(formatValue(0.145 * 100, { compact: false, fractionDigits: 0 })).toBe("15");
+    expect((1.005).toFixed(2)).toBe("1.00");
+    expect(formatValue(-0.001, { compact: false, fractionDigits: 2 })).toBe("0.00");
+    expect(formatValue(999.996, { fractionDigits: 2 })).toBe("1.00K");
+  });
+
+  it("its percent table: the four changes once a format sets one of the four options", () => {
+    const NB = "\u00a0";
+    const en = percentFormatOf({ locale: "en-US" });
+    expect(formatPercent(0.175, 1)).toBe("+17.5%");
+    expect(formatPercent(0.175, percentFormatOf({ locale: "sr-Latn" }))).toBe("+17,5%");
+    expect(formatPercent(0.175, percentFormatOf({ locale: "de-DE" }))).toBe(`+17,5${NB}%`);
+    expect(formatPercent(0.0004, 1)).toBe("+0.0%");
+    expect(formatPercent(0.0004, en)).toBe("0.0%");
+    expect(formatPercent(0.0115, 1)).toBe("+1.1%");
+    expect(formatPercent(0.0115, en)).toBe("+1.2%");
+    expect(formatPercent(17.279, 1)).toBe("+1727.9%");
+    expect(formatPercent(17.279, en)).toBe("+1,727.9%");
+    expect(0.0045 * 100).toBe(0.44999999999999996);
+    expect(formatPercent(0.0045, en)).toBe("+0.5%");
+    expect(formatPercent(0.0185, en)).toBe("+1.9%");
+    expect(formatPercent(0.0045, 1)).toBe("+0.4%");
+    expect(formatPercent(0.0185, 1)).toBe("+1.8%");
+  });
+});
+
+/* ------------------------------------------------------------------ *
+ * 1.5 round 2 - ties as the number reads, intervals that never write a
+ * positive half-width as zero, compact unit promotion.
+ * ------------------------------------------------------------------ */
+
+describe("percent ties round half up as the number reads (options form)", () => {
+  it("rounds every one-digit tie 0.05 % … 199.95 % up", () => {
+    const wrong: string[] = [];
+    for (let i = 0; i < 2000; i++) {
+      const fraction = Number(`${10 * i + 5}e-4`); // 0.0005, 0.0015, … from decimal text
+      const expected = `+${((i + 1) / 10).toFixed(1)}%`;
+      const got = formatPercent(fraction, { fractionDigits: 1 });
+      if (got !== expected) wrong.push(`${fraction} → ${got} (want ${expected})`);
+    }
+    expect(wrong).toEqual([]);
+  });
+
+  it("rounds every two-digit tie 0.005 % … 19.995 % up, in sr-Latn too", () => {
+    const wrong: string[] = [];
+    for (let i = 0; i < 2000; i++) {
+      const fraction = Number(`${10 * i + 5}e-5`);
+      const expected = `+${((i + 1) / 100).toFixed(2).replace(".", ",")}%`;
+      const got = formatPercent(fraction, { fractionDigits: 2, locale: "sr-Latn" });
+      if (got !== expected) wrong.push(`${fraction} → ${got} (want ${expected})`);
+    }
+    expect(wrong).toEqual([]);
+  });
+
+  it("gives the review's cases and survives a ×100 / ÷100 round trip", () => {
+    expect(formatPercent(0.0045, { fractionDigits: 1 })).toBe("+0.5%");
+    expect(formatPercent(0.0185, { fractionDigits: 1 })).toBe("+1.9%");
+    expect(formatPercent(-0.0045, { fractionDigits: 1 })).toBe("-0.5%");
+    expect(formatPercentPlain(0.0045, { fractionDigits: 1 })).toBe("+0.5");
+    // A table cell stores percent units and divides back: 0.44999999999999996 / 100.
+    expect(formatPercentPlain((0.0045 * 100) / 100, { fractionDigits: 1 })).toBe("+0.5");
+  });
+
+  it("leaves the 1.4 numeric form byte-identical, binary rounding included", () => {
+    expect(formatPercent(0.0045)).toBe("+0.4%");
+    expect(formatPercent(0.0185)).toBe("+1.8%");
+    expect(formatPercentPlain(0.0045)).toBe("+0.4");
+  });
+});
+
+describe("values: ties at 15 significant digits, compact units promoted", () => {
+  it("rounds a computed tie the way it reads", () => {
+    // 0.145 * 100 is 14.499999999999998 in binary.
+    expect(formatValue(0.145 * 100, { compact: false, fractionDigits: 0 })).toBe("15");
+    expect(formatValue(1.005, { compact: false, fractionDigits: 2 })).toBe("1.01");
+  });
+
+  it("moves a compact value to the next unit when rounding reaches 1,000", () => {
+    expect(formatValue(999.994, { fractionDigits: 2 })).toBe("999.99");
+    expect(formatValue(999.996, { fractionDigits: 2 })).toBe("1.00K");
+    expect(formatValue(999999.6, { fractionDigits: 2 })).toBe("1.00M");
+    expect(formatValue(-999.996, { fractionDigits: 2 })).toBe("-1.00K");
+    expect(formatValue(999.996, { compact: false, fractionDigits: 2 })).toBe("1,000.00");
+    // The 1.4 path keeps its own rounding.
+    expect(formatValue(999.6)).toBe("1000");
+  });
+});
+
+describe("formatInterval - a positive half-width is never written as zero", () => {
+  const NB = "\u00a0";
+
+  it("writes both numbers in full at two figures of the half-width when no digits are set", () => {
+    expect(formatInterval(914.3013, 0.4682, {})).toBe(`914.30${NB}±${NB}0.47`);
+    expect(formatInterval(3.4573, 0.4621, {}, true)).toBe(`+3.46${NB}±${NB}0.46`);
+    expect(formatInterval(12345, 234, {})).toBe(`12,345${NB}±${NB}234`);
+    expect(formatInterval(5, 0.004, {})).toBe(`5.0000${NB}±${NB}0.0040`);
+    expect(formatInterval(914.3013, 0.4682, { locale: "sr-Latn" })).toBe(`914,30${NB}±${NB}0,47`);
+    expect(formatInterval(5, 0, {})).toBe(`5${NB}±${NB}0`);
+  });
+
+  it("keeps the value's exact digits and gives the half-width its first figure", () => {
+    const two = { compact: false, fractionDigits: 2 };
+    expect(formatInterval(914.3013, 0.004, two)).toBe(`914.30${NB}±${NB}0.004`);
+    expect(formatInterval(914.3013, 0.0004, two)).toBe(`914.30${NB}±${NB}0.0004`);
+    expect(formatInterval(914.3013, 0.4682, two)).toBe(`914.30${NB}±${NB}0.47`);
+    expect(formatInterval(-2.8818, 0.004, two, true)).toBe(`-2.88${NB}±${NB}0.004`);
+  });
+
+  it("writes the half-width in the value's compact unit", () => {
+    expect(formatInterval(12345, 234, { fractionDigits: 2 })).toBe(`12.35K${NB}±${NB}0.23K`);
+    expect(formatInterval(12345, 1, { fractionDigits: 2 })).toBe(`12.35K${NB}±${NB}0.001K`);
+    expect(formatInterval(1.5e6, 2.5e4, { fractionDigits: 1, currency: "€" })).toBe(
+      `€1.5M${NB}±${NB}€0.03M`,
+    );
+    expect(formatInterval(250, 0.5, { fractionDigits: 1 })).toBe(`250.0${NB}±${NB}0.5`);
+  });
+});
+
+describe("formatPercentInterval", () => {
+  const NB = "\u00a0";
+  it("writes the half-width unsigned, at least to its first figure", () => {
+    expect(formatPercentInterval(0.069, 0.004, { locale: "sr-Latn" }, false)).toBe(
+      `+6,9${NB}±${NB}0,4`,
+    );
+    expect(formatPercentInterval(0.069, 0.0004, { locale: "sr-Latn" }, false)).toBe(
+      `+6,9${NB}±${NB}0,04`,
+    );
+    expect(formatPercentInterval(0.004, 0.005, 1, true)).toBe(`+0.4%${NB}±${NB}0.5%`);
+    expect(formatPercentInterval(null, 0.005, 1, true)).toBe("n/a");
+    expect(formatPercentInterval(0.069, undefined, 1, false)).toBe("+6.9");
   });
 });

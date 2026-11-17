@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from "react";
 import type { ScenarioKey } from "../core/types";
 import type { IbcsTokens, IbcsTokensOverride } from "../core/tokens";
-import type { IbcsLabels, IbcsLabelsOverride } from "../core/labels";
+import { scenarioHeadings, type IbcsLabels, type IbcsLabelsOverride } from "../core/labels";
 import { formatValue, formatSigned, type FormatOptions } from "../core/format";
 import { srOnly } from "./a11y";
 import { useIbcsLabels, useIbcsTokens } from "./theme";
@@ -172,9 +172,10 @@ function scenarioName(
   varianceScenarios: { actual: ScenarioKey; base: ScenarioKey },
   words: IbcsLabels,
 ): string {
+  const S = scenarioHeadings(words);
   return scenario === "DELTA"
-    ? `${words.scenario[varianceScenarios.actual]} ${words.minus} ${words.scenario[varianceScenarios.base]}`
-    : words.scenario[scenario];
+    ? `${S[varianceScenarios.actual]} ${words.minus} ${S[varianceScenarios.base]}`
+    : S[scenario];
 }
 
 export function MatrixTable({
@@ -520,7 +521,7 @@ export function MatrixTable({
                       }}
                       title={words.scenarioTitle[scn]}
                     >
-                      {words.scenario[scn]}
+                      {scenarioHeadings(words)[scn]}
                     </th>
                   ))}
                   {showVariance && (
@@ -534,7 +535,7 @@ export function MatrixTable({
                         borderBottom: `2px solid ${tokens.color.text}`,
                         color: tokens.color.textMuted,
                       }}
-                      title={`${words.scenario[varianceScenarios.actual]} − ${words.scenario[varianceScenarios.base]}`}
+                      title={`${scenarioHeadings(words)[varianceScenarios.actual]} − ${scenarioHeadings(words)[varianceScenarios.base]}`}
                     >
                       {words.deltaBudget}
                     </th>

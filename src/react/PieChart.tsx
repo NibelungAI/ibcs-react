@@ -109,7 +109,9 @@ export interface PieChartProps {
   title?: string;
   /**
    * The chart's accessible name, in place of the generated English
-   * description; also the caption of its screen-reader table.
+   * description; also the caption of its screen-reader table. With
+   * `onSelect`, the svg is a container of selectable marks, each with its own
+   * name, and takes no name itself: the text then names the table alone.
    */
   ariaLabel?: string;
   /** Extra class name for the chart `<svg>` (the rendered root). */

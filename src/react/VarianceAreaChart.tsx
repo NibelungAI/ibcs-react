@@ -1,7 +1,7 @@
 import { forwardRef, useId, type CSSProperties } from "react";
 import type { ScenarioKey } from "../core/types";
 import type { IbcsTokensOverride } from "../core/tokens";
-import type { IbcsLabelsOverride } from "../core/labels";
+import { scenarioHeadings, type IbcsLabelsOverride } from "../core/labels";
 import { computeVariance } from "../core/variance";
 import { bandScale, resolveBandPadding, type BandPadding } from "../core/bandScale";
 import {
@@ -130,7 +130,7 @@ export const VarianceAreaChart = forwardRef<SVGSVGElement, VarianceAreaChartProp
   ) {
     const tokens = useIbcsTokens(tokenOverride);
     const words = useIbcsLabels(labels);
-    const S = words.scenario;
+    const S = scenarioHeadings(words);
     const pctFmt = percentFormatOf(format);
     const na = notAvailableOf(format);
     // Sanitised so the id stays a valid selector after an SVG export/serialization.

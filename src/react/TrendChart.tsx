@@ -1,7 +1,7 @@
 import { forwardRef, useId, useMemo, type CSSProperties } from "react";
 import type { ScenarioKey } from "../core/types";
 import type { IbcsTokensOverride } from "../core/tokens";
-import { fillLabel, type IbcsLabelsOverride } from "../core/labels";
+import { deltaHeading, fillLabel, scenarioHeadings, type IbcsLabelsOverride } from "../core/labels";
 import { computeTrend, type TrendDatum } from "../core/trend";
 import { bandScale, resolveBandPadding, type BandPadding } from "../core/bandScale";
 import {
@@ -67,7 +67,9 @@ export interface TrendChartProps {
   title?: string;
   /**
    * The chart's accessible name, in place of the generated English
-   * description; also the caption of its screen-reader table.
+   * description; also the caption of its screen-reader table. With
+   * `onSelect`, the svg is a container of selectable marks, each with its own
+   * name, and takes no name itself: the text then names the table alone.
    */
   ariaLabel?: string;
   /** Extra class name for the chart `<svg>` (the rendered root). */
@@ -155,7 +157,7 @@ export const TrendChart = forwardRef<SVGSVGElement, TrendChartProps>(function Tr
 ) {
   const tokens = useIbcsTokens(tokenOverride);
   const words = useIbcsLabels(labels);
-  const S = words.scenario;
+  const S = scenarioHeadings(words);
   const cmpName = S[comparison];
   const pctFmt = percentFormatOf(format);
   const na = notAvailableOf(format);
@@ -299,7 +301,11 @@ export const TrendChart = forwardRef<SVGSVGElement, TrendChartProps>(function Tr
       const color =
         v.abs === 0 ? tokens.color.zero : v.favorable ? tokens.color.good : tokens.color.bad;
       const pct = v.pct != null ? ` (${formatPercent(v.pct, pctFmt)})` : "";
-      rows.push({ label: `Δ${cmpName}`, value: `${formatSigned(v.abs, exact)}${pct}`, color });
+      rows.push({
+        label: deltaHeading(words, cmpName),
+        value: `${formatSigned(v.abs, exact)}${pct}`,
+        color,
+      });
     }
     return (
       <ChartTooltip
@@ -319,7 +325,9 @@ export const TrendChart = forwardRef<SVGSVGElement, TrendChartProps>(function Tr
     words.current,
     ...(showPyLine ? [S.PY] : []),
     ...(showPlLine ? [S.PL] : []),
-    ...(showVariancePanel ? [`Δ${cmpName}`, `Δ${cmpName}%`] : []),
+    ...(showVariancePanel
+      ? [deltaHeading(words, cmpName), deltaHeading(words, cmpName, true)]
+      : []),
   ];
   const a11yRows: ChartDataRow[] = cells.map((c) => {
     const cells_: Array<string | number> = [

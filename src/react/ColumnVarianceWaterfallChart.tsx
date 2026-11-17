@@ -1,7 +1,7 @@
 import { forwardRef, useId, useMemo, type CSSProperties } from "react";
 import type { ScenarioKey } from "../core/types";
 import type { IbcsTokensOverride } from "../core/tokens";
-import type { IbcsLabelsOverride } from "../core/labels";
+import { deltaHeading, scenarioHeadings, type IbcsLabelsOverride } from "../core/labels";
 import {
   computeColumnVarianceWaterfall,
   type ColumnVarianceDatum,
@@ -141,7 +141,7 @@ export const ColumnVarianceWaterfallChart = forwardRef<
 ) {
   const tokens = useIbcsTokens(tokenOverride);
   const words = useIbcsLabels(labels);
-  const S = words.scenario;
+  const S = scenarioHeadings(words);
   const pctFmt = percentFormatOf(format);
   const na = notAvailableOf(format);
   // `useId()` values contain ":" in React 18 - sanitized so the `url(#…)` refs
@@ -356,8 +356,12 @@ export const ColumnVarianceWaterfallChart = forwardRef<
     const v = c.variance;
     if (v) {
       const color = impactColor(v);
-      rows.push({ label: `Δ${S.PL}`, value: formatSigned(v.abs, exact), color });
-      rows.push({ label: `Δ${S.PL}%`, value: formatPercent(v.pct, pctFmt), color });
+      rows.push({ label: deltaHeading(words, S.PL), value: formatSigned(v.abs, exact), color });
+      rows.push({
+        label: deltaHeading(words, S.PL, true),
+        value: formatPercent(v.pct, pctFmt),
+        color,
+      });
     }
     return (
       <ChartTooltip
@@ -407,7 +411,12 @@ export const ColumnVarianceWaterfallChart = forwardRef<
   // front of PL), the bridge step between them and - while the pin tier is on -
   // the relative variance those pins encode. A closing Total row carries the
   // bridge's anchors (ΣPL → ΣAC) and the circled grand variance.
-  const a11yColumns = [S.AC, S.PL, `Δ${S.PL}`, ...(showPct ? [`Δ${S.PL}%`] : [])];
+  const a11yColumns = [
+    S.AC,
+    S.PL,
+    deltaHeading(words, S.PL),
+    ...(showPct ? [deltaHeading(words, S.PL, true)] : []),
+  ];
   const a11yRows: ChartDataRow[] = cells.map((c) => ({
     label: c.isForecast ? `${c.category} (${S.FC})` : c.category,
     cells: [

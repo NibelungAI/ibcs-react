@@ -1,6 +1,6 @@
 import { forwardRef, useMemo, type CSSProperties } from "react";
 import type { IbcsTokensOverride } from "../core/tokens";
-import type { IbcsLabelsOverride } from "../core/labels";
+import { deltaHeading, scenarioHeadings, type IbcsLabelsOverride } from "../core/labels";
 import { computeTree, type TreeNode } from "../core/tree";
 import { formatValue, formatSigned, notAvailableOf, type FormatOptions } from "../core/format";
 import { useMountGrow, useDataTween } from "./hooks";
@@ -174,8 +174,12 @@ export const TreeChart = forwardRef<SVGSVGElement, TreeChartProps>(function Tree
   // keeps its own `format` override, exactly as its box label does.
   const hasPy = nodes.some((node) => node.py != null);
   const showDelta = showVariance && hasPy;
-  const PY = words.scenario.PY;
-  const a11yColumns = [words.value, ...(hasPy ? [PY] : []), ...(showDelta ? [`Δ${PY}`] : [])];
+  const PY = scenarioHeadings(words).PY;
+  const a11yColumns = [
+    words.value,
+    ...(hasPy ? [PY] : []),
+    ...(showDelta ? [deltaHeading(words, PY)] : []),
+  ];
   const a11yRows: ChartDataRow[] = nodes.map((node) => {
     const f = node.format ?? format;
     const cells: Array<string | number> = [formatValue(node.value, f)];

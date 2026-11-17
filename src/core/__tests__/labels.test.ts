@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { defaultLabels, fillLabel, mergeLabels, prefixLabel } from "../labels";
+import {
+  defaultLabels,
+  deltaHeading,
+  endLabelText,
+  fillLabel,
+  mergeLabels,
+  scenarioHeadings,
+} from "../labels";
 
 describe("defaultLabels", () => {
   it("keeps the IBCS scenario codes and 1.4's words", () => {
@@ -59,7 +66,7 @@ describe("mergeLabels", () => {
   });
 });
 
-describe("fillLabel and prefixLabel", () => {
+describe("fillLabel and the heading helpers", () => {
   it("fills placeholders and leaves unknown ones as written", () => {
     expect(fillLabel("Point {n}", { n: 3 })).toBe("Point 3");
     expect(fillLabel("+{count} more", { count: 12 })).toBe("+12 more");
@@ -69,8 +76,24 @@ describe("fillLabel and prefixLabel", () => {
     expect(fillLabel("Tačka {n}, opet {n}", { n: 2 })).toBe("Tačka 2, opet 2");
   });
 
-  it("joins a series word to its value, or writes the value alone for an empty word", () => {
-    expect(prefixLabel("AC", "150")).toBe("AC 150");
-    expect(prefixLabel("", "0,14%")).toBe("0,14%");
+  it("writes an end label from its template, with no dangling space for an empty word", () => {
+    expect(endLabelText(defaultLabels, "AC", "150")).toBe("AC 150");
+    expect(endLabelText(defaultLabels, "", "0,14%")).toBe("0,14%");
+    expect(endLabelText(mergeLabels({ endLabel: "{value}" }), "AC", "150")).toBe("150");
+    expect(endLabelText(mergeLabels({ endLabel: "{value} ({name})" }), "DPS", "9")).toBe("9 (DPS)");
+  });
+
+  it("never leaves a heading blank: an empty word falls back to the title, then the code", () => {
+    expect(scenarioHeadings(defaultLabels)).toEqual({ AC: "AC", PY: "PY", PL: "PL", FC: "FC" });
+    const empty = mergeLabels({ scenario: { AC: "", PL: "" }, scenarioTitle: { PL: "" } });
+    expect(scenarioHeadings(empty)).toEqual({ AC: "Actual", PY: "PY", PL: "PL", FC: "FC" });
+  });
+
+  it("writes the Δ headers from the delta templates", () => {
+    expect(deltaHeading(defaultLabels, "PY")).toBe("ΔPY");
+    expect(deltaHeading(defaultLabels, "PY", true)).toBe("ΔPY%");
+    const sr = mergeLabels({ delta: "Δ {base}", deltaPct: "Δ {base} (%)" });
+    expect(deltaHeading(sr, "PG")).toBe("Δ PG");
+    expect(deltaHeading(sr, "PG", true)).toBe("Δ PG (%)");
   });
 });

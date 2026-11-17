@@ -1,6 +1,6 @@
 import { forwardRef, useMemo, type CSSProperties } from "react";
 import type { IbcsTokensOverride } from "../core/tokens";
-import type { IbcsLabelsOverride } from "../core/labels";
+import { deltaHeading, scenarioHeadings, type IbcsLabelsOverride } from "../core/labels";
 import {
   computeBarVarianceWaterfall,
   type BarVarianceDatum,
@@ -133,7 +133,7 @@ export const BarVarianceWaterfallChart = forwardRef<SVGSVGElement, BarVarianceWa
   ) {
     const tokens = useIbcsTokens(tokenOverride);
     const words = useIbcsLabels(labels);
-    const S = words.scenario;
+    const S = scenarioHeadings(words);
     const pctFmt = percentFormatOf(format);
     const hover = useChartHover<BarVarianceRow>();
     const marks = markInteraction(hover, tooltip, onHover);
@@ -401,7 +401,7 @@ export const BarVarianceWaterfallChart = forwardRef<SVGSVGElement, BarVarianceWa
       ];
       if (usesPy) rowsT.push({ label: S.PY, value: formatValue(r.ref, exact) });
       rowsT.push({
-        label: `Δ${S[reference]}`,
+        label: deltaHeading(words, S[reference]),
         value: `${formatSigned(r.abs, exact)} (${formatPercent(r.pct, pctFmt)})`,
         color: impactColor(r.abs, r.favorable),
       });
@@ -423,7 +423,12 @@ export const BarVarianceWaterfallChart = forwardRef<SVGSVGElement, BarVarianceWa
     // Screen-reader data table: every entity's AC, the waterfall reference it is
     // bridged from, the absolute step and the Δ% tier value - plus the totals row
     // the chart draws at the bottom - as real numbers, not the decorative svg.
-    const a11yColumns = [S.AC, S[reference], `Δ${S[reference]}`, `Δ${S[pctRef]}%`];
+    const a11yColumns = [
+      S.AC,
+      S[reference],
+      deltaHeading(words, S[reference]),
+      deltaHeading(words, S[pctRef], true),
+    ];
     const a11yRows: ChartDataRow[] = rows.map((r) => ({
       label: r.label,
       cells: [
@@ -454,7 +459,7 @@ export const BarVarianceWaterfallChart = forwardRef<SVGSVGElement, BarVarianceWa
           aria-label={
             ariaLabel ??
             (title ? `${title}. ` : "") +
-              `IBCS C06: ${n} entities as ${S.AC} structure bars with a ${S[reference]}→${S.AC} variance waterfall and a Δ${S[pctRef]}% tier.`
+              `IBCS C06: ${n} entities as ${S.AC} structure bars with a ${S[reference]}→${S.AC} variance waterfall and a ${deltaHeading(words, S[pctRef], true)} tier.`
           }
           className={className}
           style={{
@@ -480,7 +485,7 @@ export const BarVarianceWaterfallChart = forwardRef<SVGSVGElement, BarVarianceWa
             fontStyle="italic"
             fill={tokens.color.textMuted}
           >
-            {`Δ${S[pctRef]}%`}
+            {deltaHeading(words, S[pctRef], true)}
           </text>
 
           {/* Zero baseline (left axis) + Δ% center axis, spanning the whole body. */}

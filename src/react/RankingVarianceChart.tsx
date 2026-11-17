@@ -1,7 +1,7 @@
 import { forwardRef, useId, useMemo, type CSSProperties } from "react";
 import { SCENARIO_KEYS, type ScenarioKey } from "../core/types";
 import type { IbcsTokensOverride } from "../core/tokens";
-import type { IbcsLabelsOverride } from "../core/labels";
+import { deltaHeading, scenarioHeadings, type IbcsLabelsOverride } from "../core/labels";
 import {
   computeRankingVariance,
   type RankingBand,
@@ -12,6 +12,7 @@ import {
 import {
   formatInterval,
   formatPercent,
+  formatPercentInterval,
   formatSigned,
   formatValue,
   notAvailableOf,
@@ -168,10 +169,6 @@ export const RankingVarianceChart = forwardRef<SVGSVGElement, RankingVarianceCha
     const tokens = useIbcsTokens(tokenOverride);
     const words = useIbcsLabels(labels);
     const pctFmt = percentFormatOf(format);
-    const pctHalfFmt = {
-      ...(typeof pctFmt === "number" ? { fractionDigits: pctFmt } : pctFmt),
-      signDisplay: "auto" as const,
-    };
     const na = notAvailableOf(format);
     // Sanitised so the id stays a valid selector after an SVG export/serialization.
     const hatchId = svgSafeId(useId());
@@ -192,11 +189,13 @@ export const RankingVarianceChart = forwardRef<SVGSVGElement, RankingVarianceCha
     const baseKey: ScenarioKey = baseScenario ?? "PL";
     const baseStyle = tokens.scenario[baseKey];
     // The base as the headers write it: a scenario's word, else the caller's own.
-    const baseName = baseScenario ? words.scenario[baseScenario] : baseLabel;
-    const acName = words.scenario.AC;
+    const S = scenarioHeadings(words);
+    const baseName = baseScenario ? S[baseScenario] : baseLabel;
+    const acName = S.AC;
 
     // Bands captioned on a line of their own above the panel headers.
-    const bandLabelH = bands?.some((b) => b.label) ? 14 : 0;
+    const captionedBands = (bands ?? []).filter((b) => b.label).length;
+    const bandLabelH = captionedBands > 0 ? 14 : 0;
 
     // --- vertical layout ------------------------------------------------------
     const rowH = Math.max(14, rowHeight);
@@ -240,11 +239,25 @@ export const RankingVarianceChart = forwardRef<SVGSVGElement, RankingVarianceCha
     const absCx = absX0 + absPanelW / 2;
     const pctCx = pctX0 + pctPanelW / 2;
 
+    const valFont = Math.max(9, Math.min(11, rowH * 0.46));
+    const labelFont = Math.max(9, Math.min(12, rowH * 0.5));
+    // Below this row height even the floor font would overlap vertically; drop
+    // per-row text and keep just the (non-overlapping) bars/pins.
+    const showRowText = rowH >= 13;
+
     // AC bars grow from the left axis; reference frame is a touch taller so its
     // outline stays visible around the solid AC bar.
     const acBarH = Math.min(rowH * 0.5, 14);
     const planH = Math.min(rowH * 0.64, 18);
-    const acBarAreaW = Math.max(acPanelW - 4, 8);
+    // With AC error bars the AC labels get a gutter of their own, as the
+    // variance panels do: the bars and whiskers are scaled into what is left,
+    // so each label fits past its whisker's end and never crosses it. Without
+    // them, 1.4's layout (a label that does not fit falls back to the edge).
+    const acGutterW =
+      showRowText && rows.some((r) => r.acError != null)
+        ? Math.max(...rows.map((r) => estTextW(formatValue(r.ac, format), valFont))) + 4
+        : 0;
+    const acBarAreaW = Math.max(acPanelW - 4 - acGutterW, 8);
     const wOfAc = (v: number) => (Math.abs(v) / acMax) * acBarAreaW;
 
     // Variance panels: reserve an outer label gutter so the signed value never
@@ -256,12 +269,6 @@ export const RankingVarianceChart = forwardRef<SVGSVGElement, RankingVarianceCha
     const pctValW = Math.min(46, pctPanelW * 0.46);
     const pctBarMax = Math.max(pctPanelW / 2 - pctValW - 4, 8);
     const PIN_R = 3.5;
-
-    const valFont = Math.max(9, Math.min(11, rowH * 0.46));
-    const labelFont = Math.max(9, Math.min(12, rowH * 0.5));
-    // Below this row height even the floor font would overlap vertically; drop
-    // per-row text and keep just the (non-overlapping) bars/pins.
-    const showRowText = rowH >= 13;
 
     const impactColor = (val: number, favorable: boolean) =>
       val === 0 ? tokens.color.zero : favorable ? tokens.color.good : tokens.color.bad;
@@ -293,12 +300,11 @@ export const RankingVarianceChart = forwardRef<SVGSVGElement, RankingVarianceCha
               panelSpan: [pctX0, pctX1] as const,
             }
           : { scale: acScale(1), range: acRange, panelSpan: [acX0, acX1] as const };
-    // The half-width of a Δ% as text: unsigned, same locale and digits as the Δ%.
-    const pctHalfText = (e: number) => formatPercent(e / 100, pctHalfFmt);
+    // A Δ% as text, with its unsigned "± half-width" (never written as zero).
     const pctText = (r: RankingRow | RankingTotalRow) => {
-      const base = r.pct == null ? na : formatPercent(r.pct, pctFmt);
+      if (r.pct == null) return na;
       const e = "pctError" in r ? r.pctError : undefined;
-      return r.pct == null || e == null ? base : `${base}\u00a0±\u00a0${pctHalfText(e)}`;
+      return formatPercentInterval(r.pct, e == null ? undefined : e / 100, pctFmt, true);
     };
 
     // --- one row's three marks (shared by data rows and the total) ------------
@@ -506,7 +512,7 @@ export const RankingVarianceChart = forwardRef<SVGSVGElement, RankingVarianceCha
       ];
       const color = impactColor(r.abs, r.favorable);
       rowsT.push({
-        label: `Δ${baseName}`,
+        label: deltaHeading(words, baseName),
         value: `${formatInterval(r.abs, r.absError, exact, true)} (${pctText(r)})`,
         color,
       });
@@ -526,7 +532,12 @@ export const RankingVarianceChart = forwardRef<SVGSVGElement, RankingVarianceCha
 
     // Screen-reader data table: AC, the base, and absolute / relative variance per
     // entity (plus the total) - values, not the decorative svg.
-    const a11yColumns = [acName, baseName, `Δ${baseName}`, `Δ${baseName}%`];
+    const a11yColumns = [
+      acName,
+      baseName,
+      deltaHeading(words, baseName),
+      deltaHeading(words, baseName, true),
+    ];
     const a11yRows: ChartDataRow[] = rows.map((r) => ({
       label: r.label,
       cells: [
@@ -612,7 +623,9 @@ export const RankingVarianceChart = forwardRef<SVGSVGElement, RankingVarianceCha
             fontSize={10.5}
             fill={tokens.color.textMuted}
             textAnchor="middle"
-          >{`Δ${baseName}`}</text>
+          >
+            {deltaHeading(words, baseName)}
+          </text>
           <text
             x={pctCx}
             y={headerY}
@@ -620,7 +633,9 @@ export const RankingVarianceChart = forwardRef<SVGSVGElement, RankingVarianceCha
             fontStyle="italic"
             fill={tokens.color.textMuted}
             textAnchor="middle"
-          >{`Δ${baseName}%`}</text>
+          >
+            {deltaHeading(words, baseName, true)}
+          </text>
 
           {/* Value bands, beneath every mark, across the data rows; their
             captions on the line above the panel headers. */}
@@ -644,9 +659,12 @@ export const RankingVarianceChart = forwardRef<SVGSVGElement, RankingVarianceCha
               const { scale, range, panelSpan } = bandAxis(b.panel);
               const r = resolveValueBand(b, scale, range);
               if (!r) return null;
-              const text = fitLabel(b.label, panelSpan[1] - panelSpan[0], 9.5);
+              // One caption may use the whole caption line; several share it,
+              // each within its own panel, so they cannot overlap.
+              const [x0, x1] = captionedBands > 1 ? panelSpan : [padL, width - padR];
+              const text = fitLabel(b.label, x1 - x0, 9.5);
               const half = estTextW(text, 9.5) / 2;
-              const x = clampTo((r.start + r.end) / 2, panelSpan[0] + half, panelSpan[1] - half);
+              const x = clampTo((r.start + r.end) / 2, x0 + half, x1 - half);
               return (
                 <text
                   key={`band-label-${i}`}
@@ -695,13 +713,20 @@ export const RankingVarianceChart = forwardRef<SVGSVGElement, RankingVarianceCha
               value: r.ac,
               datum: r,
             };
-            // AC value label at the bar's end (past its error bar's whisker),
-            // clamped inside the AC panel.
             const acLabel = (() => {
               if (!showRowText) return null;
               const s = formatValue(r.ac, format);
               const tw = estTextW(s, valFont);
-              const tip = acX0 + wOfAc(Math.abs(r.ac) + (r.acError ?? 0));
+              if (acGutterW > 0) {
+                // In the gutter: 4px past the whisker's end (the bar's end
+                // when the row has no error). Only a panel too narrow for the
+                // gutter can push a label out; it is then left out - the
+                // tooltip and the screen-reader table still carry the value.
+                const x = acX0 + wOfAc(Math.abs(r.ac) + (r.acError ?? 0)) + 4;
+                return x + tw <= acX1 ? { x, anchor: "start" as const, s } : null;
+              }
+              // 1.4: at the bar's end, clamped inside the AC panel.
+              const tip = acX0 + wOfAc(r.ac);
               let x = tip + 4;
               let anchor: "start" | "end" = "start";
               if (x + tw > acX1) {

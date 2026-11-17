@@ -48,9 +48,13 @@ export interface ErrorBarProps {
  *
  * The whisker is drawn over a thin halo in the theme's surface colour, so the
  * half that crosses a solid bar stays visible on any fill, light or dark. The
- * `<g>` names itself (`role="img"`, `aria-label`, and a `<title>` tooltip) with
- * the interval as text. Renders nothing for a zero or invalid half-width, or
- * an interval wholly outside `clip`. Pure SVG, SSR-safe.
+ * `<g>` carries the interval as text: `role="img"`, `aria-label` and a
+ * `<title>` tooltip. Inside an `<svg role="img">` that has a name of its own
+ * - a chart that is one labelled image - assistive technology treats the
+ * children as presentational and reads only the svg's name; the library's
+ * charts therefore also write every interval into their screen-reader table.
+ * Renders nothing for a zero or invalid half-width, or an interval wholly
+ * outside `clip`. Pure SVG, SSR-safe.
  */
 export function ErrorBar({
   value,

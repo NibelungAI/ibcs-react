@@ -1,7 +1,7 @@
 import { forwardRef, useId, useMemo, type CSSProperties } from "react";
 import type { ScenarioKey } from "../core/types";
 import type { IbcsTokensOverride } from "../core/tokens";
-import type { IbcsLabelsOverride } from "../core/labels";
+import { deltaHeading, scenarioHeadings, type IbcsLabelsOverride } from "../core/labels";
 import { computeCombo, type ComboDatum, type ComboSecondaryDatum } from "../core/combo";
 import { computeTicks } from "../core/xy";
 import { bandScale, resolveBandPadding, type BandPadding } from "../core/bandScale";
@@ -288,12 +288,12 @@ export const ComboChart = forwardRef<SVGSVGElement, ComboChartProps>(function Co
   // draws, the Δ label when it is shown, and the secondary series (named by its
   // own axis caption, formatted with its own options) - the second axis is the
   // part a single aria-label can never convey.
-  const S = words.scenario;
+  const S = scenarioHeadings(words);
   const na = notAvailableOf(format);
   const a11yColumns = [
     S.AC,
     ...(showComparison ? [S[comparison]] : []),
-    ...(showVariance ? [`Δ${S[comparison]}`] : []),
+    ...(showVariance ? [deltaHeading(words, S[comparison])] : []),
     secondaryLabel ?? words.secondary,
   ];
   const a11yRows: ChartDataRow[] = cells.map((c) => {

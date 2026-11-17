@@ -6,12 +6,14 @@
  *
  * The invariant test renders every fixture under a provider whose words are
  * ALL replaced by sentinels, then scans what a user can read or hear - text,
- * `aria-label` and `title` - for any default word left behind. A chart's own
- * accessible-name sentence and its table caption are left out of the scan on
- * purpose: they are English sentences, replaced whole by `ariaLabel` (tested
- * below), not word by word. Numbers' "n/a" belongs to `format.notAvailable`.
+ * `aria-label` and `title` - for any default word left behind; a second pass
+ * hovers each fixture's hit targets and scans the tooltip the same way. A
+ * chart's own accessible-name sentence and its table caption are left out of
+ * the scan on purpose: they are English sentences, replaced whole by
+ * `ariaLabel` (tested below), not word by word. Numbers' "n/a" belongs to
+ * `format.notAvailable`.
  */
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { renderToStaticMarkup } from "react-dom/server";
 import type { ReactElement } from "react";
@@ -28,6 +30,7 @@ import {
   Skeleton,
   StatementTable,
   TrendChart,
+  VarianceColumnChart,
   defaultLabels,
   type IbcsLabels,
 } from "../../index";
@@ -63,18 +66,27 @@ const escape = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 /**
  * One matcher per default word: a word must stand alone (no letter or digit
- * either side, case-sensitive); a template must match whole, its placeholders
- * as wildcards.
+ * either side, case-sensitive - except that a leading "Δ" does not hide one, so
+ * a default "PL" in "ΔPL" is caught); a template must match whole, its
+ * placeholders as wildcards. A template with no fixed word of its own ("{name}
+ * {value}") has nothing to find and is not scanned.
  */
-const DEFAULT_WORDS: Array<{ path: string; re: RegExp }> = leaves(defaultLabels).map(
-  ([path, word]) => {
+const DEFAULT_WORDS: Array<{ path: string; re: RegExp }> = leaves(defaultLabels)
+  .filter(([, word]) => /[\p{L}\p{N}]/u.test(word.replace(/\{\w+\}/g, "")))
+  .map(([path, word]) => {
     const body = word
       .split(/\{\w+\}/)
       .map(escape)
       .join(".+?");
-    return { path, re: new RegExp(`(?<![\\p{L}\\p{N}])${body}(?![\\p{L}\\p{N}])`, "u") };
-  },
-);
+    return {
+      path,
+      re: new RegExp(`(?<!(?!Δ)[\\p{L}\\p{N}])${body}(?![\\p{L}\\p{N}])`, "u"),
+    };
+  });
+
+/** The default words in a string, as "path in \"string\"". */
+const offendersIn = (s: string) =>
+  DEFAULT_WORDS.filter((w) => w.re.test(s)).map((w) => `${w.path} in "${s}"`);
 
 /**
  * What a user reads or hears in server markup - text nodes, and `aria-label` /
@@ -109,6 +121,7 @@ const CALLER_WORDS_ONLY = new Set(["ChartDataTable", "ChartTooltip"]);
 const FIXTURE_TEXT: Record<string, ReadonlySet<string>> = {
   ExportMenu: new Set(["Export"]),
   ConfiguredChart: new Set(["Revenue vs PY"]),
+  DataTable: new Set(["ΔPY"]), // its column's own label
 };
 
 describe("labels reach every fixed word", () => {
@@ -122,12 +135,102 @@ describe("labels reach every fixed word", () => {
       );
       const { texts, attributes } = heardStrings(html);
       const own = FIXTURE_TEXT[name];
-      const offenders = [...texts.filter((t) => !own?.has(t)), ...attributes].flatMap((s) =>
-        DEFAULT_WORDS.filter((w) => w.re.test(s)).map((w) => `${w.path} in "${s}"`),
-      );
+      const offenders = [...texts.filter((t) => !own?.has(t)), ...attributes].flatMap(offendersIn);
       expect(offenders).toEqual([]);
     });
   }
+
+  /** The open tooltip's text: a ChartTooltip, or StatementTable's fixed-position row tooltip. */
+  const tooltipText = () =>
+    (screen.queryByRole("tooltip") ?? document.body.querySelector("[style*='position: fixed']"))
+      ?.textContent;
+
+  it("tooltips write no default word under replaced labels", () => {
+    // Hover every transparent hit target, path and table row of every fixture
+    // (jsdom cannot measure the svg, so proximity gating is off and each hover
+    // shows its tooltip), and scan each tooltip's text. Under reduced motion
+    // every chart draws its finished marks on the first frame, so a mark that
+    // grows in (a pie's slices) is there to hover.
+    vi.stubGlobal(
+      "matchMedia",
+      vi.fn(() => ({
+        matches: true,
+        media: "(prefers-reduced-motion: reduce)",
+        addEventListener: () => {},
+        removeEventListener: () => {},
+      })),
+    );
+    const shown = new Set<string>();
+    const offenders: string[] = [];
+    try {
+      for (const { name, element } of [...cases, ...featureCases]) {
+        if (CALLER_WORDS_ONLY.has(name)) continue;
+        const { container } = render(
+          <IbcsThemeProvider labels={sentinels}>{element}</IbcsThemeProvider>,
+        );
+        const targets = container.querySelectorAll(
+          "svg rect[fill='transparent'], svg path, tbody tr",
+        );
+        for (const target of targets) {
+          fireEvent.pointerMove(target, { clientX: 10, clientY: 10, pointerType: "mouse" });
+          const tip = tooltipText();
+          if (!tip) continue;
+          shown.add(name);
+          offenders.push(...offendersIn(tip).map((o) => `${name}: ${o}`));
+        }
+        cleanup();
+      }
+    } finally {
+      vi.unstubAllGlobals();
+    }
+    expect(offenders).toEqual([]);
+    // Not vacuous, and complete: every component with a built-in tooltip
+    // opened it.
+    for (const name of [
+      "BarVarianceWaterfallChart",
+      "ColumnVarianceWaterfallChart",
+      "GroupedVarianceChart",
+      "HorizontalWaterfallChart",
+      "IntegratedVarianceChart",
+      "PieChart",
+      "RankingVarianceChart",
+      "RatioTreeChart",
+      "StackedChart",
+      "StatementTable",
+      "StructureChart",
+      "TrendChart",
+      "VarianceAreaChart",
+      "VarianceColumnChart",
+      "WaterfallChart",
+      "WaterfallStatementChart",
+    ]) {
+      expect(shown).toContain(name);
+    }
+  });
+
+  it("writes StatementTable's tooltip Δ caption from the delta template once one is set", () => {
+    const lines = [{ id: "rev", label: "Revenue", values: { AC: 500, PY: 460 } }];
+    render(<StatementTable lines={lines} animate={false} labels={{ scenario: { PY: "PG" } }} />);
+    const hover = () =>
+      fireEvent.pointerMove(screen.getByText("Revenue").closest("tr")!, {
+        clientX: 40,
+        clientY: 60,
+        pointerType: "mouse",
+      });
+    hover();
+    // 1.4's spaced caption while `delta` is the default, with the caller's word.
+    expect(tooltipText()).toContain("Δ PG");
+    cleanup();
+    render(
+      <StatementTable
+        lines={lines}
+        animate={false}
+        labels={{ scenario: { PY: "PG" }, delta: "Razlika {base}" }}
+      />,
+    );
+    hover();
+    expect(tooltipText()).toContain("Razlika PG");
+  });
 
   it("the scan itself sees default words (it is not vacuous)", () => {
     const html = renderToStaticMarkup(
@@ -139,6 +242,10 @@ describe("labels reach every fixed word", () => {
     expect(DEFAULT_WORDS.find((w) => w.path === "scenario.AC")!.re.test("AC 150")).toBe(true);
     expect(DEFAULT_WORDS.find((w) => w.path === "scenario.AC")!.re.test("TRACE")).toBe(false);
     expect(DEFAULT_WORDS.find((w) => w.path === "point")!.re.test("Point 3")).toBe(true);
+    // A default code right after a "Δ" is still found, and so is a fixed "Δ".
+    expect(DEFAULT_WORDS.find((w) => w.path === "scenario.PL")!.re.test("ΔPL")).toBe(true);
+    expect(DEFAULT_WORDS.find((w) => w.path === "delta")!.re.test("Δ ζ3")).toBe(true);
+    expect(DEFAULT_WORDS.find((w) => w.path === "scenario.PL")!.re.test("PLAN")).toBe(false);
   });
 });
 
@@ -352,6 +459,42 @@ describe("labels in interactive and conditional states", () => {
     );
     expect(html).toContain('aria-label="EMEA: odstupanje po kategoriji"');
     expect(html).toContain("Zajednička skala ±20 prema PG");
+  });
+
+  it("names selectable marks with a heading when the scenario word is empty (no double space)", () => {
+    render(
+      <VarianceColumnChart
+        data={[{ category: "Q1", AC: 120, PY: 100 }]}
+        onSelect={() => {}}
+        labels={{ scenario: { AC: "" } }}
+      />,
+    );
+    expect(screen.getByRole("button", { name: "Select Q1, Actual 120" })).toBeTruthy();
+    cleanup();
+    render(
+      <TrendChart
+        data={[{ category: "Q1", AC: 120, PY: 100 }]}
+        onSelect={() => {}}
+        labels={{ scenario: { AC: "" } }}
+      />,
+    );
+    expect(screen.getByRole("button", { name: "Select Q1, Actual 120" })).toBeTruthy();
+  });
+
+  it("writes the Δ headers from the delta and deltaPct templates", () => {
+    const html = renderToStaticMarkup(
+      <RankingVarianceChart
+        data={[{ label: "A", AC: 2, base: 1 }]}
+        labels={{
+          delta: "Razlika {base}",
+          deltaPct: "Razlika {base} u %",
+          scenario: { PL: "plan" },
+        }}
+      />,
+    );
+    expect(html).toContain(">Razlika plan<");
+    expect(html).toContain(">Razlika plan u %<");
+    expect(html).not.toContain("Δ");
   });
 
   it("lays TrendChart's legend out for longer words without overlap", () => {

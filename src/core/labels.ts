@@ -52,9 +52,11 @@ export interface IbcsLabels {
   /**
    * The IBCS scenario codes wherever a component writes one: column and panel
    * headers ("AC", "ΔPY", "ΔPY%"), line end labels ("AC 150"), legends,
-   * tooltips and screen-reader tables. Default the codes themselves. An empty
-   * string drops the code where it prefixes a value (a line end label then
-   * reads "150").
+   * tooltips and screen-reader tables. Default the codes themselves.
+   *
+   * A header never goes blank: where an empty word would name a column or a
+   * row, the scenario's `scenarioTitle` is written, then its code. To show a
+   * line's value without its name, set `endLabel` to `"{value}"` instead.
    */
   scenario: Record<ScenarioKey, string>;
   /**
@@ -63,6 +65,15 @@ export interface IbcsLabels {
    * "Forecast" - the 1.4 tooltips (PY never had a longer one).
    */
   scenarioTitle: Record<ScenarioKey, string>;
+  /** A variance header: the difference to a base ("ΔPY"). Default "Δ{base}". */
+  delta: string;
+  /** A relative variance header ("ΔPY%"). Default "Δ{base}%". */
+  deltaPct: string;
+  /**
+   * A line's end label (`LineChart`, `AreaChart`): its scenario word and its
+   * last value. Default "{name} {value}"; `"{value}"` writes the value alone.
+   */
+  endLabel: string;
   /** The totals row, total bars and total columns. Default "Total". */
   total: string;
   /** The total-variance row of `VarianceAreaChart`'s table. Default "Total variance". */
@@ -170,6 +181,9 @@ export interface IbcsLabels {
 export const defaultLabels: IbcsLabels = {
   scenario: { AC: "AC", PY: "PY", PL: "PL", FC: "FC" },
   scenarioTitle: { AC: "Actual", PY: "PY", PL: "Plan / budget", FC: "Forecast" },
+  delta: "Δ{base}",
+  deltaPct: "Δ{base}%",
+  endLabel: "{name} {value}",
   total: "Total",
   totalVariance: "Total variance",
   current: "Current",
@@ -274,9 +288,35 @@ export function fillLabel(template: string, values: Record<string, string | numb
 }
 
 /**
- * "AC 150", or just "150" when the caller's word for the series is empty - a
- * name joined to the value it labels, with no dangling space.
+ * The scenario words as headers - column and panel headers, legend entries,
+ * tooltip rows, screen-reader table columns - never empty: an empty word falls
+ * back to the scenario's `scenarioTitle`, then to its code. Internal plumbing.
  */
-export function prefixLabel(name: string, text: string): string {
-  return name ? `${name} ${text}` : text;
+export function scenarioHeadings(words: IbcsLabels): Record<ScenarioKey, string> {
+  const heading = (key: ScenarioKey) => words.scenario[key] || words.scenarioTitle[key] || key;
+  return { AC: heading("AC"), PY: heading("PY"), PL: heading("PL"), FC: heading("FC") };
+}
+
+/** "ΔPY" / "ΔPY%": a variance header from the `delta` / `deltaPct` templates. Internal plumbing. */
+export function deltaHeading(words: IbcsLabels, base: string, pct = false): string {
+  return fillLabel(pct ? words.deltaPct : words.delta, { base });
+}
+
+/**
+ * The tooltip caption 1.4 wrote with a space ("Δ PY": `StatementTable`'s row
+ * tooltip, `RatioTreeChart`'s node tooltip): byte-identical while `delta` is
+ * the default, the caller's `delta` template once they set one. Internal
+ * plumbing.
+ */
+export function deltaCaption(words: IbcsLabels, base: string): string {
+  return words.delta === defaultLabels.delta ? `Δ ${base}` : deltaHeading(words, base);
+}
+
+/**
+ * A line's end label from the `endLabel` template: "AC 150"; an empty name or
+ * a "{value}" template leaves the value alone, with no dangling space.
+ * Internal plumbing.
+ */
+export function endLabelText(words: IbcsLabels, name: string, value: string): string {
+  return fillLabel(words.endLabel, { name, value }).trim();
 }

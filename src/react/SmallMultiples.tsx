@@ -17,7 +17,7 @@ import {
   type MiniGroupInput,
 } from "../core/smallMultiples";
 import { formatSigned, formatValue, notAvailableOf, type FormatOptions } from "../core/format";
-import { fillLabel, type IbcsLabelsOverride } from "../core/labels";
+import { deltaHeading, fillLabel, scenarioHeadings, type IbcsLabelsOverride } from "../core/labels";
 import type { ScenarioKey } from "../core/types";
 import { useMountGrow, useDataTween } from "./hooks";
 import { ChartDataTable, type ChartDataRow } from "./a11y";
@@ -373,7 +373,7 @@ export const MiniVarianceMultiples = forwardRef<HTMLDivElement, MiniVarianceMult
   ) {
     const tokens = useIbcsTokens(tokenOverride);
     const words = useIbcsLabels(labels);
-    const S = words.scenario;
+    const S = scenarioHeadings(words);
     const na = notAvailableOf(format);
     const groups = useDataTween(groupsProp);
     const grow = useMountGrow(700, 0, groups);
@@ -403,7 +403,7 @@ export const MiniVarianceMultiples = forwardRef<HTMLDivElement, MiniVarianceMult
     // straight off the input rows, exactly as `computeMiniVariances` resolves
     // them: AC, else FC) plus the variance the mini column actually draws. This
     // replaces the grid's generic table, so there is exactly one.
-    const a11yColumns = [S.AC, S[comparison], `Δ${S[comparison]}`];
+    const a11yColumns = [S.AC, S[comparison], deltaHeading(words, S[comparison])];
     const a11yRows: ChartDataRow[] = layout.groups.flatMap((g, gi) =>
       g.bars.map((b, bi) => {
         const d = groups[gi]?.data[bi];

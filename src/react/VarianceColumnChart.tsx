@@ -1,12 +1,13 @@
 import { forwardRef, useId, useMemo, type CSSProperties } from "react";
 import type { ScenarioDatum, ScenarioKey } from "../core/types";
 import type { IbcsTokensOverride } from "../core/tokens";
-import { fillLabel, type IbcsLabelsOverride } from "../core/labels";
+import { deltaHeading, fillLabel, scenarioHeadings, type IbcsLabelsOverride } from "../core/labels";
 import { computeVariance } from "../core/variance";
 import { bandScale, resolveBandPadding, type BandPadding } from "../core/bandScale";
 import {
   formatInterval,
   formatPercent,
+  formatPercentInterval,
   formatSigned,
   formatValue,
   notAvailableOf,
@@ -86,7 +87,9 @@ export interface VarianceColumnChartProps {
   title?: string;
   /**
    * The chart's accessible name, in place of the generated English
-   * description; also the caption of its screen-reader table.
+   * description; also the caption of its screen-reader table. With
+   * `onSelect`, the svg is a container of selectable marks, each with its own
+   * name, and takes no name itself: the text then names the table alone.
    */
   ariaLabel?: string;
   /** Extra class name for the chart `<svg>` (the rendered root). */
@@ -156,7 +159,7 @@ export const VarianceColumnChart = forwardRef<SVGSVGElement, VarianceColumnChart
     const showVariancePanel = variance !== "none";
     const tokens = useIbcsTokens(tokenOverride);
     const words = useIbcsLabels(labels);
-    const S = words.scenario;
+    const S = scenarioHeadings(words);
     const cmpName = S[comparison];
     const pctFmt = percentFormatOf(format);
     const na = notAvailableOf(format);
@@ -244,16 +247,10 @@ export const VarianceColumnChart = forwardRef<SVGSVGElement, VarianceColumnChart
     const varMid = topBase + gap + varH / 2;
     // Value → pixel in the variance panel (animated), for error bars on its marks.
     const varY = (val: number) => varMid - (val / varMax) * (varH / 2) * grow;
-    // A Δ% as text, with "± half-width" when the datum has a pct error.
+    // A Δ% as text, with its unsigned "± half-width" (never written as zero).
     const pctText = (pct: number | null, d: ColumnDatum): string => {
-      const text = formatPercent(pct, pctFmt);
       const e = halfWidthOf(d.pctError);
-      if (pct == null || e == null) return text;
-      const half = {
-        ...(typeof pctFmt === "number" ? { fractionDigits: pctFmt } : pctFmt),
-        signDisplay: "auto" as const,
-      };
-      return `${text}\u00a0±\u00a0${formatPercent(e / 100, half)}`;
+      return formatPercentInterval(pct, e == null ? undefined : e / 100, pctFmt, true);
     };
 
     // Built-in tooltip rows for the hovered column: AC, the comparison value, and
@@ -277,7 +274,7 @@ export const VarianceColumnChart = forwardRef<SVGSVGElement, VarianceColumnChart
           v.abs === 0 ? tokens.color.zero : v.favorable ? tokens.color.good : tokens.color.bad;
         const pct = v.pct != null ? ` (${pctText(v.pct, d)})` : "";
         rows.push({
-          label: `Δ${cmpName}`,
+          label: deltaHeading(words, cmpName),
           value: `${formatInterval(v.abs, halfWidthOf(d.absError), exact, true)}${pct}`,
           color,
         });
@@ -299,7 +296,9 @@ export const VarianceColumnChart = forwardRef<SVGSVGElement, VarianceColumnChart
     const a11yColumns = [
       S.AC,
       cmpName,
-      ...(showVariancePanel ? [`Δ${cmpName}`, `Δ${cmpName}%`] : []),
+      ...(showVariancePanel
+        ? [deltaHeading(words, cmpName), deltaHeading(words, cmpName, true)]
+        : []),
     ];
     const a11yRows: ChartDataRow[] = data.map((d, i) => {
       const cmp = d[comparison];

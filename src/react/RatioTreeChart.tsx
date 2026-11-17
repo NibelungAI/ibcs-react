@@ -1,6 +1,11 @@
 import { forwardRef, useId, useMemo, type CSSProperties } from "react";
 import type { IbcsTokensOverride } from "../core/tokens";
-import type { IbcsLabelsOverride } from "../core/labels";
+import {
+  deltaCaption,
+  deltaHeading,
+  scenarioHeadings,
+  type IbcsLabelsOverride,
+} from "../core/labels";
 import {
   computeRatioTree,
   type RatioNode,
@@ -416,14 +421,14 @@ export const RatioTreeChart = forwardRef<SVGSVGElement, RatioTreeChartProps>(
         },
       ];
       if (node.latestPy != null) {
-        rows.push({ label: words.scenario.PY, value: formatValue(node.latestPy, exact) });
+        rows.push({ label: scenarioHeadings(words).PY, value: formatValue(node.latestPy, exact) });
         const v = computeVariance(node.latest, node.latestPy, true);
         if (v) {
           const color =
             v.abs === 0 ? tokens.color.zero : v.favorable ? tokens.color.good : tokens.color.bad;
           const pct = v.pct != null ? ` (${formatPercent(v.pct, percentFormatOf(format))})` : "";
           rows.push({
-            label: `Δ ${words.scenario.PY}`,
+            label: deltaCaption(words, scenarioHeadings(words).PY),
             value: `${formatSigned(v.abs, exact)}${pct}`,
             color,
           });
@@ -449,7 +454,9 @@ export const RatioTreeChart = forwardRef<SVGSVGElement, RatioTreeChartProps>(
     const na = notAvailableOf(format);
     const a11yColumns = [
       words.latest,
-      ...(hasPy ? [words.scenario.PY, `Δ${words.scenario.PY}`] : []),
+      ...(hasPy
+        ? [scenarioHeadings(words).PY, deltaHeading(words, scenarioHeadings(words).PY)]
+        : []),
     ];
     const a11yRows: ChartDataRow[] = nodes.map((node) => {
       const cells: Array<string | number> = [

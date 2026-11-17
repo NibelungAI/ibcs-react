@@ -1,7 +1,7 @@
 import { forwardRef, useId, useMemo, type CSSProperties } from "react";
 import type { ScenarioKey } from "../core/types";
 import type { IbcsTokensOverride } from "../core/tokens";
-import { fillLabel, type IbcsLabelsOverride } from "../core/labels";
+import { deltaHeading, fillLabel, scenarioHeadings, type IbcsLabelsOverride } from "../core/labels";
 import { computeStructure, type StructureDatum } from "../core/structure";
 import { bandScale, resolveBandPadding, type BandPadding } from "../core/bandScale";
 import {
@@ -66,7 +66,9 @@ export interface StructureChartProps {
   title?: string;
   /**
    * The chart's accessible name, in place of the generated English
-   * description; also the caption of its screen-reader table.
+   * description; also the caption of its screen-reader table. With
+   * `onSelect`, the svg is a container of selectable marks, each with its own
+   * name, and takes no name itself: the text then names the table alone.
    */
   ariaLabel?: string;
   /** Extra class name for the chart `<svg>` (the rendered root). */
@@ -136,7 +138,7 @@ export const StructureChart = forwardRef<SVGSVGElement, StructureChartProps>(
     const showVariance = variance !== "none";
     const tokens = useIbcsTokens(tokenOverride);
     const words = useIbcsLabels(labels);
-    const S = words.scenario;
+    const S = scenarioHeadings(words);
     const cmpName = S[comparison];
     const pctFmt = percentFormatOf(format);
     const na = notAvailableOf(format);
@@ -228,7 +230,7 @@ export const StructureChart = forwardRef<SVGSVGElement, StructureChartProps>(
           v.abs === 0 ? tokens.color.zero : v.favorable ? tokens.color.good : tokens.color.bad;
         const pct = v.pct != null ? ` (${formatPercent(v.pct, pctFmt)})` : "";
         rows.push({
-          label: `Δ${cmpName}`,
+          label: deltaHeading(words, cmpName),
           value: `${formatSigned(v.abs, exact)}${pct}`,
           color,
         });
@@ -251,7 +253,7 @@ export const StructureChart = forwardRef<SVGSVGElement, StructureChartProps>(
     const a11yColumns = [
       words.value,
       cmpName,
-      ...(showVariance ? [`Δ${cmpName}`] : []),
+      ...(showVariance ? [deltaHeading(words, cmpName)] : []),
       ...(showShare ? [words.share] : []),
     ];
     const a11yRows: ChartDataRow[] = segments.map((s) => {

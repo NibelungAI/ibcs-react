@@ -1,7 +1,7 @@
 import { forwardRef, useMemo, type CSSProperties } from "react";
 import type { ScenarioKey } from "../core/types";
 import type { IbcsTokensOverride } from "../core/tokens";
-import type { IbcsLabelsOverride } from "../core/labels";
+import { deltaHeading, scenarioHeadings, type IbcsLabelsOverride } from "../core/labels";
 import {
   computeWaterfallStatement,
   type WaterfallStatementLine,
@@ -205,7 +205,7 @@ export const WaterfallStatementChart = forwardRef<SVGSVGElement, WaterfallStatem
     const pctNegRoom = Math.max(pctAxisX - pctX0 - 8, 6);
 
     const plotBottom = plotTop + n * rowH;
-    const S = words.scenario;
+    const S = scenarioHeadings(words);
     const compLabel = S[comparison];
     const pctFmt = percentFormatOf(format);
     // A Δ% with its "%": the 1.4 "+6.9%" until the format opts in, then the locale's own.
@@ -482,14 +482,14 @@ export const WaterfallStatementChart = forwardRef<SVGSVGElement, WaterfallStatem
         { label: S.AC, value: formatValue(r.acValue, exact), strong: true },
         { label: compLabel, value: formatValue(r.baseValue, exact) },
         {
-          label: `Δ${compLabel}`,
+          label: deltaHeading(words, compLabel),
           value: formatSigned(r.variance.abs, exact),
           color: impactColor(r),
         },
       ];
       if (r.variance.pct != null && Number.isFinite(r.variance.pct)) {
         rowsT.push({
-          label: `Δ${compLabel}%`,
+          label: deltaHeading(words, compLabel, true),
           value: pctWithSign(r.variance.pct),
           color: impactColor(r),
         });
@@ -513,8 +513,8 @@ export const WaterfallStatementChart = forwardRef<SVGSVGElement, WaterfallStatem
     const a11yColumns = [
       compLabel,
       S.AC,
-      `Δ${compLabel}`,
-      ...(showPctPanel ? [`Δ${compLabel}%`] : []),
+      deltaHeading(words, compLabel),
+      ...(showPctPanel ? [deltaHeading(words, compLabel, true)] : []),
     ];
     const a11yRows: ChartDataRow[] = rows.map((r) => ({
       label: r.label,
@@ -536,7 +536,7 @@ export const WaterfallStatementChart = forwardRef<SVGSVGElement, WaterfallStatem
           role="img"
           aria-label={
             ariaLabel ??
-            `${title ? title + ". " : ""}P&L calculation scheme: ${compLabel} and ${S.AC} waterfalls with Δ${compLabel} absolute${showPctPanel ? " and relative" : ""} variance, ${n} lines.`
+            `${title ? title + ". " : ""}P&L calculation scheme: ${compLabel} and ${S.AC} waterfalls with ${deltaHeading(words, compLabel)} absolute${showPctPanel ? " and relative" : ""} variance, ${n} lines.`
           }
           className={className}
           style={{
@@ -556,8 +556,8 @@ export const WaterfallStatementChart = forwardRef<SVGSVGElement, WaterfallStatem
           {/* Headers + underline */}
           {header(lane1X0 + laneW / 2, compLabel)}
           {header(lane2X0 + laneW / 2, S.AC)}
-          {header(absMidX, `Δ${compLabel}`)}
-          {showPctPanel && header(pctX0 + pctW / 2, `Δ${compLabel}%`)}
+          {header(absMidX, deltaHeading(words, compLabel))}
+          {showPctPanel && header(pctX0 + pctW / 2, deltaHeading(words, compLabel, true))}
           <line
             x1={padL}
             y1={plotTop}

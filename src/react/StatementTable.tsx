@@ -1,7 +1,13 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { ScenarioKey, StatementLine, WaterfallBar, VarianceColumnSpec } from "../core/types";
 import type { IbcsTokens, IbcsTokensOverride } from "../core/tokens";
-import type { IbcsLabels, IbcsLabelsOverride } from "../core/labels";
+import {
+  deltaCaption,
+  deltaHeading,
+  scenarioHeadings,
+  type IbcsLabels,
+  type IbcsLabelsOverride,
+} from "../core/labels";
 import { computeWindow } from "../core/virtualize";
 import { lineVariance, resolveValue } from "../core/variance";
 import {
@@ -315,7 +321,9 @@ export function StatementTable({
         spec,
         header:
           spec.label ??
-          (isPct ? `Δ${words.scenario[spec.base]}%` : `Δ${words.scenario[spec.base]}`),
+          (isPct
+            ? deltaHeading(words, scenarioHeadings(words)[spec.base], true)
+            : deltaHeading(words, scenarioHeadings(words)[spec.base])),
         values,
         domain: domain || (isPct ? clamp : 1),
         // Pins need room for the value + an off-scale arrow; abs bars are tighter.
@@ -433,7 +441,7 @@ export function StatementTable({
               {showBaseValues &&
                 baseColumns.map((base) => (
                   <th key={`bh-${base}`} scope="col" style={{ ...headerCell, ...stickyHead }}>
-                    {words.scenario[base]}
+                    {scenarioHeadings(words)[base]}
                   </th>
                 ))}
               {showWaterfall ? (
@@ -447,11 +455,11 @@ export function StatementTable({
                     width: waterfallWidth,
                   }}
                 >
-                  {words.scenario[scenario]}
+                  {scenarioHeadings(words)[scenario]}
                 </th>
               ) : (
                 <th scope="col" style={{ ...headerCell, ...stickyHead }}>
-                  {words.scenario[scenario]}
+                  {scenarioHeadings(words)[scenario]}
                 </th>
               )}
               {columns.map((c, i) => (
@@ -1037,7 +1045,7 @@ const RowTooltip = React.forwardRef<
     >
       <div style={{ fontWeight: 600, marginBottom: 6 }}>{line.label}</div>
       <TipRow
-        k={words.scenario[scenario]}
+        k={scenarioHeadings(words)[scenario]}
         val={ac == null ? missing : formatValue(ac, exact)}
         surface={tokens.color.surface}
         strong
@@ -1064,12 +1072,12 @@ const RowTooltip = React.forwardRef<
             }}
           >
             <TipRow
-              k={words.scenario[base]}
+              k={scenarioHeadings(words)[base]}
               val={baseVal == null ? missing : formatValue(baseVal, exact)}
               surface={tokens.color.surface}
             />
             <TipRow
-              k={`Δ ${words.scenario[base]}`}
+              k={deltaCaption(words, scenarioHeadings(words)[base])}
               val={
                 v
                   ? `${formatSigned(v.abs, exact)}  (${formatPercent(v.pct, percentFormatOf(format))})`

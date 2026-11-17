@@ -507,8 +507,11 @@ export const cases: SmokeCase[] = [
  * ------------------------------------------------------------------ */
 
 /**
- * A Top Gear ranking (F1b-R review figures): each variant's DPS with its own
- * 95% half-width, the difference to the current setup with its paired one.
+ * A Top Gear ranking: each variant's DPS with its own 95% half-width, the
+ * difference to the current setup with its paired one. Best set, Bracers swap,
+ * Equipped, Trinket swap and Weapon swap carry the DPS and Δ ± figures of the
+ * F1b-R review's table (rows 19-25), Best set and Equipped its DPS ± too; the
+ * Ring swap row and the other DPS half-widths are made up for the fixture.
  */
 const topGear: RankingDatum[] = [
   { label: "Best set", AC: 914.3013, base: 910.8441, acError: 0.4682, absError: 0.4621 },

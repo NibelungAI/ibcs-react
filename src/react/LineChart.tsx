@@ -1,7 +1,12 @@
 import { forwardRef, useMemo, type CSSProperties } from "react";
 import type { ScenarioKey } from "../core/types";
 import type { IbcsTokens, IbcsTokensOverride } from "../core/tokens";
-import { prefixLabel, type IbcsLabelsOverride } from "../core/labels";
+import {
+  deltaHeading,
+  endLabelText,
+  scenarioHeadings,
+  type IbcsLabelsOverride,
+} from "../core/labels";
 import {
   computeLines,
   splitForecast,
@@ -84,15 +89,19 @@ export interface LineChartProps {
   /**
    * Per-series number formatting, keyed by scenario, for a series' own values
    * (its end label and its column of the screen-reader table) - e.g.
-   * `{ AC: { fractionDigits: 2 } }`. A series without an entry uses `format`;
-   * the variance panel always uses `format`.
+   * `{ AC: { fractionDigits: 2 } }`. An entry is merged over `format`, so it
+   * keeps the chart's `locale`, `suffix` and the rest unless it sets them. A
+   * series without an entry uses `format`; the variance panel always uses
+   * `format`.
    */
   seriesFormat?: Partial<Record<ScenarioKey, FormatOptions>>;
   tokens?: IbcsTokensOverride;
   /**
    * The chart's own words - the scenario codes of the end labels ("AC 150")
-   * and table headers - merged onto `IbcsThemeProvider`'s. An empty word drops
-   * the code: `{ scenario: { AC: "" } }` labels the line "150". See `IbcsLabels`.
+   * and table headers - merged onto `IbcsThemeProvider`'s. `{ endLabel:
+   * "{value}" }` labels the line "150" and keeps the code in the table's
+   * header; an empty scenario word drops it from the end label too, and the
+   * header then falls back to the scenario's `scenarioTitle`. See `IbcsLabels`.
    */
   labels?: IbcsLabelsOverride;
   title?: string;
@@ -239,8 +248,11 @@ export const LineChart = forwardRef<SVGSVGElement, LineChartProps>(function Line
 ) {
   const tokens = useIbcsTokens(tokenOverride);
   const words = useIbcsLabels(labels);
-  /** A series' own number format (its `seriesFormat` entry, else the chart's). */
-  const formatOf = (scenario: ScenarioKey): FormatOptions => seriesFormat?.[scenario] ?? format;
+  /** A series' own number format: its `seriesFormat` entry merged over the chart's. */
+  const formatOf = (scenario: ScenarioKey): FormatOptions => {
+    const own = seriesFormat?.[scenario];
+    return own ? { ...format, ...own } : format;
+  };
   const pctFmt = percentFormatOf(format);
   const data = useDataTween(dataProp);
   const grow = useMountGrow(700, 0, data);
@@ -337,10 +349,14 @@ export const LineChart = forwardRef<SVGSVGElement, LineChartProps>(function Line
   // Screen-reader data table: each period's value per scenario, plus the shown
   // variance - so SR users read the actual numbers, not the decorative svg.
   const hasVarTable = showVariancePanel && variancePoints.length > 0;
-  const comparisonName = words.scenario[comparison];
+  // Headers never go blank: an empty word falls back to the scenario's title.
+  const S = scenarioHeadings(words);
+  const comparisonName = S[comparison];
   const a11yColumns = [
-    ...lines.map((s) => words.scenario[s.scenario]),
-    ...(hasVarTable ? [`Δ${comparisonName}`, `Δ${comparisonName}%`] : []),
+    ...lines.map((s) => S[s.scenario]),
+    ...(hasVarTable
+      ? [deltaHeading(words, comparisonName), deltaHeading(words, comparisonName, true)]
+      : []),
   ];
   const lineByIndex = lines.map((s) => new Map(s.points.map((p) => [p.index, p.value])));
   const varByIndex = new Map(variancePoints.map((vp) => [vp.index, vp.variance]));
@@ -564,7 +580,8 @@ export const LineChart = forwardRef<SVGSVGElement, LineChartProps>(function Line
         {/* Integrated end labels beside each line's last point (no legend box) */}
         {endLabels.map((e) => {
           const st = lineStyle(e.scenario, tokens);
-          const label = prefixLabel(
+          const label = endLabelText(
+            words,
             words.scenario[e.scenario],
             formatValue(e.point.value, formatOf(e.scenario)),
           );

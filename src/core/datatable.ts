@@ -67,9 +67,11 @@ export interface DataTableColumn {
    * value: "bar" draws the value ITSELF as a magnitude bar (an IBCS integrated
    * bar chart - its length is the size, not a difference to a base) and "pin"
    * as a dot on a stem, each with the number beside it, on a scale shared by
-   * the column's detail rows. The bar wears its scenario's IBCS fill (AC
-   * solid, PY grey, PL frame, FC hatch). The totals row shows the number
-   * alone. Default "none" - the plain number, as before.
+   * the column's detail (leaf) rows. The bar wears its scenario's IBCS fill (AC
+   * solid, PY grey, PL frame, FC hatch). The totals row and group (parent) rows
+   * show the number alone: a sum is off the detail rows' scale, and a bar
+   * clamped to it would draw 160 as long as 100. Default "none" - the plain
+   * number, as before.
    */
   mark?: "bar" | "pin" | "none";
   /**
@@ -84,7 +86,11 @@ export interface DataTableColumn {
    * excluded from the column's axis scale. Default 100.
    */
   clampPct?: number;
-  /** Per-column number-format override (falls back to the table `format`). */
+  /**
+   * Per-column number format. It REPLACES the table's `format` for this column
+   * (no merge, as in 1.4): repeat the table's `locale`, `compact` and the rest
+   * in it. Unset, the column uses the table's `format`.
+   */
   format?: FormatOptions;
   /**
    * Shaded value ranges drawn beneath the marks across the column's body rows
@@ -294,7 +300,8 @@ function columnKind(col: DataTableColumn): "value" | "variance" | "sparkline" {
   return col.kind ?? "value";
 }
 
-function measureOf(col: DataTableColumn): string {
+/** The measure a column reads: `measure`, else its own key. */
+export function measureOf(col: DataTableColumn): string {
   return col.measure ?? col.key;
 }
 
@@ -459,7 +466,7 @@ export function flattenRows(rows: DataTableRow[], collapsed: Set<string>): FlatD
  * built from. Parents are skipped: their aggregate would set a scale the detail
  * bars can never reach.
  */
-function collectDetailRows(rows: DataTableRow[], out: DataTableRow[] = []): DataTableRow[] {
+export function collectDetailRows(rows: DataTableRow[], out: DataTableRow[] = []): DataTableRow[] {
   for (const row of rows) {
     if (row.children?.length) collectDetailRows(row.children, out);
     else out.push(row);
