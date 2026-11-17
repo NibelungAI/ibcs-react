@@ -15,6 +15,8 @@
  */
 
 import { computeVariance } from "./variance";
+import { halfWidthOf } from "./errorBar";
+import type { ValueBand } from "./reference";
 
 /** One input entity: an actual value and the plan / prior value to compare it against. */
 export interface RankingDatum {
@@ -29,6 +31,34 @@ export interface RankingDatum {
    * cost / expense entities so an increase reads as unfavorable (red).
    */
   higherIsBetter?: boolean;
+  /**
+   * Half-width of AC's interval (e.g. a 95% confidence interval), in AC's
+   * units: the AC bar gets an error bar spanning AC ± acError.
+   */
+  acError?: number;
+  /**
+   * Half-width of the absolute variance's interval, in AC's units: the ΔPL bar
+   * gets an error bar spanning Δ ± absError. Give the variance's own error (for
+   * paired runs, the paired error) - it is not derived from `acError`.
+   */
+  absError?: number;
+  /**
+   * Half-width of the relative variance's interval, in PERCENT units (like
+   * `clampPct`: 0.4 means ±0.4 %): the ΔPL% pin gets an error bar.
+   */
+  pctError?: number;
+}
+
+/**
+ * A shaded value range across one panel's data rows - e.g. "tied with the
+ * best". `panel` picks the axis, and with it the units of `from` / `to`:
+ *  - "ac" (default): AC units. The AC bars grow from 0 by size, so give sizes.
+ *  - "abs": ΔPL units, favorable to the right (a positive Δ for
+ *    higher-is-better data; mirrored when every row is a cost line).
+ *  - "pct": ΔPL% in percent units (5 = 5 %), on the same direction rule.
+ */
+export interface RankingBand extends ValueBand {
+  panel?: "ac" | "abs" | "pct";
 }
 
 /** One ranked, variance-resolved row. */
@@ -49,6 +79,12 @@ export interface RankingRow {
   absOutlier: boolean;
   /** |pct%| ≥ `clampPct` → draw an off-scale arrow, excluded from the % scale. */
   pctOutlier: boolean;
+  /** AC's half-width, when the datum gave a valid one (finite, ≥ 0). */
+  acError?: number;
+  /** ΔPL's half-width, when valid. */
+  absError?: number;
+  /** ΔPL%'s half-width in percent units, when valid. */
+  pctError?: number;
 }
 
 /** The rolled-up TOTAL row (sum of AC vs sum of base). */
@@ -66,11 +102,20 @@ export interface RankingTotalRow {
 export interface RankingVarianceLayout {
   rows: RankingRow[];
   total: RankingTotalRow;
-  /** Max |AC| (and |base|) across the rows - the left AC-bar scale. */
+  /**
+   * Max |AC| (and |base|) across the rows - the left AC-bar scale - widened to
+   * |AC| + acError where a row has an error bar, so the whisker fits.
+   */
   acMax: number;
-  /** Shared absolute-variance scale: max |abs| across the rows (never the total). */
+  /**
+   * Shared absolute-variance scale: max |abs| across the rows (never the
+   * total), widened to |abs| + absError for error bars.
+   */
   absMax: number;
-  /** Shared relative-variance scale, in PERCENT units, excluding outliers. */
+  /**
+   * Shared relative-variance scale, in PERCENT units, excluding outliers;
+   * widened for error bars up to `clampPct`.
+   */
   pctMax: number;
 }
 
@@ -113,7 +158,7 @@ export function computeRankingVariance(
     const base = finite(d.base);
     // ac/base are finite numbers, so computeVariance never returns null here.
     const v = computeVariance(ac, base, higherIsBetter)!;
-    return {
+    const row: RankingRow = {
       label: d.label ?? "",
       ac,
       base,
@@ -124,6 +169,14 @@ export function computeRankingVariance(
       absOutlier: false,
       pctOutlier: false,
     };
+    // Half-widths ride along only when valid, so rows without them stay as before.
+    const acError = halfWidthOf(d.acError);
+    const absError = halfWidthOf(d.absError);
+    const pctError = halfWidthOf(d.pctError);
+    if (acError != null) row.acError = acError;
+    if (absError != null) row.absError = absError;
+    if (pctError != null) row.pctError = pctError;
+    return row;
   });
 
   const rows = [...built];
@@ -135,11 +188,12 @@ export function computeRankingVariance(
   let absMax = 0;
   let pctMax = 0;
   for (const r of rows) {
-    acMax = Math.max(acMax, Math.abs(r.ac), Math.abs(r.base));
-    absMax = Math.max(absMax, Math.abs(r.abs));
+    // An error bar's far end must fit on the scale too.
+    acMax = Math.max(acMax, Math.abs(r.ac) + (r.acError ?? 0), Math.abs(r.base));
+    absMax = Math.max(absMax, Math.abs(r.abs) + (r.absError ?? 0));
     if (r.pct != null && Number.isFinite(r.pct)) {
       const p = Math.abs(r.pct) * 100;
-      if (p < clamp) pctMax = Math.max(pctMax, p);
+      if (p < clamp) pctMax = Math.max(pctMax, Math.min(p + (r.pctError ?? 0), clamp));
     }
   }
 

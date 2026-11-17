@@ -99,6 +99,42 @@ year.
 <VarianceColumnChart data={quarterly} comparison="PL" />
 ```
 
+## Error bars
+
+A datum's `acError` stands a vertical error bar on its AC column, and
+`absError` (or `pctError`, in percent units, with `variance="pct"`) one on its
+variance bar - each on its own scale, which widens so the whisker fits. A value
+label moves above its whisker. The intervals' text is in the tooltip and the
+screen-reader table.
+
+<Frame center>
+  <VarianceColumnChart
+    width={460}
+    height={280}
+    format={{ compact: false, fractionDigits: 1 }}
+    labels={{ scenario: { AC: "new", PY: "old" } }}
+    data={[
+      { category: "Hunter", AC: 910.8, PY: 909.6, acError: 0.8, absError: 0.6 },
+      { category: "Ret", AC: 890.5, PY: 892.9, acError: 1.2, absError: 0.9 },
+      { category: "Fire", AC: 860.1, PY: 859.8, acError: 1.0, absError: 0.7 },
+    ]}
+  />
+</Frame>
+
+```tsx
+<VarianceColumnChart
+  format={{ compact: false, fractionDigits: 1 }}
+  labels={{ scenario: { AC: "new", PY: "old" } }}
+  data={[
+    { category: "Hunter", AC: 910.8, PY: 909.6, acError: 0.8, absError: 0.6 },
+    { category: "Fire", AC: 860.1, PY: 859.8, acError: 1.0, absError: 0.7 },
+  ]}
+/>
+```
+
+Fire's Δ of +0.3 ± 0.7 straddles zero - no measurable change - and the picture
+says so.
+
 ## Props
 
 <AutoTypeTable path="../src/react/VarianceColumnChart.tsx" name="VarianceColumnChartProps" />

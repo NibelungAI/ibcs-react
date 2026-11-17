@@ -1,5 +1,6 @@
 import type React from "react";
-import { useIbcsTokens } from "./theme";
+import { useIbcsLabels, useIbcsTokens } from "./theme";
+import type { IbcsLabelsOverride } from "../core/labels";
 
 /** What the placeholder should resemble while data loads. */
 export type SkeletonVariant = "chart" | "table" | "card" | "block";
@@ -17,8 +18,10 @@ export interface SkeletonProps {
   bars?: number;
   /** Placeholder ink. Defaults to the theme's `color.surfaceMuted`. */
   color?: string;
-  /** Accessible label announced to screen readers. Default "Loading…". */
+  /** Accessible label announced to screen readers. Wins over `labels.loading`; default "Loading…". */
   label?: string;
+  /** The component's own words (`loading`), merged onto `IbcsThemeProvider`'s. See `IbcsLabels`. */
+  labels?: IbcsLabelsOverride;
   className?: string;
   style?: React.CSSProperties;
 }
@@ -46,11 +49,13 @@ export function Skeleton({
   rows = 6,
   bars = 9,
   color,
-  label = "Loading…",
+  label,
+  labels,
   className,
   style,
 }: SkeletonProps): React.ReactElement {
   const tokens = useIbcsTokens();
+  const words = useIbcsLabels(labels);
   const ink = color ?? tokens.color.surfaceMuted;
   const H = height ?? DEFAULT_H[variant];
   // Logical coordinate width; the SVG scales to the real width via the viewBox.
@@ -131,7 +136,7 @@ export function Skeleton({
       className={className}
       role="status"
       aria-busy="true"
-      aria-label={label}
+      aria-label={label ?? words.loading}
       style={{ width, ...style }}
     >
       <svg

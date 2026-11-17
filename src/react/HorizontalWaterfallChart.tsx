@@ -1,14 +1,15 @@
 import { forwardRef, useMemo, type CSSProperties } from "react";
 import type { ScenarioKey } from "../core/types";
 import type { IbcsTokensOverride } from "../core/tokens";
+import type { IbcsLabelsOverride } from "../core/labels";
 import { computeBridge, rowBands, type WaterfallDatum } from "../core/horizontalWaterfall";
-import { formatValue, formatSigned, type FormatOptions } from "../core/format";
+import { formatValue, formatSigned, notAvailableOf, type FormatOptions } from "../core/format";
 import { useMountGrow, useDataTween, useChartHover } from "./hooks";
 import type { ChartHover } from "./hooks";
 import { markInteraction, type MarkRect } from "./internal/hover";
 import { ChartTooltip, type ChartTooltipRow } from "./ChartTooltip";
 import { ChartDataTable, type ChartDataRow } from "./a11y";
-import { useIbcsTokens } from "./theme";
+import { useIbcsLabels, useIbcsTokens } from "./theme";
 import { clampTo, estTextW, fitLabel } from "./internal/text";
 
 export type { WaterfallDatum } from "../core/horizontalWaterfall";
@@ -42,7 +43,17 @@ export interface HorizontalWaterfallChartProps {
   format?: FormatOptions;
   /** Token override merged over the nearest {@link IbcsThemeProvider} theme. */
   tokens?: IbcsTokensOverride;
+  /**
+   * The component's own words (the tooltip and table words: "Total", "Contribution", "Running total", "Δ vs comparison") merged onto `IbcsThemeProvider`'s.
+   * See `IbcsLabels`.
+   */
+  labels?: IbcsLabelsOverride;
   title?: string;
+  /**
+   * The chart's accessible name, in place of the generated English
+   * description; also the caption of its screen-reader table.
+   */
+  ariaLabel?: string;
   /** Class applied to the chart `<svg>` (the root element). */
   className?: string;
   /** Styles merged *over* the chart's own layout styles. */
@@ -105,7 +116,9 @@ export const HorizontalWaterfallChart = forwardRef<SVGSVGElement, HorizontalWate
       rowHeight,
       format = {},
       tokens: tokenOverride,
+      labels,
       title,
+      ariaLabel,
       onHover,
       tooltip = true,
       className,
@@ -114,6 +127,7 @@ export const HorizontalWaterfallChart = forwardRef<SVGSVGElement, HorizontalWate
     ref,
   ) {
     const tokens = useIbcsTokens(tokenOverride);
+    const words = useIbcsLabels(labels);
     const data = useDataTween(dataProp);
     const comparisonData = useDataTween(comparisonDataProp);
     const grow = useMountGrow(700, 0, data);
@@ -184,16 +198,16 @@ export const HorizontalWaterfallChart = forwardRef<SVGSVGElement, HorizontalWate
       const exact = { ...format, compact: false };
       const rows: ChartTooltipRow[] = [];
       if (b.isTotal) {
-        rows.push({ label: "Total", value: formatValue(b.to, exact), strong: true });
+        rows.push({ label: words.total, value: formatValue(b.to, exact), strong: true });
       } else {
-        rows.push({ label: "Contribution", value: formatSigned(b.delta, exact), strong: true });
-        rows.push({ label: "Running total", value: formatValue(b.to, exact) });
+        rows.push({ label: words.contribution, value: formatSigned(b.delta, exact), strong: true });
+        rows.push({ label: words.runningTotal, value: formatValue(b.to, exact) });
       }
       const v = b.variance;
       if (v) {
         const color =
           v.abs === 0 ? tokens.color.zero : v.favorable ? tokens.color.good : tokens.color.bad;
-        rows.push({ label: "Δ vs comparison", value: formatSigned(v.abs, exact), color });
+        rows.push({ label: words.deltaVsComparison, value: formatSigned(v.abs, exact), color });
       }
       return (
         <ChartTooltip
@@ -211,16 +225,18 @@ export const HorizontalWaterfallChart = forwardRef<SVGSVGElement, HorizontalWate
     // its total), the running level it walks the bridge to, and the comparison
     // variance where the panel shows one - mirrors the vertical WaterfallChart.
     const a11yColumns = [
-      "Contribution",
-      "Running total",
-      ...(hasVariance ? ["Δ vs comparison"] : []),
+      words.contribution,
+      words.runningTotal,
+      ...(hasVariance ? [words.deltaVsComparison] : []),
     ];
     const a11yRows: ChartDataRow[] = bars.map((b) => {
       const cells: Array<string | number> = [
         b.isTotal ? formatValue(b.to, format) : formatSigned(b.delta, format),
         formatValue(b.to, format),
       ];
-      if (hasVariance) cells.push(b.variance ? formatSigned(b.variance.abs, format) : "n/a");
+      if (hasVariance) {
+        cells.push(b.variance ? formatSigned(b.variance.abs, format) : notAvailableOf(format));
+      }
       return { label: b.category, cells };
     });
 
@@ -232,7 +248,10 @@ export const HorizontalWaterfallChart = forwardRef<SVGSVGElement, HorizontalWate
           height={height}
           viewBox={`0 0 ${width} ${height}`}
           role="img"
-          aria-label={`${sub}Horizontal bridge of ${n} ${SCENARIO_LABEL[scenario]} contributions to a running total${hasVariance ? ", with a variance panel" : ""}.`}
+          aria-label={
+            ariaLabel ??
+            `${sub}Horizontal bridge of ${n} ${SCENARIO_LABEL[scenario]} contributions to a running total${hasVariance ? ", with a variance panel" : ""}.`
+          }
           className={className}
           style={{
             display: "block",
@@ -485,9 +504,10 @@ export const HorizontalWaterfallChart = forwardRef<SVGSVGElement, HorizontalWate
         </svg>
         <ChartDataTable
           caption={
-            title
+            ariaLabel ??
+            (title
               ? `${title} - data table`
-              : `Horizontal bridge of ${SCENARIO_LABEL[scenario]} contributions - data table`
+              : `Horizontal bridge of ${SCENARIO_LABEL[scenario]} contributions - data table`)
           }
           columns={a11yColumns}
           rows={a11yRows}

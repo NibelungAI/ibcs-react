@@ -80,6 +80,168 @@ import { DataTable } from "ibcs-react";
 Rows may nest through `children`: a parent renders as a bold group that sums
 its children and collapses on click.
 
+## Magnitude bars
+
+A value column with `mark: "bar"` draws the value itself as a bar - an IBCS
+integrated bar chart, whose length is the size, not a difference to a base -
+with its number beside it; `mark: "pin"` draws a dot on a stem instead. The
+detail (leaf) rows share one scale that always contains zero (negative values
+grow left of a shifted axis), and the bar wears its scenario's notation (AC
+solid, PY grey, PL frame, FC hatch). The totals row and group rows keep the
+plain number: a sum is off the detail rows' scale, and a bar cut at its edge
+would draw 160 as long as 100. The bars stop 8px short of the column's widest
+number, so no number overlaps a bar or a whisker; the column grows past its
+160px when its numbers need the room.
+
+<Frame>
+  <DataTable
+    columns={[
+      { key: "dps", label: "DPS", mark: "bar", format: { compact: false, fractionDigits: 1 } },
+      { key: "share", label: "Share %", format: { compact: false, fractionDigits: 1 } },
+      { key: "casts", label: "Casts", format: { compact: false, fractionDigits: 1 } },
+    ]}
+    rows={[
+      { id: "shoot", label: "Shoot", values: { dps: 215.037, share: 23.609, casts: 41.647 } },
+      { id: "raptor", label: "Raptor Strike", values: { dps: 91.041, share: 9.996, casts: 30.2 } },
+      { id: "wing", label: "Wing Clip", values: { dps: 40.3, share: 4.425, casts: 35.156 } },
+      { id: "trap", label: "Immolation Trap", values: { dps: 31.5, share: 3.459, casts: 6 } },
+    ]}
+  />
+</Frame>
+
+```tsx
+<DataTable
+  columns={[
+    { key: "dps", label: "DPS", mark: "bar", format: { compact: false, fractionDigits: 1 } },
+    { key: "share", label: "Share %", format: { compact: false, fractionDigits: 1 } },
+    { key: "casts", label: "Casts", format: { compact: false, fractionDigits: 1 } },
+  ]}
+  rows={[
+    { id: "shoot", label: "Shoot", values: { dps: 215.037, share: 23.609, casts: 41.647 } },
+    { id: "raptor", label: "Raptor Strike", values: { dps: 91.041, share: 9.996, casts: 30.2 } },
+  ]}
+/>
+```
+
+`fractionDigits` keeps every cell of a column at the same digits: Raptor
+Strike's share of 9.996 % reads "10.0", not "10". A column's `format` replaces
+the table's `format` for that column - it is not merged - so repeat the
+table's `locale`, `compact` and the rest in it. See
+[Numbers and words](/docs/localization).
+
+## Intervals and bands
+
+`row.errors` holds the half-width of an interval - a 95% confidence interval,
+say - per column key (a value and its variance each have their own). A plain
+value column writes "914.30 ± 0.47"; a bar or pin column - a value column with
+a `mark`, or a variance column - draws an error bar on its mark, which carries
+the interval as its accessible text and tooltip. An off-scale Δ% arrow has no
+whisker, so the interval is the arrow's tooltip. A pin column with errors moves
+its labels into a right-hand gutter so no whisker meets a label. Half-widths
+are never summed into parents or the totals row.
+
+A positive half-width is never written as zero (within Intl's 20 fraction
+digits). With `fractionDigits` it keeps
+the column's digits and takes more when its first significant figure needs
+them ("914.30 ± 0.004"); without, both numbers are written in full at the
+digits two significant figures of the half-width need, so the default format
+writes 914.3013 ± 0.4682 as "914.30 ± 0.47", not "914 ± 0".
+
+`column.bands` shades value ranges across the body rows of a bar or pin column,
+in the units its mark is drawn in - here the variants tied with the best. Which
+rows are tied is your rule; the band only draws it. A band's `label` is its
+tooltip, and the table's screen-reader caption names it after your `caption`:
+"Δ vs equipped, Tied with the best: +3.00–+3.92".
+
+<Frame>
+  <DataTable
+    columns={[
+      { key: "dps", label: "DPS", format: { compact: false, fractionDigits: 2 } },
+      {
+        key: "delta",
+        label: "Δ vs equipped",
+        kind: "variance",
+        measure: "dps",
+        base: "PL",
+        mark: "pin",
+        width: 190,
+        format: { compact: false, fractionDigits: 2 },
+        bands: [{ from: 2.9952, to: 3.9194, label: "Tied with the best" }],
+      },
+    ]}
+    rows={[
+      {
+        id: "a",
+        label: "Best set",
+        values: { dps: { AC: 914.3013, PL: 910.8441 } },
+        errors: { dps: 0.4682, delta: 0.4621 },
+      },
+      {
+        id: "b",
+        label: "Ring swap",
+        values: { dps: { AC: 914.0512, PL: 910.8441 } },
+        errors: { dps: 0.4511, delta: 0.4402 },
+      },
+      {
+        id: "c",
+        label: "Bracers swap",
+        values: { dps: { AC: 910.9064, PL: 910.8441 } },
+        errors: { dps: 0.4744, delta: 0.1347 },
+      },
+      {
+        id: "d",
+        label: "Equipped",
+        values: { dps: { AC: 910.8441, PL: 910.8441 } },
+        errors: { dps: 0.4808, delta: 0 },
+      },
+      {
+        id: "e",
+        label: "Trinket swap",
+        values: { dps: { AC: 907.9623, PL: 910.8441 } },
+        errors: { dps: 0.4793, delta: 0.5439 },
+      },
+      {
+        id: "f",
+        label: "Weapon swap",
+        values: { dps: { AC: 906.2537, PL: 910.8441 } },
+        errors: { dps: 0.4951, delta: 0.6408 },
+      },
+    ]}
+  />
+</Frame>
+
+```tsx
+<DataTable
+  columns={[
+    { key: "dps", label: "DPS", format: { compact: false, fractionDigits: 2 } },
+    {
+      key: "delta",
+      label: "Δ vs equipped",
+      kind: "variance",
+      measure: "dps",
+      base: "PL", // the equipped set, carried as each row's PL
+      mark: "pin",
+      format: { compact: false, fractionDigits: 2 },
+      bands: [{ from: 2.9952, to: 3.9194, label: "Tied with the best" }],
+    },
+  ]}
+  rows={[
+    {
+      id: "a",
+      label: "Best set",
+      values: { dps: { AC: 914.3013, PL: 910.8441 } },
+      errors: { dps: 0.4682, delta: 0.4621 }, // DPS ± its own, Δ ± the paired one
+    },
+    // …
+  ]}
+/>
+```
+
+On an abs variance column drawn as a `bar` the axis is the bar's length |Δ|
+from 0, so its band is given as lengths and a whisker that reaches past zero is
+cut at the axis (an open end). `ComparisonTable` reads the same column type but
+draws marks, error bars and bands in `DataTable` only.
+
 ## Sorting: controlled or uncontrolled
 
 Clicking a header cycles the sort: descending, then ascending, then off.

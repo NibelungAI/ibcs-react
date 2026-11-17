@@ -1,9 +1,21 @@
 import { forwardRef, useId, useMemo, type CSSProperties } from "react";
 import type { ScenarioDatum, ScenarioKey } from "../core/types";
 import type { IbcsTokensOverride } from "../core/tokens";
+import { deltaHeading, fillLabel, scenarioHeadings, type IbcsLabelsOverride } from "../core/labels";
 import { computeVariance } from "../core/variance";
 import { bandScale, resolveBandPadding, type BandPadding } from "../core/bandScale";
-import { formatValue, formatSigned, formatPercent, type FormatOptions } from "../core/format";
+import {
+  formatInterval,
+  formatPercent,
+  formatPercentInterval,
+  formatSigned,
+  formatValue,
+  notAvailableOf,
+  percentFormatOf,
+  type FormatOptions,
+} from "../core/format";
+import { halfWidthOf } from "../core/errorBar";
+import { ErrorBar } from "./ErrorBar";
 import { useMountGrow, useDataTween, useChartHover } from "./hooks";
 import type { ChartSelection, ChartHover } from "./hooks";
 import { markInteraction, type MarkRect } from "./internal/hover";
@@ -14,15 +26,34 @@ import {
   selectableMarkProps,
   type ChartDataRow,
 } from "./a11y";
-import { useIbcsTokens } from "./theme";
+import { useIbcsLabels, useIbcsTokens } from "./theme";
 import { clampTo, estTextW, fitLabel, svgSafeId } from "./internal/text";
 
 /**
  * One category column: the canonical {@link ScenarioDatum} with `AC` required -
  * this chart draws the actual in front of the comparison, so there is always an
  * actual to draw.
+ *
+ * The optional half-widths add vertical error bars: `acError` on the AC column
+ * (AC ± acError, in AC's units), `absError` on an "abs" variance bar and
+ * `pctError` on a "pct" one (in PERCENT units: 0.4 means ±0.4 %). Give the
+ * variance's own error (for paired runs, the paired one); it is never derived.
  */
-export type ColumnDatum = ScenarioDatum & { AC: number };
+export type ColumnDatum = ScenarioDatum & {
+  AC: number;
+  acError?: number;
+  absError?: number;
+  pctError?: number;
+};
+
+/** A datum's variance half-width in the panel's units (pct: a fraction, like `Variance.pct`). */
+function varianceErrorOf(d: ColumnDatum, variance: "abs" | "pct" | "none"): number | undefined {
+  if (variance === "pct") {
+    const e = halfWidthOf(d.pctError);
+    return e == null ? undefined : e / 100;
+  }
+  return halfWidthOf(d.absError);
+}
 
 export interface VarianceColumnChartProps {
   data: ColumnDatum[];
@@ -48,7 +79,19 @@ export interface VarianceColumnChartProps {
   bandPadding?: BandPadding;
   format?: FormatOptions;
   tokens?: IbcsTokensOverride;
+  /**
+   * The component's own words (the scenario codes of its tooltip and table, and the columns' "Select …" names) merged onto `IbcsThemeProvider`'s.
+   * See `IbcsLabels`.
+   */
+  labels?: IbcsLabelsOverride;
   title?: string;
+  /**
+   * The chart's accessible name, in place of the generated English
+   * description; also the caption of its screen-reader table. With
+   * `onSelect`, the svg is a container of selectable marks, each with its own
+   * name, and takes no name itself: the text then names the table alone.
+   */
+  ariaLabel?: string;
   /** Extra class name for the chart `<svg>` (the rendered root). */
   className?: string;
   /** Inline style merged OVER the chart `<svg>`'s own layout style. */
@@ -95,7 +138,9 @@ export const VarianceColumnChart = forwardRef<SVGSVGElement, VarianceColumnChart
       bandPadding,
       format = {},
       tokens: tokenOverride,
+      labels,
       title,
+      ariaLabel,
       className,
       style,
       onSelect,
@@ -113,6 +158,11 @@ export const VarianceColumnChart = forwardRef<SVGSVGElement, VarianceColumnChart
     // on/off switch, so every geometry branch below reads this one flag.
     const showVariancePanel = variance !== "none";
     const tokens = useIbcsTokens(tokenOverride);
+    const words = useIbcsLabels(labels);
+    const S = scenarioHeadings(words);
+    const cmpName = S[comparison];
+    const pctFmt = percentFormatOf(format);
+    const na = notAvailableOf(format);
     const hatchId = svgSafeId(useId());
     const hover = useChartHover<ColumnDatum>();
     const marks = markInteraction(hover, tooltip, onHover);
@@ -150,6 +200,12 @@ export const VarianceColumnChart = forwardRef<SVGSVGElement, VarianceColumnChart
             mx = Math.max(mx, v);
           }
         }
+        // The AC column's error bar must fit on the scale too.
+        const e = halfWidthOf(d.acError);
+        if (e != null && isFinite(d.AC)) {
+          mn = Math.min(mn, d.AC - e);
+          mx = Math.max(mx, d.AC + e);
+        }
       }
       return { domainMin: mn, domainMax: mx };
     }, [data]);
@@ -161,12 +217,13 @@ export const VarianceColumnChart = forwardRef<SVGSVGElement, VarianceColumnChart
 
     const varMax = useMemo(() => {
       let m = 0;
-      for (const v of variances) {
-        if (!v) continue;
-        m = Math.max(m, Math.abs(variance === "pct" ? (v.pct ?? 0) : v.abs));
-      }
+      variances.forEach((v, i) => {
+        if (!v) return;
+        const reach = Math.abs(variance === "pct" ? (v.pct ?? 0) : v.abs);
+        m = Math.max(m, reach + (varianceErrorOf(data[i]!, variance) ?? 0));
+      });
       return m || 1;
-    }, [variances, variance]);
+    }, [variances, variance, data]);
 
     // Band layout (column placement). Default reproduces the historical centred
     // look exactly (back column = 0.62·step, half-band gutter); `bandPadding` lets
@@ -188,6 +245,13 @@ export const VarianceColumnChart = forwardRef<SVGSVGElement, VarianceColumnChart
     const colH = (v: number) => Math.abs(gY(v) - zeroY);
 
     const varMid = topBase + gap + varH / 2;
+    // Value → pixel in the variance panel (animated), for error bars on its marks.
+    const varY = (val: number) => varMid - (val / varMax) * (varH / 2) * grow;
+    // A Δ% as text, with its unsigned "± half-width" (never written as zero).
+    const pctText = (pct: number | null, d: ColumnDatum): string => {
+      const e = halfWidthOf(d.pctError);
+      return formatPercentInterval(pct, e == null ? undefined : e / 100, pctFmt, true);
+    };
 
     // Built-in tooltip rows for the hovered column: AC, the comparison value, and
     // the signed Δ (impact-coloured), reusing the chart's variance computation.
@@ -201,17 +265,17 @@ export const VarianceColumnChart = forwardRef<SVGSVGElement, VarianceColumnChart
       const v = computeVariance(d.AC, cmp, higherIsBetter);
       const exact = { ...format, compact: false };
       const rows: ChartTooltipRow[] = [
-        { label: "AC", value: formatValue(d.AC, exact), strong: true },
+        { label: S.AC, value: formatInterval(d.AC, halfWidthOf(d.acError), exact), strong: true },
       ];
       if (cmp != null && isFinite(cmp))
-        rows.push({ label: comparison, value: formatValue(cmp, exact) });
+        rows.push({ label: cmpName, value: formatValue(cmp, exact) });
       if (v) {
         const color =
           v.abs === 0 ? tokens.color.zero : v.favorable ? tokens.color.good : tokens.color.bad;
-        const pct = v.pct != null ? ` (${formatPercent(v.pct)})` : "";
+        const pct = v.pct != null ? ` (${pctText(v.pct, d)})` : "";
         rows.push({
-          label: `Δ${comparison}`,
-          value: `${formatSigned(v.abs, exact)}${pct}`,
+          label: deltaHeading(words, cmpName),
+          value: `${formatInterval(v.abs, halfWidthOf(d.absError), exact, true)}${pct}`,
           color,
         });
       }
@@ -230,20 +294,22 @@ export const VarianceColumnChart = forwardRef<SVGSVGElement, VarianceColumnChart
     // Screen-reader data table: the chart's numbers (AC, the comparison, and the
     // shown variance) as a real <table>, so SR users read values, not the svg.
     const a11yColumns = [
-      "AC",
-      comparison,
-      ...(showVariancePanel ? [`Δ${comparison}`, `Δ${comparison}%`] : []),
+      S.AC,
+      cmpName,
+      ...(showVariancePanel
+        ? [deltaHeading(words, cmpName), deltaHeading(words, cmpName, true)]
+        : []),
     ];
     const a11yRows: ChartDataRow[] = data.map((d, i) => {
       const cmp = d[comparison];
       const v = variances[i];
       const cells: Array<string | number> = [
-        formatValue(d.AC, format),
-        cmp != null && isFinite(cmp) ? formatValue(cmp, format) : "n/a",
+        formatInterval(d.AC, halfWidthOf(d.acError), format),
+        cmp != null && isFinite(cmp) ? formatValue(cmp, format) : na,
       ];
       if (showVariancePanel) {
-        cells.push(v ? formatSigned(v.abs, format) : "n/a");
-        cells.push(v ? formatPercent(v.pct) : "n/a");
+        cells.push(v ? formatInterval(v.abs, halfWidthOf(d.absError), format, true) : na);
+        cells.push(v ? pctText(v.pct, d) : na);
       }
       return { label: d.category, cells };
     });
@@ -264,9 +330,10 @@ export const VarianceColumnChart = forwardRef<SVGSVGElement, VarianceColumnChart
           aria-label={
             onSelect
               ? undefined
-              : title
-                ? `${title}. AC versus ${comparison} columns with a variance panel.`
-                : `AC versus ${comparison} columns`
+              : (ariaLabel ??
+                (title
+                  ? `${title}. ${S.AC} versus ${cmpName} columns with a variance panel.`
+                  : `${S.AC} versus ${cmpName} columns`))
           }
           style={{
             display: "block",
@@ -317,6 +384,21 @@ export const VarianceColumnChart = forwardRef<SVGSVGElement, VarianceColumnChart
             const py = d[comparison];
             const pl = d.PL;
             const info = { category: d.category, scenario: "AC" as const, value: d.AC, datum: d };
+            // The AC column's vertical error bar, on the column's own (animated) scale.
+            const acError = halfWidthOf(d.acError);
+            const acErrorBar = acError != null && (
+              <ErrorBar
+                value={d.AC}
+                halfWidth={acError}
+                orientation="vertical"
+                scale={gY}
+                cross={cx}
+                clip={[topBase, padT]}
+                capSize={Math.round(Math.min(acW * 0.5, 12))}
+                label={formatInterval(d.AC, acError, format)}
+                tokens={tokens}
+              />
+            );
             // The visible marks of this category, in final (un-animated)
             // geometry: the tooltip fires only near these - the full-height
             // band rect below stays as the generous click/focus target.
@@ -357,7 +439,10 @@ export const VarianceColumnChart = forwardRef<SVGSVGElement, VarianceColumnChart
                 key={d.category}
                 {...selectableMarkProps(
                   onSelect ? () => onSelect(info) : undefined,
-                  `Select ${d.category}, AC ${formatValue(d.AC, format)}`,
+                  fillLabel(words.selectMark, {
+                    label: d.category,
+                    value: `${S.AC} ${formatValue(d.AC, format)}`,
+                  }),
                 )}
                 {...marks.forMark(info, markRects)}
                 style={onSelect ? { cursor: "pointer" } : undefined}
@@ -408,16 +493,20 @@ export const VarianceColumnChart = forwardRef<SVGSVGElement, VarianceColumnChart
                       stroke={tokens.scenario.AC.fill}
                       strokeWidth={2.5}
                     />
+                    {acError != null && acErrorBar}
                     <circle cx={cx} cy={gY(d.AC)} r={4} fill={tokens.scenario.AC.fill} />
                   </>
                 ) : (
-                  <rect
-                    x={cx - acW / 2}
-                    y={colTop(d.AC)}
-                    width={acW}
-                    height={colH(d.AC)}
-                    fill={tokens.scenario.AC.fill}
-                  />
+                  <>
+                    <rect
+                      x={cx - acW / 2}
+                      y={colTop(d.AC)}
+                      width={acW}
+                      height={colH(d.AC)}
+                      fill={tokens.scenario.AC.fill}
+                    />
+                    {acError != null && acErrorBar}
+                  </>
                 )}
                 {/* Plan/budget reference frame - shown when AC is compared to some
                 OTHER scenario (e.g. PY) but plan data exists, so the plan is
@@ -443,8 +532,9 @@ export const VarianceColumnChart = forwardRef<SVGSVGElement, VarianceColumnChart
                   if (w > band - 1) return null;
                   const lx = clampTo(cx, padL + w / 2, width - padR - w / 2);
                   // Always just above the bar's top edge (above the zero line for
-                  // negatives) so it never drops into the variance band below.
-                  const ly = Math.min(zeroY, gY(d.AC)) - 5;
+                  // negatives) so it never drops into the variance band below -
+                  // and above its error bar's whisker.
+                  const ly = Math.min(zeroY, gY(d.AC + (acError ?? 0))) - 5;
                   return (
                     <text x={lx} y={ly} fontSize={11} fill={tokens.color.text} textAnchor="middle">
                       {s}
@@ -490,8 +580,28 @@ export const VarianceColumnChart = forwardRef<SVGSVGElement, VarianceColumnChart
                       : tokens.color.bad;
                 const up = val >= 0;
                 const label =
-                  variance === "pct" ? formatPercent(v.pct) : formatSigned(v.abs, format);
+                  variance === "pct" ? formatPercent(v.pct, pctFmt) : formatSigned(v.abs, format);
                 const tip = up ? varMid - h : varMid + h;
+                // The variance mark's vertical error bar, and its reach past the tip.
+                const varError = varianceErrorOf(d, variance);
+                const reach = varError == null ? 0 : (varError / varMax) * (varH / 2) * grow;
+                const varErrorBar = varError != null && (
+                  <ErrorBar
+                    value={val}
+                    halfWidth={varError}
+                    orientation="vertical"
+                    scale={varY}
+                    cross={cx}
+                    clip={[varMid - varH / 2, varMid + varH / 2]}
+                    capSize={Math.round(Math.min(acW * 0.5, 12))}
+                    label={
+                      variance === "pct"
+                        ? pctText(v.pct, d)
+                        : formatInterval(v.abs, varError, format, true)
+                    }
+                    tokens={tokens}
+                  />
+                );
                 return (
                   <g key={`v-${d.category}`}>
                     {mark === "pin" ? (
@@ -504,16 +614,20 @@ export const VarianceColumnChart = forwardRef<SVGSVGElement, VarianceColumnChart
                           stroke={color}
                           strokeWidth={2.5}
                         />
+                        {varErrorBar}
                         {val !== 0 && <circle cx={cx} cy={tip} r={3.5} fill={color} />}
                       </>
                     ) : (
-                      <rect
-                        x={cx - acW / 2}
-                        y={up ? varMid - h : varMid}
-                        width={acW}
-                        height={Math.max(h, 1)}
-                        fill={color}
-                      />
+                      <>
+                        <rect
+                          x={cx - acW / 2}
+                          y={up ? varMid - h : varMid}
+                          width={acW}
+                          height={Math.max(h, 1)}
+                          fill={color}
+                        />
+                        {varErrorBar}
+                      </>
                     )}
                     {estTextW(label, 10.5) <= band - 1 && (
                       <text
@@ -522,7 +636,7 @@ export const VarianceColumnChart = forwardRef<SVGSVGElement, VarianceColumnChart
                           padL + estTextW(label, 10.5) / 2,
                           width - padR - estTextW(label, 10.5) / 2,
                         )}
-                        y={up ? varMid - h - 4 : varMid + h + 12}
+                        y={up ? varMid - h - reach - 4 : varMid + h + reach + 12}
                         fontSize={10.5}
                         fill={color}
                         textAnchor="middle"
@@ -537,7 +651,10 @@ export const VarianceColumnChart = forwardRef<SVGSVGElement, VarianceColumnChart
           )}
         </svg>
         <ChartDataTable
-          caption={title ? `${title} - data table` : `AC versus ${comparison} - data table`}
+          caption={
+            ariaLabel ??
+            (title ? `${title} - data table` : `${S.AC} versus ${cmpName} - data table`)
+          }
           columns={a11yColumns}
           rows={a11yRows}
         />

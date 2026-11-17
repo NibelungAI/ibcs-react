@@ -1,17 +1,24 @@
 import { forwardRef, useMemo, type CSSProperties } from "react";
 import type { IbcsTokensOverride } from "../core/tokens";
+import { deltaHeading, scenarioHeadings, type IbcsLabelsOverride } from "../core/labels";
 import {
   computeBarVarianceWaterfall,
   type BarVarianceDatum,
   type BarVarianceRow,
 } from "../core/barVarianceWaterfall";
-import { formatValue, formatSigned, formatPercent, type FormatOptions } from "../core/format";
+import {
+  formatPercent,
+  formatSigned,
+  formatValue,
+  percentFormatOf,
+  type FormatOptions,
+} from "../core/format";
 import { useMountGrow, useDataTween, useChartHover } from "./hooks";
 import type { ChartHover } from "./hooks";
 import { markInteraction, type MarkRect } from "./internal/hover";
 import { ChartTooltip, type ChartTooltipRow } from "./ChartTooltip";
 import { ChartDataTable, type ChartDataRow } from "./a11y";
-import { useIbcsTokens } from "./theme";
+import { useIbcsLabels, useIbcsTokens } from "./theme";
 import { clampTo, estTextW, fitLabel } from "./internal/text";
 
 export type { BarVarianceDatum } from "../core/barVarianceWaterfall";
@@ -43,7 +50,17 @@ export interface BarVarianceWaterfallChartProps {
   format?: FormatOptions;
   /** Token override merged over the nearest {@link IbcsThemeProvider} theme. */
   tokens?: IbcsTokensOverride;
+  /**
+   * The component's own words (the scenario codes of the total bars, the Δ% tier and the tooltip, and the "Total" row of its table) merged onto `IbcsThemeProvider`'s.
+   * See `IbcsLabels`.
+   */
+  labels?: IbcsLabelsOverride;
   title?: string;
+  /**
+   * The chart's accessible name, in place of the generated English
+   * description; also the caption of its screen-reader table.
+   */
+  ariaLabel?: string;
   /** Class applied to the chart `<svg>` (the root element). */
   className?: string;
   /** Styles merged *over* the chart's own layout styles. */
@@ -104,7 +121,9 @@ export const BarVarianceWaterfallChart = forwardRef<SVGSVGElement, BarVarianceWa
       rowHeight = 24,
       format = {},
       tokens: tokenOverride,
+      labels,
       title,
+      ariaLabel,
       tooltip = true,
       onHover,
       className,
@@ -113,6 +132,9 @@ export const BarVarianceWaterfallChart = forwardRef<SVGSVGElement, BarVarianceWa
     ref,
   ) {
     const tokens = useIbcsTokens(tokenOverride);
+    const words = useIbcsLabels(labels);
+    const S = scenarioHeadings(words);
+    const pctFmt = percentFormatOf(format);
     const hover = useChartHover<BarVarianceRow>();
     const marks = markInteraction(hover, tooltip, onHover);
     const hoverEnabled = marks.enabled;
@@ -222,7 +244,7 @@ export const BarVarianceWaterfallChart = forwardRef<SVGSVGElement, BarVarianceWa
       const frac = outlier ? 1 : Math.min(Math.abs(pctVal) / pctMax, 1);
       const len = frac * pctBarMax * grow;
       const tip = pctCx + dir * len;
-      const label = formatPercent(pct);
+      const label = formatPercent(pct, pctFmt);
       const showLbl = showText && estTextW(label, valFont) <= pctValW + 10;
       const lx = dir > 0 ? pctX1 - 2 : dir < 0 ? pctX0 + 2 : pctCx;
       const anchor: "start" | "middle" | "end" = dir > 0 ? "end" : dir < 0 ? "start" : "middle";
@@ -374,13 +396,13 @@ export const BarVarianceWaterfallChart = forwardRef<SVGSVGElement, BarVarianceWa
       const r = h.datum;
       const exact = { ...format, compact: false };
       const rowsT: ChartTooltipRow[] = [
-        { label: "AC", value: formatValue(r.ac, exact), strong: true },
-        { label: "PL", value: formatValue(r.base, exact) },
+        { label: S.AC, value: formatValue(r.ac, exact), strong: true },
+        { label: S.PL, value: formatValue(r.base, exact) },
       ];
-      if (usesPy) rowsT.push({ label: "PY", value: formatValue(r.ref, exact) });
+      if (usesPy) rowsT.push({ label: S.PY, value: formatValue(r.ref, exact) });
       rowsT.push({
-        label: `Δ${reference}`,
-        value: `${formatSigned(r.abs, exact)} (${formatPercent(r.pct)})`,
+        label: deltaHeading(words, S[reference]),
+        value: `${formatSigned(r.abs, exact)} (${formatPercent(r.pct, pctFmt)})`,
         color: impactColor(r.abs, r.favorable),
       });
       return (
@@ -401,23 +423,28 @@ export const BarVarianceWaterfallChart = forwardRef<SVGSVGElement, BarVarianceWa
     // Screen-reader data table: every entity's AC, the waterfall reference it is
     // bridged from, the absolute step and the Δ% tier value - plus the totals row
     // the chart draws at the bottom - as real numbers, not the decorative svg.
-    const a11yColumns = ["AC", reference, `Δ${reference}`, `Δ${pctRef}%`];
+    const a11yColumns = [
+      S.AC,
+      S[reference],
+      deltaHeading(words, S[reference]),
+      deltaHeading(words, S[pctRef], true),
+    ];
     const a11yRows: ChartDataRow[] = rows.map((r) => ({
       label: r.label,
       cells: [
         formatValue(r.ac, format),
         formatValue(r.ref, format),
         formatSigned(r.abs, format),
-        formatPercent(r.pct),
+        formatPercent(r.pct, pctFmt),
       ],
     }));
     a11yRows.push({
-      label: "Total",
+      label: words.total,
       cells: [
         formatValue(totals.ac, format),
         formatValue(usesPy ? totals.pyDisplay : totals.pl, format),
         formatSigned(totals.refAbs, format),
-        formatPercent(totals.pct),
+        formatPercent(totals.pct, pctFmt),
       ],
     });
 
@@ -430,8 +457,9 @@ export const BarVarianceWaterfallChart = forwardRef<SVGSVGElement, BarVarianceWa
           viewBox={`0 0 ${width} ${height}`}
           role="img"
           aria-label={
+            ariaLabel ??
             (title ? `${title}. ` : "") +
-            `IBCS C06: ${n} entities as AC structure bars with a ${reference}→AC variance waterfall and a Δ${pctRef}% tier.`
+              `IBCS C06: ${n} entities as ${S.AC} structure bars with a ${S[reference]}→${S.AC} variance waterfall and a ${deltaHeading(words, S[pctRef], true)} tier.`
           }
           className={className}
           style={{
@@ -457,7 +485,7 @@ export const BarVarianceWaterfallChart = forwardRef<SVGSVGElement, BarVarianceWa
             fontStyle="italic"
             fill={tokens.color.textMuted}
           >
-            {`Δ${pctRef}%`}
+            {deltaHeading(words, S[pctRef], true)}
           </text>
 
           {/* Zero baseline (left axis) + Δ% center axis, spanning the whole body. */}
@@ -489,8 +517,8 @@ export const BarVarianceWaterfallChart = forwardRef<SVGSVGElement, BarVarianceWa
           />
 
           {/* Header totals */}
-          <g>{renderTotalBar(plTop + rowH / 2, "PL", totals.pl, "frame")}</g>
-          {usesPy && <g>{renderTotalBar(pyTop + rowH / 2, "PY", totals.pyDisplay, "py")}</g>}
+          <g>{renderTotalBar(plTop + rowH / 2, S.PL, totals.pl, "frame")}</g>
+          {usesPy && <g>{renderTotalBar(pyTop + rowH / 2, S.PY, totals.pyDisplay, "py")}</g>}
 
           {/* Step connectors tying the waterfall together (leaving level of each
             step), including PY→first and last→result. Drawn under the bars. */}
@@ -687,7 +715,7 @@ export const BarVarianceWaterfallChart = forwardRef<SVGSVGElement, BarVarianceWa
             stroke={tokens.color.rowBorder}
             strokeWidth={1}
           />
-          <g>{renderTotalBar(acTop + rowH / 2, "AC", totals.ac, "ac")}</g>
+          <g>{renderTotalBar(acTop + rowH / 2, S.AC, totals.ac, "ac")}</g>
           {renderPctMark(
             acTop + rowH / 2,
             totals.pct,
@@ -714,7 +742,10 @@ export const BarVarianceWaterfallChart = forwardRef<SVGSVGElement, BarVarianceWa
             )}
         </svg>
         <ChartDataTable
-          caption={title ? `${title} - data table` : `AC versus ${reference} bridge - data table`}
+          caption={
+            ariaLabel ??
+            (title ? `${title} - data table` : `${S.AC} versus ${S[reference]} bridge - data table`)
+          }
           columns={a11yColumns}
           rows={a11yRows}
         />

@@ -1,8 +1,9 @@
 import { forwardRef, useMemo, type CSSProperties } from "react";
 import type { IbcsTokens, IbcsTokensOverride } from "../core/tokens";
+import { fillLabel, type IbcsLabelsOverride } from "../core/labels";
 import { computeStacked, type StackedDatum, type StackedSeries } from "../core/stacked";
 import { bandScale, resolveBandPadding, type BandPadding } from "../core/bandScale";
-import { formatValue, type FormatOptions } from "../core/format";
+import { formatValue, notAvailableOf, type FormatOptions } from "../core/format";
 import { useMountGrow, useDataTween, useChartHover } from "./hooks";
 import type { ChartSelection, ChartHover } from "./hooks";
 import { markInteraction, type MarkRect } from "./internal/hover";
@@ -13,7 +14,7 @@ import {
   selectableMarkProps,
   type ChartDataRow,
 } from "./a11y";
-import { useIbcsTokens } from "./theme";
+import { useIbcsLabels, useIbcsTokens } from "./theme";
 
 export type { StackedDatum, StackedSeries } from "../core/stacked";
 
@@ -39,7 +40,19 @@ export interface StackedChartProps {
   /** Number formatting for the total / value labels. */
   format?: FormatOptions;
   tokens?: IbcsTokensOverride;
+  /**
+   * The component's own words ("Total" in its tooltip and table, and the columns' "Select …" names) merged onto `IbcsThemeProvider`'s.
+   * See `IbcsLabels`.
+   */
+  labels?: IbcsLabelsOverride;
   title?: string;
+  /**
+   * The chart's accessible name, in place of the generated English
+   * description; also the caption of its screen-reader table. With
+   * `onSelect`, the svg is a container of selectable marks, each with its own
+   * name, and takes no name itself: the text then names the table alone.
+   */
+  ariaLabel?: string;
   /** Extra class name for the chart `<svg>` (the rendered root). */
   className?: string;
   /** Inline style merged OVER the chart `<svg>`'s own layout style. */
@@ -186,7 +199,9 @@ export const StackedChart = forwardRef<SVGSVGElement, StackedChartProps>(functio
     bandPadding,
     format = {},
     tokens: tokenOverride,
+    labels,
     title,
+    ariaLabel,
     className,
     style,
     showTotals = true,
@@ -198,6 +213,7 @@ export const StackedChart = forwardRef<SVGSVGElement, StackedChartProps>(functio
   ref,
 ) {
   const tokens = useIbcsTokens(tokenOverride);
+  const words = useIbcsLabels(labels);
   const data = useDataTween(dataProp);
   const grow = useMountGrow(700, 0, data);
   const hover = useChartHover<StackedDatum>();
@@ -236,7 +252,7 @@ export const StackedChart = forwardRef<SVGSVGElement, StackedChartProps>(functio
     if (!col) return null;
     const exact = { ...format, compact: false };
     const rows: ChartTooltipRow[] = [
-      { label: "Total", value: formatValue(col.total, exact), strong: true },
+      { label: words.total, value: formatValue(col.total, exact), strong: true },
     ];
     for (const seg of col.segments) {
       const s = series.find((x) => x.key === seg.seriesKey);
@@ -256,12 +272,12 @@ export const StackedChart = forwardRef<SVGSVGElement, StackedChartProps>(functio
 
   // Screen-reader data table: per-category, each series' value plus the total -
   // shared by both orientations, so SR users read values, not the svg.
-  const a11yColumns = [...series.map((s) => s.label), "Total"];
+  const a11yColumns = [...series.map((s) => s.label), words.total];
   const a11yRows: ChartDataRow[] = columns.map((col) => {
     const byKey = new Map(col.segments.map((seg) => [seg.seriesKey, seg.value]));
     const cells: Array<string | number> = series.map((s) => {
       const val = byKey.get(s.key);
-      return val != null ? fmt(val) : "n/a";
+      return val != null ? fmt(val) : notAvailableOf(format);
     });
     cells.push(fmt(col.total));
     return { label: col.category, cells };
@@ -269,9 +285,10 @@ export const StackedChart = forwardRef<SVGSVGElement, StackedChartProps>(functio
   const a11yTable = (
     <ChartDataTable
       caption={
-        title
+        ariaLabel ??
+        (title
           ? `${title} - data table`
-          : `Stacked ${orientation === "column" ? "columns" : "bars"} - data table`
+          : `Stacked ${orientation === "column" ? "columns" : "bars"} - data table`)
       }
       columns={a11yColumns}
       rows={a11yRows}
@@ -331,7 +348,9 @@ export const StackedChart = forwardRef<SVGSVGElement, StackedChartProps>(functio
           aria-label={
             onSelect
               ? undefined
-              : (title ?? `Stacked columns of ${series.length} series across ${n} periods`)
+              : (ariaLabel ??
+                title ??
+                `Stacked columns of ${series.length} series across ${n} periods`)
           }
           style={{
             display: "block",
@@ -378,7 +397,7 @@ export const StackedChart = forwardRef<SVGSVGElement, StackedChartProps>(functio
                 key={col.category}
                 {...selectableMarkProps(
                   onSelect ? () => onSelect(info) : undefined,
-                  `Select ${col.category}, total ${fmt(col.total)}`,
+                  fillLabel(words.selectTotal, { label: col.category, value: fmt(col.total) }),
                 )}
                 {...marks.forMark(info, markRects)}
                 style={onSelect ? { cursor: "pointer" } : undefined}
@@ -535,7 +554,9 @@ export const StackedChart = forwardRef<SVGSVGElement, StackedChartProps>(functio
         aria-label={
           onSelect
             ? undefined
-            : (title ?? `Stacked bars of ${series.length} series across ${n} categories`)
+            : (ariaLabel ??
+              title ??
+              `Stacked bars of ${series.length} series across ${n} categories`)
         }
         style={{
           display: "block",
@@ -586,7 +607,7 @@ export const StackedChart = forwardRef<SVGSVGElement, StackedChartProps>(functio
               key={col.category}
               {...selectableMarkProps(
                 onSelect ? () => onSelect(info) : undefined,
-                `Select ${col.category}, total ${fmt(col.total)}`,
+                fillLabel(words.selectTotal, { label: col.category, value: fmt(col.total) }),
               )}
               {...marks.forMark(info, markRects)}
               style={onSelect ? { cursor: "pointer" } : undefined}

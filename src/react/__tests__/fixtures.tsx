@@ -51,7 +51,9 @@ import {
   ResponsiveChart,
   ChartDataTable,
   ExportMenu,
+  ErrorBar,
 } from "../index";
+import type { DataTableColumn, DataTableRow, RankingDatum } from "../../index";
 
 /* ------------------------------------------------------------------ *
  * Tiny shared data fixtures (reused across many charts).
@@ -463,5 +465,173 @@ export const cases: SmokeCase[] = [
         <div>ready</div>
       </ChartState>
     ),
+  },
+  {
+    // A mark, so the fixture supplies the chart svg it lives in: a horizontal
+    // bar and a vertical column, each with its error bar on its own scale.
+    name: "ErrorBar",
+    element: (
+      <svg width={480} height={140} viewBox="0 0 480 140">
+        <rect x={20} y={28} width={62 * 3} height={14} fill="#54534e" />
+        <ErrorBar value={62} halfWidth={9} scale={(v) => 20 + v * 3} cross={35} capSize={10} />
+        <rect x={340} y={130 - 70 * 1.5} width={24} height={70 * 1.5} fill="#54534e" />
+        <ErrorBar
+          value={70}
+          halfWidth={12}
+          orientation="vertical"
+          scale={(v) => 130 - v * 1.5}
+          cross={352}
+          capSize={12}
+        />
+        {/* A point: its error bar first, the point on top, so the point stays whole. */}
+        <ErrorBar
+          value={48}
+          halfWidth={20}
+          orientation="vertical"
+          scale={(v) => 130 - v * 1.5}
+          cross={420}
+          clip={[130, 40]}
+        />
+        <circle cx={420} cy={130 - 48 * 1.5} r={3.5} fill="#2b2b29" />
+      </svg>
+    ),
+  },
+];
+
+/* ------------------------------------------------------------------ *
+ * Feature fixtures: one component in a configuration a single smoke case
+ * cannot show (error bars, bands, exact decimals, caller-given words). The
+ * markup, SSR, a11y and visual suites render these too; the one-case-per-
+ * export coverage check reads `cases` only, so a feature case never stands in
+ * for a component's plain smoke test.
+ * ------------------------------------------------------------------ */
+
+/**
+ * A Top Gear ranking: each variant's DPS with its own 95% half-width, the
+ * difference to the current setup with its paired one. Best set, Bracers swap,
+ * Equipped, Trinket swap and Weapon swap carry the DPS and Δ ± figures of the
+ * F1b-R review's table (rows 19-25), Best set and Equipped its DPS ± too; the
+ * Ring swap row and the other DPS half-widths are made up for the fixture.
+ */
+const topGear: RankingDatum[] = [
+  { label: "Best set", AC: 914.3013, base: 910.8441, acError: 0.4682, absError: 0.4621 },
+  { label: "Ring swap", AC: 914.0512, base: 910.8441, acError: 0.4511, absError: 0.4402 },
+  { label: "Bracers swap", AC: 910.9064, base: 910.8441, acError: 0.4744, absError: 0.1347 },
+  { label: "Equipped", AC: 910.8441, base: 910.8441, acError: 0.4808, absError: 0 },
+  { label: "Trinket swap", AC: 907.9623, base: 910.8441, acError: 0.4793, absError: 0.5439 },
+  { label: "Weapon swap", AC: 906.2537, base: 910.8441, acError: 0.4951, absError: 0.6408 },
+];
+
+const srLatn2 = { compact: false, locale: "sr-Latn", fractionDigits: 2 } as const;
+
+/** A Quick Sim's damage by ability: plain magnitudes (no base), with a share and casts. */
+const abilityColumns: DataTableColumn[] = [
+  {
+    key: "dps",
+    label: "DPS",
+    mark: "bar",
+    format: { compact: false, locale: "sr-Latn", fractionDigits: 1 },
+  },
+  {
+    key: "share",
+    label: "Udeo %",
+    format: { compact: false, locale: "sr-Latn", fractionDigits: 1 },
+  },
+  {
+    key: "casts",
+    label: "Korišćenja",
+    format: { compact: false, locale: "sr-Latn", fractionDigits: 1 },
+  },
+];
+const abilityRows: DataTableRow[] = [
+  {
+    id: "shoot",
+    label: "Shoot",
+    values: { dps: 215.037, share: 23.609, casts: 41.647 },
+    errors: { dps: 1.84 },
+  },
+  {
+    id: "raptor",
+    label: "Raptor Strike",
+    values: { dps: 91.041, share: 9.996, casts: 30.2 },
+    errors: { dps: 1.12 },
+  },
+  {
+    id: "wing",
+    label: "Wing Clip",
+    values: { dps: 40.3, share: 4.425, casts: 35.156 },
+    errors: { dps: 0.71 },
+  },
+  {
+    id: "trap",
+    label: "Immolation Trap",
+    values: { dps: 31.5, share: 3.459, casts: 6 },
+    errors: { dps: 0.94 },
+  },
+];
+
+/** The Top Gear as a table: DPS ± in text, the Δ as a signed pin with its error bar and a tied band. */
+const topGearColumns: DataTableColumn[] = [
+  { key: "dps", label: "DPS", format: srLatn2 },
+  {
+    key: "delta",
+    label: "Δ",
+    kind: "variance",
+    measure: "dps",
+    base: "PL",
+    mark: "pin",
+    format: srLatn2,
+    width: 190,
+    bands: [{ from: 2.9952, to: 3.9194, label: "Izjednačeno sa najboljom" }],
+  },
+];
+const topGearRows: DataTableRow[] = topGear.map((d) => ({
+  id: d.label,
+  label: d.label,
+  values: { dps: { AC: d.AC, PL: d.base } },
+  errors: { dps: d.acError!, delta: d.absError! },
+}));
+
+/** Engine drift (old vs new artifact): DPS per spec with its own interval, Δ with the paired one. */
+const drift = [
+  { category: "Hunter", AC: 910.8, PY: 909.6, acError: 0.8, absError: 0.6 },
+  { category: "Ret", AC: 890.5, PY: 892.9, acError: 1.2, absError: 0.9 },
+  { category: "Fire", AC: 860.1, PY: 859.8, acError: 1.0, absError: 0.7 },
+];
+
+export const featureCases: SmokeCase[] = [
+  {
+    name: "VarianceColumnChart-errors",
+    element: (
+      <VarianceColumnChart
+        data={drift}
+        width={400}
+        height={260}
+        format={{ compact: false, locale: "sr-Latn", fractionDigits: 1 }}
+        labels={{ scenario: { AC: "novo", PY: "staro" } }}
+      />
+    ),
+  },
+  {
+    name: "RankingVarianceChart-errors-band",
+    element: (
+      <RankingVarianceChart
+        data={topGear}
+        sortBy="value"
+        format={srLatn2}
+        labels={{ scenario: { AC: "DPS", PL: "trenutne" }, total: "Ukupno" }}
+        bands={[{ panel: "abs", from: 2.9952, to: 3.9194, label: "Izjednačeno sa najboljom" }]}
+        showTotals={false}
+        width={640}
+      />
+    ),
+  },
+  {
+    name: "DataTable-magnitude-bars",
+    element: <DataTable columns={abilityColumns} rows={abilityRows} />,
+  },
+  {
+    name: "DataTable-errors-band",
+    element: <DataTable columns={topGearColumns} rows={topGearRows} />,
   },
 ];

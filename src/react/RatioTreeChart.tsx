@@ -1,20 +1,33 @@
 import { forwardRef, useId, useMemo, type CSSProperties } from "react";
 import type { IbcsTokensOverride } from "../core/tokens";
 import {
+  deltaCaption,
+  deltaHeading,
+  scenarioHeadings,
+  type IbcsLabelsOverride,
+} from "../core/labels";
+import {
   computeRatioTree,
   type RatioNode,
   type RatioLayoutNode,
   type RatioOp,
 } from "../core/ratioTree";
 import { computeVariance } from "../core/variance";
-import { formatValue, formatSigned, formatPercent, type FormatOptions } from "../core/format";
+import {
+  formatPercent,
+  formatSigned,
+  formatValue,
+  notAvailableOf,
+  percentFormatOf,
+  type FormatOptions,
+} from "../core/format";
 import { useMountGrow, useDataTween, useChartHover } from "./hooks";
 import type { ChartHover } from "./hooks";
 import { markInteraction } from "./internal/hover";
 import { ChartTooltip, type ChartTooltipRow } from "./ChartTooltip";
 import { ChartDataTable, type ChartDataRow } from "./a11y";
 import { clampTo, svgSafeId } from "./internal/text";
-import { useIbcsTokens } from "./theme";
+import { useIbcsLabels, useIbcsTokens } from "./theme";
 
 // Local, CJK-aware text metrics: wide glyphs count ~1em where the shared
 // `./internal/text` heuristics assume a uniform 0.6em - node labels and values
@@ -79,7 +92,17 @@ export interface RatioTreeChartProps {
   nodeHeight?: number;
   format?: FormatOptions;
   tokens?: IbcsTokensOverride;
+  /**
+   * The component's own words ("Latest" and the PY code of its tooltip and table) merged onto `IbcsThemeProvider`'s.
+   * See `IbcsLabels`.
+   */
+  labels?: IbcsLabelsOverride;
   title?: string;
+  /**
+   * The chart's accessible name, in place of the generated English
+   * description; also the caption of its screen-reader table.
+   */
+  ariaLabel?: string;
   /** Class name for the chart's `<svg>`. */
   className?: string;
   /** Inline style merged over the `<svg>`'s own layout style (your keys win). */
@@ -126,7 +149,9 @@ export const RatioTreeChart = forwardRef<SVGSVGElement, RatioTreeChartProps>(
       nodeHeight = 84,
       format = {},
       tokens: tokenOverride,
+      labels,
       title,
+      ariaLabel,
       className,
       style,
       onHover,
@@ -135,6 +160,7 @@ export const RatioTreeChart = forwardRef<SVGSVGElement, RatioTreeChartProps>(
     ref,
   ) {
     const tokens = useIbcsTokens(tokenOverride);
+    const words = useIbcsLabels(labels);
     // Sanitised so the id stays a valid selector after an SVG export/serialization.
     const hatchId = svgSafeId(useId());
     const hover = useChartHover<RatioLayoutNode>();
@@ -388,19 +414,24 @@ export const RatioTreeChart = forwardRef<SVGSVGElement, RatioTreeChartProps>(
       const exact = { ...format, compact: false };
       const rows: ChartTooltipRow[] = [
         {
-          label: "Latest",
-          value: node.latest != null ? formatValue(node.latest, exact) : "-",
+          label: words.latest,
+          value:
+            node.latest != null ? formatValue(node.latest, exact) : (format.notAvailable ?? "-"),
           strong: true,
         },
       ];
       if (node.latestPy != null) {
-        rows.push({ label: "PY", value: formatValue(node.latestPy, exact) });
+        rows.push({ label: scenarioHeadings(words).PY, value: formatValue(node.latestPy, exact) });
         const v = computeVariance(node.latest, node.latestPy, true);
         if (v) {
           const color =
             v.abs === 0 ? tokens.color.zero : v.favorable ? tokens.color.good : tokens.color.bad;
-          const pct = v.pct != null ? ` (${formatPercent(v.pct)})` : "";
-          rows.push({ label: "Δ PY", value: `${formatSigned(v.abs, exact)}${pct}`, color });
+          const pct = v.pct != null ? ` (${formatPercent(v.pct, percentFormatOf(format))})` : "";
+          rows.push({
+            label: deltaCaption(words, scenarioHeadings(words).PY),
+            value: `${formatSigned(v.abs, exact)}${pct}`,
+            color,
+          });
         }
       }
       return (
@@ -420,15 +451,21 @@ export const RatioTreeChart = forwardRef<SVGSVGElement, RatioTreeChartProps>(
     // Each node reports the headline number its box prints - the latest point of
     // its mini series - against the PY reference the overlay draws.
     const hasPy = nodes.some((node) => node.latestPy != null);
-    const a11yColumns = ["Latest", ...(hasPy ? ["PY", "ΔPY"] : [])];
+    const na = notAvailableOf(format);
+    const a11yColumns = [
+      words.latest,
+      ...(hasPy
+        ? [scenarioHeadings(words).PY, deltaHeading(words, scenarioHeadings(words).PY)]
+        : []),
+    ];
     const a11yRows: ChartDataRow[] = nodes.map((node) => {
       const cells: Array<string | number> = [
-        node.latest != null ? formatValue(node.latest, format) : "n/a",
+        node.latest != null ? formatValue(node.latest, format) : na,
       ];
       if (hasPy) {
-        cells.push(node.latestPy != null ? formatValue(node.latestPy, format) : "n/a");
+        cells.push(node.latestPy != null ? formatValue(node.latestPy, format) : na);
         const v = computeVariance(node.latest, node.latestPy, true);
-        cells.push(v ? formatSigned(v.abs, format) : "n/a");
+        cells.push(v ? formatSigned(v.abs, format) : na);
       }
       return { label: `${"· ".repeat(node.depth)}${node.label}`, cells };
     });
@@ -442,9 +479,10 @@ export const RatioTreeChart = forwardRef<SVGSVGElement, RatioTreeChartProps>(
           viewBox={`0 0 ${geom.svgW} ${geom.svgH}`}
           role="img"
           aria-label={
-            title
+            ariaLabel ??
+            (title
               ? `${title}. Ratio tree of ${nodes.length} time-series measures.`
-              : `Ratio tree of ${nodes.length} time-series measures`
+              : `Ratio tree of ${nodes.length} time-series measures`)
           }
           className={className}
           style={{
@@ -588,7 +626,7 @@ export const RatioTreeChart = forwardRef<SVGSVGElement, RatioTreeChartProps>(
           })}
         </svg>
         <ChartDataTable
-          caption={title ? `${title} - data table` : "Ratio tree data table"}
+          caption={ariaLabel ?? (title ? `${title} - data table` : "Ratio tree data table")}
           columns={a11yColumns}
           rows={a11yRows}
         />

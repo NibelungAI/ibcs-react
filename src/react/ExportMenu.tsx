@@ -15,7 +15,8 @@ import {
   type ReactNode,
 } from "react";
 import type { IbcsTokensOverride } from "../core/tokens";
-import { useIbcsTokens } from "./theme";
+import type { IbcsLabelsOverride } from "../core/labels";
+import { useIbcsLabels, useIbcsTokens } from "./theme";
 import { downloadTextFile } from "./download";
 import { downloadPNG, downloadSVG } from "./exportImage";
 import { canCopyImage, copyPngToClipboard, copySvgToClipboard, printSvg } from "./exportClipboard";
@@ -41,6 +42,11 @@ export interface ExportMenuProps {
   csv?: string;
   /** Token overrides, so the control matches the chart's palette. */
   tokens?: IbcsTokensOverride;
+  /**
+   * The component's own words (the trigger's name and tooltip and the menu items, `export.*`) merged onto `IbcsThemeProvider`'s.
+   * See `IbcsLabels`.
+   */
+  labels?: IbcsLabelsOverride;
   /**
    * Called when an export action fails - rasterization errors, denied clipboard
    * permissions, blocked downloads. Without a handler the failure is logged to
@@ -78,10 +84,12 @@ export function ExportMenu({
   data,
   csv,
   tokens: tokenOverride,
+  labels,
   onError,
   children,
 }: ExportMenuProps) {
   const tokens = useIbcsTokens(tokenOverride);
+  const words = useIbcsLabels(labels);
   const containerRef = useRef<HTMLDivElement>(null);
   const toolbarRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -285,17 +293,27 @@ export function ExportMenu({
   };
 
   const actions: Array<{ key: string; label: string; onClick: () => void; disabled?: boolean }> = [
-    { key: "svg", label: "SVG", onClick: onSvg, disabled: !hasSvg },
-    { key: "png", label: "PNG", onClick: onPng, disabled: !hasSvg },
+    { key: "svg", label: words.export.svg, onClick: onSvg, disabled: !hasSvg },
+    { key: "png", label: words.export.png, onClick: onPng, disabled: !hasSvg },
   ];
-  if (csv != null) actions.push({ key: "csv", label: "CSV", onClick: onCsv });
-  if (data !== undefined) actions.push({ key: "json", label: "JSON", onClick: onJson });
+  if (csv != null) actions.push({ key: "csv", label: words.export.csv, onClick: onCsv });
+  if (data !== undefined) actions.push({ key: "json", label: words.export.json, onClick: onJson });
   // Clipboard image copy only when the browser supports it; text copy and print
   // work wherever a DOM is present, so they're gated on `hasSvg` alone.
   if (canCopyImage())
-    actions.push({ key: "copy-png", label: "Copy PNG", onClick: onCopyPng, disabled: !hasSvg });
-  actions.push({ key: "copy-svg", label: "Copy SVG", onClick: onCopySvg, disabled: !hasSvg });
-  actions.push({ key: "print", label: "Print", onClick: onPrint, disabled: !hasSvg });
+    actions.push({
+      key: "copy-png",
+      label: words.export.copyPng,
+      onClick: onCopyPng,
+      disabled: !hasSvg,
+    });
+  actions.push({
+    key: "copy-svg",
+    label: words.export.copySvg,
+    onClick: onCopySvg,
+    disabled: !hasSvg,
+  });
+  actions.push({ key: "print", label: words.export.print, onClick: onPrint, disabled: !hasSvg });
 
   const itemStyle = (disabled?: boolean): CSSProperties => ({
     appearance: "none",
@@ -333,8 +351,8 @@ export function ExportMenu({
           aria-haspopup="menu"
           aria-expanded={open}
           aria-controls={open ? menuId : undefined}
-          aria-label="Export chart"
-          title="Export"
+          aria-label={words.export.menu}
+          title={words.export.button}
           onClick={() => setMenuOpen(!open)}
           style={{
             appearance: "none",

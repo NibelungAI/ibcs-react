@@ -1,7 +1,11 @@
-import React, { useMemo, useState } from "react";
+import React, { useId, useMemo, useState } from "react";
 import {
   buildDataTableModel,
+  collectDetailRows,
+  measureOf,
+  measureValue,
   resolveMark,
+  valueMarkOf,
   type ColumnModel,
   type DataTableColumn,
   type DataTableRow,
@@ -10,21 +14,45 @@ import {
   type VarianceCellData,
 } from "../core/datatable";
 import type { IbcsTokens, IbcsTokensOverride } from "../core/tokens";
-import { formatValue, formatSigned, formatPercentPlain, type FormatOptions } from "../core/format";
+import type { IbcsLabelsOverride } from "../core/labels";
+import type { ValueBand } from "../core/reference";
+import type { ScenarioKey } from "../core/types";
+import {
+  formatInterval,
+  formatPercent,
+  formatPercentInterval,
+  formatPercentPlain,
+  formatSigned,
+  formatValue,
+  percentFormatOf,
+  type FormatOptions,
+} from "../core/format";
 import { Sparkline } from "./Sparkline";
+import { ErrorBar } from "./ErrorBar";
 import { srOnly } from "./a11y";
-import { useIbcsTokens } from "./theme";
+import { useIbcsLabels, useIbcsTokens } from "./theme";
 import { toIdSet } from "./internal/ids";
+import { estTextW, svgSafeId } from "./internal/text";
+import { ValueBandRects } from "./internal/valueBand";
 
 export interface DataTableProps {
   /** Column definitions (value / variance / sparkline). */
   columns: DataTableColumn[];
   /** Row entities/categories; may nest via `children`. */
   rows: DataTableRow[];
-  /** Number formatting (compact, decimals, currency, locale). */
+  /**
+   * Number formatting (compact, decimals, currency, locale, exact
+   * `fractionDigits`); a column's own `format` wins for its cells. Percent
+   * cells follow its `locale` and `percentFractionDigits`.
+   */
   format?: FormatOptions;
   /** Theme overrides (colors, scenario fills). */
   tokens?: IbcsTokensOverride;
+  /**
+   * The table's own words - the totals row ("Total") and the expand / collapse
+   * buttons' names - merged onto `IbcsThemeProvider`'s. See `IbcsLabels`.
+   */
+  labels?: IbcsLabelsOverride;
   /** Append a bold, summed totals row. Default false. */
   showTotals?: boolean;
   /**
@@ -61,7 +89,7 @@ export interface DataTableProps {
    * Required for controlled mode; a plain observer when uncontrolled.
    */
   onCollapsedChange?: (collapsedIds: string[]) => void;
-  /** Totals row label. Default "Total". */
+  /** Totals row label. Wins over `labels.total`; default "Total". */
   totalsLabel?: string;
   /**
    * Cap the row-label column width (px). Longer labels are truncated with an
@@ -105,6 +133,7 @@ export function DataTable({
   rows,
   format = {},
   tokens: tokenOverride,
+  labels,
   showTotals = false,
   defaultSort = null,
   sort: sortProp,
@@ -112,13 +141,15 @@ export function DataTable({
   defaultCollapsed,
   collapsed: collapsedProp,
   onCollapsedChange,
-  totalsLabel = "Total",
+  totalsLabel: totalsLabelProp,
   maxLabelWidth,
   caption,
   className,
   style,
 }: DataTableProps) {
   const tokens = useIbcsTokens(tokenOverride);
+  const words = useIbcsLabels(labels);
+  const totalsLabel = totalsLabelProp ?? words.total;
 
   // Sort: internal state is the source of truth ONLY while `sort` is absent.
   const [uncontrolledSort, setUncontrolledSort] = useState<DataTableSort | null>(defaultSort);
@@ -178,6 +209,36 @@ export function DataTable({
     [columns, rows, collapsed, sort, showTotals, totalsLabel],
   );
 
+  // Per value-mark column: room for the widest number its detail rows write
+  // (the rows its scale spans), so no number overlaps a bar or a whisker - the
+  // same for every row, and unchanged when a group opens or closes.
+  const markLabelW = useMemo(() => {
+    const detail = collectDetailRows(rows);
+    const widths = new Map<string, number>();
+    for (const cm of model.columns) {
+      if (!cm.extent) continue;
+      const fmt = cm.column.format ?? format;
+      const measure = measureOf(cm.column);
+      const scenario = cm.column.scenario ?? "AC";
+      let w = 0;
+      for (const r of detail) {
+        const v = measureValue(r, measure, scenario);
+        if (v != null) w = Math.max(w, estTextW(formatValue(v, fmt), CELL_FONT));
+      }
+      widths.set(cm.column.key, w);
+    }
+    return widths;
+  }, [rows, model.columns, format]);
+  const widthOf = (cm: ColumnModel) => columnWidth(cm, markLabelW.get(cm.column.key));
+  // The captioned bands as text, after the caller's caption: a band's shading
+  // and its <title> are not read out, so the table names them here.
+  const fullCaption = [
+    caption,
+    ...model.columns.flatMap((cm) => bandNotes(cm, cm.column.format ?? format)),
+  ]
+    .filter(Boolean)
+    .join(". ");
+
   const onSort = (key: string) => {
     const next: DataTableSort | null =
       sort?.key !== key ? { key, dir: "desc" } : sort.dir === "desc" ? { key, dir: "asc" } : null; // third click clears the sort
@@ -229,7 +290,7 @@ export function DataTable({
           className="ibcs-dtbl"
           style={{ borderCollapse: "collapse", width: "100%", minWidth: "min-content" }}
         >
-          {caption && <caption style={srOnly}>{caption}</caption>}
+          {fullCaption && <caption style={srOnly}>{fullCaption}</caption>}
           <thead>
             {/* Top row: column-group super-headers (only when columns are grouped). */}
             {model.headerGroups && (
@@ -290,7 +351,7 @@ export function DataTable({
                       ...(model.headerGroups ? { padding: "7px 10px 8px" } : null),
                       ...divider(cm),
                       textAlign: align,
-                      width: columnWidth(cm),
+                      width: widthOf(cm),
                       color: active ? tokens.color.text : tokens.color.textMuted,
                     }}
                   >
@@ -364,7 +425,7 @@ export function DataTable({
                         <button
                           type="button"
                           onClick={() => toggle(vr.row.id)}
-                          aria-label={vr.isExpanded ? "Collapse" : "Expand"}
+                          aria-label={vr.isExpanded ? words.collapse : words.expand}
                           aria-expanded={vr.isExpanded}
                           style={{
                             border: "none",
@@ -432,12 +493,15 @@ export function DataTable({
                     return cell ? (
                       <td
                         key={cm.column.key}
-                        style={{ padding: 0, width: columnWidth(cm), ...divider(cm) }}
+                        style={{ padding: 0, width: widthOf(cm), ...divider(cm) }}
                       >
                         <CellView
                           cell={cell}
                           cm={cm}
                           emphasis={emphasis}
+                          isTotal={vr.isTotal}
+                          isParent={vr.hasChildren}
+                          markLabelW={markLabelW.get(cm.column.key) ?? 0}
                           format={format}
                           tokens={tokens}
                         />
@@ -460,23 +524,51 @@ function CellView({
   cell,
   cm,
   emphasis,
+  isTotal,
+  isParent,
+  markLabelW,
   format,
   tokens,
 }: {
   cell: ResolvedCell;
   cm: ColumnModel;
   emphasis: boolean;
+  isTotal: boolean;
+  /** A group row: its value is its children's sum (or its own aggregate). */
+  isParent: boolean;
+  /** Value-mark columns: the width of the column's widest number. */
+  markLabelW: number;
   format: FormatOptions;
   tokens: IbcsTokens;
 }) {
   const fmt = cm.column.format ?? format;
 
   if (cell.kind === "value") {
+    // A bar / pin of the value itself - on the detail rows only: the scale
+    // spans them, so a sum (the totals row, a group row) keeps the plain number.
+    const mark = valueMarkOf(cm.column);
+    if (mark && cm.extent && !isTotal && !isParent && cell.value != null) {
+      return (
+        <ValueMarkCell
+          value={cell.value}
+          error={cell.error}
+          extent={cm.extent}
+          mark={mark}
+          scenario={cm.column.scenario ?? "AC"}
+          bands={cm.column.bands}
+          width={columnWidth(cm, markLabelW)}
+          labelW={markLabelW}
+          emphasis={emphasis}
+          format={fmt}
+          tokens={tokens}
+        />
+      );
+    }
     const align = cm.column.align ?? "right";
     return (
       <div
         style={{
-          fontSize: 12.5,
+          fontSize: CELL_FONT,
           padding: "0 10px",
           textAlign: align,
           whiteSpace: "nowrap",
@@ -485,7 +577,7 @@ function CellView({
           color: tokens.color.text,
         }}
       >
-        {cell.value == null ? "" : formatValue(cell.value, fmt)}
+        {cell.value == null ? "" : formatInterval(cell.value, cell.error, fmt)}
       </div>
     );
   }
@@ -520,7 +612,7 @@ function CellView({
     const { value, favorable } = cell.variance;
     const color =
       value === 0 ? tokens.color.zero : favorable ? tokens.color.good : tokens.color.bad;
-    const label = mode === "pct" ? formatPercentPlain(value / 100) : formatSigned(value, fmt);
+    const label = varianceText(value, cell.error, mode, fmt);
     return (
       <div
         style={{
@@ -542,6 +634,9 @@ function CellView({
   return (
     <VarianceCell
       data={cell.variance}
+      error={cell.error}
+      gutter={cm.errors === true}
+      bands={isTotal ? undefined : cm.column.bands}
       domain={cm.domain}
       width={columnWidth(cm)}
       mark={mark}
@@ -550,6 +645,155 @@ function CellView({
       format={fmt}
       tokens={tokens}
     />
+  );
+}
+
+/**
+ * A variance cell's number: the signed Δ, or the Δ% without its "%" (the
+ * header carries it), followed by "± half-width" when the row has one - a
+ * half-width that is never written as zero.
+ */
+function varianceText(
+  value: number,
+  error: number | undefined,
+  mode: "abs" | "pct",
+  fmt: FormatOptions,
+): string {
+  if (mode !== "pct") return formatInterval(value, error, fmt, true);
+  return formatPercentInterval(
+    value / 100,
+    error == null ? undefined : error / 100,
+    percentFormatOf(fmt),
+    false,
+  );
+}
+
+/**
+ * A value column's `mark`: the value ITSELF as a magnitude bar (or a pin) on
+ * the column's shared scale, its number right-aligned beside it, with the
+ * row's error bar and the column's bands. The scale spans `extent` (always
+ * containing 0), so negative values grow left of a shifted zero axis. The bar
+ * area ends 8px before the column's widest number (`labelW`).
+ */
+function ValueMarkCell({
+  value,
+  error,
+  extent,
+  mark,
+  scenario,
+  bands,
+  width,
+  labelW,
+  emphasis,
+  format,
+  tokens,
+}: {
+  value: number;
+  error: number | undefined;
+  extent: { min: number; max: number };
+  mark: "bar" | "pin";
+  scenario: ScenarioKey;
+  bands: readonly ValueBand[] | undefined;
+  width: number;
+  labelW: number;
+  emphasis: boolean;
+  format: FormatOptions;
+  tokens: IbcsTokens;
+}) {
+  const hatchId = svgSafeId(useId());
+  const cy = ROW_H / 2;
+  const x0 = 8;
+  const barMaxW = Math.max(width - MARK_PAD - labelW, 40);
+  const lo = x0;
+  const hi = x0 + barMaxW;
+  const span = extent.max - extent.min || 1;
+  const x = (v: number) => x0 + ((v - extent.min) / span) * barMaxW;
+  const axisX = x(0);
+  // Only detail rows reach here, and the extent spans every one of them; the
+  // clamp only keeps a rounding error inside the area.
+  const tip = Math.min(hi, Math.max(lo, x(value)));
+  const barH = emphasis ? 17 : 13;
+  const style = tokens.scenario[scenario];
+  const solidFill = scenario === "AC" && emphasis ? tokens.color.total : style.fill;
+  const barX = Math.min(axisX, tip);
+  const barW = Math.max(Math.abs(tip - axisX), 1.5);
+
+  return (
+    <svg width={width} height={ROW_H} style={{ display: "block" }}>
+      <ValueBandRects
+        bands={bands}
+        scale={x}
+        range={[lo, hi]}
+        y={0}
+        height={ROW_H}
+        tokens={tokens}
+      />
+      <line
+        x1={axisX}
+        y1={3}
+        x2={axisX}
+        y2={ROW_H - 3}
+        stroke={tokens.color.axis}
+        strokeWidth={0.75}
+      />
+      {mark === "bar" && value !== 0 && style.variant === "hatch" && (
+        <defs>
+          <pattern
+            id={hatchId}
+            width="5"
+            height="5"
+            patternUnits="userSpaceOnUse"
+            patternTransform="rotate(45)"
+          >
+            <line x1="0" y1="0" x2="0" y2="5" stroke={style.stroke} strokeWidth="1" />
+          </pattern>
+        </defs>
+      )}
+      {mark === "bar" &&
+        value !== 0 &&
+        (style.variant === "solid" ? (
+          <rect x={barX} y={cy - barH / 2} width={barW} height={barH} fill={solidFill} />
+        ) : (
+          <rect
+            x={barX}
+            y={cy - barH / 2}
+            width={barW}
+            height={barH}
+            fill={style.variant === "hatch" ? `url(#${hatchId})` : tokens.color.surface}
+            stroke={style.stroke}
+            strokeWidth={1}
+          />
+        ))}
+      {mark === "pin" && value !== 0 && (
+        <line x1={axisX} y1={cy} x2={tip} y2={cy} stroke={style.stroke} strokeWidth={2} />
+      )}
+      {/* Over a bar the whisker must sit on top to stay visible; under a pin's
+        dot, so the head stays whole. */}
+      {error != null && (
+        <ErrorBar
+          value={value}
+          halfWidth={error}
+          scale={x}
+          cross={cy}
+          clip={[lo, hi]}
+          capSize={mark === "bar" ? Math.round(barH * 0.7) : 9}
+          format={format}
+          tokens={tokens}
+        />
+      )}
+      {mark === "pin" && <circle cx={tip} cy={cy} r={emphasis ? 4 : 3.5} fill={style.stroke} />}
+      {/* The number at the value cells' size, so it lines up with plain value columns. */}
+      <text
+        x={width - 10}
+        y={cy + 4.5}
+        textAnchor="end"
+        fontSize={CELL_FONT}
+        fontWeight={emphasis ? 700 : 400}
+        fill={tokens.color.text}
+      >
+        {formatValue(value, format)}
+      </text>
+    </svg>
   );
 }
 
@@ -566,6 +810,9 @@ function flowMarker(flow: "add" | "subtract" | "result"): string {
  */
 function VarianceCell({
   data,
+  error,
+  gutter,
+  bands,
   domain,
   width,
   mark,
@@ -575,6 +822,13 @@ function VarianceCell({
   tokens,
 }: {
   data: VarianceCellData;
+  error: number | undefined;
+  /**
+   * The column carries error bars: a pin then sits in a symmetric area with
+   * its label right-aligned in a gutter, so no whisker or label collides.
+   */
+  gutter: boolean;
+  bands: readonly ValueBand[] | undefined;
   domain: number;
   width: number;
   mark: "bar" | "pin";
@@ -589,7 +843,13 @@ function VarianceCell({
   const labelColor = mode === "pct" ? color : tokens.color.text;
   const weight = emphasis ? 700 : 400;
   const italic = mode === "pct" ? "italic" : "normal";
-  const label = mode === "pct" ? formatPercentPlain(value / 100) : formatSigned(value, format);
+  const label =
+    mode === "pct"
+      ? formatPercentPlain(value / 100, percentFormatOf(format))
+      : formatSigned(value, format);
+  // The error bar names itself with the full interval (its tooltip and
+  // accessible text); the printed label stays the point value.
+  const errorText = error == null ? "" : varianceText(value, error, mode, format);
 
   // Absolute: magnitude bar from a left axis, value in an aligned right column.
   if (mark === "bar") {
@@ -597,8 +857,20 @@ function VarianceCell({
     const barMaxW = Math.max(width * 0.42, 36);
     const barW = Math.max(Math.min(Math.abs(value) / domain, 1) * barMaxW, value === 0 ? 0 : 1.5);
     const barH = emphasis ? 17 : 13;
+    // The bar's axis is its LENGTH |Δ| from 0: the whisker centres on the
+    // bar's end, and a low end below 0 is cut at the axis (open end).
+    const lengthX = (m: number) => axisX + (m / domain) * barMaxW;
+    const range = [axisX, axisX + barMaxW] as const;
     return (
       <svg width={width} height={ROW_H} style={{ display: "block" }}>
+        <ValueBandRects
+          bands={bands}
+          scale={lengthX}
+          range={range}
+          y={0}
+          height={ROW_H}
+          tokens={tokens}
+        />
         <line
           x1={axisX}
           y1={3}
@@ -609,6 +881,18 @@ function VarianceCell({
         />
         {value !== 0 && (
           <rect x={axisX} y={cy - barH / 2} width={barW} height={barH} fill={color} />
+        )}
+        {error != null && (
+          <ErrorBar
+            value={Math.abs(value)}
+            halfWidth={error}
+            scale={lengthX}
+            cross={cy}
+            clip={range}
+            capSize={Math.round(barH * 0.7)}
+            label={errorText}
+            tokens={tokens}
+          />
         )}
         <text
           x={width - 6}
@@ -625,17 +909,35 @@ function VarianceCell({
     );
   }
 
-  // Percent: pin (or off-scale arrow) on a left-offset axis so positives get room.
-  const axisX = Math.round(width * 0.4);
-  const posRoom = width - axisX - 50;
-  const negRoom = axisX - 10;
+  // Percent: pin (or off-scale arrow) on a left-offset axis so positives get
+  // room. With error bars in the column: a centred, symmetric pin area and the
+  // label in a right-hand gutter (as ComparisonTable lays its pins out).
+  const labelRoom = Math.max(46, Math.round(width * 0.32));
+  const areaRight = width - labelRoom - 6;
+  const axisX = gutter ? Math.round((8 + areaRight) / 2) : Math.round(width * 0.4);
+  const posRoom = gutter ? (areaRight - 8) / 2 : width - axisX - 50;
+  const negRoom = gutter ? (areaRight - 8) / 2 : axisX - 10;
   const dir = value >= 0 ? 1 : -1;
   const frac = Math.min(Math.abs(value) / domain, 1);
+
+  // The pin's two sides may have their own lengths: one scale per side.
+  const posR = Math.max(posRoom, 8);
+  const negR = Math.max(negRoom, 8);
+  const pinX = (v: number) => axisX + (v / domain) * (v >= 0 ? posR : negR);
+  const pinRange = [axisX - negR, axisX + posR] as const;
 
   let markX: number;
   let labelX: number;
   let anchor: "start" | "end";
-  if (outlier) {
+  if (gutter) {
+    markX = outlier
+      ? dir > 0
+        ? axisX + posR
+        : axisX - negR
+      : axisX + dir * frac * (dir > 0 ? posR : negR);
+    labelX = width - 6;
+    anchor = "end";
+  } else if (outlier) {
     markX = dir > 0 ? width - 8 : 8;
     labelX = dir > 0 ? width - 16 : 18;
     anchor = dir > 0 ? "end" : "start";
@@ -647,6 +949,14 @@ function VarianceCell({
 
   return (
     <svg width={width} height={ROW_H} style={{ display: "block" }}>
+      <ValueBandRects
+        bands={bands}
+        scale={pinX}
+        range={pinRange}
+        y={0}
+        height={ROW_H}
+        tokens={tokens}
+      />
       <line
         x1={axisX}
         y1={3}
@@ -658,12 +968,28 @@ function VarianceCell({
       {!outlier && value !== 0 && (
         <line x1={axisX} y1={cy} x2={markX} y2={cy} stroke={color} strokeWidth={2} />
       )}
+      {/* The whisker under the dot, so the pin's head stays whole. */}
+      {!outlier && error != null && (
+        <ErrorBar
+          value={value}
+          halfWidth={error}
+          scale={pinX}
+          cross={cy}
+          clip={pinRange}
+          capSize={9}
+          label={errorText}
+          tokens={tokens}
+        />
+      )}
       {!outlier && value !== 0 && <circle cx={markX} cy={cy} r={3.5} fill={tokens.color.text} />}
+      {/* An off-scale arrow has no whisker: its interval is its tooltip. */}
       {outlier && (
         <polygon
           points={`${markX},${cy} ${markX - dir * 8},${cy - 4.5} ${markX - dir * 8},${cy + 4.5}`}
           fill={color}
-        />
+        >
+          {error != null && <title>{errorText}</title>}
+        </polygon>
       )}
       <text
         x={labelX}
@@ -680,6 +1006,36 @@ function VarianceCell({
   );
 }
 
+/**
+ * A column's captioned bands as text ("DPS, Top: 200.0–217.0"), in the units
+ * its mark is drawn in: the value, a pin's signed Δ or Δ%, or a bar's length.
+ */
+function bandNotes(cm: ColumnModel, fmt: FormatOptions): string[] {
+  const variance = cm.kind === "variance";
+  const marked = variance ? resolveMark(cm.column) !== "none" : cm.extent != null;
+  if (!marked || !cm.column.bands) return [];
+  const pin = variance && resolveMark(cm.column) === "pin";
+  const pct = variance && (cm.column.mode ?? "abs") === "pct";
+  const pctFmt = percentFormatOf(fmt);
+  const lengthFmt = {
+    ...(typeof pctFmt === "number" ? { fractionDigits: pctFmt } : pctFmt),
+    signDisplay: "auto" as const,
+  };
+  const write = (v: number) =>
+    pct
+      ? formatPercent(v / 100, pin ? pctFmt : lengthFmt)
+      : pin
+        ? formatSigned(v, fmt)
+        : formatValue(v, fmt);
+  return cm.column.bands
+    .filter((b) => b.label && Number.isFinite(b.from) && Number.isFinite(b.to))
+    .map((b) => {
+      const lo = Math.min(b.from, b.to);
+      const hi = Math.max(b.from, b.to);
+      return `${cm.column.label}, ${b.label}: ${write(lo)}–${write(hi)}`;
+    });
+}
+
 /* ---------------- layout helpers ---------------- */
 
 function headerAlign(col: DataTableColumn): "left" | "right" | "center" {
@@ -694,8 +1050,16 @@ function headerAlign(col: DataTableColumn): "left" | "right" | "center" {
   return "right";
 }
 
-function columnWidth(cm: ColumnModel): number {
+/** The font size of a value cell's number (plain or beside a mark). */
+const CELL_FONT = 12.5;
+/** A value-mark cell's padding: 8px before the bar, 8px between it and the number, 10px after. */
+const MARK_PAD = 8 + 8 + 10;
+
+function columnWidth(cm: ColumnModel, markLabelW = 0): number {
   if (cm.column.width != null) return cm.column.width;
+  // A value-mark column: 160px, wider when its widest number would leave the
+  // bars less than 80px.
+  if (cm.extent) return Math.max(160, Math.ceil(MARK_PAD + 80 + markLabelW));
   if (cm.kind === "variance") {
     const mark = resolveMark(cm.column);
     if (mark === "none") return 76;

@@ -1,6 +1,8 @@
 import { forwardRef, useMemo, type CSSProperties } from "react";
 import type { IbcsTokensOverride } from "../core/tokens";
-import { formatValue, type FormatOptions } from "../core/format";
+import type { IbcsLabelsOverride } from "../core/labels";
+import { formatValue, notAvailableOf, type FormatOptions } from "../core/format";
+import { fillLabel } from "../core/labels";
 import {
   computeXyScale,
   computeTicks,
@@ -11,7 +13,7 @@ import {
 } from "../core/xy";
 import { useMountGrow, useDataTween } from "./hooks";
 import { ChartDataTable, type ChartDataRow } from "./a11y";
-import { useIbcsTokens } from "./theme";
+import { useIbcsLabels, useIbcsTokens } from "./theme";
 
 // Local, CJK-aware text metrics: wide glyphs count ~1em where the shared
 // `./internal/text` heuristic assumes a uniform 0.6em - kept for label fitting.
@@ -76,7 +78,17 @@ export interface BubbleChartProps {
   height?: number;
   format?: FormatOptions;
   tokens?: IbcsTokensOverride;
+  /**
+   * The component's own words (the size and group columns and row names of its table, the legend's "+N more") merged onto `IbcsThemeProvider`'s.
+   * See `IbcsLabels`.
+   */
+  labels?: IbcsLabelsOverride;
   title?: string;
+  /**
+   * The chart's accessible name, in place of the generated English
+   * description; also the caption of its screen-reader table.
+   */
+  ariaLabel?: string;
   /** Class name for the chart's root `<svg>`. */
   className?: string;
   /** Inline style merged over the root `<svg>`'s own layout style (your keys win). */
@@ -105,13 +117,16 @@ export const BubbleChart = forwardRef<SVGSVGElement, BubbleChartProps>(function 
     height = 380,
     format = {},
     tokens: tokenOverride,
+    labels,
     title,
+    ariaLabel,
     className,
     style,
   },
   ref,
 ) {
   const tokens = useIbcsTokens(tokenOverride);
+  const words = useIbcsLabels(labels);
   const data = useDataTween(dataProp);
   const grow = useMountGrow(650, 0, data);
 
@@ -174,12 +189,17 @@ export const BubbleChart = forwardRef<SVGSVGElement, BubbleChartProps>(function 
   const a11yColumns = [
     xLabel ?? "X",
     yLabel ?? "Y",
-    sizeLabel ?? "Size",
-    ...(hasGroups ? ["Group"] : []),
+    sizeLabel ?? words.size,
+    ...(hasGroups ? [words.group] : []),
   ];
   const a11yRows: ChartDataRow[] = clean.map((d, i) => ({
-    label: d.label ?? `Item ${i + 1}`,
-    cells: [fmt(d.x), fmt(d.y), fmt(d.size), ...(hasGroups ? [d.group ?? "n/a"] : [])],
+    label: d.label ?? fillLabel(words.item, { n: i + 1 }),
+    cells: [
+      fmt(d.x),
+      fmt(d.y),
+      fmt(d.size),
+      ...(hasGroups ? [d.group ?? notAvailableOf(format)] : []),
+    ],
   }));
 
   return (
@@ -191,9 +211,10 @@ export const BubbleChart = forwardRef<SVGSVGElement, BubbleChartProps>(function 
         viewBox={`0 0 ${width} ${height}`}
         role="img"
         aria-label={
-          title
+          ariaLabel ??
+          (title
             ? `${title}. Bubble chart of ${data.length} items${sizeLabel ? `, sized by ${sizeLabel}` : ""}.`
-            : `Bubble chart of ${data.length} items`
+            : `Bubble chart of ${data.length} items`)
         }
         className={className}
         style={{
@@ -419,14 +440,14 @@ export const BubbleChart = forwardRef<SVGSVGElement, BubbleChartProps>(function 
                 fontSize={10}
                 fill={tokens.color.textMuted}
               >
-                {`+${legendMore} more`}
+                {fillLabel(words.more, { count: legendMore })}
               </text>
             )}
           </g>
         )}
       </svg>
       <ChartDataTable
-        caption={title ? `${title} - data table` : "Bubble chart data table"}
+        caption={ariaLabel ?? (title ? `${title} - data table` : "Bubble chart data table")}
         columns={a11yColumns}
         rows={a11yRows}
       />

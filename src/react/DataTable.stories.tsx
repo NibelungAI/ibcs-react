@@ -231,3 +231,58 @@ export const T01_GroupedHeaders: Story = {
     style: { maxWidth: 760 },
   },
 };
+
+/** Value columns drawn as magnitude bars (the value itself, not a difference), exact digits. */
+export const MagnitudeBars: Story = {
+  args: {
+    showTotals: false,
+    defaultSort: { key: "dps", dir: "desc" },
+    format: { compact: false, fractionDigits: 1 },
+    columns: [
+      { key: "dps", label: "DPS", mark: "bar" },
+      { key: "share", label: "Share %" },
+      { key: "casts", label: "Casts" },
+    ],
+    rows: [
+      { id: "shoot", label: "Shoot", values: { dps: 215.037, share: 23.609, casts: 41.647 } },
+      { id: "raptor", label: "Raptor Strike", values: { dps: 91.041, share: 9.996, casts: 30.2 } },
+      { id: "wing", label: "Wing Clip", values: { dps: 40.3, share: 4.425, casts: 35.156 } },
+      { id: "trap", label: "Immolation Trap", values: { dps: 31.5, share: 3.459, casts: 6 } },
+    ],
+  },
+};
+
+/** Intervals: DPS ± in text, the Δ as a pin with its error bar, and a band of the tied variants. */
+export const IntervalsAndBand: Story = {
+  args: {
+    showTotals: false,
+    defaultSort: null,
+    format: { compact: false, fractionDigits: 2 },
+    columns: [
+      { key: "dps", label: "DPS" },
+      {
+        key: "delta",
+        label: "Δ vs equipped",
+        kind: "variance",
+        measure: "dps",
+        base: "PL",
+        mark: "pin",
+        width: 190,
+        bands: [{ from: 2.9952, to: 3.9194, label: "Tied with the best" }],
+      },
+    ],
+    rows: [
+      ["Best set", 914.3013, 0.4682, 0.4621],
+      ["Ring swap", 914.0512, 0.4511, 0.4402],
+      ["Bracers swap", 910.9064, 0.4744, 0.1347],
+      ["Equipped", 910.8441, 0.4808, 0],
+      ["Trinket swap", 907.9623, 0.4793, 0.5439],
+      ["Weapon swap", 906.2537, 0.4951, 0.6408],
+    ].map(([label, dps, own, paired]) => ({
+      id: String(label),
+      label: String(label),
+      values: { dps: { AC: Number(dps), PL: 910.8441 } },
+      errors: { dps: Number(own), delta: Number(paired) },
+    })),
+  },
+};

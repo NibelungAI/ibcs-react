@@ -2,7 +2,7 @@
 import { afterEach, describe, expect, it } from "vitest";
 import { cleanup, render } from "@testing-library/react";
 
-import { cases } from "./fixtures";
+import { cases, featureCases } from "./fixtures";
 
 afterEach(cleanup);
 
@@ -54,6 +54,13 @@ const DECORATIVE_SVG = new Map<string, string>([
     "ChartState",
     "renders Skeleton while loading - no data",
   ],
+  [
+    // A mark (`<g>`) placed inside the caller's own chart svg, which owns that
+    // chart's data table; the fixture's bare svg stands in for that chart. The
+    // mark names itself with its interval (`role="img"` + `aria-label`).
+    "ErrorBar",
+    "a mark inside the caller's chart svg; names itself with its interval",
+  ],
 ]);
 
 /**
@@ -77,7 +84,7 @@ function shapeOf(element: (typeof cases)[number]["element"]) {
 }
 
 describe("chart accessibility: svg charts expose a data table", () => {
-  for (const { name, element } of cases) {
+  for (const { name, element } of [...cases, ...featureCases]) {
     if (DECORATIVE_SVG.has(name)) continue;
     it(`${name} renders a data table beside its svg`, () => {
       const { svg, table } = shapeOf(element);

@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it } from "vitest";
 import { cleanup, render } from "@testing-library/react";
 
 import * as api from "../index";
-import { cases } from "./fixtures";
+import { cases, featureCases } from "./fixtures";
 
 afterEach(cleanup);
 
@@ -43,7 +43,7 @@ const exportedComponents = Object.entries(api)
  * reads, broken geometry, etc.).
  */
 describe("component render smoke tests", () => {
-  for (const { name, element } of cases) {
+  for (const { name, element } of [...cases, ...featureCases]) {
     it(`${name} mounts and renders non-empty DOM`, () => {
       const { container } = render(element);
       // A real rendered surface - chart (svg), table, or a container div.

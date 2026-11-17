@@ -1,9 +1,10 @@
 import React, { useMemo, useState } from "react";
 import type { ScenarioKey } from "../core/types";
 import type { IbcsTokens, IbcsTokensOverride } from "../core/tokens";
+import { scenarioHeadings, type IbcsLabels, type IbcsLabelsOverride } from "../core/labels";
 import { formatValue, formatSigned, type FormatOptions } from "../core/format";
 import { srOnly } from "./a11y";
-import { useIbcsTokens } from "./theme";
+import { useIbcsLabels, useIbcsTokens } from "./theme";
 import { toIdSet } from "./internal/ids";
 import {
   type MatrixRow,
@@ -38,6 +39,11 @@ export interface MatrixTableProps {
   format?: FormatOptions;
   /** Theme tokens (colors). Merged onto the defaults; never hardcode colors. */
   tokens?: IbcsTokensOverride;
+  /**
+   * The component's own words (scenario codes and their tooltips, "ΔBdg", the toolbar and expand / collapse button names, a cell's spoken "minus" / "no value") merged onto `IbcsThemeProvider`'s.
+   * See `IbcsLabels`.
+   */
+  labels?: IbcsLabelsOverride;
   /**
    * Row ids expanded on mount - the uncontrolled seed. Default: all except
    * `defaultCollapsed` rows. Note the polarity: unlike StatementTable/DataTable
@@ -104,8 +110,6 @@ export interface MatrixTableProps {
   style?: React.CSSProperties;
 }
 
-const SCENARIO_LABEL: Record<ScenarioKey, string> = { AC: "AC", PY: "PY", PL: "PL", FC: "FC" };
-
 const DEFAULT_SCENARIOS: ScenarioKey[] = ["PL", "AC"];
 const SUBCOL_W = 62; // width of one scenario sub-column
 const VAR_W = 72; // width of a ΔBudget column
@@ -166,10 +170,12 @@ function Ribbon({ color }: { color: string }) {
 function scenarioName(
   scenario: MatrixCellScenario,
   varianceScenarios: { actual: ScenarioKey; base: ScenarioKey },
+  words: IbcsLabels,
 ): string {
+  const S = scenarioHeadings(words);
   return scenario === "DELTA"
-    ? `${SCENARIO_LABEL[varianceScenarios.actual]} minus ${SCENARIO_LABEL[varianceScenarios.base]}`
-    : SCENARIO_LABEL[scenario];
+    ? `${S[varianceScenarios.actual]} ${words.minus} ${S[varianceScenarios.base]}`
+    : S[scenario];
 }
 
 export function MatrixTable({
@@ -181,6 +187,7 @@ export function MatrixTable({
   varianceScenarios = { actual: "AC", base: "PL" },
   format = {},
   tokens: tokenOverride,
+  labels,
   defaultExpandedRows,
   defaultExpandedCols,
   expandedRows: expandedRowsProp,
@@ -200,6 +207,7 @@ export function MatrixTable({
   style,
 }: MatrixTableProps) {
   const tokens = useIbcsTokens(tokenOverride);
+  const words = useIbcsLabels(labels);
 
   // Rows are tracked internally as the INVERSE (a collapsed set) because that is
   // what `flattenMatrixRows` consumes; the props stay in expanded terms.
@@ -371,7 +379,7 @@ export function MatrixTable({
       ? {
           role: "button",
           tabIndex: 0,
-          "aria-label": `${rowLabel}, ${periodLabel}, ${scenarioName(scenario, varianceScenarios)}: ${text || "no value"}`,
+          "aria-label": `${rowLabel}, ${periodLabel}, ${scenarioName(scenario, varianceScenarios, words)}: ${text || words.noValue}`,
           onKeyDown: (e) => {
             if (e.key !== "Enter" && e.key !== " ") return;
             if (e.key === " ") e.preventDefault(); // Space would scroll the page
@@ -429,7 +437,7 @@ export function MatrixTable({
             disabled={allColsExpanded}
             style={colBtn(allColsExpanded)}
           >
-            Expand all periods
+            {words.expandAllPeriods}
           </button>
           <button
             type="button"
@@ -437,7 +445,7 @@ export function MatrixTable({
             disabled={allColsCollapsed}
             style={colBtn(allColsCollapsed)}
           >
-            Collapse all
+            {words.collapseAll}
           </button>
         </div>
       )}
@@ -488,6 +496,7 @@ export function MatrixTable({
                     stickyTop={stickyTopAt(level)}
                     onToggle={toggleCol}
                     headerCellBase={headerCellBase}
+                    words={words}
                   />
                 ))}
               </tr>
@@ -510,17 +519,9 @@ export function MatrixTable({
                         fontStyle: scn === "FC" ? "italic" : "normal",
                         ...(scn === "FC" ? hatchStyle(tokens) : null),
                       }}
-                      title={
-                        scn === "FC"
-                          ? "Forecast"
-                          : scn === "PL"
-                            ? "Plan / budget"
-                            : scn === "AC"
-                              ? "Actual"
-                              : scn
-                      }
+                      title={words.scenarioTitle[scn]}
                     >
-                      {SCENARIO_LABEL[scn]}
+                      {scenarioHeadings(words)[scn]}
                     </th>
                   ))}
                   {showVariance && (
@@ -534,9 +535,9 @@ export function MatrixTable({
                         borderBottom: `2px solid ${tokens.color.text}`,
                         color: tokens.color.textMuted,
                       }}
-                      title={`${SCENARIO_LABEL[varianceScenarios.actual]} − ${SCENARIO_LABEL[varianceScenarios.base]}`}
+                      title={`${scenarioHeadings(words)[varianceScenarios.actual]} − ${scenarioHeadings(words)[varianceScenarios.base]}`}
                     >
-                      ΔBdg
+                      {words.deltaBudget}
                     </th>
                   )}
                 </React.Fragment>
@@ -587,7 +588,7 @@ export function MatrixTable({
                         <button
                           type="button"
                           onClick={() => toggleRow(row.id)}
-                          aria-label={isExpanded ? "Collapse row" : "Expand row"}
+                          aria-label={isExpanded ? words.collapseRow : words.expandRow}
                           aria-expanded={isExpanded}
                           style={{
                             border: "none",
@@ -749,12 +750,14 @@ function PeriodHeader({
   stickyTop,
   onToggle,
   headerCellBase,
+  words,
 }: {
   cell: ColumnHeaderCell;
   tokens: IbcsTokens;
   stickyTop: React.CSSProperties;
   onToggle: (id: string) => void;
   headerCellBase: React.CSSProperties;
+  words: IbcsLabels;
 }) {
   const clickable = cell.expandable && cell.periodId != null;
   // Expanded parent bands (e.g. a Year over its Quarters) are left-aligned so the
@@ -762,7 +765,7 @@ function PeriodHeader({
   // attached to its columns even when the group is wide and scrolled. Leaf
   // headers (the actual columns) stay centered over their scenario sub-columns.
   const alignLeft = cell.expanded;
-  const toggleLabel = `${cell.expanded ? "Collapse" : "Expand"} ${cell.label}`;
+  const toggleLabel = `${cell.expanded ? words.collapse : words.expand} ${cell.label}`;
   const chevron = clickable && (
     <span
       aria-hidden

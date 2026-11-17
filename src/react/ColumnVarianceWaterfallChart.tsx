@@ -1,19 +1,27 @@
 import { forwardRef, useId, useMemo, type CSSProperties } from "react";
 import type { ScenarioKey } from "../core/types";
 import type { IbcsTokensOverride } from "../core/tokens";
+import { deltaHeading, scenarioHeadings, type IbcsLabelsOverride } from "../core/labels";
 import {
   computeColumnVarianceWaterfall,
   type ColumnVarianceDatum,
   type PriorTotalInput,
   type EndTotalInput,
 } from "../core/columnVarianceWaterfall";
-import { formatValue, formatSigned, formatPercent, type FormatOptions } from "../core/format";
+import {
+  formatPercent,
+  formatSigned,
+  formatValue,
+  notAvailableOf,
+  percentFormatOf,
+  type FormatOptions,
+} from "../core/format";
 import { useMountGrow, useDataTween, useChartHover } from "./hooks";
 import type { ChartHover } from "./hooks";
 import { markInteraction, type MarkRect } from "./internal/hover";
 import { ChartTooltip, type ChartTooltipRow } from "./ChartTooltip";
 import { ChartDataTable, type ChartDataRow } from "./a11y";
-import { useIbcsTokens } from "./theme";
+import { useIbcsLabels, useIbcsTokens } from "./theme";
 import { clampTo, estTextW, fitLabel, svgSafeId } from "./internal/text";
 
 export type {
@@ -47,7 +55,17 @@ export interface ColumnVarianceWaterfallChartProps {
   format?: FormatOptions;
   /** Token override merged over the nearest {@link IbcsThemeProvider} theme. */
   tokens?: IbcsTokensOverride;
+  /**
+   * The component's own words (the scenario codes of its tooltip and table, the "(FC)" mark and the "Total" row) merged onto `IbcsThemeProvider`'s.
+   * See `IbcsLabels`.
+   */
+  labels?: IbcsLabelsOverride;
   title?: string;
+  /**
+   * The chart's accessible name, in place of the generated English
+   * description; also the caption of its screen-reader table.
+   */
+  ariaLabel?: string;
   /** Class applied to the chart `<svg>` (the root element). */
   className?: string;
   /** Styles merged *over* the chart's own layout styles. */
@@ -111,7 +129,9 @@ export const ColumnVarianceWaterfallChart = forwardRef<
     height = 460,
     format = {},
     tokens: tokenOverride,
+    labels,
     title,
+    ariaLabel,
     onHover,
     tooltip = true,
     className,
@@ -120,6 +140,10 @@ export const ColumnVarianceWaterfallChart = forwardRef<
   ref,
 ) {
   const tokens = useIbcsTokens(tokenOverride);
+  const words = useIbcsLabels(labels);
+  const S = scenarioHeadings(words);
+  const pctFmt = percentFormatOf(format);
+  const na = notAvailableOf(format);
   // `useId()` values contain ":" in React 18 - sanitized so the `url(#…)` refs
   // survive serialization / querySelector after an SVG export.
   const hatchFc = svgSafeId(useId());
@@ -237,7 +261,7 @@ export const ColumnVarianceWaterfallChart = forwardRef<
     const color = mag === 0 ? tokens.color.zero : favorable ? tokens.color.good : tokens.color.bad;
     const up = favorable;
     const tipY = up ? pctMid - len : pctMid + len;
-    const label = formatPercent(pct);
+    const label = formatPercent(pct, pctFmt);
     const labelW = estTextW(label, 9);
     return (
       <g key={key}>
@@ -322,14 +346,22 @@ export const ColumnVarianceWaterfallChart = forwardRef<
     if (!c) return null;
     const exact = { ...format, compact: false };
     const rows: ChartTooltipRow[] = [
-      { label: c.isForecast ? "AC (FC)" : "AC", value: formatValue(c.ac, exact), strong: true },
-      { label: "PL", value: formatValue(c.pl, exact) },
+      {
+        label: c.isForecast ? `${S.AC} (${S.FC})` : S.AC,
+        value: formatValue(c.ac, exact),
+        strong: true,
+      },
+      { label: S.PL, value: formatValue(c.pl, exact) },
     ];
     const v = c.variance;
     if (v) {
       const color = impactColor(v);
-      rows.push({ label: "ΔPL", value: formatSigned(v.abs, exact), color });
-      rows.push({ label: "ΔPL%", value: formatPercent(v.pct), color });
+      rows.push({ label: deltaHeading(words, S.PL), value: formatSigned(v.abs, exact), color });
+      rows.push({
+        label: deltaHeading(words, S.PL, true),
+        value: formatPercent(v.pct, pctFmt),
+        color,
+      });
     }
     return (
       <ChartTooltip
@@ -379,23 +411,28 @@ export const ColumnVarianceWaterfallChart = forwardRef<
   // front of PL), the bridge step between them and - while the pin tier is on -
   // the relative variance those pins encode. A closing Total row carries the
   // bridge's anchors (ΣPL → ΣAC) and the circled grand variance.
-  const a11yColumns = ["AC", "PL", "ΔPL", ...(showPct ? ["ΔPL%"] : [])];
+  const a11yColumns = [
+    S.AC,
+    S.PL,
+    deltaHeading(words, S.PL),
+    ...(showPct ? [deltaHeading(words, S.PL, true)] : []),
+  ];
   const a11yRows: ChartDataRow[] = cells.map((c) => ({
-    label: c.isForecast ? `${c.category} (FC)` : c.category,
+    label: c.isForecast ? `${c.category} (${S.FC})` : c.category,
     cells: [
       formatValue(c.ac, format),
       formatValue(c.pl, format),
-      c.variance ? formatSigned(c.variance.abs, format) : "n/a",
-      ...(showPct ? [c.variance ? formatPercent(c.variance.pct) : "n/a"] : []),
+      c.variance ? formatSigned(c.variance.abs, format) : na,
+      ...(showPct ? [c.variance ? formatPercent(c.variance.pct, pctFmt) : na] : []),
     ],
   }));
   a11yRows.push({
-    label: end ? end.label.replace(/\s+/g, " ") : "Total",
+    label: end ? end.label.replace(/\s+/g, " ") : words.total,
     cells: [
       formatValue(end ? end.total : bridgeEnd, format),
       formatValue(bridgeStart, format),
       formatSigned(total.abs, format),
-      ...(showPct ? [formatPercent(total.pct)] : []),
+      ...(showPct ? [formatPercent(total.pct, pctFmt)] : []),
     ],
   });
 
@@ -408,8 +445,9 @@ export const ColumnVarianceWaterfallChart = forwardRef<
         viewBox={`0 0 ${width} ${height}`}
         role="img"
         aria-label={
+          ariaLabel ??
           (title ? `${title}. ` : "") +
-          `IBCS C05: grouped AC versus PL columns with a horizontal variance waterfall over ${nP} periods.`
+            `IBCS C05: grouped ${S.AC} versus ${S.PL} columns with a horizontal variance waterfall over ${nP} periods.`
         }
         className={className}
         style={{
@@ -813,7 +851,12 @@ export const ColumnVarianceWaterfallChart = forwardRef<
         ))}
       </svg>
       <ChartDataTable
-        caption={title ? `${title} - data table` : "AC versus PL with variance bridge - data table"}
+        caption={
+          ariaLabel ??
+          (title
+            ? `${title} - data table`
+            : `${S.AC} versus ${S.PL} with variance bridge - data table`)
+        }
         columns={a11yColumns}
         rows={a11yRows}
       />

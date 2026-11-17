@@ -55,6 +55,28 @@ By default every scenario present in the data is drawn; narrow that with
 `series={["AC", "PY"]}`. `showMarkers` forces the markers back on (or off)
 when the automatic density rule picks the wrong side.
 
+## Words and per-series digits
+
+Each line's end label is its scenario's word and its last value, from the
+template `labels.endLabel` ("{name} {value}"; `"{value}"` writes the value
+alone). `labels.scenario` replaces the word; an empty one leaves that line's
+value alone, while its screen-reader column falls back to the scenario's title
+("PY") - a header never goes blank. `seriesFormat` gives a series its own number
+format - its end label and its column of the screen-reader table - merged over
+`format`, so it keeps the chart's `locale`; the variance panel keeps `format`:
+
+```tsx
+<LineChart
+  data={data}
+  labels={{ scenario: { AC: "DPS", PY: "" } }}
+  format={{ compact: false, fractionDigits: 1 }}
+  seriesFormat={{ AC: { compact: false, fractionDigits: 2 } }}
+/>
+```
+
+See [Numbers and words](/docs/localization) for decimals, locales and the whole
+word dictionary.
+
 ## Props
 
 <AutoTypeTable path="../src/react/LineChart.tsx" name="LineChartProps" />
