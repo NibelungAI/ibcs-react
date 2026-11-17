@@ -456,6 +456,9 @@ describe("the 'Numbers and words' docs page, verbatim", () => {
     expect((1.005).toFixed(2)).toBe("1.00");
     expect(formatValue(-0.001, { compact: false, fractionDigits: 2 })).toBe("0.00");
     expect(formatValue(999.996, { fractionDigits: 2 })).toBe("1.00K");
+    expect(formatValue(12345678901234.56, { compact: false, fractionDigits: 2 })).toBe(
+      "12,345,678,901,234.56",
+    );
   });
 
   it("its percent table: the four changes once a format sets one of the four options", () => {
@@ -582,5 +585,47 @@ describe("formatPercentInterval", () => {
     expect(formatPercentInterval(0.004, 0.005, 1, true)).toBe(`+0.4%${NB}±${NB}0.5%`);
     expect(formatPercentInterval(null, 0.005, 1, true)).toBe("n/a");
     expect(formatPercentInterval(0.069, undefined, 1, false)).toBe("+6.9");
+  });
+});
+
+describe("the 15-digit step removes noise and never rounds a written digit", () => {
+  const nf = (digits: number) =>
+    new Intl.NumberFormat("en-US", {
+      minimumFractionDigits: digits,
+      maximumFractionDigits: digits,
+    });
+
+  it("writes a value with 15 or more written digits as Intl writes the double", () => {
+    // 16 and 17 written digits: 15-digit rounding would end "…234.60" and "…460".
+    expect(formatValue(12345678901234.56, { compact: false, fractionDigits: 2 })).toBe(
+      "12,345,678,901,234.56",
+    );
+    expect(formatValue(1234567890123456, { compact: false, fractionDigits: 0 })).toBe(
+      "1,234,567,890,123,456",
+    );
+    expect(formatValue(-12345678901234.56, { compact: false, fractionDigits: 2 })).toBe(
+      "-12,345,678,901,234.56",
+    );
+    expect(formatPercent(123456789012.3456, { fractionDigits: 2 })).toBe("+12,345,678,901,234.56%");
+    expect(formatPercentPlain(123456789012.3456, { fractionDigits: 2 })).toBe(
+      "+12,345,678,901,234.56",
+    );
+    // Exactly 15 written digits: 15-digit rounding would round the last written
+    // digit on the binary value (…987.644531… → "…987.64").
+    expect(formatValue(9876543210987.645, { compact: false, fractionDigits: 2 })).toBe(
+      nf(2).format(9876543210987.645),
+    );
+    expect(formatValue(9876543210987.645, { compact: false, fractionDigits: 2 })).toBe(
+      "9,876,543,210,987.65",
+    );
+    expect(formatValue(123456789012.3445, { compact: false, fractionDigits: 3 })).toBe(
+      "123,456,789,012.345",
+    );
+  });
+
+  it("still drops binary noise when a guard digit is left", () => {
+    // 14.499999999999998: Intl alone writes "14"; the 15-digit step writes "15".
+    expect(nf(0).format(0.145 * 100)).toBe("14");
+    expect(formatValue(0.145 * 100, { compact: false, fractionDigits: 0 })).toBe("15");
   });
 });

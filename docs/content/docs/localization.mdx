@@ -33,12 +33,14 @@ Set it where the numbers live:
   over the chart's `format`, and `ComboChart`'s `secondaryFormat`, which
   replaces it.
 
-Rounding is half away from zero on the number as it reads. The value is first
-rounded to 15 significant digits - a double carries 15 to 17, and arithmetic
-leaves noise past the 15th - and then written by `Intl.NumberFormat`: 1.005 →
-"1.01", 2.5 → "3", -2.5 → "-3", and `0.145 * 100`, which is 14.499999999999998
-in binary, → "15" at 0 digits. (`Number#toFixed` would give "1.00" for the
-first: it rounds the binary value.) A value that rounds to zero carries no
+Rounding is half away from zero on the number as it reads. When the digits to
+be written fit in 14 significant digits, the value is first rounded to 15 - a
+double carries 15 to 17, and arithmetic leaves noise past the 15th - and then
+written by `Intl.NumberFormat`: 1.005 → "1.01", 2.5 → "3", -2.5 → "-3", and
+`0.145 * 100`, which is 14.499999999999998 in binary, → "15" at 0 digits, where
+`Intl` alone writes "14". (`Number#toFixed` would give "1.00" for the first: it
+rounds the binary value.) A value with more written digits is written as
+`Intl` writes the double: 12345678901234.56 → "12,345,678,901,234.56". A value that rounds to zero carries no
 sign: "0.00", never "-0.00". In compact mode a value that rounds up to 1,000 of
 its unit moves to the next one: 999.996 → "1.00K". `fractionDigits` takes an
 integer from 0 to 20.

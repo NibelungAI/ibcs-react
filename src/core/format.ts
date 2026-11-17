@@ -7,13 +7,18 @@
  * inject bidi control characters here.
  *
  * Exact decimals (`fractionDigits`, `percentFractionDigits`, the options form
- * of {@link formatPercent} and {@link formatPercentPlain}) go through
- * `Intl.NumberFormat` only, so a chart's digits match what an app writes with
- * `Intl` beside it: the locale's separators, and rounding half away from zero
- * on the number as it reads. A value is first rounded to 15 significant digits
- * (a double carries 15-17), so binary noise never decides a tie: 1.005 → "1.01",
- * 2.5 → "3", and 0.0045 → "0.5%" (a percent is scaled by 100 in decimal, by
- * Intl's percent style; `0.0045 * 100` in binary is 0.44999999999999996).
+ * of {@link formatPercent} and {@link formatPercentPlain}) are written by
+ * `Intl.NumberFormat` - the locale's digits and separators, rounding half away
+ * from zero - after one step of our own: when the digits to be written fit in
+ * 14 significant digits (|x| < 10^(14 - digits)), the value is first rounded
+ * to 15, one guard digit past the last written one, so noise that arithmetic
+ * leaves past the 15th digit never decides a tie. So the output can differ
+ * from `Intl` alone: `0.145 * 100` (14.499999999999998) is "15" at 0 digits,
+ * where `Intl` writes "14". Also 1.005 → "1.01", 2.5 → "3", and 0.0045 →
+ * "0.5%" (a percent is scaled by 100 in decimal, by Intl's percent style;
+ * `0.0045 * 100` in binary is 0.44999999999999996). A value with more written
+ * digits is written as `Intl` writes the double: 12345678901234.56 →
+ * "12,345,678,901,234.56".
  *
  * The 1.4 forms - a format without exact digits, and the numeric second
  * argument of the percent helpers - are kept byte for byte, including their
@@ -52,8 +57,10 @@ export interface FormatOptions {
    * in place of `decimals`) and to compact values under 1,000 ("999.00").
    *
    * Digits and separators follow `locale` ("1,234.50" in en-US, "1.234,50" in
-   * sr-Latn); rounding is half away from zero on the number at 15 significant
-   * digits (1.005 → "1.01", 2.5 → "3", -2.5 → "-3"). A value that rounds to
+   * sr-Latn); rounding is half away from zero, on the number rounded to 15
+   * significant digits when the written digits fit in 14 (1.005 → "1.01",
+   * 2.5 → "3", -2.5 → "-3"; a larger value as `Intl` writes the double). A
+   * value that rounds to
    * zero is written without a sign ("0.00", never "-0.00"), and a compact value
    * whose rounding reaches 1,000 moves to the next unit (999.996 → "1.00K").
    * An integer from 0 to 20; other numbers are rounded and clamped into that
@@ -170,12 +177,19 @@ function percentFormatter(locale: string, digits: number): Intl.NumberFormat {
 }
 
 /**
- * The number at 15 significant digits. A double carries 15-17, and arithmetic
- * leaves noise beyond the 15th (`0.0045 * 100` = 0.44999999999999996); without
- * it, a tie rounds the way the number reads.
+ * The number at 15 significant digits, when it is to be written with `digits`
+ * fraction digits and those fit in 14 (|x| < 10^(14 - digits)): the 15th is a
+ * guard digit, so this never rounds a written digit. A double carries 15-17,
+ * and arithmetic leaves noise beyond the 15th (`0.0045 * 100` =
+ * 0.44999999999999996); without it, a tie rounds the way the number reads. A
+ * larger value is returned as it is, for Intl to write: rounding it to 15
+ * digits would round a written digit on the binary value (12345678901234.56
+ * would end "…234.60", 9876543210987.645 "…987.64").
  */
-function denoise(x: number): number {
-  return x === 0 || !Number.isFinite(x) ? x : Number(x.toPrecision(15));
+function denoise(x: number, digits: number): number {
+  return x === 0 || !Number.isFinite(x) || Math.abs(x) >= 10 ** (14 - digits)
+    ? x
+    : Number(x.toPrecision(15));
 }
 
 /** A magnitude (≥ 0) rounded by Intl at `digits`, as a number (en-US digits). */
@@ -198,7 +212,7 @@ function roundsToZero(abs: number, digits: number): boolean {
  */
 function writtenAsZero(abs: number, compact: boolean, digits: number | undefined): boolean {
   if (digits == null) return abs === 0;
-  const x = denoise(abs);
+  const x = denoise(abs, digits);
   if (compact && compactUnit(x, digits) != null) return false;
   return roundsToZero(x, digits);
 }
@@ -214,7 +228,7 @@ function compactUnit(abs: number, digits: number): (typeof UNITS)[number] | null
     if (roundedAt(abs, digits) < 1e3) return null;
     i = UNITS.length - 1;
   }
-  while (i > 0 && roundedAt(denoise(abs / UNITS[i]![0]), digits) >= 1e3) i--;
+  while (i > 0 && roundedAt(denoise(abs / UNITS[i]![0], digits), digits) >= 1e3) i--;
   return UNITS[i]!;
 }
 
@@ -237,7 +251,7 @@ function exactMagnitude(
   opts: FormatOptions,
 ): string {
   const { currency = "", suffix = "", locale = "en-US", compactSuffixes = DEFAULT_SUFFIXES } = opts;
-  const scaled = denoise(unit ? abs / unit[0] : abs);
+  const scaled = denoise(unit ? abs / unit[0] : abs, digits);
   const body =
     fixedFormatter(locale, digits).format(scaled) + (unit ? compactSuffixes[unit[1]] : "");
   return `${currency}${body}${suffix}`;
@@ -256,7 +270,7 @@ export function formatValue(n: number, opts: FormatOptions = {}): string {
   if (digits != null) {
     // Exact digits: Intl on the denoised magnitude, in the compact unit its
     // rounding lands in.
-    const abs = denoise(Math.abs(n));
+    const abs = denoise(Math.abs(n), digits);
     const unit = (opts.compact ?? true) ? compactUnit(abs, digits) : null;
     const zero = unit == null && roundsToZero(abs, digits);
     return `${n < 0 && !zero ? "-" : ""}${exactMagnitude(abs, unit, digits, opts)}`;
@@ -351,8 +365,9 @@ export function formatInterval(
   }
 
   // The half-width shares the value's compact unit, and its first figure shows.
-  const unit = (opts.compact ?? true) ? compactUnit(denoise(Math.abs(value)), digits) : null;
-  const scaled = denoise(unit ? halfWidth / unit[0] : halfWidth);
+  const unit =
+    (opts.compact ?? true) ? compactUnit(denoise(Math.abs(value), digits), digits) : null;
+  const scaled = denoise(unit ? halfWidth / unit[0] : halfWidth, digits);
   const halfDigits = halfWidth > 0 ? Math.max(digits, figureDigits(scaled, 1)) : digits;
   return `${write(opts)}\u00a0±\u00a0${exactMagnitude(halfWidth, unit, halfDigits, opts)}`;
 }
@@ -383,7 +398,8 @@ const NUMBER_PARTS = new Set(["integer", "group", "decimal", "fraction"]);
  * written with `toFixed` and a bare "%", byte-identical to 1.4, rounding the
  * binary product - 0.0045 → "+0.4%") or a {@link PercentFormatOptions} object:
  * Intl's percent style, which scales by 100 in decimal, on the fraction at 15
- * significant digits - so ties round half up as the number reads (0.0045 →
+ * significant digits when the percent's digits fit in 14 - so ties round half
+ * up as the number reads (0.0045 →
  * "+0.5%", 0.0185 → "+1.9%") - with the locale's separators and percent sign
  * ("+17,5%" in sr-Latn, "+17,5 %" in de-DE) and no sign on a value that rounds
  * to zero.
@@ -400,7 +416,7 @@ export function formatPercent(
   }
   if (fraction == null || !Number.isFinite(fraction)) return options.notAvailable ?? "n/a";
   const digits = digitsOf(options.fractionDigits) ?? 1;
-  const abs = denoise(Math.abs(fraction));
+  const abs = denoise(Math.abs(fraction), digits + 2);
   const body = percentFormatter(options.locale ?? "en-US", digits).format(abs);
   return `${percentSign(fraction, abs, digits, options)}${body}`;
 }
@@ -433,7 +449,7 @@ export function formatPercentPlain(
   const options = decimals;
   if (fraction == null || !Number.isFinite(fraction)) return options.notAvailable ?? "n/a";
   const digits = digitsOf(options.fractionDigits) ?? 1;
-  const abs = denoise(Math.abs(fraction));
+  const abs = denoise(Math.abs(fraction), digits + 2);
   const body = percentFormatter(options.locale ?? "en-US", digits)
     .formatToParts(abs)
     .filter((part) => NUMBER_PARTS.has(part.type))
@@ -467,7 +483,7 @@ export function formatPercentInterval(
   const base = typeof format === "number" ? { fractionDigits: format } : format;
   const digits = digitsOf(base.fractionDigits) ?? 1;
   const halfDigits =
-    halfWidth > 0 ? Math.max(digits, figureDigits(denoise(halfWidth * 100), 1)) : digits;
+    halfWidth > 0 ? Math.max(digits, figureDigits(denoise(halfWidth * 100, digits), 1)) : digits;
   const half = write(halfWidth, { ...base, fractionDigits: halfDigits, signDisplay: "auto" });
   return `${value}\u00a0±\u00a0${half}`;
 }
