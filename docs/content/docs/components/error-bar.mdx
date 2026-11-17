@@ -68,10 +68,13 @@ goes on.
 The whisker is drawn over a thin halo in the theme's `surface` colour, so the
 half that crosses a solid bar stays visible on any fill, light or dark: draw
 the error bar after a bar, and before a point, so the point stays whole. The
-mark names itself (`role="img"`, `aria-label`, and a `<title>` tooltip) with its
-interval, written by `formatInterval` with your `format` - pass `signed` for a
-difference ("+3.46 ± 0.46") or a `label` of your own. It renders nothing for a
-zero half-width: an exact value has no interval.
+mark carries its interval as text - `role="img"`, `aria-label`, and a `<title>`
+tooltip - written by `formatInterval` with your `format` (never "± 0" for a
+positive half-width): pass `signed` for a difference ("+3.46 ± 0.46") or a
+`label` of your own. Inside an `<svg role="img">` with a name of its own, the
+children are presentational to assistive technology, so only the svg's name
+is read: give such a chart a table of its intervals, as the library's charts
+do. It renders nothing for a zero half-width: an exact value has no interval.
 
 The geometry alone is `computeErrorBar` in `ibcs-react/core`, for renderers
 that are not React.

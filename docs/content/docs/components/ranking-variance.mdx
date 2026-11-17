@@ -65,14 +65,17 @@ Each datum may carry the half-width of an interval for each mark: `acError`
 on the AC bar, `absError` on the ΔPL bar (give the difference's own error - for
 paired runs, the paired one; it is never derived from `acError`) and
 `pctError` on the ΔPL% pin, in percent units. Each is drawn as an error bar on
-its mark's own scale, and the shared scales widen so every whisker fits. The
+its mark's own scale, and the shared scales widen so every whisker fits. With
+`acError` the AC labels get a gutter of their own, sized for the widest one,
+and each sits past its whisker's end; without it the layout is 1.4's. The
 interval's text - "+3.46 ± 0.46" - is in the tooltip and the screen-reader
 table; the printed labels stay the point values.
 
 `bands` shades a value range across one panel's data rows - here the variants
 statistically tied with the best, on the ΔPL panel. A band's `label` is printed
-above its panel and added to the screen-reader table's caption. On the ΔPL and
-ΔPL% panels favorable points right, so for higher-is-better data a band's
+on a line above the panel headers - one label may use the whole line, several
+share it by panel - and added to the screen-reader table's caption. On the ΔPL
+and ΔPL% panels favorable points right, so for higher-is-better data a band's
 values are plain Δ values.
 
 <Frame center>

@@ -48,8 +48,8 @@ Before opening a PR, make sure **`npm run ci` and `npm run check-format` pass**.
 `npm run build` is `tsdown` in **unbundle mode** - `dist/` mirrors `src/`, one
 file per module, with the barrels as pure re-exports. That per-module layout is
 what makes the library tree-shake in consumers (one imported `KpiCard` costs
-~4 KB gzip, not the whole library); `scripts/verify-treeshake.mjs` fails the
-build if that regresses. `scripts/postbuild.mjs` then prepends `"use client"`
+about 6 KB gzip, not the whole library); `scripts/verify-treeshake.mjs` fails
+the build if that regresses. `scripts/postbuild.mjs` then prepends `"use client"`
 to the root barrels (`dist/index.js`, `dist/index.cjs`) and every module under
 `dist/react/` so the components work in a Next.js App Router server component.
 `dist/core/*` is left directive-free on purpose - `ibcs-react/core` is pure

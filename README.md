@@ -257,7 +257,7 @@ uncontrolled mode, as observers.
 - **`VarianceBar`** - the standalone variance bar/pin primitive used inside the
   tables and charts.
 - **`ErrorBar`** - value ± half-width as a whisker with caps, horizontal or
-  vertical, for bars and points; the mark names itself with its interval.
+  vertical, for bars and points, with its interval as accessible text and tooltip.
 
 <table>
 <tr>
@@ -482,9 +482,15 @@ import { IbcsThemeProvider, RankingVarianceChart } from "ibcs-react";
 </IbcsThemeProvider>;
 ```
 
-The defaults are 1.4's output, byte for byte. `formatValue`, `formatPercent`
-and `formatInterval` ("910,79 ± 0,76") write your own text the same way, and
-`useIbcsLabels(override?)` gives a custom chart the same words.
+Without `labels`, and with a `format` that sets none of `locale`,
+`fractionDigits`, `percentFractionDigits` and `notAvailable`, the output is
+1.4's, byte for byte. A format that already sets `locale` changes the percent
+labels: the locale's separators, no sign on a rounded zero, ties rounded as the
+number reads, grouping from 1,000 % (see
+[Numbers and words](docs/content/docs/localization.mdx)).
+`formatValue`, `formatPercent` and `formatInterval` ("910,79 ± 0,76") write
+your own text the same way, and `useIbcsLabels(override?)` gives a custom chart
+the same words.
 
 Error bars, value bands and magnitude bars, here in `sr-Latn` with exact
 digits and the caller's words:

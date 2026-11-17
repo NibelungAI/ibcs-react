@@ -7,7 +7,10 @@ import { LineChart } from "ibcs-react";
 
 A report reads as one voice when every number on it carries the same digits
 and separators, and when the words the charts add are the reader's. Both are
-options of the components; left alone, they write exactly what 1.4 wrote.
+options of the components. A component whose `format` sets none of `locale`,
+`fractionDigits`, `percentFractionDigits` and `notAvailable`, and which gets no
+`labels`, writes exactly what 1.4 wrote. A format that already sets `locale`
+changes the percent labels - see [Percentages](#percentages-written-one-way).
 
 ## Exact decimals
 
@@ -24,27 +27,49 @@ trailing zeros, so "10" never stands beside "10.0" in one column:
 Set it where the numbers live:
 
 - **per component** - the `format` prop of every chart, table and card;
-- **per column** - a `DataTable` column's own `format`;
-- **per series** - `LineChart`'s `seriesFormat` (keyed by scenario) and
-  `ComboChart`'s `secondaryFormat`.
+- **per column** - a `DataTable` column's own `format`, which replaces the
+  table's (repeat its `locale` in it);
+- **per series** - `LineChart`'s `seriesFormat` (keyed by scenario), merged
+  over the chart's `format`, and `ComboChart`'s `secondaryFormat`, which
+  replaces it.
 
-Rounding is `Intl.NumberFormat`'s: half away from zero, on the number as
-written - 1.005 → "1.01", 2.5 → "3", -2.5 → "-3" (`Number#toFixed` would give
-"1.00" for the first, since it rounds the binary value). A value that rounds to
-zero carries no sign: "0.00", never "-0.00". `fractionDigits` takes an integer
-from 0 to 20.
+Rounding is half away from zero on the number as it reads. The value is first
+rounded to 15 significant digits - a double carries 15 to 17, and arithmetic
+leaves noise past the 15th - and then written by `Intl.NumberFormat`: 1.005 →
+"1.01", 2.5 → "3", -2.5 → "-3", and `0.145 * 100`, which is 14.499999999999998
+in binary, → "15" at 0 digits. (`Number#toFixed` would give "1.00" for the
+first: it rounds the binary value.) A value that rounds to zero carries no
+sign: "0.00", never "-0.00". In compact mode a value that rounds up to 1,000 of
+its unit moves to the next one: 999.996 → "1.00K". `fractionDigits` takes an
+integer from 0 to 20.
 
-Without `fractionDigits` nothing changes: compact values under 1,000 still
-round to whole numbers, and other values drop their trailing zeros.
+Without `fractionDigits` a value is written as in 1.4: compact values under
+1,000 round to whole numbers, and other values drop their trailing zeros. An
+interval is the exception - see `formatInterval` below.
 
 ## Percentages, written one way
 
 The percentages a component writes itself - Δ% labels, shares, growth rates -
-take `percentFractionDigits` (default 1). Once a format sets any of `locale`,
-`fractionDigits`, `percentFractionDigits` or `notAvailable`, they also follow
-the locale's own separators and percent sign: "+17,5%" in `sr-Latn`, "+17,5 %"
-in `de-DE`. With none of the four set, they are byte-identical to 1.4
-("+17.5%").
+take `percentFractionDigits`. It defaults to 1, except where a component has
+always written fewer: `ComparisonTable`'s Δ% and `StructureChart`'s shares
+default to 0, and `PieChart`'s centre share to 1 for a share above 0 and under
+10 %, else 0.
+
+Once a format sets any of `locale`, `fractionDigits`, `percentFractionDigits`
+or `notAvailable`, those labels are written by `Intl.NumberFormat`'s percent
+style. Against 1.4 that changes four things, in every locale, `en-US` included:
+
+| What                            | 1.4                | With any of the four set                  |
+| ------------------------------- | ------------------ | ----------------------------------------- |
+| separators and the percent sign | "+17.5%"           | "+17,5%" (`sr-Latn`), "+17,5 %" (`de-DE`) |
+| a value that rounds to zero     | "+0.0%"            | "0.0%" - no sign                          |
+| ties                            | "+1.1%" for 1.15 % | "+1.2%"                                   |
+| 1,000 % and more                | "+1727.9%"         | "+1,727.9%"                               |
+
+The percent style scales by 100 in decimal, so ties round the way the number
+reads: 0.0045 is "+0.5%" and 0.0185 is "+1.9%", where 1.4's binary product
+(`0.0045 * 100` is 0.44999999999999996) gave "+0.4%" and "+1.8%". With none of
+the four set, the labels are byte-identical to 1.4's.
 
 Write your own text with the same functions, and the page and the chart can
 never disagree:
@@ -58,10 +83,18 @@ formatValue(914.3013, sr); // "914,30"
 formatPercent(0.0014, { locale: "sr-Latn", fractionDigits: 2 }); // "+0,14%"
 formatInterval(910.7916, 0.7605, sr); // "910,79 ± 0,76"
 formatInterval(-2.8818, 0.5439, sr, true); // "-2,88 ± 0,54" (signed: a difference)
+formatInterval(914.3013, 0.004, sr); // "914,30 ± 0,004"
+formatInterval(914.3013, 0.4682); // "914.30 ± 0.47" (no fractionDigits)
 ```
 
-`formatInterval` holds the "±" to its numbers with no-break spaces, so the pair
-never wraps apart. The text for a missing number - "n/a" by default - is the
+`formatInterval` never writes a positive half-width as zero (within Intl's 20
+fraction digits). With
+`fractionDigits` the value keeps its digits and the half-width takes more when
+its first significant figure needs them; in compact mode it is written in the
+value's unit ("12.35K ± 0.23K"). Without `fractionDigits` both numbers are
+written in full, at the digits two significant figures of the half-width
+need. The "±" is held to its numbers with no-break spaces, so the pair never
+wraps apart. The text for a missing number - "n/a" by default - is the
 format's `notAvailable`.
 
 ## The components' own words
@@ -86,20 +119,26 @@ import { IbcsThemeProvider } from "ibcs-react";
 </IbcsThemeProvider>;
 ```
 
-Nearest wins: a component's own word prop (`totalsLabel`, `baseLabel`,
-`emptyMessage`, `Skeleton`'s `label`), then its `labels`, then the nearest
-provider's, then `defaultLabels` - the library's IBCS English. Entries such as
-`"Point {n}"` or `"+{count} more"` are templates: keep the placeholders in your
-words and the component fills them in.
+Nearest wins: a component's own word prop (`totalsLabel`, `emptyMessage`,
+`Skeleton`'s `label`, a `baseLabel` such as `"Budget"`), then its `labels`, then
+the nearest provider's, then `defaultLabels` - the library's IBCS English. A
+`baseLabel` that names a scenario (`"PY"`) is the exception: it takes that
+scenario's word from `labels`. Entries such as `"Point {n}"`, `"+{count} more"`
+or the variance headers `delta` ("Δ{base}") and `deltaPct` ("Δ{base}%") are
+templates: keep the placeholders in your words and the component fills them in.
 
-An empty word drops a scenario code where it prefixes a value. This error
-narrowing reads "0,14%" at the end of its line, not "AC 0,14%":
+A header never goes blank: where an empty scenario word would name a column, a
+row or a selectable mark, the scenario's `scenarioTitle` ("Actual") is
+written. A line's end label is the template `endLabel` ("{name} {value}"); set
+it to `"{value}"` to show the value alone. This error narrowing reads "0,14%"
+at the end of its line, not "AC 0,14%", and its screen-reader table still
+names the column "AC":
 
 <Frame center>
   <LineChart
     width={560}
     height={220}
-    labels={{ scenario: { AC: "" } }}
+    labels={{ endLabel: "{value}" }}
     format={{ compact: false, locale: "sr-Latn", fractionDigits: 2, suffix: "%" }}
     references={[{ axis: "y", value: 0.1, label: "cilj ±0,10%" }]}
     data={[
@@ -112,7 +151,7 @@ narrowing reads "0,14%" at the end of its line, not "AC 0,14%":
 
 ```tsx
 <LineChart
-  labels={{ scenario: { AC: "" } }}
+  labels={{ endLabel: "{value}" }}
   format={{ compact: false, locale: "sr-Latn", fractionDigits: 2, suffix: "%" }}
   references={[{ axis: "y", value: 0.1, label: "cilj ±0,10%" }]}
   data={[
@@ -128,9 +167,11 @@ narrowing reads "0,14%" at the end of its line, not "AC 0,14%":
 A chart's generated description ("Line chart of 3 periods across 1 series") is
 an English sentence, not a word, so it is not in the dictionary: pass the
 chart's `ariaLabel` to replace it. It also becomes the caption of the chart's
-screen-reader table.
+screen-reader table. A chart with `onSelect` is a container of selectable
+marks, each with its own name, and takes no name itself; there `ariaLabel`
+names the table alone.
 
-## What stays as written
+## What the dictionary leaves in English
 
 - The conformance linter's findings - developer diagnostics, in English.
 - `ConfiguredChart`'s invalid-config message - pass `renderError` to show your

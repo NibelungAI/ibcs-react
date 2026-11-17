@@ -12,8 +12,9 @@
  * when the property regresses:
  *
  * 1. A KpiCard-only bundle must stay under BUDGET_GZIP - generous headroom
- *    over the measured ~4.2 KB, but an order of magnitude below the broken
- *    state, so drift is caught long before it hurts.
+ *    over the measured size (~4.2 KB in 1.0; about 6 KB since 1.5 added the
+ *    word dictionary and the exact formats), but an order of magnitude below
+ *    the broken state, so drift is caught long before it hurts.
  * 2. It must not contain other components' aria-caption markers ("Bridge
  *    of" = WaterfallChart, "Composition of" = StructureChart, "Trend of" =
  *    TrendChart) - the exact leak the integration report demonstrated.

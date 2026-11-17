@@ -85,9 +85,13 @@ its children and collapses on click.
 A value column with `mark: "bar"` draws the value itself as a bar - an IBCS
 integrated bar chart, whose length is the size, not a difference to a base -
 with its number beside it; `mark: "pin"` draws a dot on a stem instead. The
-detail rows share one scale that always contains zero (negative values grow
-left of a shifted axis), the bar wears its scenario's notation (AC solid, PY
-grey, PL frame, FC hatch), and the totals row keeps the plain number.
+detail (leaf) rows share one scale that always contains zero (negative values
+grow left of a shifted axis), and the bar wears its scenario's notation (AC
+solid, PY grey, PL frame, FC hatch). The totals row and group rows keep the
+plain number: a sum is off the detail rows' scale, and a bar cut at its edge
+would draw 160 as long as 100. The bars stop 8px short of the column's widest
+number, so no number overlaps a bar or a whisker; the column grows past its
+160px when its numbers need the room.
 
 <Frame>
   <DataTable
@@ -120,7 +124,9 @@ grey, PL frame, FC hatch), and the totals row keeps the plain number.
 ```
 
 `fractionDigits` keeps every cell of a column at the same digits: Raptor
-Strike's share of 9.996 % reads "10.0", not "10". See
+Strike's share of 9.996 % reads "10.0", not "10". A column's `format` replaces
+the table's `format` for that column - it is not merged - so repeat the
+table's `locale`, `compact` and the rest in it. See
 [Numbers and words](/docs/localization).
 
 ## Intervals and bands
@@ -128,14 +134,24 @@ Strike's share of 9.996 % reads "10.0", not "10". See
 `row.errors` holds the half-width of an interval - a 95% confidence interval,
 say - per column key (a value and its variance each have their own). A plain
 value column writes "914.30 ± 0.47"; a bar or pin column - a value column with
-a `mark`, or a variance column - draws an error bar on its mark, which names
-itself with the interval (its accessible text and tooltip). A pin column with
-errors moves its labels into a right-hand gutter so no whisker meets a label.
-Half-widths are never summed into parents or the totals row.
+a `mark`, or a variance column - draws an error bar on its mark, which carries
+the interval as its accessible text and tooltip. An off-scale Δ% arrow has no
+whisker, so the interval is the arrow's tooltip. A pin column with errors moves
+its labels into a right-hand gutter so no whisker meets a label. Half-widths
+are never summed into parents or the totals row.
+
+A positive half-width is never written as zero (within Intl's 20 fraction
+digits). With `fractionDigits` it keeps
+the column's digits and takes more when its first significant figure needs
+them ("914.30 ± 0.004"); without, both numbers are written in full at the
+digits two significant figures of the half-width need, so the default format
+writes 914.3013 ± 0.4682 as "914.30 ± 0.47", not "914 ± 0".
 
 `column.bands` shades value ranges across the body rows of a bar or pin column,
 in the units its mark is drawn in - here the variants tied with the best. Which
-rows are tied is your rule; the band only draws it.
+rows are tied is your rule; the band only draws it. A band's `label` is its
+tooltip, and the table's screen-reader caption names it after your `caption`:
+"Δ vs equipped, Tied with the best: +3.00–+3.92".
 
 <Frame>
   <DataTable
