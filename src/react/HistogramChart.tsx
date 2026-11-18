@@ -12,6 +12,7 @@ import {
   type HistogramMean,
   type HistogramOptions,
   type HistogramSpread,
+  type ResolvedHistogramBins,
 } from "../core/histogram";
 import {
   formatInterval,
@@ -87,12 +88,14 @@ export interface HistogramChartProps {
   height?: number;
   /**
    * Number formatting of the values - the class edges, the mean and its
-   * interval, the spread - and their `locale`. With `fractionDigits`, values
-   * are written at those digits. Without it they are written in full (never
-   * compact), at the digits that keep two adjacent class edges apart, and the
-   * mean's interval at two significant figures of its half-width. Counts are
-   * whole numbers and shares percentages (`percentFractionDigits`, default 1),
-   * both in the same `locale`.
+   * interval, the spread - and their `locale`. Values are written in full
+   * unless `compact` is `true`: at `fractionDigits`, or without them at the
+   * digits that keep two adjacent class edges apart, and the mean's interval
+   * then at two significant figures of its half-width. With `compact: true`
+   * they are compact, at `fractionDigits` or more: the fewest digits at which
+   * neighbouring edges and the spread's two ends read apart. Counts are whole
+   * numbers and shares percentages (`percentFractionDigits`, default 1), both
+   * in the same `locale`.
    */
   format?: FormatOptions;
   tokens?: IbcsTokensOverride;
@@ -175,6 +178,48 @@ function lineSegments(
 function edgeDigits(width: number): number | undefined {
   if (!(width > 0) || !Number.isFinite(width)) return undefined;
   return Math.min(20, Math.max(0, Math.ceil(-Math.log10(width)) + 1));
+}
+
+/**
+ * The options the histogram writes its values with - the class edges and
+ * ranges, the spread, the mean. In full unless the caller sets `compact: true`
+ * (the format's default compact would name neighbouring classes alike,
+ * "1.3K–1.3K"): at the caller's `fractionDigits`, else at {@link edgeDigits}.
+ * An explicit compact is honoured, at the caller's digits or more: the fewest,
+ * up to 20, at which every two neighbouring edges and the spread's two ends
+ * read apart.
+ */
+function valueFormat(
+  format: FormatOptions,
+  bins: ResolvedHistogramBins | null,
+  spreadEnds: readonly [number, number] | null,
+): FormatOptions {
+  const callerDigits = Number.isFinite(format.fractionDigits)
+    ? Math.min(20, Math.max(0, Math.round(format.fractionDigits!)))
+    : undefined;
+  if (format.compact !== true) {
+    return {
+      ...format,
+      compact: false,
+      fractionDigits: callerDigits ?? edgeDigits(bins?.width ?? 0),
+    };
+  }
+  const edges =
+    bins && bins.width > 0
+      ? Array.from({ length: bins.counts.length + 1 }, (_, i) =>
+          histogramEdge(bins.start, bins.width, i),
+        )
+      : [];
+  const apart = (o: FormatOptions) => {
+    const written = edges.map((e) => formatValue(e, o));
+    if (written.some((w, i) => i > 0 && w === written[i - 1])) return false;
+    if (!spreadEnds || spreadEnds[0] === spreadEnds[1]) return true;
+    return formatValue(spreadEnds[0], o) !== formatValue(spreadEnds[1], o);
+  };
+  for (let d = callerDigits ?? 0; d < 20; d++) {
+    if (apart({ ...format, fractionDigits: d })) return { ...format, fractionDigits: d };
+  }
+  return { ...format, fractionDigits: 20 };
 }
 
 /** The length of the tick that marks the mean under the axis (px), from 2 px below it. */
@@ -279,14 +324,23 @@ export const HistogramChart = forwardRef<SVGSVGElement, HistogramChartProps>(
       notAvailable: format.notAvailable,
     };
     const single = target != null && target.width === 0;
-    // Values - edges, class ranges, the spread, a mean without an interval -
-    // at the caller's exact digits, else in full at the digits that keep two
-    // adjacent edges apart: compact "1.3K–1.3K" would name different classes
-    // alike.
-    const exact = Number.isFinite(format.fractionDigits);
-    const valueFmt: FormatOptions = exact
-      ? format
-      : { ...format, compact: false, fractionDigits: edgeDigits(target?.width ?? 0) };
+
+    const spread: HistogramSpread | null =
+      spreadProp === false
+        ? null
+        : spreadProp
+          ? Number.isFinite(spreadProp.from) && Number.isFinite(spreadProp.to)
+            ? spreadProp
+            : null
+          : computed && computed.n > 0
+            ? { from: computed.q1, to: computed.q3 }
+            : null;
+    const spreadLo = spread ? Math.min(spread.from, spread.to) : 0;
+    const spreadHi = spread ? Math.max(spread.from, spread.to) : 0;
+
+    // Values - edges, class ranges, the spread, the mean - in full unless the
+    // caller asks for compact, at digits that keep neighbouring edges apart.
+    const valueFmt = valueFormat(format, target, spread ? [spreadLo, spreadHi] : null);
     const value = (v: number) => formatValue(v, valueFmt);
     const rangeText = (b: HistogramBin) =>
       single ? value(b.from) : `${value(b.from)}–${value(b.to)}`;
@@ -307,9 +361,14 @@ export const HistogramChart = forwardRef<SVGSVGElement, HistogramChartProps>(
             signDisplay: "auto",
           })
         : "";
+    // The interval in the values' notation: compact with their digits when
+    // asked for; else in full, at the caller's digits or at two significant
+    // figures of the half-width.
+    const intervalFmt: FormatOptions =
+      format.compact === true ? valueFmt : { ...format, compact: false };
     const meanInterval = meanOk
       ? meanHalf != null
-        ? formatInterval(mean!.value, meanHalf, format)
+        ? formatInterval(mean!.value, meanHalf, intervalFmt)
         : formatValue(mean!.value, valueFmt)
       : "";
     const meanText = meanOk
@@ -318,18 +377,6 @@ export const HistogramChart = forwardRef<SVGSVGElement, HistogramChartProps>(
         })
       : "";
 
-    const spread: HistogramSpread | null =
-      spreadProp === false
-        ? null
-        : spreadProp
-          ? Number.isFinite(spreadProp.from) && Number.isFinite(spreadProp.to)
-            ? spreadProp
-            : null
-          : computed && computed.n > 0
-            ? { from: computed.q1, to: computed.q3 }
-            : null;
-    const spreadLo = spread ? Math.min(spread.from, spread.to) : 0;
-    const spreadHi = spread ? Math.max(spread.from, spread.to) : 0;
     const spreadText = spread
       ? fillLabel(spread.label ?? words.spread, {
           range: spreadLo === spreadHi ? value(spreadLo) : `${value(spreadLo)}–${value(spreadHi)}`,

@@ -15,6 +15,7 @@ import {
   HistogramChart,
   computeHistogram,
   defaultTokens,
+  type FormatOptions,
   type HistogramChartProps,
 } from "../../index";
 import { estTextW } from "../internal/text";
@@ -367,7 +368,7 @@ describe("HistogramChart - the mean's interval and the spread of the values, nev
   });
 });
 
-describe("HistogramChart - numbers and words without a format", () => {
+describe("HistogramChart - numbers and words", () => {
   it("writes values above 1,000 in full, at digits that keep every class and the spread apart", () => {
     const values = sample(6000, 1411.3, 30, 7);
     const h = computeHistogram(values);
@@ -395,11 +396,87 @@ describe("HistogramChart - numbers and words without a format", () => {
     expect(plain.text("Mean 1,311.4")).toBeTruthy();
     expect(plain.text("1,300.0")).toBeTruthy();
     expect(plain.text("1,320.0")).toBeTruthy();
+    // The caller's digits, still in full: compact is not asked for.
     const exact = parts(
       ssr(<HistogramChart bins={bins} mean={{ value: 1311.4 }} format={{ fractionDigits: 2 }} />),
     );
-    // With fractionDigits the caller's format rules, compact included.
-    expect(exact.text("Mean 1.31K")).toBeTruthy();
+    expect(exact.text("Mean 1,311.40")).toBeTruthy();
+    expect(exact.text("1,300.00")).toBeTruthy();
+    // Compact when asked for, at the digits that keep the edges apart: two
+    // would write 1,305 and 1,310 alike ("1.31K"), so three.
+    const compact = parts(
+      ssr(
+        <HistogramChart
+          bins={bins}
+          mean={{ value: 1311.4 }}
+          format={{ compact: true, fractionDigits: 2 }}
+        />,
+      ),
+    );
+    expect(compact.text("Mean 1.311K")).toBeTruthy();
+    expect(compact.text("1.300K")).toBeTruthy();
+  });
+
+  it("names classes as the docs say: 5 wide from 1,300 is 1,300.0–1,305.0, 20 wide is 1,300–1,320", () => {
+    const firstName = (width: number, format?: FormatOptions) => {
+      const { container } = render(
+        <HistogramChart bins={{ start: 1300, width, counts: [3, 5] }} format={format} />,
+      );
+      const name = container.querySelector("tbody th")!.textContent;
+      cleanup();
+      return name;
+    };
+    expect(firstName(5)).toBe("1,300.0–1,305.0");
+    expect(firstName(20)).toBe("1,300–1,320");
+    // Compact when asked for: three digits keep 1,300 and 1,305 apart.
+    expect(firstName(5, { compact: true })).toBe("1.300K–1.305K");
+  });
+
+  it("writes values in full at the caller's fractionDigits when compact is left unset", () => {
+    const values = sample(6000, 1411.3, 30, 7);
+    const h = computeHistogram(values);
+    const { container } = render(
+      <HistogramChart
+        values={values}
+        mean={{ value: 1411.29, halfWidth: 0.75, level: 0.95 }}
+        format={{ fractionDigits: 1 }}
+      />,
+    );
+    const names = [...container.querySelectorAll("tbody th")].map((t) => t.textContent!);
+    expect(names).toHaveLength(h.counts.length);
+    expect(new Set(names).size).toBe(names.length);
+    expect(names.every((name) => /^1,\d{3}\.\d–1,\d{3}\.\d$/.test(name))).toBe(true);
+    const svgText = [...container.querySelectorAll("svg text")].map((t) => t.textContent!);
+    const [lo, hi] = svgText
+      .find((t) => t.startsWith("Middle half"))!
+      .replace("Middle half ", "")
+      .split("–");
+    expect(lo).not.toBe(hi);
+    expect(svgText).toContain(`Mean 1,411.3${NB}±${NB}0.8 (95%)`);
+    expect(container.textContent).not.toMatch(/\dK/);
+  });
+
+  it("honours an explicit compact: true, with the digits that keep neighbouring edges apart", () => {
+    const values = sample(6000, 1411.3, 30, 7);
+    for (const format of [{ compact: true }, { compact: true, fractionDigits: 1 }]) {
+      const { container } = render(
+        <HistogramChart
+          values={values}
+          mean={{ value: 1411.29, halfWidth: 0.75, level: 0.95 }}
+          format={format}
+        />,
+      );
+      const names = [...container.querySelectorAll("tbody th")].map((t) => t.textContent!);
+      expect(new Set(names).size).toBe(names.length);
+      // In K, as asked; three digits, since the classes are about 4.7 wide.
+      expect(names.every((name) => /^1\.\d{3}K–1\.\d{3}K$/.test(name))).toBe(true);
+      const svgText = [...container.querySelectorAll("svg text")].map((t) => t.textContent!);
+      expect(svgText.find((t) => t.startsWith("Middle half"))).toMatch(
+        /^Middle half 1\.\d{3}K–1\.\d{3}K$/,
+      );
+      expect(svgText.find((t) => t.startsWith("Mean"))).toMatch(/^Mean 1\.411K/);
+      cleanup();
+    }
   });
 
   it("draws no interval on the values path when the mean comes alone (none is derived)", () => {

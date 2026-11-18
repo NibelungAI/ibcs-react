@@ -124,14 +124,18 @@ would cross.
 
 The chart's words come from `labels` (or `IbcsThemeProvider`): `mean`
 ("Mean {value}"), `spread` ("Middle half {range}"), `sampleSize`
-("n = {n}"), and the table's `count` and `share`. Values follow `format` -
-exact `fractionDigits` and a `locale`; counts are whole numbers and shares
-percentages (`percentFractionDigits`, default 1) in the same locale. Without
-`fractionDigits`, the class edges, the spread and a mean alone are written in
-full, never compact, to one decimal place past the class width's first
-significant digit - "1,300.0–1,320.0" for classes 20 wide, where compact
-numbers would write "1.3K–1.3K" - so neighbouring edges never read alike; a
-mean's interval keeps two significant figures of its half-width:
+("n = {n}"), and the table's `count` and `share`. Values follow `format`'s
+`fractionDigits` and `locale`; counts are whole numbers and shares percentages
+(`percentFractionDigits`, default 1) in the same locale.
+
+The class edges, the spread and the mean are written in full unless `format`
+sets `compact: true`, since compact numbers would name neighbouring classes
+alike ("1.3K–1.3K"). Without `fractionDigits` they take one decimal place past
+the class width's first significant digit, so neighbouring edges never read
+alike: classes 5 wide from 1,300 are "1,300.0–1,305.0", classes 20 wide
+"1,300–1,320". A mean's interval then keeps two significant figures of its
+half-width. With `compact: true` the values are compact, with as many digits as
+keep neighbouring edges apart ("1.300K–1.305K" for classes 5 wide):
 
 <Frame center>
   <HistogramChart
