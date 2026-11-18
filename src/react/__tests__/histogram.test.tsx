@@ -81,6 +81,42 @@ function textBoxes(svg: Element) {
   });
 }
 
+/**
+ * Every straight mark of the chart as a thin box - its stroke's width across:
+ * each <line> (the axis, the mean's line and tick, the error bar with its
+ * halo) and each segment of the spread's bracket path.
+ */
+function lineBoxes(svg: Element) {
+  const out: Array<{ s: string; left: number; right: number; top: number; bottom: number }> = [];
+  const add = (s: string, x1: number, y1: number, x2: number, y2: number, w: number) =>
+    out.push({
+      s,
+      left: Math.min(x1, x2) - w / 2,
+      right: Math.max(x1, x2) + w / 2,
+      top: Math.min(y1, y2) - w / 2,
+      bottom: Math.max(y1, y2) + w / 2,
+    });
+  for (const l of svg.querySelectorAll("line")) {
+    add(
+      "a line",
+      num(l, "x1"),
+      num(l, "y1"),
+      num(l, "x2"),
+      num(l, "y2"),
+      num(l, "stroke-width") || 1,
+    );
+  }
+  for (const p of svg.querySelectorAll(":scope > path")) {
+    const m = /^M([\d.]+),([\d.]+)V([\d.]+)H([\d.]+)V([\d.]+)$/.exec(p.getAttribute("d")!);
+    if (!m) continue;
+    const [a, b, c, d, e] = m.slice(1).map(Number) as [number, number, number, number, number];
+    add("the bracket", a, b, a, c, 0.75);
+    add("the bracket", a, c, d, c, 0.75);
+    add("the bracket", d, c, d, e, 0.75);
+  }
+  return out;
+}
+
 const overlap = (
   a: { left: number; right: number; top: number; bottom: number },
   b: { left: number; right: number; top: number; bottom: number },
@@ -128,8 +164,8 @@ describe("HistogramChart - classes of one width (IBCS CH 1.3)", () => {
       Number(r.querySelector("td")!.textContent!.replace(/,/g, "")),
     );
     expect(counts.reduce((a, b) => a + b, 0)).toBe(1234);
-    // Each row is named by its class's range.
-    expect(container.querySelector("tbody th")!.textContent).toMatch(/^\d+–\d+$/);
+    // Each row is named by its class's range, written in full.
+    expect(container.querySelector("tbody th")!.textContent).toMatch(/^[\d.,]+–[\d.,]+$/);
   });
 
   it("labels every count when all fit their columns, else the tallest alone", () => {
@@ -185,14 +221,56 @@ describe("HistogramChart - the mean's interval and the spread of the values, nev
     expect(num(whisker, "x1")).toBeCloseTo(scale(17.3 - 0.42), 9);
     expect(num(whisker, "x2")).toBeCloseTo(scale(17.3 + 0.42), 9);
     expect(p.errorBar!.getAttribute("aria-label")).toBe(`17.30${NB}±${NB}0.42`);
-    // The line from the error bar down to the axis, at the mean.
-    const meanLines = [...p.svg.querySelectorAll(":scope > g:not([role]) > line")].filter(
-      (l) => l.getAttribute("stroke") === defaultTokens.color.text,
+    // The line from the error bar down towards the column the mean falls in
+    // (class 3, 15-20, the tallest), and the tick under the axis.
+    const meanMarks = [...p.svg.querySelectorAll(":scope > g:not([role]) > line")];
+    for (const l of meanMarks) expect(num(l, "x1")).toBeCloseTo(scale(17.3), 9);
+    const tick = meanMarks.find((l) => num(l, "y1") > p.baseline)!;
+    expect([num(tick, "y1"), num(tick, "y2")]).toEqual([p.baseline + 2, p.baseline + 6]);
+    const line = meanMarks.filter((l) => l !== tick);
+    expect(line.length).toBeGreaterThan(0);
+    expect(Math.min(...line.map((l) => num(l, "y1")))).toBe(num(whisker, "y1"));
+    const column = p.columns[3]!;
+    expect(Math.max(...line.map((l) => num(l, "y2")))).toBeLessThanOrEqual(num(column, "y") - 2);
+    // No halo: the mean is drawn in ink only.
+    expect(meanMarks.every((l) => l.getAttribute("stroke") === defaultTokens.color.text)).toBe(
+      true,
     );
-    expect(meanLines.length).toBeGreaterThan(0);
-    for (const l of meanLines) expect(num(l, "x1")).toBeCloseTo(scale(17.3), 9);
-    expect(Math.max(...meanLines.map((l) => num(l, "y2")))).toBe(p.baseline);
-    expect(Math.min(...meanLines.map((l) => num(l, "y1")))).toBe(num(whisker, "y1"));
+  });
+
+  it("never draws the mean's line across a column, so no class reads as two (AC and PL)", () => {
+    const counts = [3, 9, 21, 34, 30, 17, 6, 2];
+    for (const scenario of ["AC", "PL"] as const) {
+      for (const meanValue of [3.7, 4.0, 4.5, 5.9, 0.2, 7.95]) {
+        const svg = ssr(
+          <HistogramChart
+            bins={{ start: 0, width: 1, counts }}
+            mean={{ value: meanValue, halfWidth: 0.1, level: 0.95 }}
+            scenario={scenario}
+            width={420}
+          />,
+        ).querySelector("svg")!;
+        const cols = [...svg.querySelectorAll(":scope > rect")].filter(
+          (r) => r.getAttribute("fill") !== "transparent" && !r.hasAttribute("opacity"),
+        );
+        const marks = [...svg.querySelectorAll(":scope > g:not([role]) > line")];
+        expect(marks.length).toBeGreaterThan(1);
+        for (const m of marks) {
+          const x = num(m, "x1");
+          const [y1, y2] = [num(m, "y1"), num(m, "y2")];
+          for (const c of cols) {
+            const inside =
+              x > num(c, "x") - 1 &&
+              x < num(c, "x") + num(c, "width") + 1 &&
+              Math.max(y1, y2) > num(c, "y") &&
+              Math.min(y1, y2) < num(c, "y") + num(c, "height");
+            expect(inside, `${scenario} mean ${meanValue}: a mean mark crosses a column`).toBe(
+              false,
+            );
+          }
+        }
+      }
+    }
   });
 
   it("draws the spread as a band behind the columns, bracketed and captioned under the axis", () => {
@@ -240,26 +318,37 @@ describe("HistogramChart - the mean's interval and the spread of the values, nev
     expect(parts(ssr(<HistogramChart bins={bins} />)).band).toBeNull();
   });
 
-  it("writes a level only with a half-width, in the fewest digits that hold it", () => {
-    const label = (mean: HistogramChartProps["mean"]) =>
-      parts(ssr(element({ mean }))).texts.find((t) => t.textContent!.startsWith("Mean"))!
-        .textContent;
-    expect(label({ value: 17.3, halfWidth: 0.42, level: 0.995 })).toBe(
-      `Mean 17.30${NB}±${NB}0.42 (99.5%)`,
-    );
-    expect(label({ value: 17.3, halfWidth: 0.42, level: 0.9 })).toBe(
+  it("writes an interval only with its level, in the fewest digits that hold it", () => {
+    const drawn = (mean: unknown) => {
+      const p = parts(ssr(element({ mean: mean as HistogramChartProps["mean"] })));
+      const text = p.texts.find((t) => t.textContent!.startsWith("Mean"))!.textContent;
+      return { text, errorBar: p.errorBar != null };
+    };
+    expect(drawn({ value: 17.3, halfWidth: 0.42, level: 0.995 })).toEqual({
+      text: `Mean 17.30${NB}±${NB}0.42 (99.5%)`,
+      errorBar: true,
+    });
+    expect(drawn({ value: 17.3, halfWidth: 0.42, level: 0.9 }).text).toBe(
       `Mean 17.30${NB}±${NB}0.42 (90%)`,
     );
-    expect(label({ value: 17.3, halfWidth: 0.42 })).toBe(`Mean 17.30${NB}±${NB}0.42`);
-    expect(label({ value: 17.3, level: 0.95 })).toBe("Mean 17.30");
-    expect(label({ value: 17.3, halfWidth: 0.42, level: 1.5 })).toBe(`Mean 17.30${NB}±${NB}0.42`);
+    // The type asks for a level with a half-width; from JavaScript, an
+    // interval without a level between 0 and 1 is not drawn at all.
+    for (const mean of [
+      { value: 17.3, halfWidth: 0.42 },
+      { value: 17.3, halfWidth: 0.42, level: 1.5 },
+      { value: 17.3, halfWidth: 0.42, level: 0 },
+      { value: 17.3, level: 0.95 },
+      { value: 17.3 },
+    ]) {
+      expect(drawn(mean)).toEqual({ text: "Mean 17.30", errorBar: false });
+    }
   });
 
   it("draws no mean and no spread from numbers that are not finite", () => {
     const p = parts(
       ssr(
         element({
-          mean: { value: Number.NaN, halfWidth: 1 },
+          mean: { value: Number.NaN, halfWidth: 1, level: 0.95 },
           spread: { from: 1, to: Number.POSITIVE_INFINITY },
         }),
       ),
@@ -271,10 +360,94 @@ describe("HistogramChart - the mean's interval and the spread of the values, nev
   });
 
   it("draws a mean off the axis as its label alone, with no line or error bar", () => {
-    const p = parts(ssr(element({ mean: { value: 99, halfWidth: 1 } })));
-    expect(p.text(`Mean 99.00${NB}±${NB}1.00`)).toBeTruthy();
+    const p = parts(ssr(element({ mean: { value: 99, halfWidth: 1, level: 0.95 } })));
+    expect(p.text(`Mean 99.00${NB}±${NB}1.00 (95%)`)).toBeTruthy();
     expect(p.errorBar).toBeNull();
     expect(p.svg.querySelector(":scope > g:not([role]) > line")).toBeNull();
+  });
+});
+
+describe("HistogramChart - numbers and words without a format", () => {
+  it("writes values above 1,000 in full, at digits that keep every class and the spread apart", () => {
+    const values = sample(6000, 1411.3, 30, 7);
+    const h = computeHistogram(values);
+    const { container } = render(
+      <HistogramChart values={values} mean={{ value: 1411.29, halfWidth: 0.75, level: 0.95 }} />,
+    );
+    const names = [...container.querySelectorAll("tbody th")].map((t) => t.textContent);
+    expect(names).toHaveLength(h.counts.length);
+    expect(new Set(names).size).toBe(names.length);
+    // One digit: the width (about 4.7) has its first significant digit in the units.
+    expect(names[0]).toMatch(/^1,\d{3}\.\d–1,\d{3}\.\d$/);
+    const svgText = [...container.querySelectorAll("svg text")].map((t) => t.textContent);
+    const spreadCaption = svgText.find((t) => t!.startsWith("Middle half"))!;
+    const [lo, hi] = spreadCaption.replace("Middle half ", "").split("–");
+    expect(lo).not.toBe(hi);
+    expect(svgText.find((t) => t!.startsWith("Mean"))).toBe(`Mean 1,411.29${NB}±${NB}0.75 (95%)`);
+    // Nothing compact anywhere: no "K".
+    expect(container.textContent).not.toMatch(/\dK/);
+  });
+
+  it("writes a mean without an interval in full too, and the caller's digits when given", () => {
+    const bins = { start: 1300, width: 5, counts: [2, 8, 20, 9] };
+    // Width 5: one digit (one more than the width's first significant digit).
+    const plain = parts(ssr(<HistogramChart bins={bins} mean={{ value: 1311.4 }} />));
+    expect(plain.text("Mean 1,311.4")).toBeTruthy();
+    expect(plain.text("1,300.0")).toBeTruthy();
+    expect(plain.text("1,320.0")).toBeTruthy();
+    const exact = parts(
+      ssr(<HistogramChart bins={bins} mean={{ value: 1311.4 }} format={{ fractionDigits: 2 }} />),
+    );
+    // With fractionDigits the caller's format rules, compact included.
+    expect(exact.text("Mean 1.31K")).toBeTruthy();
+  });
+
+  it("draws no interval on the values path when the mean comes alone (none is derived)", () => {
+    const values = sample(2000, 910, 30, 3);
+    const p = parts(ssr(<HistogramChart values={values} mean={{ value: 910.4 }} />));
+    const meanText = p.texts.find((t) => t.textContent!.startsWith("Mean"))!.textContent!;
+    expect(meanText).not.toContain("±");
+    expect(p.errorBar).toBeNull();
+  });
+
+  it("captions a caller's spread with its own label, over the dictionary's word", () => {
+    const p = parts(
+      ssr(
+        <HistogramChart
+          bins={{ start: 0, width: 10, counts: [4, 19, 61, 152, 61, 19, 4] }}
+          spread={{ from: 22.5, to: 47.5, label: "10th to 90th percentile {range}" }}
+          labels={{ spread: "srednja polovina {range}" }}
+        />,
+      ),
+    );
+    // Width 10: no digit, so the ends are written at the classes' resolution.
+    expect(p.text("10th to 90th percentile 23–48")).toBeTruthy();
+    expect(p.texts.some((t) => t.textContent!.startsWith("srednja"))).toBe(false);
+  });
+
+  it("describes itself in classes, with n grouped", () => {
+    const values = sample(6000, 910, 30, 7);
+    const svg = ssr(<HistogramChart values={values} />).querySelector("svg")!;
+    expect(svg.getAttribute("aria-label")).toMatch(/^Histogram of 6,000 values in \d+ classes$/);
+  });
+
+  it("leaves out the edge label the mean's tick would touch", () => {
+    // Nearly every value in the first class: the mean sits by the first edge.
+    const svg = ssr(
+      <HistogramChart
+        bins={{ start: 0, width: 1, counts: [400, 3, 2, 1, 1, 1, 1, 1] }}
+        mean={{ value: 0.4, halfWidth: 0.05, level: 0.95 }}
+        format={{ fractionDigits: 1 }}
+        width={420}
+      />,
+    ).querySelector("svg")!;
+    const texts = [...svg.querySelectorAll(":scope > text")].map((t) => t.textContent);
+    expect(texts).not.toContain("0.0");
+    expect(texts).toContain("8.0");
+    const tick = [...svg.querySelectorAll(":scope > g:not([role]) > line")].find(
+      (l) => num(l, "y1") > num(svg.querySelector("line")!, "y1"),
+    );
+    expect(tick).toBeTruthy();
   });
 });
 
@@ -333,12 +506,10 @@ describe("HistogramChart - labels instead of grid lines, none overlapping anothe
               expect(overlap(a, b), `"${a.s}" overlaps "${b.s}"`).toBe(false);
             }
           }
-          // The mean's line never crosses a label.
-          for (const l of svg.querySelectorAll(":scope > g:not([role]) > line")) {
-            const x = num(l, "x1");
-            const seg = { left: x - 1.5, right: x + 1.5, top: num(l, "y1"), bottom: num(l, "y2") };
-            for (const b of boxes)
-              expect(overlap(seg, b), `the mean's line crosses "${b.s}"`).toBe(false);
+          // No line crosses a label: the axis, the mean's line and tick, the
+          // error bar's whisker and caps (halo included), the spread's bracket.
+          for (const seg of lineBoxes(svg)) {
+            for (const b of boxes) expect(overlap(seg, b), `${seg.s} crosses "${b.s}"`).toBe(false);
           }
         });
       }
@@ -347,7 +518,11 @@ describe("HistogramChart - labels instead of grid lines, none overlapping anothe
 
   it("draws no grid line: the only line across the plot is the axis", () => {
     const svg = ssr(
-      <HistogramChart values={values} mean={{ value: 911.2, halfWidth: 0.76 }} width={560} />,
+      <HistogramChart
+        values={values}
+        mean={{ value: 911.2, halfWidth: 0.76, level: 0.95 }}
+        width={560}
+      />,
     ).querySelector("svg")!;
     const horizontal = [...svg.querySelectorAll("line")].filter(
       (l) => l.getAttribute("y1") === l.getAttribute("y2") && num(l, "x2") - num(l, "x1") > 20,
@@ -409,7 +584,7 @@ describe("HistogramChart - IBCS notation, words and edge cases", () => {
     const own = ssr(<HistogramChart bins={bins} title="DPS" />);
     expect(own.querySelector("svg")!.getAttribute("role")).toBe("img");
     expect(own.querySelector("svg")!.getAttribute("aria-label")).toBe(
-      "DPS. Histogram of 10 values in 3 bins.",
+      "DPS. Histogram of 10 values in 3 classes.",
     );
     const named = ssr(<HistogramChart bins={bins} ariaLabel="Raspodela DPS-a" />);
     expect(named.querySelector("svg")!.getAttribute("aria-label")).toBe("Raspodela DPS-a");
@@ -465,7 +640,7 @@ describe("HistogramChart - IBCS notation, words and edge cases", () => {
       <HistogramChart
         bins={bins}
         title="t"
-        mean={{ value: 1.5, halfWidth: 0.1 }}
+        mean={{ value: 1.5, halfWidth: 0.1, level: 0.95 }}
         spread={{ from: 1, to: 2 }}
         height={100}
       />,

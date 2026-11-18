@@ -842,11 +842,10 @@ export const featureCases: SmokeCase[] = [
           width: 10,
           counts: [4, 19, 61, 152, 288, 401, 395, 301, 170, 72, 25, 6],
         }}
-        mean={{ value: 909.6, halfWidth: 0.7 }}
-        spread={{ from: 877.2, to: 942.4 }}
+        mean={{ value: 909.6, halfWidth: 0.7, level: 0.95 }}
+        spread={{ from: 877.2, to: 942.4, label: "10th to 90th percentile {range}" }}
         scenario="FC"
         format={{ compact: false, fractionDigits: 1 }}
-        labels={{ spread: "10th to 90th percentile {range}" }}
         width={480}
         height={240}
       />

@@ -67,18 +67,27 @@ export interface Histogram extends HistogramBins {
 }
 
 /**
- * The mean of the values and the half-width of its interval, as the caller
- * computed them - e.g. a 95% confidence interval, 1.96 standard errors. The
- * chart draws them; it never derives an interval itself.
+ * The mean of the values, alone or with the interval the caller computed for
+ * it - e.g. a 95% confidence interval, 1.96 standard errors. The chart draws
+ * them; it never derives an interval itself. An interval comes with its level
+ * or not at all, so it always says what it is: "Mean 910.8 ± 0.9 (95%)",
+ * never a bare "± 0.9" that reads like a standard deviation.
  */
-export interface HistogramMean {
-  /** The mean. */
-  value: number;
-  /** Half-width of the mean's interval, ≥ 0. Unset: the mean is drawn without one. */
-  halfWidth?: number;
-  /** The interval's level as a fraction, written after it: 0.95 → "(95%)". */
-  level?: number;
-}
+export type HistogramMean =
+  | {
+      /** The mean. */
+      value: number;
+      halfWidth?: undefined;
+      level?: undefined;
+    }
+  | {
+      /** The mean. */
+      value: number;
+      /** Half-width of the mean's interval, ≥ 0. */
+      halfWidth: number;
+      /** The interval's level, a fraction between 0 and 1, written after it: 0.95 → "(95%)". */
+      level: number;
+    };
 
 /**
  * A range of the values - by default the middle half, from the first to the
@@ -90,6 +99,12 @@ export interface HistogramSpread {
   from: number;
   /** The other end (order does not matter). */
   to: number;
+  /**
+   * The range's caption, a template: `{range}` is "from–to". It wins over the
+   * `spread` word of `labels`, whose default names the middle half - so a
+   * range of another kind (the 10th to the 90th percentile) says what it is.
+   */
+  label?: string;
 }
 
 /** One class, resolved: its edges and its count. */
@@ -131,10 +146,19 @@ export function quantileSorted(sorted: readonly number[], p: number): number {
   return h === lo ? a : a + (h - lo) * (b - a);
 }
 
-/** The next double above a positive width. */
-function nextUp(width: number): number {
-  const next = width * (1 + Number.EPSILON);
-  return next > width ? next : width + Number.MIN_VALUE;
+/**
+ * The unit in the last place of a finite number ≥ 0: the gap between it and
+ * the next double above it (`Number.MIN_VALUE` for 0 and the subnormals).
+ * `Math.log2` may round across a power of two, so the exponent is corrected
+ * against exact powers of two.
+ */
+export function ulpOf(x: number): number {
+  const a = Math.abs(x);
+  if (!(a >= 2 ** -1022)) return Number.MIN_VALUE;
+  let e = Math.floor(Math.log2(a));
+  if (2 ** e > a) e -= 1;
+  else if (2 ** (e + 1) <= a) e += 1;
+  return 2 ** (e - 52);
 }
 
 /**
@@ -173,9 +197,10 @@ function classOf(value: number, start: number, width: number, k: number): number
  * h = 2 * IQR * n^(-1/3), so k = ceil((max - min) / h) classes, bounded to
  * [`minBins`, `maxBins`] (default 20 to 60; a spread with no middle half - an
  * IQR of 0 - takes `maxBins`). `bins` fixes k instead. The width is then
- * (max - min) / k, nudged up by the last unit of rounding when needed so the
- * last edge is never below the largest value. Each class counts the values in
- * [lower, upper); the last class also counts its upper edge.
+ * (max - min) / k; when rounding leaves the last edge below the largest value,
+ * the width is raised by the shortfall's k-th part, doubled if needed, in at
+ * most a few dozen steps. Each class counts the values in [lower, upper); the
+ * last class also counts its upper edge.
  *
  * Non-finite values (NaN, ±Infinity) are left out, and `n` counts the rest.
  * No values give no classes (`n` 0, NaN figures); values that are all equal
@@ -218,7 +243,19 @@ export function computeHistogram(
   if (!Number.isFinite(max - min)) k = Math.max(k, 2);
 
   let width = max / k - min / k;
-  while (histogramEdge(min, width, k) < max) width = nextUp(width);
+  const last = histogramEdge(min, width, k);
+  if (last < max) {
+    // The last edge falls short of the largest value by rounding. Close the
+    // shortfall in a bounded number of steps: its k-th part per class (at
+    // least an ulp of the width), doubled until the last edge reaches it.
+    const base = width;
+    let step = Math.max((max - last) / k, ulpOf(base));
+    width = base + step;
+    for (let turn = 0; turn < 64 && histogramEdge(min, width, k) < max; turn++) {
+      step *= 2;
+      width = base + step;
+    }
+  }
 
   const counts = new Array<number>(k).fill(0);
   for (const v of finite) counts[classOf(v, min, width, k)]! += 1;

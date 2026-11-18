@@ -55,7 +55,7 @@ function scene() {
       <HistogramChart
         bins={{ start: 0, width: 1, counts: [2, 5, 3] }}
         scenario="PL"
-        mean={{ value: 1.4, halfWidth: 0.2 }}
+        mean={{ value: 1.4, halfWidth: 0.2, level: 0.95 }}
         width={300}
       />
       <Skeleton variant="table" />

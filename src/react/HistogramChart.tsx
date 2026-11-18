@@ -55,10 +55,13 @@ export interface HistogramChartProps {
   /** How `values` are binned: `bins`, or the rule's `minBins` / `maxBins` (default 20 to 60). */
   binning?: HistogramOptions;
   /**
-   * The mean and the half-width of its interval, as you computed them (the
-   * chart never derives an interval): drawn as a line with an error bar above
-   * the columns, labelled "Mean 910.8 ± 0.9 (95%)" (`labels.mean`; the level
-   * when `level` is given).
+   * The mean, alone or with the half-width of its interval and that
+   * interval's level, as you computed them (the chart never derives an
+   * interval). Drawn as a line from its label above the columns down to the
+   * top of the class it falls in, with a tick under the axis; its interval as
+   * an error bar on that line, labelled "Mean 910.8 ± 0.9 (95%)"
+   * (`labels.mean`). A half-width without a level between 0 and 1 is not
+   * drawn: the mean is then written alone.
    */
   mean?: HistogramMean;
   /**
@@ -66,8 +69,8 @@ export interface HistogramChartProps {
    * and a caption under the axis ("Middle half 890.0–931.0", `labels.spread`).
    * Default: the middle half of `values`, from the first to the third quartile;
    * with `bins`, none unless given. `false` draws none. A spread of your own
-   * (say the 10th to the 90th percentile) needs its own words in
-   * `labels.spread`.
+   * (say the 10th to the 90th percentile) takes its own caption: its `label`,
+   * or `labels.spread`.
    */
   spread?: HistogramSpread | false;
   /**
@@ -84,9 +87,12 @@ export interface HistogramChartProps {
   height?: number;
   /**
    * Number formatting of the values - the class edges, the mean and its
-   * interval, the spread - with exact `fractionDigits` and a `locale`. Counts
-   * are whole numbers and shares percentages (`percentFractionDigits`,
-   * default 1), both in the same `locale`.
+   * interval, the spread - and their `locale`. With `fractionDigits`, values
+   * are written at those digits. Without it they are written in full (never
+   * compact), at the digits that keep two adjacent class edges apart, and the
+   * mean's interval at two significant figures of its half-width. Counts are
+   * whole numbers and shares percentages (`percentFractionDigits`, default 1),
+   * both in the same `locale`.
    */
   format?: FormatOptions;
   tokens?: IbcsTokensOverride;
@@ -161,6 +167,19 @@ function lineSegments(
   return out;
 }
 
+/**
+ * The fraction digits that keep two adjacent class edges apart when written:
+ * one decimal place past the width's first significant digit (4.75 → 1,
+ * 10 → 0, 0.12 → 2), from 0 to 20. None for a width of 0 (one class).
+ */
+function edgeDigits(width: number): number | undefined {
+  if (!(width > 0) || !Number.isFinite(width)) return undefined;
+  return Math.min(20, Math.max(0, Math.ceil(-Math.log10(width)) + 1));
+}
+
+/** The length of the tick that marks the mean under the axis (px), from 2 px below it. */
+const MEAN_TICK = 4;
+
 /** The fewest fraction digits that write an interval's level exactly (0.95 → 0, 0.995 → 1), at most 2. */
 function levelDigits(level: number): number {
   for (let d = 0; d < 2; d++) {
@@ -176,16 +195,19 @@ function levelDigits(level: number): number {
  * statistical distributions (UN 3.4).
  *
  * Two ranges are drawn apart so they cannot be confused: the **mean's
- * interval** - how well the average is known - as a line with an error bar
- * above the columns, labelled "Mean 910.8 ± 0.9 (95%)"; and the **spread of
+ * interval** - how well the average is known - as an error bar above the
+ * columns, labelled "Mean 910.8 ± 0.9 (95%)", with a line down to the top of
+ * the class the mean falls in and a tick under the axis; and the **spread of
  * the values** - how much single values vary - as a band behind the columns,
  * bracketed and captioned under the axis, "Middle half 890.0–931.0". n is
- * written on the title line.
+ * written on the title line. The mean's line never crosses a column, so every
+ * class keeps one whole width (CH 1.3).
  *
  * Labels replace grid lines and a count axis: every column's count where all
  * fit above their columns, else the tallest column's alone; the class edges at
- * the two ends of the axis. Every kind of label has a row of its own, so none
- * crosses another, and the mean's line pauses at a count label it would cross.
+ * the two ends of the axis (the last one left out when both do not fit, and an
+ * edge label beside the mean's tick left out too). Every kind of label has a
+ * row of its own, and the mean's line pauses at a count label it would cross.
  *
  * Feed it raw `values` (binned by `computeHistogram`: the Freedman-Diaconis
  * rule bounded to 20-60 classes, counts summing to n, edges covering the
@@ -256,25 +278,40 @@ export const HistogramChart = forwardRef<SVGSVGElement, HistogramChartProps>(
       signDisplay: "auto",
       notAvailable: format.notAvailable,
     };
-    const value = (v: number) => formatValue(v, format);
     const single = target != null && target.width === 0;
+    // Values - edges, class ranges, the spread, a mean without an interval -
+    // at the caller's exact digits, else in full at the digits that keep two
+    // adjacent edges apart: compact "1.3K–1.3K" would name different classes
+    // alike.
+    const exact = Number.isFinite(format.fractionDigits);
+    const valueFmt: FormatOptions = exact
+      ? format
+      : { ...format, compact: false, fractionDigits: edgeDigits(target?.width ?? 0) };
+    const value = (v: number) => formatValue(v, valueFmt);
     const rangeText = (b: HistogramBin) =>
       single ? value(b.from) : `${value(b.from)}–${value(b.to)}`;
     const countText = (c: number) => formatValue(c, countFmt);
     const shareText = (c: number) => formatPercent(n > 0 ? c / n : null, shareFmt);
 
+    // An interval is drawn only with its level, so it always says what it is
+    // ("± 0.9" alone reads like a standard deviation).
     const meanOk = mean != null && Number.isFinite(mean.value);
-    const meanHalf = meanOk ? halfWidthOf(mean!.halfWidth) : undefined;
     const level = mean?.level;
+    const levelOk = level != null && level > 0 && level < 1;
+    const meanHalf = meanOk && levelOk ? halfWidthOf(mean!.halfWidth) : undefined;
     const levelText =
-      meanHalf != null && level != null && level > 0 && level < 1
-        ? formatPercent(level, {
-            fractionDigits: levelDigits(level),
+      meanHalf != null
+        ? formatPercent(level!, {
+            fractionDigits: levelDigits(level!),
             locale: format.locale,
             signDisplay: "auto",
           })
         : "";
-    const meanInterval = meanOk ? formatInterval(mean!.value, meanHalf, format) : "";
+    const meanInterval = meanOk
+      ? meanHalf != null
+        ? formatInterval(mean!.value, meanHalf, format)
+        : formatValue(mean!.value, valueFmt)
+      : "";
     const meanText = meanOk
       ? fillLabel(words.mean, {
           value: levelText ? `${meanInterval} (${levelText})` : meanInterval,
@@ -294,7 +331,7 @@ export const HistogramChart = forwardRef<SVGSVGElement, HistogramChartProps>(
     const spreadLo = spread ? Math.min(spread.from, spread.to) : 0;
     const spreadHi = spread ? Math.max(spread.from, spread.to) : 0;
     const spreadText = spread
-      ? fillLabel(words.spread, {
+      ? fillLabel(spread.label ?? words.spread, {
           range: spreadLo === spreadHi ? value(spreadLo) : `${value(spreadLo)}–${value(spreadHi)}`,
         })
       : "";
@@ -365,13 +402,27 @@ export const HistogramChart = forwardRef<SVGSVGElement, HistogramChartProps>(
     const meanX = meanOnAxis ? xOf(mean!.value) : center;
     const meanLabelY = meanTop + FONT_LABEL;
     const meanBarY = meanTop + 23;
+    // The line stops 2 px above the column the mean falls in - the taller one
+    // when it sits on the edge between two - so it never crosses a column and
+    // the class keeps its one width; a tick under the axis marks the mean.
+    let meanStopY = baseline;
+    if (meanOnAxis) {
+      for (const [i] of classes.entries()) {
+        const left = colLeft(i);
+        const c = liveCounts[i] ?? 0;
+        if (c > 0 && meanX >= left - 1 && meanX <= left + colW + 1) {
+          meanStopY = Math.min(meanStopY, grownTop(c) - 2);
+        }
+      }
+    }
     const meanSegments = lineSegments(
       meanBarY,
-      baseline,
+      meanStopY,
       countLabels
         .filter((l) => Math.abs(l.x - meanX) <= l.w / 2 + LABEL_CLEARANCE)
         .map((l) => [l.y - FONT_COUNT - LABEL_CLEARANCE, l.y + LABEL_CLEARANCE] as const),
     );
+    const meanTick = meanOnAxis && !single;
 
     // The spread: a band behind the columns, a bracket and a caption under the axis.
     const spreadBand = spread
@@ -383,8 +434,8 @@ export const HistogramChart = forwardRef<SVGSVGElement, HistogramChartProps>(
     const description =
       ariaLabel ??
       (title
-        ? `${title}. Histogram of ${n} values in ${k} bins.`
-        : `Histogram of ${n} values in ${k} bins`);
+        ? `${title}. Histogram of ${n.toLocaleString("en-US")} values in ${k} classes.`
+        : `Histogram of ${n.toLocaleString("en-US")} values in ${k} classes`);
     const a11yRows: ChartDataRow[] = classes.map((b) => ({
       label: rangeText(b),
       cells: [countText(b.count), shareText(b.count)],
@@ -427,7 +478,11 @@ export const HistogramChart = forwardRef<SVGSVGElement, HistogramChartProps>(
       target && !single
         ? value(histogramEdge(target.start, target.width, target.counts.length))
         : "";
-    const edgesFit = estTextW(edgeLo, FONT_EDGE) + estTextW(edgeHi, FONT_EDGE) + 8 <= plotW;
+    const edgeLoW = estTextW(edgeLo, FONT_EDGE);
+    const edgeHiW = estTextW(edgeHi, FONT_EDGE);
+    const edgesFit = edgeLoW + edgeHiW + 8 <= plotW;
+    const showEdgeLo = !(meanTick && meanX <= x0 + edgeLoW + 2);
+    const showEdgeHi = edgesFit && !(meanTick && meanX >= x1 - edgeHiW - 2);
 
     return (
       <>
@@ -514,24 +569,14 @@ export const HistogramChart = forwardRef<SVGSVGElement, HistogramChartProps>(
             strokeWidth={1}
           />
 
-          {/* The mean: a line over a surface halo, from its error bar to the
-            axis, pausing at a count label it would cross. */}
+          {/* The mean: a line from its error bar down to just above the column
+            it falls in, pausing at a count label it would cross, and a tick
+            under the axis. It crosses no column, so no class reads as two. */}
           {meanOnAxis && (
             <g>
               {meanSegments.map(([a, b], s) => (
                 <line
-                  key={`halo-${s}`}
-                  x1={meanX}
-                  y1={a}
-                  x2={meanX}
-                  y2={b}
-                  stroke={tokens.color.surface}
-                  strokeWidth={3}
-                />
-              ))}
-              {meanSegments.map(([a, b], s) => (
-                <line
-                  key={`ink-${s}`}
+                  key={`mean-${s}`}
                   x1={meanX}
                   y1={a}
                   x2={meanX}
@@ -540,6 +585,16 @@ export const HistogramChart = forwardRef<SVGSVGElement, HistogramChartProps>(
                   strokeWidth={1}
                 />
               ))}
+              {meanTick && (
+                <line
+                  x1={meanX}
+                  y1={baseline + 2}
+                  x2={meanX}
+                  y2={baseline + 2 + MEAN_TICK}
+                  stroke={tokens.color.text}
+                  strokeWidth={1.5}
+                />
+              )}
             </g>
           )}
 
@@ -602,16 +657,18 @@ export const HistogramChart = forwardRef<SVGSVGElement, HistogramChartProps>(
           )}
           {target && !single && (
             <>
-              <text
-                x={x0}
-                y={baseline + 13}
-                fontSize={FONT_EDGE}
-                fill={tokens.color.textMuted}
-                textAnchor="start"
-              >
-                {edgeLo}
-              </text>
-              {edgesFit && (
+              {showEdgeLo && (
+                <text
+                  x={x0}
+                  y={baseline + 13}
+                  fontSize={FONT_EDGE}
+                  fill={tokens.color.textMuted}
+                  textAnchor="start"
+                >
+                  {edgeLo}
+                </text>
+              )}
+              {showEdgeHi && (
                 <text
                   x={x1}
                   y={baseline + 13}

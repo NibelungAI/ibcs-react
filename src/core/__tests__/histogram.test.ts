@@ -5,6 +5,7 @@ import {
   histogramBinList,
   histogramEdge,
   quantileSorted,
+  ulpOf,
   resolveHistogramBins,
   type Histogram,
 } from "../histogram";
@@ -63,19 +64,79 @@ describe("quantileSorted (type 7)", () => {
   });
 });
 
+/** A deterministic integer sample of one of three shapes, from an LCG and exact IEEE operations only. */
+function intSample(n: number, shape: "normal" | "skewed" | "outliers", seed: number): number[] {
+  let s = seed;
+  const u = () => (s = (s * 1664525 + 1013904223) % 4294967296) / 4294967296;
+  const z = () => (u() + u() + u() + u() - 2) * Math.sqrt(3); // about normal, sd 1
+  return Array.from({ length: n }, () => {
+    if (shape === "normal") return Math.round(900 + 30 * z());
+    if (shape === "skewed") return 100 + Math.round(1000 * u() ** 6);
+    return Math.round(u() < 0.95 ? 900 + 30 * z() : 1100 + 200 * u());
+  });
+}
+
+/**
+ * R33's k for integer values, exactly, with none of the module's code:
+ * type-7 quartiles as fractions over 4 (h = (n - 1) p falls on quarters),
+ * then the least m with m * 2 * IQR >= range * n^(1/3) - cubed, so in
+ * integers: m^3 * (4 IQR)^3 >= 8 * range^3 * n - bounded to [20, 60]. Also
+ * the quartiles, and whether the quotient's fractional part is under one half
+ * (q < m - 1/2, so (2m - 1)^3 * (4 IQR)^3 > 64 * range^3 * n): there,
+ * rounding instead of the ceiling would choose m - 1.
+ */
+function exactRule(values: readonly number[]) {
+  const xs = values.map(BigInt).sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
+  const n = BigInt(xs.length);
+  const quarters = (j: bigint) => {
+    const h4 = (n - 1n) * j; // 4h for p = j / 4
+    const lo = Number(h4 / 4n);
+    const a = xs[lo]!;
+    const b = xs[Math.min(lo + 1, xs.length - 1)]!;
+    return 4n * a + (h4 % 4n) * (b - a); // 4 * (a + (h - lo) * (b - a))
+  };
+  const [q1x4, q3x4] = [quarters(1n), quarters(3n)];
+  const iqr4 = q3x4 - q1x4;
+  const range = xs[xs.length - 1]! - xs[0]!;
+  const quartiles = { q1: Number(q1x4) / 4, q3: Number(q3x4) / 4 };
+  if (iqr4 === 0n) return { k: 60, m: Infinity, underHalf: false, ...quartiles };
+  const rhs = 8n * range ** 3n * n;
+  let m = 1n;
+  while (m ** 3n * iqr4 ** 3n < rhs) m++;
+  const underHalf = (2n * m - 1n) ** 3n * iqr4 ** 3n > 64n * range ** 3n * n;
+  return { k: Math.min(60, Math.max(20, Number(m))), m: Number(m), underHalf, ...quartiles };
+}
+
 describe("computeHistogram - the Freedman-Diaconis rule, bounded (R33)", () => {
-  it("chooses k = ceil((max - min) / (2 IQR n^(-1/3))) inside [20, 60]", () => {
-    const values = sample(6000, 910.8, 30);
-    const h = computeHistogram(values);
-    const sorted = [...values].sort((a, b) => a - b);
-    const iqr = quantileSorted(sorted, 0.75) - quantileSorted(sorted, 0.25);
-    const raw = Math.ceil((sorted[5999]! - sorted[0]!) / (2 * iqr * Math.cbrt(6000) ** -1));
-    expect(raw).toBeGreaterThanOrEqual(20);
-    expect(raw).toBeLessThanOrEqual(60);
-    expect(h.counts).toHaveLength(raw);
-    expect(h.q1).toBe(quantileSorted(sorted, 0.25));
-    expect(h.q3).toBe(quantileSorted(sorted, 0.75));
-    expectInvariants(values, h);
+  it("chooses k as an exact reference does: ceil((max - min) / (2 IQR n^(-1/3))) inside [20, 60]", () => {
+    const table: Array<{ m: number; underHalf: boolean }> = [];
+    for (const shape of ["normal", "skewed", "outliers"] as const) {
+      for (const n of [40, 300, 700, 1500, 3000]) {
+        for (let seed = 1; seed <= 10; seed++) {
+          const values = intSample(n, shape, seed);
+          const want = exactRule(values);
+          const h = computeHistogram(values);
+          const at = `${shape}, n ${n}, seed ${seed}`;
+          expect(h.counts.length, at).toBe(want.k);
+          expect([h.q1, h.q3], at).toEqual([want.q1, want.q3]);
+          expect(
+            h.counts.reduce((a, b) => a + b, 0),
+            at,
+          ).toBe(n);
+          table.push(want);
+        }
+      }
+    }
+    // Not vacuous: the bounds bite at both ends, and many quotients inside them
+    // have a fractional part under one half, where rounding would choose m - 1
+    // (from 21 up: below that the floor of 20 would hide it).
+    expect(table.some((r) => r.m < 20)).toBe(true);
+    expect(table.some((r) => r.m > 60)).toBe(true);
+    // Of the 150 samples: 51 under the floor, 20 over the ceiling, 53 inside
+    // with a fractional part under one half and 23 with one over it.
+    const inside = table.filter((r) => r.m >= 21 && r.m <= 60);
+    expect(inside.filter((r) => r.underHalf).length).toBeGreaterThanOrEqual(40);
+    expect(inside.filter((r) => !r.underHalf).length).toBeGreaterThanOrEqual(15);
   });
 
   it("bounds the rule: a flat sample takes the 20-class floor, a heavy tail the 60-class ceiling", () => {
@@ -225,6 +286,111 @@ describe("computeHistogram - the Freedman-Diaconis rule, bounded (R33)", () => {
     expect(h.width).toBe(2);
     expect(h.counts).toEqual([3, 3, 4, 5]);
     expect(h.n).toBe(15);
+  });
+});
+
+describe("computeHistogram - bounded on narrow ranges far from zero", () => {
+  /**
+   * The counting's own guarantees, without "the first and last classes hold a
+   * value": when a class is narrower than a double's resolution at that
+   * magnitude, its float edges coincide and the class is empty by the rule.
+   */
+  function expectCoverage(values: readonly number[], h: Histogram) {
+    expect(h.counts.reduce((a, b) => a + b, 0)).toBe(h.n);
+    expect(recount(values, h)).toEqual(h.counts);
+    expect(h.start).toBe(Math.min(...values));
+    expect(histogramEdge(h.start, h.width, h.counts.length)).toBeGreaterThanOrEqual(
+      Math.max(...values),
+    );
+  }
+
+  /** computeHistogram, timed. Before the bounded correction these cases did not return. */
+  function timed(values: readonly number[], options?: Parameters<typeof computeHistogram>[1]) {
+    const t0 = performance.now();
+    const h = computeHistogram(values, options);
+    return { h, ms: performance.now() - t0 };
+  }
+
+  it("two values one ulp apart near 1e6", () => {
+    const a = 1e6;
+    const b = a + ulpOf(a);
+    expect(b - a).toBe(1.1641532182693481e-10);
+    for (const options of [{ bins: 60 }, { bins: 7 }, {}]) {
+      const { h, ms } = timed([a, b], options);
+      expect(ms).toBeLessThan(100);
+      expectCoverage([a, b], h);
+    }
+  });
+
+  /** The plain width (max/k - min/k) leaves the last edge short: the case needs the correction. */
+  function expectShortfall(values: readonly number[], k: number) {
+    const min = Math.min(...values);
+    const max = Math.max(...values);
+    expect(histogramEdge(min, max / k - min / k, k)).toBeLessThan(max);
+  }
+
+  it("epoch-millisecond timestamps over one second", () => {
+    // Seed 2 needs the correction; the one-ulp loop ran past 2·10⁷ turns on it.
+    const t0 = 1_763_424_000_000; // 2025-11-18 00:00 UTC, in ms
+    let s = 2;
+    const u = () => (s = (s * 1664525 + 1013904223) % 4294967296) / 4294967296;
+    const values = Array.from({ length: 500 }, () => t0 + Math.floor(u() * 1_000));
+    const { h, ms } = timed(values);
+    expectShortfall(values, h.counts.length);
+    expect(ms).toBeLessThan(100);
+    expectCoverage(values, h);
+  });
+
+  it("911.2 + i·10⁻⁹", () => {
+    // Eleven values in seven classes need the correction (the one-ulp loop ran
+    // past 2·10⁷ turns); two hundred by the rule do not, and must not move.
+    const eleven = Array.from({ length: 11 }, (_, i) => 911.2 + i * 1e-9);
+    const seven = timed(eleven, { bins: 7 });
+    expectShortfall(eleven, 7);
+    expect(seven.ms).toBeLessThan(100);
+    expectCoverage(eleven, seven.h);
+    const twoHundred = Array.from({ length: 200 }, (_, i) => 911.2 + i * 1e-9);
+    const rule = timed(twoHundred);
+    expect(rule.ms).toBeLessThan(100);
+    expectCoverage(twoHundred, rule.h);
+  });
+
+  it("every row of the review's survey: centres far from zero, spreads down to 10⁻⁶", () => {
+    const rows: Array<[number, number]> = [
+      [910, 30],
+      [910, 0.01],
+      [910, 1e-6],
+      [1e6, 1],
+      [1e6, 1e-3],
+      [1_763_424_000_000, 60_000],
+      [1_763_424_000_000, 1_000],
+    ];
+    const t0 = performance.now();
+    for (const [centre, spread] of rows) {
+      for (let seed = 1; seed <= 20; seed++) {
+        const values = sample(200, centre, spread, seed);
+        expectCoverage(values, computeHistogram(values));
+      }
+    }
+    expect(performance.now() - t0).toBeLessThan(5_000);
+  });
+
+  it("ulpOf: the gap to the next double, exact at every exponent", () => {
+    expect(ulpOf(1)).toBe(2 ** -52);
+    // The old one-step "next double" took two ulps from a mantissa of 1.5 on.
+    expect(ulpOf(1.5)).toBe(2 ** -52);
+    expect(ulpOf(1.75)).toBe(2 ** -52);
+    expect(ulpOf(2)).toBe(2 ** -51);
+    expect(ulpOf(1e6)).toBe(1.1641532182693481e-10);
+    expect(ulpOf(0)).toBe(Number.MIN_VALUE);
+    expect(ulpOf(2 ** -1022)).toBe(2 ** -1074);
+    expect(ulpOf(Number.MAX_VALUE)).toBe(2 ** 971);
+    for (const x of [0.1, 0.3, 910.8, 1e15, 3.3e-200, 7.5e300, 2 ** 52 - 1, 2 ** 53]) {
+      const u = ulpOf(x);
+      expect(x + u > x).toBe(true);
+      expect(x + u / 4).toBe(x);
+      expect(x + u - x).toBe(u);
+    }
   });
 });
 

@@ -512,7 +512,7 @@ describe("labels in interactive and conditional states", () => {
     // The defaults, unreplaced: each of the five words is there to be replaced.
     const plain = render(element);
     const plainText = plain.container.textContent ?? "";
-    for (const word of ["Mean 3.00", "Middle half 2–4", "n = 9", "Count", "Share"]) {
+    for (const word of ["Mean 3.00", "Middle half 2.00–4.00", "n = 9", "Count", "Share"]) {
       expect(plainText).toContain(word);
     }
     cleanup();
