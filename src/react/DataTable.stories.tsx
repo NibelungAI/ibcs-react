@@ -286,3 +286,66 @@ export const IntervalsAndBand: Story = {
     })),
   },
 };
+
+/** A plain svg glyph as a 56 px `data:` URI - a stand-in for a game icon, not game art. */
+const glyph = (background: string, shape: string) =>
+  `data:image/svg+xml,${encodeURIComponent(
+    `<svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 56 56"><rect width="56" height="56" fill="${background}"/>${shape}</svg>`,
+  )}`;
+
+/**
+ * Icons in row labels: a spell icon per row, an item named in its quality's
+ * colour and framed in it, an 18 px file drawn at 18 px, and a row without an
+ * icon that keeps the labels aligned.
+ */
+export const IconsInRowLabels: Story = {
+  args: {
+    showTotals: true,
+    defaultSort: null,
+    columns: [
+      { key: "dps", label: "DPS", mark: "bar", format: { compact: false, fractionDigits: 1 } },
+      { key: "casts", label: "Casts", format: { compact: false, fractionDigits: 1 } },
+    ],
+    rows: [
+      {
+        id: "shoot",
+        label: "Shoot",
+        icon: {
+          src: glyph(
+            "#24382c",
+            '<path d="M13 43 L41 15 M27 15 H41 V29" stroke="#d3e6b5" stroke-width="5" fill="none"/>',
+          ),
+          naturalSize: 56,
+        },
+        values: { dps: 215.04, casts: 41.65 },
+      },
+      {
+        id: "ring",
+        label: "Signet of Embers",
+        labelColor: "#a335ee",
+        icon: {
+          src: glyph(
+            "#3d2f4a",
+            '<circle cx="28" cy="30" r="12" fill="none" stroke="#e2c46a" stroke-width="6"/>',
+          ),
+          naturalSize: 56,
+          border: "#a335ee",
+        },
+        values: { dps: 40.3, casts: 12 },
+      },
+      {
+        id: "trap",
+        label: "Immolation Trap",
+        icon: {
+          src: glyph(
+            "#4a2a1f",
+            '<path d="M28 10 C40 24 40 34 28 46 C16 34 18 24 28 10Z" fill="#f0a23a"/>',
+          ),
+          naturalSize: 18,
+        },
+        values: { dps: 31.5, casts: 6 },
+      },
+      { id: "melee", label: "Melee", values: { dps: 20.07, casts: 52.3 } },
+    ],
+  },
+};

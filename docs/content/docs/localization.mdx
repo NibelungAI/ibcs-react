@@ -125,9 +125,11 @@ Nearest wins: a component's own word prop (`totalsLabel`, `emptyMessage`,
 `Skeleton`'s `label`, a `baseLabel` such as `"Budget"`), then its `labels`, then
 the nearest provider's, then `defaultLabels` - the library's IBCS English. A
 `baseLabel` that names a scenario (`"PY"`) is the exception: it takes that
-scenario's word from `labels`. Entries such as `"Point {n}"`, `"+{count} more"`
-or the variance headers `delta` ("Δ{base}") and `deltaPct` ("Δ{base}%") are
-templates: keep the placeholders in your words and the component fills them in.
+scenario's word from `labels`. Entries such as `"Point {n}"`, `"+{count} more"`,
+the variance headers `delta` ("Δ{base}") and `deltaPct` ("Δ{base}%") or
+`HistogramChart`'s `mean` ("Mean {value}"), `spread` ("Middle half {range}")
+and `sampleSize` ("n = {n}") are templates: keep the placeholders in your words
+and the component fills them in.
 
 A header never goes blank: where an empty scenario word would name a column, a
 row or a selectable mark, the scenario's `scenarioTitle` ("Actual") is

@@ -4,6 +4,7 @@ description: A sorted horizontal variance chart - AC bars with a plan overlay, a
 ---
 
 import { RankingVarianceChart } from "ibcs-react";
+import { EPIC, RARE, ringChip, swordChip } from "@/lib/demo-data/distribution";
 
 Rows sorted by deviation: AC bars with the comparison overlaid, then the
 absolute variance as bars, then the relative variance as pins - with a bold
@@ -112,6 +113,85 @@ values are plain Δ values.
 
 The AC panel's bars start at zero, so an interval of ±0.5 on 914 is a hair's
 width there - that is the honest picture; the ΔPL panel is where it reads.
+
+## Icons in row labels
+
+A datum's `icon` puts a small picture before its label, or several as chips -
+here the items each variant changes - and its `labelColor` colours the label.
+Icons are drawn at `iconSize` (default 20; at most the row height minus 4, and
+never above 56), never above the image's own `naturalSize`, with an optional
+`border` inside the box. The label column grows by the widest row's icons, up
+to 40% of the chart, and every label, the total's too, starts past them; a chip
+that would leave a label less than 24 px is left out, from the end.
+
+<Frame center>
+  <RankingVarianceChart
+    width={680}
+    sortBy="value"
+    showTotals={false}
+    baseLabel="Equipped"
+    format={{ compact: false, fractionDigits: 2 }}
+    labels={{ scenario: { AC: "DPS" } }}
+    data={[
+      {
+        label: "Best set",
+        AC: 914.3013,
+        base: 910.8441,
+        acError: 0.4682,
+        absError: 0.4621,
+        icon: [ringChip, swordChip],
+      },
+      {
+        label: "Signet of Embers",
+        labelColor: EPIC,
+        AC: 914.0512,
+        base: 910.8441,
+        acError: 0.4511,
+        absError: 0.4402,
+        icon: { ...ringChip, alt: "" },
+      },
+      { label: "Equipped", AC: 910.8441, base: 910.8441, acError: 0.4808, absError: 0 },
+      {
+        label: "Runed Greatsword",
+        labelColor: RARE,
+        AC: 906.2537,
+        base: 910.8441,
+        acError: 0.4951,
+        absError: 0.6408,
+        icon: { ...swordChip, alt: "" },
+      },
+    ]}
+  />
+</Frame>
+
+```tsx
+const ring = { src: ringIcon, naturalSize: 56, border: "#a335ee", alt: "Signet of Embers" };
+const sword = { src: swordIcon, naturalSize: 56, border: "#0070dd", alt: "Runed Greatsword" };
+
+<RankingVarianceChart
+  data={[
+    { label: "Best set", AC: 914.3013, base: 910.8441, icon: [ring, sword] },
+    {
+      label: "Signet of Embers",
+      labelColor: "#a335ee",
+      AC: 914.0512,
+      base: 910.8441,
+      icon: { ...ring, alt: "" },
+    },
+    { label: "Equipped", AC: 910.8441, base: 910.8441 },
+  ]}
+/>;
+```
+
+The icons are part of the chart's image; the screen-reader table names each row
+by its label, after its icons' `alt` ("Signet of Embers Runed Greatsword Best
+set"). `renderIcon(row, size)` draws an svg element of your own in a
+`size` × `size` box at the start of the label instead - return null to fall back
+to the datum's `icon`. For a tooltip of your own, `onHover` hands you the row.
+
+A PNG export or copy of the chart draws its svg as an image, and a browser
+loads no remote file inside one: there, only icons given as `data:` URIs
+appear. The SVG export keeps every `src` as written.
 
 ## Props
 

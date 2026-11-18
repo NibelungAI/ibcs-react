@@ -18,6 +18,7 @@
     "integrated-variance",
     "ranking-variance",
     "error-bar",
+    "histogram",
     "variance-area",
     "pie-chart",
     "horizontal-waterfall",

@@ -70,7 +70,10 @@ const columns: DataTableColumn[] = [
 - `DataTableCell` = `number | Partial<Record<ScenarioKey, number>> | undefined`.
 - `DataTableRow`: `id`, `label`, `values: Record<string, DataTableCell>`,
   `spark?: Record<string, number[]>`, `children?`, `group?`, `emphasis?`,
-  `flow?`, `doubleRule?`, `defaultCollapsed?`.
+  `flow?`, `doubleRule?`, `defaultCollapsed?`, `icon?: RowIcon | RowIcon[]`
+  (`{ src, naturalSize, border?, alt? }` - drawn at `iconSize`, never above
+  `naturalSize`), `labelColor?`. `renderIcon(row, size)` puts your own element
+  in the icon slot.
 
 ## ComparisonTable - T01 / T02 (centre-label flanking layout)
 
