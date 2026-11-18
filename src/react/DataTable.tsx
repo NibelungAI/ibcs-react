@@ -1,4 +1,4 @@
-import React, { useId, useMemo, useState } from "react";
+import React, { useId, useMemo, useState, type ReactNode } from "react";
 import {
   buildDataTableModel,
   collectDetailRows,
@@ -16,6 +16,7 @@ import {
 import type { IbcsTokens, IbcsTokensOverride } from "../core/tokens";
 import type { IbcsLabelsOverride } from "../core/labels";
 import type { ValueBand } from "../core/reference";
+import { ROW_ICON_GAP, rowIconsOf, rowIconsWidth } from "../core/rowIcon";
 import type { ScenarioKey } from "../core/types";
 import {
   formatInterval,
@@ -34,6 +35,7 @@ import { useIbcsLabels, useIbcsTokens } from "./theme";
 import { toIdSet } from "./internal/ids";
 import { estTextW, svgSafeId } from "./internal/text";
 import { ValueBandRects } from "./internal/valueBand";
+import { RowIconImages } from "./internal/rowIcons";
 
 export interface DataTableProps {
   /** Column definitions (value / variance / sparkline). */
@@ -98,6 +100,21 @@ export interface DataTableProps {
    */
   maxLabelWidth?: number;
   /**
+   * The size of the row icons (`row.icon`), and of the box `renderIcon`
+   * fills, in CSS px: an integer from 8 to 28 (the rows are 34 px tall).
+   * Default 20. An icon is never drawn above its own `naturalSize`.
+   */
+  iconSize?: number;
+  /**
+   * An element for a row's icon slot in place of its `row.icon` - an icon that
+   * opens your own tooltip, a spell icon with its school marker. Called with
+   * the row and the icon size for every row but the totals row; return null
+   * to fall back to `row.icon`. The element sits before the label in a box
+   * `size` px tall and at least as wide as the widest `row.icon` slot; its
+   * size and its accessible text are yours.
+   */
+  renderIcon?: (row: DataTableRow, size: number) => ReactNode;
+  /**
    * A short description of the table, rendered as a visually-hidden
    * `<caption>` - screen-reader users get a name for the table without any
    * visual change. Omit for a purely decorative/duplicated table.
@@ -143,6 +160,8 @@ export function DataTable({
   onCollapsedChange,
   totalsLabel: totalsLabelProp,
   maxLabelWidth,
+  iconSize,
+  renderIcon,
   caption,
   className,
   style,
@@ -150,6 +169,22 @@ export function DataTable({
   const tokens = useIbcsTokens(tokenOverride);
   const words = useIbcsLabels(labels);
   const totalsLabel = totalsLabelProp ?? words.total;
+
+  // Row icons: one size for the table, and one slot width - the widest row's
+  // icons (at least the element box with `renderIcon`) - for every row, so the
+  // labels stay aligned. No icons and no `renderIcon`: no slot, as before.
+  const iconPx = Math.min(
+    ICON_MAX,
+    Math.max(ICON_MIN, Math.round(Number.isFinite(iconSize) ? iconSize! : ICON_DEFAULT)),
+  );
+  let iconSlotW = renderIcon ? iconPx : 0;
+  const measureIcons = (list: readonly DataTableRow[]) => {
+    for (const r of list) {
+      iconSlotW = Math.max(iconSlotW, rowIconsWidth(rowIconsOf(r.icon), iconPx));
+      if (r.children) measureIcons(r.children);
+    }
+  };
+  measureIcons(rows);
 
   // Sort: internal state is the source of truth ONLY while `sort` is absent.
   const [uncontrolledSort, setUncontrolledSort] = useState<DataTableSort | null>(defaultSort);
@@ -463,13 +498,25 @@ export function DataTable({
                           {flowMarker(flow)}
                         </span>
                       )}
+                      {iconSlotW > 0 && (
+                        <IconSlot
+                          row={vr.row}
+                          isTotal={vr.isTotal}
+                          size={iconPx}
+                          slotW={iconSlotW}
+                          renderIcon={renderIcon}
+                        />
+                      )}
                       <span
                         title={vr.row.label}
                         style={{
                           fontSize: emphasis ? 13 : 12.5,
                           fontWeight: emphasis ? 700 : 400,
                           color:
-                            vr.depth > 0 && !emphasis ? tokens.color.textMuted : tokens.color.text,
+                            vr.row.labelColor ??
+                            (vr.depth > 0 && !emphasis
+                              ? tokens.color.textMuted
+                              : tokens.color.text),
                           ...(maxLabelWidth != null
                             ? {
                                 flex: "1 1 auto",
@@ -515,6 +562,65 @@ export function DataTable({
         </table>
       </div>
     </div>
+  );
+}
+
+/** Row icon sizes, in CSS px: the default, and the bounds (the 34 px row leaves 3 px above and below 28). */
+const ICON_DEFAULT = 20;
+const ICON_MIN = 8;
+const ICON_MAX = 28;
+/** The space between the icon slot and the label. */
+const ICON_LABEL_GAP = 6;
+
+/**
+ * A row's icon slot: the caller's element (`renderIcon`), else the row's own
+ * icons; an empty slot of the same width on a row without either, the totals
+ * row included, so the labels start at one x (an element wider than the slot
+ * moves its own label right).
+ */
+function IconSlot({
+  row,
+  isTotal,
+  size,
+  slotW,
+  renderIcon,
+}: {
+  row: DataTableRow;
+  isTotal: boolean;
+  size: number;
+  slotW: number;
+  renderIcon: DataTableProps["renderIcon"];
+}) {
+  const element = isTotal ? null : renderIcon?.(row, size);
+  if (element != null && typeof element !== "boolean") {
+    return (
+      <span
+        style={{
+          display: "inline-flex",
+          alignItems: "center",
+          flex: "0 0 auto",
+          minWidth: slotW,
+          height: size,
+          marginRight: ICON_LABEL_GAP,
+        }}
+      >
+        {element}
+      </span>
+    );
+  }
+  return (
+    <span
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        gap: ROW_ICON_GAP,
+        flex: "0 0 auto",
+        width: slotW,
+        marginRight: ICON_LABEL_GAP,
+      }}
+    >
+      {!isTotal && <RowIconImages icons={rowIconsOf(row.icon)} size={size} />}
+    </span>
   );
 }
 

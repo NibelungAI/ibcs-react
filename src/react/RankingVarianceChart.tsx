@@ -1,4 +1,4 @@
-import { forwardRef, useId, useMemo, type CSSProperties } from "react";
+import { forwardRef, useId, useMemo, type CSSProperties, type ReactNode } from "react";
 import { SCENARIO_KEYS, type ScenarioKey } from "../core/types";
 import type { IbcsTokensOverride } from "../core/tokens";
 import { deltaHeading, scenarioHeadings, type IbcsLabelsOverride } from "../core/labels";
@@ -20,8 +20,16 @@ import {
   type FormatOptions,
 } from "../core/format";
 import { resolveValueBand } from "../core/reference";
+import {
+  ROW_ICON_MAX_PX,
+  fitRowIcons,
+  rowIconsOf,
+  rowIconsWidth,
+  type RowIcon,
+} from "../core/rowIcon";
 import { ErrorBar } from "./ErrorBar";
 import { ValueBandRects } from "./internal/valueBand";
+import { RowIconImagesSvg } from "./internal/rowIcons";
 import { bandScale, resolveBandPadding, type BandPadding } from "../core/bandScale";
 import { useMountGrow, useDataTween, useChartHover } from "./hooks";
 import type { ChartHover } from "./hooks";
@@ -32,6 +40,13 @@ import { clampTo, estTextW, fitLabel, svgSafeId } from "./internal/text";
 import { useIbcsLabels, useIbcsTokens } from "./theme";
 
 export type { RankingBand, RankingDatum } from "../core/rankingVariance";
+
+/** The smallest row icon drawn, in px. */
+const ICON_MIN = 8;
+/** The space between a row's icon slot and its label. */
+const ICON_LABEL_GAP = 6;
+/** The room a label keeps beside its icons: chips that would leave less are left out. */
+const MIN_LABEL_TEXT = 24;
 
 export interface RankingVarianceChartProps {
   /**
@@ -57,6 +72,24 @@ export interface RankingVarianceChartProps {
   width?: number;
   /** Height of each entity row, in px. Default 26. */
   rowHeight?: number;
+  /**
+   * The size of the row icons (a datum's `icon`), and of the box
+   * `renderIcon` fills, in CSS px: default 20 (less on rows under 26 px), at
+   * least 8, at most the row height minus 4 and never above 56. An icon is
+   * never drawn above its own `naturalSize`. The label column grows by the
+   * widest row's icons; chips that would leave its label less than 24 px are
+   * left out, from the end.
+   */
+  iconSize?: number;
+  /**
+   * An svg element for a row's icon slot, in place of its datum's `icon`:
+   * drawn in a `size` × `size` box whose top-left corner is the origin (the
+   * chart translates it to the start of the row's label). Return null to fall
+   * back to the `icon`. It is part of the chart's image, so its text is not
+   * read: the row's label (and its icons' `alt`) name the row in the
+   * screen-reader table.
+   */
+  renderIcon?: (row: RankingRow, size: number) => ReactNode;
   /**
    * Vertical band layout - the row spacing and the top/bottom gutter of the row
    * body. Omit for the default (rows packed flush, top to bottom); pass e.g.
@@ -151,6 +184,8 @@ export const RankingVarianceChart = forwardRef<SVGSVGElement, RankingVarianceCha
       clampPct = 100,
       width = 640,
       rowHeight = 26,
+      iconSize,
+      renderIcon,
       bandPadding,
       format = {},
       tokens: tokenOverride,
@@ -219,9 +254,58 @@ export const RankingVarianceChart = forwardRef<SVGSVGElement, RankingVarianceCha
     // a top/bottom gutter (e.g. `{ inner: 0.2 }`) without changing the default.
     const rowScale = bandScale(bodyH, n, resolveBandPadding(1, bandPadding), bodyTop);
 
+    // Below this row height even the floor font would overlap vertically; drop
+    // per-row text (and icons) and keep just the (non-overlapping) bars/pins.
+    // (`rowH` is at least 14 above, so this guards a lower floor if one comes.)
+    const showRowText = rowH >= 13;
+
     // --- horizontal layout: label | AC panel | gap | ΔPL panel | gap | ΔPL% ----
     const innerW = width - padL - padR;
-    const labelW = Math.max(56, Math.min(168, innerW * 0.26));
+    const baseLabelW = Math.max(56, Math.min(168, innerW * 0.26));
+
+    // Row icons: one size, and a slot before the labels as wide as the widest
+    // row's icons (or the `renderIcon` box), which the label column grows by,
+    // up to 40% of the chart. Chips that would leave a label under
+    // MIN_LABEL_TEXT are left out, from the end. With neither, the slot is 0
+    // and the layout is 1.5's.
+    const iconMax = Math.min(ROW_ICON_MAX_PX, rowH - 4);
+    const iconPx =
+      !showRowText || iconMax < ICON_MIN
+        ? 0
+        : Math.min(
+            iconMax,
+            Math.max(
+              ICON_MIN,
+              Math.round(Number.isFinite(iconSize) ? iconSize! : Math.min(20, rowH - 6)),
+            ),
+          );
+    const iconElements = rows.map((r) => {
+      const el = iconPx > 0 && renderIcon ? renderIcon(r, iconPx) : null;
+      return el == null || typeof el === "boolean" ? null : el;
+    });
+    const iconLists = rows.map((r) => (iconPx > 0 ? rowIconsOf(r.icon) : []));
+    const slotOf = (i: number, icons: readonly RowIcon[]) =>
+      iconElements[i] != null ? iconPx : rowIconsWidth(icons, iconPx);
+    const wantSlot = rows.reduce((w, _, i) => Math.max(w, slotOf(i, iconLists[i]!)), 0);
+    const labelCap = Math.max(baseLabelW, innerW * 0.4);
+    const maxSlot =
+      Math.min(baseLabelW + wantSlot + ICON_LABEL_GAP, labelCap) -
+      6 -
+      ICON_LABEL_GAP -
+      MIN_LABEL_TEXT;
+    const rowIcons = iconLists.map((list) => fitRowIcons(list, iconPx, maxSlot));
+    const drawsElement = (i: number) => iconElements[i] != null && iconPx <= maxSlot;
+    const slotW =
+      wantSlot > 0
+        ? rows.reduce(
+            (w, _, i) =>
+              Math.max(w, drawsElement(i) ? iconPx : rowIconsWidth(rowIcons[i]!, iconPx)),
+            0,
+          )
+        : 0;
+    const labelW = slotW > 0 ? Math.min(baseLabelW + slotW + ICON_LABEL_GAP, labelCap) : baseLabelW;
+    // Where a row's label (and the total's) starts: past the slot.
+    const labelInset = slotW > 0 ? slotW + ICON_LABEL_GAP : 0;
     const gap = 10;
     const avail = Math.max(innerW - labelW - gap * 2, 60);
     const acPanelW = avail * 0.44;
@@ -241,9 +325,6 @@ export const RankingVarianceChart = forwardRef<SVGSVGElement, RankingVarianceCha
 
     const valFont = Math.max(9, Math.min(11, rowH * 0.46));
     const labelFont = Math.max(9, Math.min(12, rowH * 0.5));
-    // Below this row height even the floor font would overlap vertically; drop
-    // per-row text and keep just the (non-overlapping) bars/pins.
-    const showRowText = rowH >= 13;
 
     // AC bars grow from the left axis; reference frame is a touch taller so its
     // outline stays visible around the solid AC bar.
@@ -539,7 +620,10 @@ export const RankingVarianceChart = forwardRef<SVGSVGElement, RankingVarianceCha
       deltaHeading(words, baseName, true),
     ];
     const a11yRows: ChartDataRow[] = rows.map((r) => ({
-      label: r.label,
+      // An icon's `alt` is read before the label, as a table's markup reads it.
+      label: [...rowIconsOf(r.icon).map((icon) => icon.alt ?? ""), r.label]
+        .filter(Boolean)
+        .join(" "),
       cells: [
         formatInterval(r.ac, r.acError, format),
         formatValue(r.base, format),
@@ -779,14 +863,22 @@ export const RankingVarianceChart = forwardRef<SVGSVGElement, RankingVarianceCha
                     fill="transparent"
                   />
                 )}
+                {slotW > 0 &&
+                  (drawsElement(i) ? (
+                    <g transform={`translate(${labelX0} ${Math.round(cy - iconPx / 2)})`}>
+                      {iconElements[i]}
+                    </g>
+                  ) : (
+                    <RowIconImagesSvg icons={rowIcons[i]!} size={iconPx} x={labelX0} cy={cy} />
+                  ))}
                 {showRowText && (
                   <text
-                    x={labelX0}
+                    x={labelX0 + labelInset}
                     y={cy + labelFont * 0.34}
                     fontSize={labelFont}
-                    fill={tokens.color.text}
+                    fill={r.labelColor ?? tokens.color.text}
                   >
-                    {fitLabel(r.label, labelW - 6, labelFont)}
+                    {fitLabel(r.label, labelW - 6 - labelInset, labelFont)}
                     <title>{r.label}</title>
                   </text>
                 )}
@@ -823,7 +915,7 @@ export const RankingVarianceChart = forwardRef<SVGSVGElement, RankingVarianceCha
                 return (
                   <>
                     <text
-                      x={labelX0}
+                      x={labelX0 + labelInset}
                       y={cy + labelFont * 0.34}
                       fontSize={labelFont}
                       fontWeight={700}

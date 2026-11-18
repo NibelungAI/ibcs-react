@@ -52,8 +52,9 @@ import {
   ChartDataTable,
   ExportMenu,
   ErrorBar,
+  HistogramChart,
 } from "../index";
-import type { DataTableColumn, DataTableRow, RankingDatum } from "../../index";
+import type { DataTableColumn, DataTableRow, RankingDatum, RowIcon } from "../../index";
 
 /* ------------------------------------------------------------------ *
  * Tiny shared data fixtures (reused across many charts).
@@ -157,6 +158,17 @@ const dataTableRows = [
   { id: "emea", label: "EMEA", values: { revenue: { AC: 120, PY: 100 } } },
   { id: "amer", label: "Americas", values: { revenue: { AC: 90, PY: 95 } } },
 ];
+
+/**
+ * A deterministic, roughly normal sample (a simulation's DPS per fight): the
+ * mean of four LCG uniforms (Irwin-Hall), scaled. Exact IEEE arithmetic only,
+ * so every platform bins it the same way.
+ */
+function fightSample(n: number, mean: number, sd: number, seed: number): number[] {
+  let s = seed;
+  const u = () => (s = (s * 1664525 + 1013904223) % 4294967296) / 4294967296;
+  return Array.from({ length: n }, () => mean + sd * (u() + u() + u() + u() - 2) * Math.sqrt(3));
+}
 
 /* ------------------------------------------------------------------ *
  * One case per exported component.
@@ -496,6 +508,11 @@ export const cases: SmokeCase[] = [
       </svg>
     ),
   },
+  {
+    // Raw values: binned by the rule, the middle half as the default spread.
+    name: "HistogramChart",
+    element: <HistogramChart values={fightSample(1000, 910, 30, 11)} width={400} height={240} />,
+  },
 ];
 
 /* ------------------------------------------------------------------ *
@@ -599,6 +616,145 @@ const drift = [
   { category: "Fire", AC: 860.1, PY: 859.8, acError: 1.0, absError: 0.7 },
 ];
 
+/**
+ * Row icons for the fixtures: plain svg glyphs drawn here as 56 px `data:`
+ * URIs, so every suite renders them offline and the same way. Not game art.
+ */
+function glyph(background: string, shape: string): string {
+  return `data:image/svg+xml,${encodeURIComponent(
+    `<svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 56 56"><rect width="56" height="56" fill="${background}"/>${shape}</svg>`,
+  )}`;
+}
+const icons = {
+  arrow: glyph(
+    "#24382c",
+    '<path d="M13 43 L41 15 M27 15 H41 V29" stroke="#d3e6b5" stroke-width="5" fill="none"/>',
+  ),
+  blade: glyph(
+    "#2f3d4a",
+    '<path d="M15 41 L40 16" stroke="#e9dcb0" stroke-width="6" stroke-linecap="round"/><path d="M13 33 L23 43" stroke="#c7a35a" stroke-width="5"/>',
+  ),
+  flame: glyph(
+    "#4a2a1f",
+    '<path d="M28 10 C40 24 40 34 28 46 C16 34 18 24 28 10Z" fill="#f0a23a"/>',
+  ),
+  paw: glyph(
+    "#3a3026",
+    '<circle cx="28" cy="33" r="9" fill="#d9c3a0"/><circle cx="17" cy="21" r="5" fill="#d9c3a0"/><circle cx="28" cy="16" r="5" fill="#d9c3a0"/><circle cx="39" cy="21" r="5" fill="#d9c3a0"/>',
+  ),
+  ring: glyph(
+    "#3d2f4a",
+    '<circle cx="28" cy="30" r="12" fill="none" stroke="#e2c46a" stroke-width="6"/><circle cx="28" cy="16" r="4" fill="#9fd3ff"/>',
+  ),
+  greatsword: glyph(
+    "#2b3442",
+    '<path d="M28 8 V40" stroke="#dfe6ee" stroke-width="7"/><path d="M18 40 H38 M28 40 V49" stroke="#c7a35a" stroke-width="5"/>',
+  ),
+};
+/** The item qualities' frame colours used here (both hold 4.5:1 on white as text). */
+const EPIC = "#a335ee";
+const RARE = "#0070dd";
+
+/** A Quick Sim's damage by ability, with a spell icon per row and the pet's abilities grouped under it. */
+const iconAbilityRows: DataTableRow[] = [
+  {
+    id: "shoot",
+    label: "Shoot",
+    icon: { src: icons.arrow, naturalSize: 56 },
+    values: { dps: 215.037, casts: 41.647 },
+  },
+  {
+    id: "raptor",
+    label: "Raptor Strike",
+    icon: { src: icons.blade, naturalSize: 56 },
+    values: { dps: 91.041, casts: 30.2 },
+  },
+  {
+    id: "wolf",
+    label: "Wolf",
+    icon: { src: icons.paw, naturalSize: 56 },
+    values: {},
+    children: [
+      {
+        id: "bite",
+        label: "Bite",
+        icon: { src: icons.paw, naturalSize: 56 },
+        values: { dps: 48.2, casts: 22.4 },
+      },
+      {
+        id: "claw",
+        label: "Claw",
+        icon: { src: icons.paw, naturalSize: 56 },
+        values: { dps: 30.9, casts: 41.1 },
+      },
+    ],
+  },
+  // An 18 px file: drawn at 18, not stretched to the table's 20.
+  {
+    id: "trap",
+    label: "Immolation Trap",
+    icon: { src: icons.flame, naturalSize: 18 },
+    values: { dps: 31.5, casts: 6 },
+  },
+  // No icon: an empty slot keeps the label aligned.
+  { id: "melee", label: "Melee", values: { dps: 20.07, casts: 52.3 } },
+];
+const iconAbilityColumns: DataTableColumn[] = [
+  { key: "dps", label: "DPS", mark: "bar", format: { compact: false, fractionDigits: 1 } },
+  { key: "casts", label: "Casts", format: { compact: false, fractionDigits: 1 } },
+];
+
+/** Top Gear: single-item swaps named in their quality's colour, and the best set with the chips of the items it changes. */
+const ringChip: RowIcon = {
+  src: icons.ring,
+  naturalSize: 56,
+  border: EPIC,
+  alt: "Signet of Embers",
+};
+const swordChip: RowIcon = {
+  src: icons.greatsword,
+  naturalSize: 56,
+  border: RARE,
+  alt: "Runed Greatsword",
+};
+const topGearIcons: RankingDatum[] = [
+  {
+    label: "Best set",
+    AC: 914.3013,
+    base: 910.8441,
+    acError: 0.4682,
+    absError: 0.4621,
+    icon: [ringChip, swordChip],
+  },
+  {
+    label: "Signet of Embers",
+    labelColor: EPIC,
+    AC: 914.0512,
+    base: 910.8441,
+    acError: 0.4511,
+    absError: 0.4402,
+    icon: { ...ringChip, alt: "" },
+  },
+  { label: "Equipped", AC: 910.8441, base: 910.8441, acError: 0.4808, absError: 0 },
+  {
+    label: "Runed Greatsword",
+    labelColor: RARE,
+    AC: 906.2537,
+    base: 910.8441,
+    acError: 0.4951,
+    absError: 0.6408,
+    icon: { ...swordChip, alt: "" },
+  },
+];
+
+/** 6,000 fights: their mean with a 95% half-width (1.96 standard errors), computed here as an engine would. */
+const fights = fightSample(6000, 910.8, 30, 7);
+const fightsMean = fights.reduce((a, b) => a + b, 0) / fights.length;
+const fightsSd = Math.sqrt(
+  fights.reduce((a, b) => a + (b - fightsMean) ** 2, 0) / (fights.length - 1),
+);
+const fightsHalf = (1.959964 * fightsSd) / Math.sqrt(fights.length);
+
 export const featureCases: SmokeCase[] = [
   {
     name: "VarianceColumnChart-errors",
@@ -633,5 +789,67 @@ export const featureCases: SmokeCase[] = [
   {
     name: "DataTable-errors-band",
     element: <DataTable columns={topGearColumns} rows={topGearRows} />,
+  },
+  {
+    name: "DataTable-icons",
+    element: <DataTable columns={iconAbilityColumns} rows={iconAbilityRows} showTotals />,
+  },
+  {
+    name: "RankingVarianceChart-icons",
+    element: (
+      <RankingVarianceChart
+        data={topGearIcons}
+        sortBy="value"
+        baseLabel="Equipped"
+        format={{ compact: false, fractionDigits: 2 }}
+        labels={{ scenario: { AC: "DPS" } }}
+        showTotals={false}
+        width={640}
+      />
+    ),
+  },
+  {
+    // The mean's interval against the middle half of the fights, in sr-Latn
+    // with one digit and the caller's words.
+    name: "HistogramChart-mean-spread",
+    element: (
+      <HistogramChart
+        title="DPS po borbi"
+        values={fights}
+        mean={{ value: fightsMean, halfWidth: fightsHalf, level: 0.95 }}
+        format={{ compact: false, locale: "sr-Latn", fractionDigits: 1 }}
+        labels={{
+          mean: "prosek {value}",
+          spread: "srednja polovina borbi {range}",
+          sampleSize: "{n} borbi",
+          count: "Borbi",
+          share: "Udeo",
+        }}
+        width={480}
+        height={280}
+      />
+    ),
+  },
+  {
+    // Twelve classes as an engine would return them (made-up figures, n =
+    // 1,894), hatched (FC), with a spread of the caller's - the 10th to the
+    // 90th percentile - named in the caller's words.
+    name: "HistogramChart-engine-bins",
+    element: (
+      <HistogramChart
+        bins={{
+          start: 850,
+          width: 10,
+          counts: [4, 19, 61, 152, 288, 401, 395, 301, 170, 72, 25, 6],
+        }}
+        mean={{ value: 909.6, halfWidth: 0.7 }}
+        spread={{ from: 877.2, to: 942.4 }}
+        scenario="FC"
+        format={{ compact: false, fractionDigits: 1 }}
+        labels={{ spread: "10th to 90th percentile {range}" }}
+        width={480}
+        height={240}
+      />
+    ),
   },
 ];

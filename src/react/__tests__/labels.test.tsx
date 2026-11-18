@@ -23,6 +23,7 @@ import {
   ConformanceReport,
   DataTable,
   ExportMenu,
+  HistogramChart,
   IbcsThemeProvider,
   MatrixTable,
   MiniVarianceMultiples,
@@ -190,6 +191,7 @@ describe("labels reach every fixed word", () => {
       "BarVarianceWaterfallChart",
       "ColumnVarianceWaterfallChart",
       "GroupedVarianceChart",
+      "HistogramChart",
       "HorizontalWaterfallChart",
       "IntegratedVarianceChart",
       "PieChart",
@@ -495,6 +497,35 @@ describe("labels in interactive and conditional states", () => {
     expect(html).toContain(">Razlika plan<");
     expect(html).toContain(">Razlika plan u %<");
     expect(html).not.toContain("Δ");
+  });
+
+  it("writes every HistogramChart word - mean, spread, n, count, share - from the dictionary", () => {
+    const sentinels = sentinelLabels();
+    const element = (
+      <HistogramChart
+        values={[1, 2, 2, 3, 3, 3, 4, 4, 5]}
+        binning={{ bins: 5 }}
+        mean={{ value: 3, halfWidth: 0.4, level: 0.95 }}
+        title="DPS"
+      />
+    );
+    // The defaults, unreplaced: each of the five words is there to be replaced.
+    const plain = render(element);
+    const plainText = plain.container.textContent ?? "";
+    for (const word of ["Mean 3.00", "Middle half 2–4", "n = 9", "Count", "Share"]) {
+      expect(plainText).toContain(word);
+    }
+    cleanup();
+    const html = renderToStaticMarkup(
+      <IbcsThemeProvider labels={sentinels}>{element}</IbcsThemeProvider>,
+    );
+    const { texts, attributes } = heardStrings(html);
+    expect([...texts, ...attributes].flatMap(offendersIn)).toEqual([]);
+    // Not vacuous: the sentinels took the five words' places.
+    for (const path of ["mean", "spread", "sampleSize", "count", "share"] as const) {
+      const word = sentinels[path].split(" ")[0]!;
+      expect(texts.some((t) => t.startsWith(word))).toBe(true);
+    }
   });
 
   it("lays TrendChart's legend out for longer words without overlap", () => {

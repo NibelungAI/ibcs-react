@@ -17,11 +17,24 @@
 import { computeVariance } from "./variance";
 import { halfWidthOf } from "./errorBar";
 import type { ValueBand } from "./reference";
+import type { RowIcon } from "./rowIcon";
 
 /** One input entity: an actual value and the plan / prior value to compare it against. */
 export interface RankingDatum {
   /** Entity label (state, product, region …). */
   label: string;
+  /**
+   * A small picture before the label - an item icon, a portrait - or several,
+   * left to right, as chips (the items a variant changes). Drawn at the
+   * chart's `iconSize`, never above the image's own `naturalSize`; an icon's
+   * `alt` joins the label in the screen-reader table. See {@link RowIcon}.
+   */
+  icon?: RowIcon | readonly RowIcon[];
+  /**
+   * The label's colour - e.g. an item's quality colour. Default the theme's
+   * text colour. Pick one that keeps enough contrast on the chart's surface.
+   */
+  labelColor?: string;
   /** Actual value (AC). */
   AC: number;
   /** Plan / reference value the actual is compared against (PL or PY). */
@@ -64,6 +77,10 @@ export interface RankingBand extends ValueBand {
 /** One ranked, variance-resolved row. */
 export interface RankingRow {
   label: string;
+  /** The datum's `icon`, as given (present only when the datum has one). */
+  icon?: RowIcon | readonly RowIcon[];
+  /** The datum's `labelColor` (present only when the datum has one). */
+  labelColor?: string;
   /** Actual value (sanitized to a finite number). */
   ac: number;
   /** Plan / reference value (sanitized). */
@@ -176,6 +193,8 @@ export function computeRankingVariance(
     if (acError != null) row.acError = acError;
     if (absError != null) row.absError = absError;
     if (pctError != null) row.pctError = pctError;
+    if (d.icon != null) row.icon = d.icon;
+    if (d.labelColor != null) row.labelColor = d.labelColor;
     return row;
   });
 

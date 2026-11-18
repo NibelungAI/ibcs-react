@@ -10,7 +10,8 @@
  * (`totalsLabel`, `baseLabel`, `emptyMessage`, ...) still win over both.
  *
  * The defaults are the library's IBCS English, byte for byte as 1.4 wrote
- * them, so nothing changes until you pass words of your own.
+ * them (the words of components added since, such as `HistogramChart`'s, are
+ * new), so nothing changes until you pass words of your own.
  *
  * Two things live elsewhere on purpose:
  *  - the text for a missing number ("n/a") belongs to the number format -
@@ -84,8 +85,24 @@ export interface IbcsLabels {
   value: string;
   /** Numbered value columns of `SmallMultiples`' table. Default "Value {n}". */
   valueNumbered: string;
-  /** Share of the whole (pie, structure). Default "Share". */
+  /** Share of the whole (pie, structure, a histogram class's share of n). Default "Share". */
   share: string;
+  /** The number of values in a histogram class (table column, tooltip). Default "Count". */
+  count: string;
+  /**
+   * `HistogramChart`'s mean label: `{value}` is the mean with its interval,
+   * and the interval's level when given ("910.8 ± 0.9 (95%)"). Default
+   * "Mean {value}".
+   */
+  mean: string;
+  /**
+   * `HistogramChart`'s caption of its spread band: `{range}` is "from–to".
+   * Default "Middle half {range}", which names the default spread (the first
+   * to the third quartile); a spread of your own needs its own words here.
+   */
+  spread: string;
+  /** `HistogramChart`'s number of values. Default "n = {n}". */
+  sampleSize: string;
   /** The latest value of `RatioTreeChart`. Default "Latest". */
   latest: string;
   /** A bridge step's own size (waterfalls). Default "Contribution". */
@@ -177,7 +194,7 @@ export interface IbcsLabels {
   export: IbcsExportLabels;
 }
 
-/** The 1.4 words, byte for byte. */
+/** The 1.4 words, byte for byte, and the words of components added since (`count`, `mean`, `spread`, `sampleSize`). */
 export const defaultLabels: IbcsLabels = {
   scenario: { AC: "AC", PY: "PY", PL: "PL", FC: "FC" },
   scenarioTitle: { AC: "Actual", PY: "PY", PL: "Plan / budget", FC: "Forecast" },
@@ -190,6 +207,10 @@ export const defaultLabels: IbcsLabels = {
   value: "Value",
   valueNumbered: "Value {n}",
   share: "Share",
+  count: "Count",
+  mean: "Mean {value}",
+  spread: "Middle half {range}",
+  sampleSize: "n = {n}",
   latest: "Latest",
   contribution: "Contribution",
   runningTotal: "Running total",
