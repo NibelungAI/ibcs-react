@@ -27,3 +27,14 @@ export const Absolute: Story = {};
 export const Percent: Story = { args: { variance: "pct" } };
 export const NoPanel: Story = { args: { variance: "none" } };
 export const LinesOnly: Story = { args: { variance: "none", showValueLabels: false } };
+
+/** Labelled periods: above their columns' value labels, tied to them. */
+export const Callouts: Story = {
+  args: {
+    variance: "none",
+    callouts: [
+      { index: 2, label: "New pricing" },
+      { index: 7, label: "Campaign" },
+    ],
+  },
+};

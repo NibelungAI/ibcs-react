@@ -4,6 +4,7 @@ description: A many-period time series - AC solid / FC hatched columns, PY & PL 
 ---
 
 import { TrendChart } from "ibcs-react";
+import { runs } from "@/lib/demo-data/marks";
 
 Actuals as solid columns, forecast periods hatched, prior year and plan drawn
 as reference lines over them, and a variance panel underneath. A `summary` row
@@ -135,6 +136,46 @@ monthly average, say) shares the scale and gets no break.
   comparison="PY"
 />
 ```
+
+### Point callouts
+
+`callouts` label the periods you name - a gear change in a run of results.
+A column's callout is written above its value label (below a negative
+column), tied to it by a short line; one with `series: "PY"` or `"PL"`
+labels that reference line's point, marked with a dot:
+
+<Frame center>
+  <TrendChart
+    title="DPS per run"
+    data={runs.slice(0, 13).map((d, i) => ({ category: `R${i + 1}`, AC: d.AC }))}
+    variance="none"
+    referenceLines={[]}
+    format={{ compact: false, fractionDigits: 0 }}
+    callouts={[
+      { index: 4, label: "T1 helm" },
+      { index: 11, label: "Signet of Embers" },
+    ]}
+    width={680}
+    height={300}
+  />
+</Frame>
+
+```tsx
+<TrendChart
+  data={runs}
+  callouts={[
+    { index: 4, label: "T1 helm" },
+    { index: 11, label: "Signet of Embers" },
+  ]}
+/>
+```
+
+Labels are placed clear of every column, value label, line and other
+callout, moved away with a leader where they must be. The plot keeps room
+above its tallest column for them (and below its lowest, for a negative
+column's callout), and grows that room, at most twice, before it writes a
+callout as a numbered note under the chart. The screen-reader table carries
+each callout's text in its period's row (`labels.note`).
 
 ## Props
 

@@ -19,6 +19,8 @@
     "ranking-variance",
     "error-bar",
     "histogram",
+    "range-bar",
+    "timeline",
     "variance-area",
     "pie-chart",
     "horizontal-waterfall",

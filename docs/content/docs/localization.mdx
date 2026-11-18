@@ -128,14 +128,18 @@ the nearest provider's, then `defaultLabels` - the library's IBCS English. A
 scenario's word from `labels`. Entries such as `"Point {n}"`, `"+{count} more"`,
 the variance headers `delta` ("Δ{base}") and `deltaPct` ("Δ{base}%"),
 `HistogramChart`'s `mean` ("Mean {value}"), `spread` ("Middle half {range}")
-and `sampleSize` ("n = {n}") or the ranking chart's `moreIcons` ("+{count}")
-are templates: keep the placeholders in your words and the component fills
-them in.
+and `sampleSize` ("n = {n}"), the ranking chart's `moreIcons` ("+{count}") or
+a `LineChart` fan's `band` ("Band {n}") are templates: keep the placeholders
+in your words and the component fills them in. `TimelineChart` writes
+`events`, `event`, `active` and `waiting`; `RangeBarChart` writes `rangeLow`,
+`rangeMark` and `rangeHigh` ("p10", "Mean", "p90" for a percentile range);
+the callouts of `LineChart` and `TrendChart` name their table column `note`.
 
 A full translation can be typed `IbcsLabelsComplete`, which requires every
-word, so the compiler names the words a new version adds. `IbcsLabels` itself
-keeps the words added after 1.5.0 optional - the defaults fill the ones a
-dictionary lacks - so a dictionary written for 1.5.0 still compiles.
+word, so the compiler names the words a new version adds - 1.7 adds nine.
+`IbcsLabels` itself keeps the words added after 1.5.0 optional - the
+defaults fill the ones a dictionary lacks - so a dictionary written for 1.5.0
+or 1.6.0 still compiles.
 `defaultLabels`, `mergeLabels` and `useIbcsLabels` keep the type `IbcsLabels`
 as well, though their values hold every word.
 
