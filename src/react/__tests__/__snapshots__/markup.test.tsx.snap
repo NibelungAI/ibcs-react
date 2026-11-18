@@ -1281,6 +1281,224 @@ exports[`component markup snapshots > DataTable-errors-band renders stable marku
 </div>"
 `;
 
+exports[`component markup snapshots > DataTable-icons renders stable markup 1`] = `
+"<div style="position:relative;min-width:0;font-family:ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif">
+<style>
+.ibcs-dtbl tbody td, .ibcs-dtbl tbody th { transition: background 90ms }
+.ibcs-dtbl tbody tr:hover td, .ibcs-dtbl tbody tr:hover th { background: rgba(0,0,0,0.025) }
+.ibcs-dtbl-sort { font: inherit; color: inherit; letter-spacing: inherit; background: none; border: 0; padding: 0; margin: 0; cursor: pointer; white-space: nowrap }
+.ibcs-dtbl-sort:focus-visible { outline: 2px solid currentColor; outline-offset: 2px }
+@media (prefers-reduced-motion: reduce) { .ibcs-dtbl tbody td, .ibcs-dtbl tbody th { transition: none } }
+</style>
+<div style="overflow-x:auto;max-width:100%">
+<table class="ibcs-dtbl" style="border-collapse:collapse;width:100%;min-width:min-content">
+<thead>
+<tr style="border-bottom:2px solid #2b2b29">
+<th scope="col" style="font-size:11px;font-weight:600;color:#6b6a64;padding:0 10px 8px;white-space:nowrap;user-select:none;text-align:left"> </th>
+<th scope="col" style="font-size:11px;font-weight:600;color:#6b6a64;padding:0 10px 8px;white-space:nowrap;user-select:none;text-align:right;width:160px">
+<button type="button" class="ibcs-dtbl-sort">DPS</button>
+</th>
+<th scope="col" style="font-size:11px;font-weight:600;color:#6b6a64;padding:0 10px 8px;white-space:nowrap;user-select:none;text-align:right;width:96px">
+<button type="button" class="ibcs-dtbl-sort">Casts</button>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr style="height:34px;border-top:1px solid #e6e5e0">
+<th scope="row" style="padding:0 10px;white-space:nowrap;text-align:left;font-weight:400">
+<span style="display:inline-flex;align-items:center;padding-left:0;min-width:0">
+<span style="width:16px;flex:0 0 auto">
+</span>
+<span style="display:inline-flex;align-items:center;flex:0 0 auto;width:20px;margin-right:6px">
+<span style="display:flex;align-items:center;gap:2px">
+<img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2256%22%20height%3D%2256%22%20viewBox%3D%220%200%2056%2056%22%3E%3Crect%20width%3D%2256%22%20height%3D%2256%22%20fill%3D%22%2324382c%22%2F%3E%3Cpath%20d%3D%22M13%2043%20L41%2015%20M27%2015%20H41%20V29%22%20stroke%3D%22%23d3e6b5%22%20stroke-width%3D%225%22%20fill%3D%22none%22%2F%3E%3C%2Fsvg%3E" alt="" width="20" height="20" style="display:block;flex:0 0 auto;object-fit:contain"/>
+</span>
+</span>
+<span title="Shoot" style="font-size:12.5px;font-weight:400;color:#2b2b29">Shoot</span>
+</span>
+</th>
+<td style="padding:0;width:160px">
+<svg width="160" height="34" style="display:block">
+<line x1="8" y1="3" x2="8" y2="31" stroke="#c9c8c2" stroke-width="0.75">
+</line>
+<rect x="8" y="10.5" width="96.5" height="13" fill="#54534e">
+</rect>
+<text x="150" y="21.5" text-anchor="end" font-size="12.5" font-weight="400" fill="#2b2b29">215.0</text>
+</svg>
+</td>
+<td style="padding:0;width:96px">
+<div style="font-size:12.5px;padding:0 10px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;font-weight:400;color:#2b2b29">41.6</div>
+</td>
+</tr>
+<tr style="height:34px;border-top:1px solid #e6e5e0">
+<th scope="row" style="padding:0 10px;white-space:nowrap;text-align:left;font-weight:400">
+<span style="display:inline-flex;align-items:center;padding-left:0;min-width:0">
+<span style="width:16px;flex:0 0 auto">
+</span>
+<span style="display:inline-flex;align-items:center;flex:0 0 auto;width:20px;margin-right:6px">
+<span style="display:flex;align-items:center;gap:2px">
+<img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2256%22%20height%3D%2256%22%20viewBox%3D%220%200%2056%2056%22%3E%3Crect%20width%3D%2256%22%20height%3D%2256%22%20fill%3D%22%232f3d4a%22%2F%3E%3Cpath%20d%3D%22M15%2041%20L40%2016%22%20stroke%3D%22%23e9dcb0%22%20stroke-width%3D%226%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M13%2033%20L23%2043%22%20stroke%3D%22%23c7a35a%22%20stroke-width%3D%225%22%2F%3E%3C%2Fsvg%3E" alt="" width="20" height="20" style="display:block;flex:0 0 auto;object-fit:contain"/>
+</span>
+</span>
+<span title="Raptor Strike" style="font-size:12.5px;font-weight:400;color:#2b2b29">Raptor Strike</span>
+</span>
+</th>
+<td style="padding:0;width:160px">
+<svg width="160" height="34" style="display:block">
+<line x1="8" y1="3" x2="8" y2="31" stroke="#c9c8c2" stroke-width="0.75">
+</line>
+<rect x="8" y="10.5" width="40.85555741570055" height="13" fill="#54534e">
+</rect>
+<text x="150" y="21.5" text-anchor="end" font-size="12.5" font-weight="400" fill="#2b2b29">91.0</text>
+</svg>
+</td>
+<td style="padding:0;width:96px">
+<div style="font-size:12.5px;padding:0 10px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;font-weight:400;color:#2b2b29">30.2</div>
+</td>
+</tr>
+<tr style="height:34px;border-top:1px solid #e6e5e0">
+<th scope="row" style="padding:0 10px;white-space:nowrap;text-align:left;font-weight:400">
+<span style="display:inline-flex;align-items:center;padding-left:0;min-width:0">
+<button type="button" aria-label="Collapse" aria-expanded="true" style="border:none;background:none;cursor:pointer;padding:0;margin-right:4px;width:12px;flex:0 0 auto;color:#6b6a64;font-size:10px;line-height:1;transition:transform 120ms;transform:rotate(90deg)">▶</button>
+<span style="display:inline-flex;align-items:center;flex:0 0 auto;width:20px;margin-right:6px">
+<span style="display:flex;align-items:center;gap:2px">
+<img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2256%22%20height%3D%2256%22%20viewBox%3D%220%200%2056%2056%22%3E%3Crect%20width%3D%2256%22%20height%3D%2256%22%20fill%3D%22%233a3026%22%2F%3E%3Ccircle%20cx%3D%2228%22%20cy%3D%2233%22%20r%3D%229%22%20fill%3D%22%23d9c3a0%22%2F%3E%3Ccircle%20cx%3D%2217%22%20cy%3D%2221%22%20r%3D%225%22%20fill%3D%22%23d9c3a0%22%2F%3E%3Ccircle%20cx%3D%2228%22%20cy%3D%2216%22%20r%3D%225%22%20fill%3D%22%23d9c3a0%22%2F%3E%3Ccircle%20cx%3D%2239%22%20cy%3D%2221%22%20r%3D%225%22%20fill%3D%22%23d9c3a0%22%2F%3E%3C%2Fsvg%3E" alt="" width="20" height="20" style="display:block;flex:0 0 auto;object-fit:contain"/>
+</span>
+</span>
+<span title="Wolf" style="font-size:12.5px;font-weight:400;color:#2b2b29">Wolf</span>
+</span>
+</th>
+<td style="padding:0;width:160px">
+<div style="font-size:12.5px;padding:0 10px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;font-weight:400;color:#2b2b29">79.1</div>
+</td>
+<td style="padding:0;width:96px">
+<div style="font-size:12.5px;padding:0 10px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;font-weight:400;color:#2b2b29">63.5</div>
+</td>
+</tr>
+<tr style="height:34px;border-top:1px solid #e6e5e0">
+<th scope="row" style="padding:0 10px;white-space:nowrap;text-align:left;font-weight:400">
+<span style="display:inline-flex;align-items:center;padding-left:16px;min-width:0">
+<span style="width:16px;flex:0 0 auto">
+</span>
+<span style="display:inline-flex;align-items:center;flex:0 0 auto;width:20px;margin-right:6px">
+<span style="display:flex;align-items:center;gap:2px">
+<img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2256%22%20height%3D%2256%22%20viewBox%3D%220%200%2056%2056%22%3E%3Crect%20width%3D%2256%22%20height%3D%2256%22%20fill%3D%22%233a3026%22%2F%3E%3Ccircle%20cx%3D%2228%22%20cy%3D%2233%22%20r%3D%229%22%20fill%3D%22%23d9c3a0%22%2F%3E%3Ccircle%20cx%3D%2217%22%20cy%3D%2221%22%20r%3D%225%22%20fill%3D%22%23d9c3a0%22%2F%3E%3Ccircle%20cx%3D%2228%22%20cy%3D%2216%22%20r%3D%225%22%20fill%3D%22%23d9c3a0%22%2F%3E%3Ccircle%20cx%3D%2239%22%20cy%3D%2221%22%20r%3D%225%22%20fill%3D%22%23d9c3a0%22%2F%3E%3C%2Fsvg%3E" alt="" width="20" height="20" style="display:block;flex:0 0 auto;object-fit:contain"/>
+</span>
+</span>
+<span title="Bite" style="font-size:12.5px;font-weight:400;color:#6b6a64">Bite</span>
+</span>
+</th>
+<td style="padding:0;width:160px">
+<svg width="160" height="34" style="display:block">
+<line x1="8" y1="3" x2="8" y2="31" stroke="#c9c8c2" stroke-width="0.75">
+</line>
+<rect x="8" y="10.5" width="21.630231076512416" height="13" fill="#54534e">
+</rect>
+<text x="150" y="21.5" text-anchor="end" font-size="12.5" font-weight="400" fill="#2b2b29">48.2</text>
+</svg>
+</td>
+<td style="padding:0;width:96px">
+<div style="font-size:12.5px;padding:0 10px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;font-weight:400;color:#2b2b29">22.4</div>
+</td>
+</tr>
+<tr style="height:34px;border-top:1px solid #e6e5e0">
+<th scope="row" style="padding:0 10px;white-space:nowrap;text-align:left;font-weight:400">
+<span style="display:inline-flex;align-items:center;padding-left:16px;min-width:0">
+<span style="width:16px;flex:0 0 auto">
+</span>
+<span style="display:inline-flex;align-items:center;flex:0 0 auto;width:20px;margin-right:6px">
+<span style="display:flex;align-items:center;gap:2px">
+<img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2256%22%20height%3D%2256%22%20viewBox%3D%220%200%2056%2056%22%3E%3Crect%20width%3D%2256%22%20height%3D%2256%22%20fill%3D%22%233a3026%22%2F%3E%3Ccircle%20cx%3D%2228%22%20cy%3D%2233%22%20r%3D%229%22%20fill%3D%22%23d9c3a0%22%2F%3E%3Ccircle%20cx%3D%2217%22%20cy%3D%2221%22%20r%3D%225%22%20fill%3D%22%23d9c3a0%22%2F%3E%3Ccircle%20cx%3D%2228%22%20cy%3D%2216%22%20r%3D%225%22%20fill%3D%22%23d9c3a0%22%2F%3E%3Ccircle%20cx%3D%2239%22%20cy%3D%2221%22%20r%3D%225%22%20fill%3D%22%23d9c3a0%22%2F%3E%3C%2Fsvg%3E" alt="" width="20" height="20" style="display:block;flex:0 0 auto;object-fit:contain"/>
+</span>
+</span>
+<span title="Claw" style="font-size:12.5px;font-weight:400;color:#6b6a64">Claw</span>
+</span>
+</th>
+<td style="padding:0;width:160px">
+<svg width="160" height="34" style="display:block">
+<line x1="8" y1="3" x2="8" y2="31" stroke="#c9c8c2" stroke-width="0.75">
+</line>
+<rect x="8" y="10.5" width="13.86668340797165" height="13" fill="#54534e">
+</rect>
+<text x="150" y="21.5" text-anchor="end" font-size="12.5" font-weight="400" fill="#2b2b29">30.9</text>
+</svg>
+</td>
+<td style="padding:0;width:96px">
+<div style="font-size:12.5px;padding:0 10px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;font-weight:400;color:#2b2b29">41.1</div>
+</td>
+</tr>
+<tr style="height:34px;border-top:1px solid #e6e5e0">
+<th scope="row" style="padding:0 10px;white-space:nowrap;text-align:left;font-weight:400">
+<span style="display:inline-flex;align-items:center;padding-left:0;min-width:0">
+<span style="width:16px;flex:0 0 auto">
+</span>
+<span style="display:inline-flex;align-items:center;flex:0 0 auto;width:20px;margin-right:6px">
+<span style="display:flex;align-items:center;gap:2px">
+<img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2256%22%20height%3D%2256%22%20viewBox%3D%220%200%2056%2056%22%3E%3Crect%20width%3D%2256%22%20height%3D%2256%22%20fill%3D%22%234a2a1f%22%2F%3E%3Cpath%20d%3D%22M28%2010%20C40%2024%2040%2034%2028%2046%20C16%2034%2018%2024%2028%2010Z%22%20fill%3D%22%23f0a23a%22%2F%3E%3C%2Fsvg%3E" alt="" width="18" height="18" style="display:block;flex:0 0 auto;object-fit:contain"/>
+</span>
+</span>
+<span title="Immolation Trap" style="font-size:12.5px;font-weight:400;color:#2b2b29">Immolation Trap</span>
+</span>
+</th>
+<td style="padding:0;width:160px">
+<svg width="160" height="34" style="display:block">
+<line x1="8" y1="3" x2="8" y2="31" stroke="#c9c8c2" stroke-width="0.75">
+</line>
+<rect x="8" y="10.5" width="14.135939396475955" height="13" fill="#54534e">
+</rect>
+<text x="150" y="21.5" text-anchor="end" font-size="12.5" font-weight="400" fill="#2b2b29">31.5</text>
+</svg>
+</td>
+<td style="padding:0;width:96px">
+<div style="font-size:12.5px;padding:0 10px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;font-weight:400;color:#2b2b29">6.0</div>
+</td>
+</tr>
+<tr style="height:34px;border-top:1px solid #e6e5e0">
+<th scope="row" style="padding:0 10px;white-space:nowrap;text-align:left;font-weight:400">
+<span style="display:inline-flex;align-items:center;padding-left:0;min-width:0">
+<span style="width:16px;flex:0 0 auto">
+</span>
+<span style="display:inline-flex;align-items:center;flex:0 0 auto;width:20px;margin-right:6px">
+</span>
+<span title="Melee" style="font-size:12.5px;font-weight:400;color:#2b2b29">Melee</span>
+</span>
+</th>
+<td style="padding:0;width:160px">
+<svg width="160" height="34" style="display:block">
+<line x1="8" y1="3" x2="8" y2="31" stroke="#c9c8c2" stroke-width="0.75">
+</line>
+<rect x="8" y="10.5" width="9.006612815468966" height="13" fill="#54534e">
+</rect>
+<text x="150" y="21.5" text-anchor="end" font-size="12.5" font-weight="400" fill="#2b2b29">20.1</text>
+</svg>
+</td>
+<td style="padding:0;width:96px">
+<div style="font-size:12.5px;padding:0 10px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;font-weight:400;color:#2b2b29">52.3</div>
+</td>
+</tr>
+<tr style="height:34px;border-top:2px solid #2b2b29">
+<th scope="row" style="padding:0 10px;white-space:nowrap;text-align:left;font-weight:400">
+<span style="display:inline-flex;align-items:center;padding-left:0;min-width:0">
+<span style="width:16px;flex:0 0 auto">
+</span>
+<span style="display:inline-flex;align-items:center;flex:0 0 auto;width:20px;margin-right:6px">
+</span>
+<span title="Total" style="font-size:13px;font-weight:700;color:#2b2b29">Total</span>
+</span>
+</th>
+<td style="padding:0;width:160px">
+<div style="font-size:12.5px;padding:0 10px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;font-weight:700;color:#2b2b29">436.7</div>
+</td>
+<td style="padding:0;width:96px">
+<div style="font-size:12.5px;padding:0 10px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;font-weight:700;color:#2b2b29">193.6</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>"
+`;
+
 exports[`component markup snapshots > DataTable-magnitude-bars renders stable markup 1`] = `
 "<div style="position:relative;min-width:0;font-family:ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif">
 <style>
@@ -1692,6 +1910,827 @@ exports[`component markup snapshots > GroupedVarianceChart renders stable markup
 <td>140</td>
 <td>+10</td>
 <td>+7.1%</td>
+</tr>
+</tbody>
+</table>
+</div>"
+`;
+
+exports[`component markup snapshots > HistogramChart renders stable markup 1`] = `
+"<svg width="400" height="240" viewBox="0 0 400 240" role="img" aria-label="Histogram of 1,000 values in 21 classes" style="display:block;max-width:100%;margin-inline:auto;font-family:ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif">
+<text x="388" y="18" font-size="10.5" fill="#6b6a64" text-anchor="end">n = 1,000</text>
+<rect x="170.54353231862848" y="40" width="92.59005375258874" height="156" fill="#c9c8c2" opacity="0.38">
+</rect>
+<rect x="12.5" y="193.11111111111111" width="16.904761904761905" height="2.8888888888888857" fill="#54534e">
+</rect>
+<rect x="30.404761904761905" y="190.22222222222223" width="16.904761904761905" height="5.7777777777777715" fill="#54534e">
+</rect>
+<rect x="48.30952380952381" y="190.22222222222223" width="16.904761904761905" height="5.7777777777777715" fill="#54534e">
+</rect>
+<rect x="66.21428571428572" y="175.77777777777777" width="16.904761904761905" height="20.22222222222223" fill="#54534e">
+</rect>
+<rect x="84.11904761904762" y="171.44444444444446" width="16.904761904761905" height="24.555555555555543" fill="#54534e">
+</rect>
+<rect x="102.02380952380952" y="145.44444444444446" width="16.904761904761905" height="50.55555555555554" fill="#54534e">
+</rect>
+<rect x="119.92857142857143" y="133.88888888888889" width="16.904761904761905" height="62.111111111111114" fill="#54534e">
+</rect>
+<rect x="137.83333333333334" y="115.11111111111111" width="16.904761904761905" height="80.88888888888889" fill="#54534e">
+</rect>
+<rect x="155.73809523809524" y="67.44444444444446" width="16.904761904761905" height="128.55555555555554" fill="#54534e">
+</rect>
+<rect x="173.64285714285714" y="61.66666666666666" width="16.904761904761905" height="134.33333333333334" fill="#54534e">
+</rect>
+<rect x="191.54761904761904" y="40" width="16.904761904761905" height="156" fill="#54534e">
+</rect>
+<rect x="209.45238095238096" y="70.33333333333333" width="16.904761904761905" height="125.66666666666667" fill="#54534e">
+</rect>
+<rect x="227.35714285714286" y="42.888888888888886" width="16.904761904761905" height="153.11111111111111" fill="#54534e">
+</rect>
+<rect x="245.26190476190476" y="68.8888888888889" width="16.904761904761905" height="127.1111111111111" fill="#54534e">
+</rect>
+<rect x="263.1666666666667" y="94.88888888888889" width="16.904761904761905" height="101.11111111111111" fill="#54534e">
+</rect>
+<rect x="281.07142857142856" y="102.11111111111111" width="16.904761904761905" height="93.88888888888889" fill="#54534e">
+</rect>
+<rect x="298.9761904761905" y="138.22222222222223" width="16.904761904761905" height="57.77777777777777" fill="#54534e">
+</rect>
+<rect x="316.8809523809524" y="145.44444444444446" width="16.904761904761905" height="50.55555555555554" fill="#54534e">
+</rect>
+<rect x="334.7857142857143" y="162.77777777777777" width="16.904761904761905" height="33.22222222222223" fill="#54534e">
+</rect>
+<rect x="352.6904761904762" y="174.33333333333334" width="16.904761904761905" height="21.666666666666657" fill="#54534e">
+</rect>
+<rect x="370.5952380952381" y="187.33333333333334" width="16.904761904761905" height="8.666666666666657" fill="#54534e">
+</rect>
+<line x1="12" y1="196" x2="388" y2="196" stroke="#c9c8c2" stroke-width="1">
+</line>
+<text x="200" y="37" font-size="9.5" fill="#6b6a64" text-anchor="middle">108</text>
+<text x="12" y="209" font-size="10.5" fill="#6b6a64" text-anchor="start">817.6</text>
+<text x="388" y="209" font-size="10.5" fill="#6b6a64" text-anchor="end">989.3</text>
+<path d="M170.54353231862848,212V216H263.1335860712172V212" fill="none" stroke="#6b6a64" stroke-width="0.75">
+</path>
+<text x="216.83855919492285" y="230" font-size="11" fill="#2b2b29" text-anchor="middle">Middle half 890.0–932.3</text>
+<rect x="12" y="26" width="17.904761904761905" height="170" fill="transparent">
+</rect>
+<rect x="29.904761904761905" y="26" width="17.904761904761905" height="170" fill="transparent">
+</rect>
+<rect x="47.80952380952381" y="26" width="17.904761904761905" height="170" fill="transparent">
+</rect>
+<rect x="65.71428571428572" y="26" width="17.904761904761905" height="170" fill="transparent">
+</rect>
+<rect x="83.61904761904762" y="26" width="17.904761904761905" height="170" fill="transparent">
+</rect>
+<rect x="101.52380952380952" y="26" width="17.904761904761905" height="170" fill="transparent">
+</rect>
+<rect x="119.42857142857143" y="26" width="17.904761904761905" height="170" fill="transparent">
+</rect>
+<rect x="137.33333333333334" y="26" width="17.904761904761905" height="170" fill="transparent">
+</rect>
+<rect x="155.23809523809524" y="26" width="17.904761904761905" height="170" fill="transparent">
+</rect>
+<rect x="173.14285714285714" y="26" width="17.904761904761905" height="170" fill="transparent">
+</rect>
+<rect x="191.04761904761904" y="26" width="17.904761904761905" height="170" fill="transparent">
+</rect>
+<rect x="208.95238095238096" y="26" width="17.904761904761905" height="170" fill="transparent">
+</rect>
+<rect x="226.85714285714286" y="26" width="17.904761904761905" height="170" fill="transparent">
+</rect>
+<rect x="244.76190476190476" y="26" width="17.904761904761905" height="170" fill="transparent">
+</rect>
+<rect x="262.6666666666667" y="26" width="17.904761904761905" height="170" fill="transparent">
+</rect>
+<rect x="280.57142857142856" y="26" width="17.904761904761905" height="170" fill="transparent">
+</rect>
+<rect x="298.4761904761905" y="26" width="17.904761904761905" height="170" fill="transparent">
+</rect>
+<rect x="316.3809523809524" y="26" width="17.904761904761905" height="170" fill="transparent">
+</rect>
+<rect x="334.2857142857143" y="26" width="17.904761904761905" height="170" fill="transparent">
+</rect>
+<rect x="352.1904761904762" y="26" width="17.904761904761905" height="170" fill="transparent">
+</rect>
+<rect x="370.0952380952381" y="26" width="17.904761904761905" height="170" fill="transparent">
+</rect>
+</svg>
+<div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<table>
+<caption>Histogram - data table. Middle half 890.0–932.3. n = 1,000</caption>
+<thead>
+<tr>
+<th scope="col">
+</th>
+<th scope="col">Count</th>
+<th scope="col">Share</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">817.6–825.8</th>
+<td>2</td>
+<td>0.2%</td>
+</tr>
+<tr>
+<th scope="row">825.8–833.9</th>
+<td>4</td>
+<td>0.4%</td>
+</tr>
+<tr>
+<th scope="row">833.9–842.1</th>
+<td>4</td>
+<td>0.4%</td>
+</tr>
+<tr>
+<th scope="row">842.1–850.3</th>
+<td>14</td>
+<td>1.4%</td>
+</tr>
+<tr>
+<th scope="row">850.3–858.5</th>
+<td>17</td>
+<td>1.7%</td>
+</tr>
+<tr>
+<th scope="row">858.5–866.6</th>
+<td>35</td>
+<td>3.5%</td>
+</tr>
+<tr>
+<th scope="row">866.6–874.8</th>
+<td>43</td>
+<td>4.3%</td>
+</tr>
+<tr>
+<th scope="row">874.8–883.0</th>
+<td>56</td>
+<td>5.6%</td>
+</tr>
+<tr>
+<th scope="row">883.0–891.2</th>
+<td>89</td>
+<td>8.9%</td>
+</tr>
+<tr>
+<th scope="row">891.2–899.3</th>
+<td>93</td>
+<td>9.3%</td>
+</tr>
+<tr>
+<th scope="row">899.3–907.5</th>
+<td>108</td>
+<td>10.8%</td>
+</tr>
+<tr>
+<th scope="row">907.5–915.7</th>
+<td>87</td>
+<td>8.7%</td>
+</tr>
+<tr>
+<th scope="row">915.7–923.9</th>
+<td>106</td>
+<td>10.6%</td>
+</tr>
+<tr>
+<th scope="row">923.9–932.0</th>
+<td>88</td>
+<td>8.8%</td>
+</tr>
+<tr>
+<th scope="row">932.0–940.2</th>
+<td>70</td>
+<td>7.0%</td>
+</tr>
+<tr>
+<th scope="row">940.2–948.4</th>
+<td>65</td>
+<td>6.5%</td>
+</tr>
+<tr>
+<th scope="row">948.4–956.6</th>
+<td>40</td>
+<td>4.0%</td>
+</tr>
+<tr>
+<th scope="row">956.6–964.7</th>
+<td>35</td>
+<td>3.5%</td>
+</tr>
+<tr>
+<th scope="row">964.7–972.9</th>
+<td>23</td>
+<td>2.3%</td>
+</tr>
+<tr>
+<th scope="row">972.9–981.1</th>
+<td>15</td>
+<td>1.5%</td>
+</tr>
+<tr>
+<th scope="row">981.1–989.3</th>
+<td>6</td>
+<td>0.6%</td>
+</tr>
+</tbody>
+</table>
+</div>"
+`;
+
+exports[`component markup snapshots > HistogramChart-engine-bins renders stable markup 1`] = `
+"<svg width="480" height="240" viewBox="0 0 480 240" role="img" aria-label="Histogram of 1,894 values in 12 classes" style="display:block;max-width:100%;margin-inline:auto;font-family:ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif">
+<defs>
+<pattern id="ID1" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+<line x1="0" y1="0" x2="0" y2="5" stroke="#54534e" stroke-width="1">
+</line>
+</pattern>
+</defs>
+<text x="468" y="18" font-size="10.5" fill="#6b6a64" text-anchor="end">n = 1,894</text>
+<rect x="115.36000000000017" y="70" width="247.7599999999997" height="126" fill="#c9c8c2" opacity="0.38">
+</rect>
+<rect x="12.5" y="194.7431421446384" width="37" height="1.256857855361602" fill="url(#ID1)" stroke="#54534e" stroke-width="1">
+</rect>
+<rect x="50.5" y="190.02992518703243" width="37" height="5.970074812967567" fill="url(#ID1)" stroke="#54534e" stroke-width="1">
+</rect>
+<rect x="88.5" y="176.83291770573567" width="37" height="19.167082294264333" fill="url(#ID1)" stroke="#54534e" stroke-width="1">
+</rect>
+<rect x="126.5" y="148.23940149625935" width="37" height="47.76059850374065" fill="url(#ID1)" stroke="#54534e" stroke-width="1">
+</rect>
+<rect x="164.5" y="105.50623441396509" width="37" height="90.49376558603491" fill="url(#ID1)" stroke="#54534e" stroke-width="1">
+</rect>
+<rect x="202.5" y="70" width="37" height="126" fill="url(#ID1)" stroke="#54534e" stroke-width="1">
+</rect>
+<rect x="240.5" y="71.88528678304239" width="37" height="124.11471321695761" fill="url(#ID1)" stroke="#54534e" stroke-width="1">
+</rect>
+<rect x="278.5" y="101.4214463840399" width="37" height="94.5785536159601" fill="url(#ID1)" stroke="#54534e" stroke-width="1">
+</rect>
+<rect x="316.5" y="142.58354114713217" width="37" height="53.416458852867834" fill="url(#ID1)" stroke="#54534e" stroke-width="1">
+</rect>
+<rect x="354.5" y="173.37655860349128" width="37" height="22.623441396508724" fill="url(#ID1)" stroke="#54534e" stroke-width="1">
+</rect>
+<rect x="392.5" y="188.14463840399003" width="37" height="7.8553615960099705" fill="url(#ID1)" stroke="#54534e" stroke-width="1">
+</rect>
+<rect x="430.5" y="194.1147132169576" width="37" height="1.8852867830424032" fill="url(#ID1)" stroke="#54534e" stroke-width="1">
+</rect>
+<line x1="12" y1="196" x2="468" y2="196" stroke="#c9c8c2" stroke-width="1">
+</line>
+<g>
+<line x1="238.4800000000001" y1="49" x2="238.4800000000001" y2="68" stroke="#2b2b29" stroke-width="1">
+</line>
+<line x1="238.4800000000001" y1="198" x2="238.4800000000001" y2="202" stroke="#2b2b29" stroke-width="1.5">
+</line>
+</g>
+<text x="31" y="191.7431421446384" font-size="9.5" fill="#6b6a64" text-anchor="middle">4</text>
+<text x="69" y="187.02992518703243" font-size="9.5" fill="#6b6a64" text-anchor="middle">19</text>
+<text x="107" y="173.83291770573567" font-size="9.5" fill="#6b6a64" text-anchor="middle">61</text>
+<text x="145" y="145.23940149625935" font-size="9.5" fill="#6b6a64" text-anchor="middle">152</text>
+<text x="183" y="102.50623441396509" font-size="9.5" fill="#6b6a64" text-anchor="middle">288</text>
+<text x="221" y="67" font-size="9.5" fill="#6b6a64" text-anchor="middle">401</text>
+<text x="259" y="68.88528678304239" font-size="9.5" fill="#6b6a64" text-anchor="middle">395</text>
+<text x="297" y="98.4214463840399" font-size="9.5" fill="#6b6a64" text-anchor="middle">301</text>
+<text x="335" y="139.58354114713217" font-size="9.5" fill="#6b6a64" text-anchor="middle">170</text>
+<text x="373" y="170.37655860349128" font-size="9.5" fill="#6b6a64" text-anchor="middle">72</text>
+<text x="411" y="185.14463840399003" font-size="9.5" fill="#6b6a64" text-anchor="middle">25</text>
+<text x="449" y="191.1147132169576" font-size="9.5" fill="#6b6a64" text-anchor="middle">6</text>
+<text x="238.4800000000001" y="37" font-size="11" fill="#2b2b29" text-anchor="middle">Mean 909.6 ± 0.7 (95%)</text>
+<g role="img" aria-label="909.6 ± 0.7">
+<title>909.6 ± 0.7</title>
+<line x1="235.8199999999999" y1="49" x2="241.14000000000027" y2="49" stroke="#fff" stroke-width="3.25" stroke-linecap="round">
+</line>
+<line x1="235.8199999999999" y1="45" x2="235.8199999999999" y2="53" stroke="#fff" stroke-width="3.25" stroke-linecap="round">
+</line>
+<line x1="241.14000000000027" y1="45" x2="241.14000000000027" y2="53" stroke="#fff" stroke-width="3.25" stroke-linecap="round">
+</line>
+<line x1="235.8199999999999" y1="49" x2="241.14000000000027" y2="49" stroke="#2b2b29" stroke-width="1.25">
+</line>
+<line x1="235.8199999999999" y1="45" x2="235.8199999999999" y2="53" stroke="#2b2b29" stroke-width="1.25">
+</line>
+<line x1="241.14000000000027" y1="45" x2="241.14000000000027" y2="53" stroke="#2b2b29" stroke-width="1.25">
+</line>
+</g>
+<text x="12" y="209" font-size="10.5" fill="#6b6a64" text-anchor="start">850.0</text>
+<text x="468" y="209" font-size="10.5" fill="#6b6a64" text-anchor="end">970.0</text>
+<path d="M115.36000000000017,212V216H363.1199999999999V212" fill="none" stroke="#6b6a64" stroke-width="0.75">
+</path>
+<text x="239.24000000000004" y="230" font-size="11" fill="#2b2b29" text-anchor="middle">10th to 90th percentile 877.2–942.4</text>
+<rect x="12" y="56" width="38" height="140" fill="transparent">
+</rect>
+<rect x="50" y="56" width="38" height="140" fill="transparent">
+</rect>
+<rect x="88" y="56" width="38" height="140" fill="transparent">
+</rect>
+<rect x="126" y="56" width="38" height="140" fill="transparent">
+</rect>
+<rect x="164" y="56" width="38" height="140" fill="transparent">
+</rect>
+<rect x="202" y="56" width="38" height="140" fill="transparent">
+</rect>
+<rect x="240" y="56" width="38" height="140" fill="transparent">
+</rect>
+<rect x="278" y="56" width="38" height="140" fill="transparent">
+</rect>
+<rect x="316" y="56" width="38" height="140" fill="transparent">
+</rect>
+<rect x="354" y="56" width="38" height="140" fill="transparent">
+</rect>
+<rect x="392" y="56" width="38" height="140" fill="transparent">
+</rect>
+<rect x="430" y="56" width="38" height="140" fill="transparent">
+</rect>
+</svg>
+<div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<table>
+<caption>Histogram - data table. Mean 909.6 ± 0.7 (95%). 10th to 90th percentile 877.2–942.4. n = 1,894</caption>
+<thead>
+<tr>
+<th scope="col">
+</th>
+<th scope="col">Count</th>
+<th scope="col">Share</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">850.0–860.0</th>
+<td>4</td>
+<td>0.2%</td>
+</tr>
+<tr>
+<th scope="row">860.0–870.0</th>
+<td>19</td>
+<td>1.0%</td>
+</tr>
+<tr>
+<th scope="row">870.0–880.0</th>
+<td>61</td>
+<td>3.2%</td>
+</tr>
+<tr>
+<th scope="row">880.0–890.0</th>
+<td>152</td>
+<td>8.0%</td>
+</tr>
+<tr>
+<th scope="row">890.0–900.0</th>
+<td>288</td>
+<td>15.2%</td>
+</tr>
+<tr>
+<th scope="row">900.0–910.0</th>
+<td>401</td>
+<td>21.2%</td>
+</tr>
+<tr>
+<th scope="row">910.0–920.0</th>
+<td>395</td>
+<td>20.9%</td>
+</tr>
+<tr>
+<th scope="row">920.0–930.0</th>
+<td>301</td>
+<td>15.9%</td>
+</tr>
+<tr>
+<th scope="row">930.0–940.0</th>
+<td>170</td>
+<td>9.0%</td>
+</tr>
+<tr>
+<th scope="row">940.0–950.0</th>
+<td>72</td>
+<td>3.8%</td>
+</tr>
+<tr>
+<th scope="row">950.0–960.0</th>
+<td>25</td>
+<td>1.3%</td>
+</tr>
+<tr>
+<th scope="row">960.0–970.0</th>
+<td>6</td>
+<td>0.3%</td>
+</tr>
+</tbody>
+</table>
+</div>"
+`;
+
+exports[`component markup snapshots > HistogramChart-mean-spread renders stable markup 1`] = `
+"<svg width="480" height="280" viewBox="0 0 480 280" role="img" aria-label="DPS po borbi. Histogram of 6,000 values in 41 classes." style="display:block;max-width:100%;margin-inline:auto;font-family:ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif">
+<text x="12" y="18" font-size="13" font-weight="500" fill="#2b2b29">DPS po borbi</text>
+<text x="468" y="18" font-size="10.5" fill="#6b6a64" text-anchor="end">6.000 borbi</text>
+<rect x="198.43938994719966" y="70" width="101.26796396099897" height="166" fill="#c9c8c2" opacity="0.38">
+</rect>
+<rect x="12.5" y="235.56430446194227" width="10.121951219512194" height="0.435695538057729" fill="#54534e">
+</rect>
+<rect x="23.621951219512194" y="235.56430446194227" width="10.121951219512194" height="0.435695538057729" fill="#54534e">
+</rect>
+<rect x="34.74390243902439" y="234.25721784776903" width="10.121951219512194" height="1.7427821522309728" fill="#54534e">
+</rect>
+<rect x="45.86585365853658" y="232.51443569553805" width="10.121951219512194" height="3.4855643044619455" fill="#54534e">
+</rect>
+<rect x="56.98780487804878" y="232.07874015748033" width="10.121951219512194" height="3.9212598425196745" fill="#54534e">
+</rect>
+<rect x="68.10975609756098" y="228.59317585301838" width="10.121951219512194" height="7.40682414698162" fill="#54534e">
+</rect>
+<rect x="79.23170731707316" y="225.10761154855643" width="10.121951219512194" height="10.892388451443566" fill="#54534e">
+</rect>
+<rect x="90.35365853658536" y="221.18635170603676" width="10.121951219512194" height="14.81364829396324" fill="#54534e">
+</rect>
+<rect x="101.47560975609755" y="208.11548556430446" width="10.121951219512194" height="27.884514435695536" fill="#54534e">
+</rect>
+<rect x="112.59756097560975" y="202.01574803149606" width="10.121951219512194" height="33.98425196850394" fill="#54534e">
+</rect>
+<rect x="123.71951219512195" y="196.3517060367454" width="10.121951219512194" height="39.64829396325459" fill="#54534e">
+</rect>
+<rect x="134.84146341463412" y="186.76640419947506" width="10.121951219512194" height="49.23359580052494" fill="#54534e">
+</rect>
+<rect x="145.96341463414632" y="172.82414698162728" width="10.121951219512194" height="63.17585301837272" fill="#54534e">
+</rect>
+<rect x="157.08536585365852" y="147.11811023622045" width="10.121951219512194" height="88.88188976377955" fill="#54534e">
+</rect>
+<rect x="168.2073170731707" y="139.71128608923885" width="10.121951219512194" height="96.28871391076115" fill="#54534e">
+</rect>
+<rect x="179.3292682926829" y="117.05511811023622" width="10.121951219512194" height="118.94488188976378" fill="#54534e">
+</rect>
+<rect x="190.4512195121951" y="117.9265091863517" width="10.121951219512194" height="118.0734908136483" fill="#54534e">
+</rect>
+<rect x="201.5731707317073" y="99.62729658792651" width="10.121951219512194" height="136.3727034120735" fill="#54534e">
+</rect>
+<rect x="212.6951219512195" y="106.16272965879264" width="10.121951219512194" height="129.83727034120736" fill="#54534e">
+</rect>
+<rect x="223.8170731707317" y="85.68503937007875" width="10.121951219512194" height="150.31496062992125" fill="#54534e">
+</rect>
+<rect x="234.9390243902439" y="82.19947506561681" width="10.121951219512194" height="153.8005249343832" fill="#54534e">
+</rect>
+<rect x="246.06097560975607" y="70" width="10.121951219512194" height="166" fill="#54534e">
+</rect>
+<rect x="257.18292682926824" y="97.88451443569554" width="10.121951219512194" height="138.11548556430446" fill="#54534e">
+</rect>
+<rect x="268.30487804878044" y="86.99212598425197" width="10.121951219512194" height="149.00787401574803" fill="#54534e">
+</rect>
+<rect x="279.42682926829264" y="101.37007874015748" width="10.121951219512194" height="134.62992125984252" fill="#54534e">
+</rect>
+<rect x="290.54878048780483" y="96.14173228346456" width="10.121951219512194" height="139.85826771653544" fill="#54534e">
+</rect>
+<rect x="301.67073170731703" y="117.49081364829397" width="10.121951219512194" height="118.50918635170603" fill="#54534e">
+</rect>
+<rect x="312.79268292682923" y="129.69028871391075" width="10.121951219512194" height="106.30971128608925" fill="#54534e">
+</rect>
+<rect x="323.9146341463414" y="137.53280839895012" width="10.121951219512194" height="98.46719160104988" fill="#54534e">
+</rect>
+<rect x="335.0365853658536" y="160.18897637795277" width="10.121951219512194" height="75.81102362204723" fill="#54534e">
+</rect>
+<rect x="346.1585365853658" y="171.51706036745406" width="10.121951219512194" height="64.48293963254594" fill="#54534e">
+</rect>
+<rect x="357.280487804878" y="191.1233595800525" width="10.121951219512194" height="44.876640419947506" fill="#54534e">
+</rect>
+<rect x="368.4024390243902" y="198.5301837270341" width="10.121951219512194" height="37.469816272965886" fill="#54534e">
+</rect>
+<rect x="379.5243902439024" y="204.1942257217848" width="10.121951219512194" height="31.80577427821521" fill="#54534e">
+</rect>
+<rect x="390.6463414634146" y="215.52230971128608" width="10.121951219512194" height="20.477690288713916" fill="#54534e">
+</rect>
+<rect x="401.7682926829268" y="222.05774278215222" width="10.121951219512194" height="13.942257217847782" fill="#54534e">
+</rect>
+<rect x="412.890243902439" y="225.54330708661416" width="10.121951219512194" height="10.456692913385837" fill="#54534e">
+</rect>
+<rect x="424.0121951219512" y="227.7217847769029" width="10.121951219512194" height="8.278215223097106" fill="#54534e">
+</rect>
+<rect x="435.1341463414634" y="233.8215223097113" width="10.121951219512194" height="2.1784776902887018" fill="#54534e">
+</rect>
+<rect x="446.2560975609756" y="234.25721784776903" width="10.121951219512194" height="1.7427821522309728" fill="#54534e">
+</rect>
+<rect x="457.3780487804878" y="233.8215223097113" width="10.121951219512194" height="2.1784776902887018" fill="#54534e">
+</rect>
+<line x1="12" y1="236" x2="468" y2="236" stroke="#c9c8c2" stroke-width="1">
+</line>
+<g>
+<line x1="249.40964512196084" y1="49" x2="249.40964512196084" y2="55.5" stroke="#2b2b29" stroke-width="1">
+</line>
+<line x1="249.40964512196084" y1="238" x2="249.40964512196084" y2="242" stroke="#2b2b29" stroke-width="1.5">
+</line>
+</g>
+<text x="251.12195121951217" y="67" font-size="9.5" fill="#6b6a64" text-anchor="middle">381</text>
+<text x="249.40964512196084" y="37" font-size="11" fill="#2b2b29" text-anchor="middle">prosek 911,3 ± 0,8 (95%)</text>
+<g role="img" aria-label="911,3 ± 0,8">
+<title>911,3 ± 0,8</title>
+<line x1="247.59668773628317" y1="49" x2="251.22260250763847" y2="49" stroke="#fff" stroke-width="3.25" stroke-linecap="round">
+</line>
+<line x1="247.59668773628317" y1="45" x2="247.59668773628317" y2="53" stroke="#fff" stroke-width="3.25" stroke-linecap="round">
+</line>
+<line x1="251.22260250763847" y1="45" x2="251.22260250763847" y2="53" stroke="#fff" stroke-width="3.25" stroke-linecap="round">
+</line>
+<line x1="247.59668773628317" y1="49" x2="251.22260250763847" y2="49" stroke="#2b2b29" stroke-width="1.25">
+</line>
+<line x1="247.59668773628317" y1="45" x2="247.59668773628317" y2="53" stroke="#2b2b29" stroke-width="1.25">
+</line>
+<line x1="251.22260250763847" y1="45" x2="251.22260250763847" y2="53" stroke="#2b2b29" stroke-width="1.25">
+</line>
+</g>
+<text x="12" y="249" font-size="10.5" fill="#6b6a64" text-anchor="start">812,5</text>
+<text x="468" y="249" font-size="10.5" fill="#6b6a64" text-anchor="end">1.002,2</text>
+<path d="M198.43938994719966,252V256H299.7073539081986V252" fill="none" stroke="#6b6a64" stroke-width="0.75">
+</path>
+<text x="249.07337192769916" y="270" font-size="11" fill="#2b2b29" text-anchor="middle">srednja polovina borbi 890,1–932,2</text>
+<rect x="12" y="56" width="11.121951219512194" height="180" fill="transparent">
+</rect>
+<rect x="23.121951219512194" y="56" width="11.121951219512194" height="180" fill="transparent">
+</rect>
+<rect x="34.24390243902439" y="56" width="11.121951219512194" height="180" fill="transparent">
+</rect>
+<rect x="45.36585365853658" y="56" width="11.121951219512194" height="180" fill="transparent">
+</rect>
+<rect x="56.48780487804878" y="56" width="11.121951219512194" height="180" fill="transparent">
+</rect>
+<rect x="67.60975609756098" y="56" width="11.121951219512194" height="180" fill="transparent">
+</rect>
+<rect x="78.73170731707316" y="56" width="11.121951219512194" height="180" fill="transparent">
+</rect>
+<rect x="89.85365853658536" y="56" width="11.121951219512194" height="180" fill="transparent">
+</rect>
+<rect x="100.97560975609755" y="56" width="11.121951219512194" height="180" fill="transparent">
+</rect>
+<rect x="112.09756097560975" y="56" width="11.121951219512194" height="180" fill="transparent">
+</rect>
+<rect x="123.21951219512195" y="56" width="11.121951219512194" height="180" fill="transparent">
+</rect>
+<rect x="134.34146341463412" y="56" width="11.121951219512194" height="180" fill="transparent">
+</rect>
+<rect x="145.46341463414632" y="56" width="11.121951219512194" height="180" fill="transparent">
+</rect>
+<rect x="156.58536585365852" y="56" width="11.121951219512194" height="180" fill="transparent">
+</rect>
+<rect x="167.7073170731707" y="56" width="11.121951219512194" height="180" fill="transparent">
+</rect>
+<rect x="178.8292682926829" y="56" width="11.121951219512194" height="180" fill="transparent">
+</rect>
+<rect x="189.9512195121951" y="56" width="11.121951219512194" height="180" fill="transparent">
+</rect>
+<rect x="201.0731707317073" y="56" width="11.121951219512194" height="180" fill="transparent">
+</rect>
+<rect x="212.1951219512195" y="56" width="11.121951219512194" height="180" fill="transparent">
+</rect>
+<rect x="223.3170731707317" y="56" width="11.121951219512194" height="180" fill="transparent">
+</rect>
+<rect x="234.4390243902439" y="56" width="11.121951219512194" height="180" fill="transparent">
+</rect>
+<rect x="245.56097560975607" y="56" width="11.121951219512194" height="180" fill="transparent">
+</rect>
+<rect x="256.68292682926824" y="56" width="11.121951219512194" height="180" fill="transparent">
+</rect>
+<rect x="267.80487804878044" y="56" width="11.121951219512194" height="180" fill="transparent">
+</rect>
+<rect x="278.92682926829264" y="56" width="11.121951219512194" height="180" fill="transparent">
+</rect>
+<rect x="290.04878048780483" y="56" width="11.121951219512194" height="180" fill="transparent">
+</rect>
+<rect x="301.17073170731703" y="56" width="11.121951219512194" height="180" fill="transparent">
+</rect>
+<rect x="312.29268292682923" y="56" width="11.121951219512194" height="180" fill="transparent">
+</rect>
+<rect x="323.4146341463414" y="56" width="11.121951219512194" height="180" fill="transparent">
+</rect>
+<rect x="334.5365853658536" y="56" width="11.121951219512194" height="180" fill="transparent">
+</rect>
+<rect x="345.6585365853658" y="56" width="11.121951219512194" height="180" fill="transparent">
+</rect>
+<rect x="356.780487804878" y="56" width="11.121951219512194" height="180" fill="transparent">
+</rect>
+<rect x="367.9024390243902" y="56" width="11.121951219512194" height="180" fill="transparent">
+</rect>
+<rect x="379.0243902439024" y="56" width="11.121951219512194" height="180" fill="transparent">
+</rect>
+<rect x="390.1463414634146" y="56" width="11.121951219512194" height="180" fill="transparent">
+</rect>
+<rect x="401.2682926829268" y="56" width="11.121951219512194" height="180" fill="transparent">
+</rect>
+<rect x="412.390243902439" y="56" width="11.121951219512194" height="180" fill="transparent">
+</rect>
+<rect x="423.5121951219512" y="56" width="11.121951219512194" height="180" fill="transparent">
+</rect>
+<rect x="434.6341463414634" y="56" width="11.121951219512194" height="180" fill="transparent">
+</rect>
+<rect x="445.7560975609756" y="56" width="11.121951219512194" height="180" fill="transparent">
+</rect>
+<rect x="456.8780487804878" y="56" width="11.121951219512194" height="180" fill="transparent">
+</rect>
+</svg>
+<div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<table>
+<caption>DPS po borbi - data table. prosek 911,3 ± 0,8 (95%). srednja polovina borbi 890,1–932,2. 6.000 borbi</caption>
+<thead>
+<tr>
+<th scope="col">
+</th>
+<th scope="col">Borbi</th>
+<th scope="col">Udeo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">812,5–817,2</th>
+<td>1</td>
+<td>0,0%</td>
+</tr>
+<tr>
+<th scope="row">817,2–821,8</th>
+<td>1</td>
+<td>0,0%</td>
+</tr>
+<tr>
+<th scope="row">821,8–826,4</th>
+<td>4</td>
+<td>0,1%</td>
+</tr>
+<tr>
+<th scope="row">826,4–831,0</th>
+<td>8</td>
+<td>0,1%</td>
+</tr>
+<tr>
+<th scope="row">831,0–835,7</th>
+<td>9</td>
+<td>0,2%</td>
+</tr>
+<tr>
+<th scope="row">835,7–840,3</th>
+<td>17</td>
+<td>0,3%</td>
+</tr>
+<tr>
+<th scope="row">840,3–844,9</th>
+<td>25</td>
+<td>0,4%</td>
+</tr>
+<tr>
+<th scope="row">844,9–849,5</th>
+<td>34</td>
+<td>0,6%</td>
+</tr>
+<tr>
+<th scope="row">849,5–854,2</th>
+<td>64</td>
+<td>1,1%</td>
+</tr>
+<tr>
+<th scope="row">854,2–858,8</th>
+<td>78</td>
+<td>1,3%</td>
+</tr>
+<tr>
+<th scope="row">858,8–863,4</th>
+<td>91</td>
+<td>1,5%</td>
+</tr>
+<tr>
+<th scope="row">863,4–868,0</th>
+<td>113</td>
+<td>1,9%</td>
+</tr>
+<tr>
+<th scope="row">868,0–872,7</th>
+<td>145</td>
+<td>2,4%</td>
+</tr>
+<tr>
+<th scope="row">872,7–877,3</th>
+<td>204</td>
+<td>3,4%</td>
+</tr>
+<tr>
+<th scope="row">877,3–881,9</th>
+<td>221</td>
+<td>3,7%</td>
+</tr>
+<tr>
+<th scope="row">881,9–886,6</th>
+<td>273</td>
+<td>4,6%</td>
+</tr>
+<tr>
+<th scope="row">886,6–891,2</th>
+<td>271</td>
+<td>4,5%</td>
+</tr>
+<tr>
+<th scope="row">891,2–895,8</th>
+<td>313</td>
+<td>5,2%</td>
+</tr>
+<tr>
+<th scope="row">895,8–900,4</th>
+<td>298</td>
+<td>5,0%</td>
+</tr>
+<tr>
+<th scope="row">900,4–905,1</th>
+<td>345</td>
+<td>5,8%</td>
+</tr>
+<tr>
+<th scope="row">905,1–909,7</th>
+<td>353</td>
+<td>5,9%</td>
+</tr>
+<tr>
+<th scope="row">909,7–914,3</th>
+<td>381</td>
+<td>6,4%</td>
+</tr>
+<tr>
+<th scope="row">914,3–918,9</th>
+<td>317</td>
+<td>5,3%</td>
+</tr>
+<tr>
+<th scope="row">918,9–923,6</th>
+<td>342</td>
+<td>5,7%</td>
+</tr>
+<tr>
+<th scope="row">923,6–928,2</th>
+<td>309</td>
+<td>5,2%</td>
+</tr>
+<tr>
+<th scope="row">928,2–932,8</th>
+<td>321</td>
+<td>5,4%</td>
+</tr>
+<tr>
+<th scope="row">932,8–937,4</th>
+<td>272</td>
+<td>4,5%</td>
+</tr>
+<tr>
+<th scope="row">937,4–942,1</th>
+<td>244</td>
+<td>4,1%</td>
+</tr>
+<tr>
+<th scope="row">942,1–946,7</th>
+<td>226</td>
+<td>3,8%</td>
+</tr>
+<tr>
+<th scope="row">946,7–951,3</th>
+<td>174</td>
+<td>2,9%</td>
+</tr>
+<tr>
+<th scope="row">951,3–956,0</th>
+<td>148</td>
+<td>2,5%</td>
+</tr>
+<tr>
+<th scope="row">956,0–960,6</th>
+<td>103</td>
+<td>1,7%</td>
+</tr>
+<tr>
+<th scope="row">960,6–965,2</th>
+<td>86</td>
+<td>1,4%</td>
+</tr>
+<tr>
+<th scope="row">965,2–969,8</th>
+<td>73</td>
+<td>1,2%</td>
+</tr>
+<tr>
+<th scope="row">969,8–974,5</th>
+<td>47</td>
+<td>0,8%</td>
+</tr>
+<tr>
+<th scope="row">974,5–979,1</th>
+<td>32</td>
+<td>0,5%</td>
+</tr>
+<tr>
+<th scope="row">979,1–983,7</th>
+<td>24</td>
+<td>0,4%</td>
+</tr>
+<tr>
+<th scope="row">983,7–988,3</th>
+<td>19</td>
+<td>0,3%</td>
+</tr>
+<tr>
+<th scope="row">988,3–993,0</th>
+<td>5</td>
+<td>0,1%</td>
+</tr>
+<tr>
+<th scope="row">993,0–997,6</th>
+<td>4</td>
+<td>0,1%</td>
+</tr>
+<tr>
+<th scope="row">997,6–1.002,2</th>
+<td>5</td>
+<td>0,1%</td>
 </tr>
 </tbody>
 </table>
@@ -2790,6 +3829,270 @@ exports[`component markup snapshots > RankingVarianceChart-errors-band renders s
 <td>910,84</td>
 <td>-4,59 ± 0,64</td>
 <td>-0,5%</td>
+</tr>
+</tbody>
+</table>
+</div>"
+`;
+
+exports[`component markup snapshots > RankingVarianceChart-icons renders stable markup 1`] = `
+"<svg width="640" height="142" viewBox="0 0 640 142" role="img" aria-label="4 entities ranked by variance versus Equipped" style="display:block;max-width:100%;margin-inline:auto;font-family:ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif">
+<defs>
+<pattern id="ID1" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+<line x1="0" y1="0" x2="0" y2="5" stroke="#54534e" stroke-width="1">
+</line>
+</pattern>
+</defs>
+<text x="220.16" y="24" font-size="10.5" fill="#6b6a64">DPS</text>
+<text x="439.3056" y="24" font-size="10.5" fill="#6b6a64" text-anchor="middle">ΔEquipped</text>
+<text x="571.3408000000002" y="24" font-size="10.5" font-style="italic" fill="#6b6a64" text-anchor="middle">ΔEquipped%</text>
+<line x1="220.16" y1="30" x2="220.16" y2="134" stroke="#c9c8c2" stroke-width="1">
+</line>
+<line x1="439.3056" y1="30" x2="439.3056" y2="134" stroke="#c9c8c2" stroke-width="0.75">
+</line>
+<line x1="571.3408000000002" y1="30" x2="571.3408000000002" y2="134" stroke="#c9c8c2" stroke-width="0.75">
+</line>
+<g>
+<rect x="12" y="30" width="616" height="26" fill="transparent">
+</rect>
+<g>
+<image href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2256%22%20height%3D%2256%22%20viewBox%3D%220%200%2056%2056%22%3E%3Crect%20width%3D%2256%22%20height%3D%2256%22%20fill%3D%22%233d2f4a%22%2F%3E%3Ccircle%20cx%3D%2228%22%20cy%3D%2230%22%20r%3D%2212%22%20fill%3D%22none%22%20stroke%3D%22%23e2c46a%22%20stroke-width%3D%226%22%2F%3E%3Ccircle%20cx%3D%2228%22%20cy%3D%2216%22%20r%3D%224%22%20fill%3D%22%239fd3ff%22%2F%3E%3C%2Fsvg%3E" x="12" y="33" width="20" height="20" preserveAspectRatio="xMidYMid meet">
+</image>
+<rect x="12.5" y="33.5" width="19" height="19" fill="none" stroke="#a335ee" stroke-width="1">
+</rect>
+</g>
+<g>
+<image href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2256%22%20height%3D%2256%22%20viewBox%3D%220%200%2056%2056%22%3E%3Crect%20width%3D%2256%22%20height%3D%2256%22%20fill%3D%22%232b3442%22%2F%3E%3Cpath%20d%3D%22M28%208%20V40%22%20stroke%3D%22%23dfe6ee%22%20stroke-width%3D%227%22%2F%3E%3Cpath%20d%3D%22M18%2040%20H38%20M28%2040%20V49%22%20stroke%3D%22%23c7a35a%22%20stroke-width%3D%225%22%2F%3E%3C%2Fsvg%3E" x="34" y="33" width="20" height="20" preserveAspectRatio="xMidYMid meet">
+</image>
+<rect x="34.5" y="33.5" width="19" height="19" fill="none" stroke="#0070dd" stroke-width="1">
+</rect>
+</g>
+<text x="60" y="47.08" font-size="12" fill="#2b2b29">Best set<title>Best set</title>
+</text>
+<rect x="220.16" y="36.5" width="96.12037819415713" height="13" fill="#54534e">
+</rect>
+<rect x="220.16" y="34.68" width="95.75692320235866" height="16.64" fill="#fff" fill-opacity="0" stroke="#54534e" stroke-width="1.25">
+</rect>
+<rect x="439.3056" y="37.019999999999996" width="12.805227710658812" height="11.96" fill="#3f8f4f">
+</rect>
+<text x="502.68160000000006" y="46.74" text-anchor="end" font-size="11" font-weight="400" fill="#2b2b29">+3.46</text>
+<line x1="571.3408000000002" y1="43" x2="577.3658958522134" y2="43" stroke="#3f8f4f" stroke-width="2">
+</line>
+<circle cx="577.3658958522134" cy="43" r="3.5" fill="#3f8f4f">
+</circle>
+<text x="626.0000000000001" y="46.74" text-anchor="end" font-size="11" font-style="italic" font-weight="400" fill="#3f8f4f">+0.4%</text>
+<g role="img" aria-label="914.30 ± 0.47">
+<title>914.30 ± 0.47</title>
+<line x1="316.2311563883142" y1="43" x2="316.3296" y2="43" stroke="#fff" stroke-width="3.25" stroke-linecap="round">
+</line>
+<line x1="316.2311563883142" y1="38" x2="316.2311563883142" y2="48" stroke="#fff" stroke-width="3.25" stroke-linecap="round">
+</line>
+<line x1="316.3296" y1="38" x2="316.3296" y2="48" stroke="#fff" stroke-width="3.25" stroke-linecap="round">
+</line>
+<line x1="316.2311563883142" y1="43" x2="316.3296" y2="43" stroke="#2b2b29" stroke-width="1.25">
+</line>
+<line x1="316.2311563883142" y1="38" x2="316.2311563883142" y2="48" stroke="#2b2b29" stroke-width="1.25">
+</line>
+<line x1="316.3296" y1="38" x2="316.3296" y2="48" stroke="#2b2b29" stroke-width="1.25">
+</line>
+</g>
+<g role="img" aria-label="+3.46 ± 0.46">
+<title>+3.46 ± 0.46</title>
+<line x1="450.39924153540267" y1="43" x2="453.82241388591495" y2="43" stroke="#fff" stroke-width="3.25" stroke-linecap="round">
+</line>
+<line x1="450.39924153540267" y1="38" x2="450.39924153540267" y2="48" stroke="#fff" stroke-width="3.25" stroke-linecap="round">
+</line>
+<line x1="453.82241388591495" y1="38" x2="453.82241388591495" y2="48" stroke="#fff" stroke-width="3.25" stroke-linecap="round">
+</line>
+<line x1="450.39924153540267" y1="43" x2="453.82241388591495" y2="43" stroke="#2b2b29" stroke-width="1.25">
+</line>
+<line x1="450.39924153540267" y1="38" x2="450.39924153540267" y2="48" stroke="#2b2b29" stroke-width="1.25">
+</line>
+<line x1="453.82241388591495" y1="38" x2="453.82241388591495" y2="48" stroke="#2b2b29" stroke-width="1.25">
+</line>
+</g>
+<text x="320.3296" y="46.74" text-anchor="start" font-size="11" fill="#2b2b29">914.30</text>
+</g>
+<g>
+<rect x="12" y="56" width="616" height="26" fill="transparent">
+</rect>
+<g>
+<image href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2256%22%20height%3D%2256%22%20viewBox%3D%220%200%2056%2056%22%3E%3Crect%20width%3D%2256%22%20height%3D%2256%22%20fill%3D%22%233d2f4a%22%2F%3E%3Ccircle%20cx%3D%2228%22%20cy%3D%2230%22%20r%3D%2212%22%20fill%3D%22none%22%20stroke%3D%22%23e2c46a%22%20stroke-width%3D%226%22%2F%3E%3Ccircle%20cx%3D%2228%22%20cy%3D%2216%22%20r%3D%224%22%20fill%3D%22%239fd3ff%22%2F%3E%3C%2Fsvg%3E" x="12" y="59" width="20" height="20" preserveAspectRatio="xMidYMid meet">
+</image>
+<rect x="12.5" y="59.5" width="19" height="19" fill="none" stroke="#a335ee" stroke-width="1">
+</rect>
+</g>
+<text x="60" y="73.08" font-size="12" fill="#a335ee">Signet of Embers<title>Signet of Embers</title>
+</text>
+<rect x="220.16" y="62.5" width="96.09408521329146" height="13" fill="#54534e">
+</rect>
+<rect x="220.16" y="60.68" width="95.75692320235866" height="16.64" fill="#fff" fill-opacity="0" stroke="#54534e" stroke-width="1.25">
+</rect>
+<rect x="439.3056" y="63.019999999999996" width="11.878874751490855" height="11.96" fill="#3f8f4f">
+</rect>
+<text x="502.68160000000006" y="72.74" text-anchor="end" font-size="11" font-weight="400" fill="#2b2b29">+3.21</text>
+<line x1="571.3408000000002" y1="69" x2="576.9300296967585" y2="69" stroke="#3f8f4f" stroke-width="2">
+</line>
+<circle cx="576.9300296967585" cy="69" r="3.5" fill="#3f8f4f">
+</circle>
+<text x="626.0000000000001" y="72.74" text-anchor="end" font-size="11" font-style="italic" font-weight="400" fill="#3f8f4f">+0.4%</text>
+<g role="img" aria-label="914.05 ± 0.45">
+<title>914.05 ± 0.45</title>
+<line x1="316.2066611282515" y1="69" x2="316.30150929833144" y2="69" stroke="#fff" stroke-width="3.25" stroke-linecap="round">
+</line>
+<line x1="316.2066611282515" y1="64" x2="316.2066611282515" y2="74" stroke="#fff" stroke-width="3.25" stroke-linecap="round">
+</line>
+<line x1="316.30150929833144" y1="64" x2="316.30150929833144" y2="74" stroke="#fff" stroke-width="3.25" stroke-linecap="round">
+</line>
+<line x1="316.2066611282515" y1="69" x2="316.30150929833144" y2="69" stroke="#2b2b29" stroke-width="1.25">
+</line>
+<line x1="316.2066611282515" y1="64" x2="316.2066611282515" y2="74" stroke="#2b2b29" stroke-width="1.25">
+</line>
+<line x1="316.30150929833144" y1="64" x2="316.30150929833144" y2="74" stroke="#2b2b29" stroke-width="1.25">
+</line>
+</g>
+<g role="img" aria-label="+3.21 ± 0.44">
+<title>+3.21 ± 0.44</title>
+<line x1="449.55400464902874" y1="69" x2="452.814944853953" y2="69" stroke="#fff" stroke-width="3.25" stroke-linecap="round">
+</line>
+<line x1="449.55400464902874" y1="64" x2="449.55400464902874" y2="74" stroke="#fff" stroke-width="3.25" stroke-linecap="round">
+</line>
+<line x1="452.814944853953" y1="64" x2="452.814944853953" y2="74" stroke="#fff" stroke-width="3.25" stroke-linecap="round">
+</line>
+<line x1="449.55400464902874" y1="69" x2="452.814944853953" y2="69" stroke="#2b2b29" stroke-width="1.25">
+</line>
+<line x1="449.55400464902874" y1="64" x2="449.55400464902874" y2="74" stroke="#2b2b29" stroke-width="1.25">
+</line>
+<line x1="452.814944853953" y1="64" x2="452.814944853953" y2="74" stroke="#2b2b29" stroke-width="1.25">
+</line>
+</g>
+<text x="320.30150929833144" y="72.74" text-anchor="start" font-size="11" fill="#2b2b29">914.05</text>
+</g>
+<g>
+<rect x="12" y="82" width="616" height="26" fill="transparent">
+</rect>
+<text x="60" y="99.08" font-size="12" fill="#2b2b29">Equipped<title>Equipped</title>
+</text>
+<rect x="220.16" y="88.5" width="95.75692320235866" height="13" fill="#54534e">
+</rect>
+<rect x="220.16" y="86.68" width="95.75692320235866" height="16.64" fill="#fff" fill-opacity="0" stroke="#54534e" stroke-width="1.25">
+</rect>
+<text x="439.3056" y="98.74" text-anchor="middle" font-size="11" font-weight="400" fill="#2b2b29">0.00</text>
+<text x="571.3408000000002" y="98.74" text-anchor="middle" font-size="11" font-style="italic" font-weight="400" fill="#9a9992">0.0%</text>
+<g role="img" aria-label="910.84 ± 0.48">
+<title>910.84 ± 0.48</title>
+<line x1="315.8663767601347" y1="95" x2="315.96746964458265" y2="95" stroke="#fff" stroke-width="3.25" stroke-linecap="round">
+</line>
+<line x1="315.8663767601347" y1="90" x2="315.8663767601347" y2="100" stroke="#fff" stroke-width="3.25" stroke-linecap="round">
+</line>
+<line x1="315.96746964458265" y1="90" x2="315.96746964458265" y2="100" stroke="#fff" stroke-width="3.25" stroke-linecap="round">
+</line>
+<line x1="315.8663767601347" y1="95" x2="315.96746964458265" y2="95" stroke="#2b2b29" stroke-width="1.25">
+</line>
+<line x1="315.8663767601347" y1="90" x2="315.8663767601347" y2="100" stroke="#2b2b29" stroke-width="1.25">
+</line>
+<line x1="315.96746964458265" y1="90" x2="315.96746964458265" y2="100" stroke="#2b2b29" stroke-width="1.25">
+</line>
+</g>
+<text x="319.96746964458265" y="98.74" text-anchor="start" font-size="11" fill="#2b2b29">910.84</text>
+</g>
+<g>
+<rect x="12" y="108" width="616" height="26" fill="transparent">
+</rect>
+<g>
+<image href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2256%22%20height%3D%2256%22%20viewBox%3D%220%200%2056%2056%22%3E%3Crect%20width%3D%2256%22%20height%3D%2256%22%20fill%3D%22%232b3442%22%2F%3E%3Cpath%20d%3D%22M28%208%20V40%22%20stroke%3D%22%23dfe6ee%22%20stroke-width%3D%227%22%2F%3E%3Cpath%20d%3D%22M18%2040%20H38%20M28%2040%20V49%22%20stroke%3D%22%23c7a35a%22%20stroke-width%3D%225%22%2F%3E%3C%2Fsvg%3E" x="12" y="111" width="20" height="20" preserveAspectRatio="xMidYMid meet">
+</image>
+<rect x="12.5" y="111.5" width="19" height="19" fill="none" stroke="#0070dd" stroke-width="1">
+</rect>
+</g>
+<text x="60" y="125.08" font-size="12" fill="#0070dd">Runed Greatsword<title>Runed Greatsword</title>
+</text>
+<rect x="220.16" y="114.5" width="95.27433504016042" height="13" fill="#54534e">
+</rect>
+<rect x="220.16" y="112.68" width="95.75692320235866" height="16.64" fill="#fff" fill-opacity="0" stroke="#54534e" stroke-width="1.25">
+</rect>
+<rect x="422.30307851353416" y="115.02" width="17.002521486465866" height="11.96" fill="#cf3a3a">
+</rect>
+<text x="375.92960000000005" y="124.74" text-anchor="start" font-size="11" font-weight="400" fill="#2b2b29">-4.59</text>
+<line x1="571.3408000000002" y1="121" x2="563.3408000000002" y2="121" stroke="#cf3a3a" stroke-width="2">
+</line>
+<circle cx="563.3408000000002" cy="121" r="3.5" fill="#cf3a3a">
+</circle>
+<text x="516.6816000000001" y="124.74" text-anchor="start" font-size="11" font-style="italic" font-weight="400" fill="#cf3a3a">-0.5%</text>
+<g role="img" aria-label="906.25 ± 0.50">
+<title>906.25 ± 0.50</title>
+<line x1="315.3822852407738" y1="121" x2="315.48638483954704" y2="121" stroke="#fff" stroke-width="3.25" stroke-linecap="round">
+</line>
+<line x1="315.3822852407738" y1="116" x2="315.3822852407738" y2="126" stroke="#fff" stroke-width="3.25" stroke-linecap="round">
+</line>
+<line x1="315.48638483954704" y1="116" x2="315.48638483954704" y2="126" stroke="#fff" stroke-width="3.25" stroke-linecap="round">
+</line>
+<line x1="315.3822852407738" y1="121" x2="315.48638483954704" y2="121" stroke="#2b2b29" stroke-width="1.25">
+</line>
+<line x1="315.3822852407738" y1="116" x2="315.3822852407738" y2="126" stroke="#2b2b29" stroke-width="1.25">
+</line>
+<line x1="315.48638483954704" y1="116" x2="315.48638483954704" y2="126" stroke="#2b2b29" stroke-width="1.25">
+</line>
+</g>
+<g role="img" aria-label="-4.59 ± 0.64">
+<title>-4.59 ± 0.64</title>
+<line x1="419.92960000000005" y1="121" x2="424.6765570270683" y2="121" stroke="#fff" stroke-width="3.25" stroke-linecap="round">
+</line>
+<line x1="419.92960000000005" y1="116" x2="419.92960000000005" y2="126" stroke="#fff" stroke-width="3.25" stroke-linecap="round">
+</line>
+<line x1="424.6765570270683" y1="116" x2="424.6765570270683" y2="126" stroke="#fff" stroke-width="3.25" stroke-linecap="round">
+</line>
+<line x1="419.92960000000005" y1="121" x2="424.6765570270683" y2="121" stroke="#2b2b29" stroke-width="1.25">
+</line>
+<line x1="419.92960000000005" y1="116" x2="419.92960000000005" y2="126" stroke="#2b2b29" stroke-width="1.25">
+</line>
+<line x1="424.6765570270683" y1="116" x2="424.6765570270683" y2="126" stroke="#2b2b29" stroke-width="1.25">
+</line>
+</g>
+<text x="319.48638483954704" y="124.74" text-anchor="start" font-size="11" fill="#2b2b29">906.25</text>
+</g>
+</svg>
+<div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
+<table>
+<caption>Ranked variance versus Equipped - data table</caption>
+<thead>
+<tr>
+<th scope="col">
+</th>
+<th scope="col">DPS</th>
+<th scope="col">Equipped</th>
+<th scope="col">ΔEquipped</th>
+<th scope="col">ΔEquipped%</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">Signet of Embers, Runed Greatsword, Best set</th>
+<td>914.30 ± 0.47</td>
+<td>910.84</td>
+<td>+3.46 ± 0.46</td>
+<td>+0.4%</td>
+</tr>
+<tr>
+<th scope="row">Signet of Embers</th>
+<td>914.05 ± 0.45</td>
+<td>910.84</td>
+<td>+3.21 ± 0.44</td>
+<td>+0.4%</td>
+</tr>
+<tr>
+<th scope="row">Equipped</th>
+<td>910.84 ± 0.48</td>
+<td>910.84</td>
+<td>0.00 ± 0.00</td>
+<td>0.0%</td>
+</tr>
+<tr>
+<th scope="row">Runed Greatsword</th>
+<td>906.25 ± 0.50</td>
+<td>910.84</td>
+<td>-4.59 ± 0.64</td>
+<td>-0.5%</td>
 </tr>
 </tbody>
 </table>

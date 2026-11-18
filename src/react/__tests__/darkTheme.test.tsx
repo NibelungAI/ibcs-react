@@ -4,6 +4,7 @@ import { renderToString } from "react-dom/server";
 import {
   ChartState,
   ExportMenu,
+  HistogramChart,
   IbcsThemeProvider,
   KpiCard,
   MatrixTable,
@@ -50,6 +51,13 @@ function scene() {
         <svg viewBox="0 0 100 50" width={100} height={50} />
       </ExportMenu>
       <TrendChart data={series} width={400} height={260} />
+      {/* Hollow plan columns and the mean line's halo: surface colour, not white. */}
+      <HistogramChart
+        bins={{ start: 0, width: 1, counts: [2, 5, 3] }}
+        scenario="PL"
+        mean={{ value: 1.4, halfWidth: 0.2, level: 0.95 }}
+        width={300}
+      />
       <Skeleton variant="table" />
       <ChartState error={new Error("boom")} onRetry={() => {}} />
     </>

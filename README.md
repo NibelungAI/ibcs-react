@@ -176,6 +176,7 @@ template set** - every standard chart (C01-C13) and table (T01-T04):
 |            | C12 vertical waterfalls + variance             | `WaterfallChart`, `WaterfallStatementChart`                |
 |            | C13 small multiples                            | `SmallMultiples`, `MiniVarianceMultiples`                  |
 |            | _(extras)_ integrated / ranking variance       | `IntegratedVarianceChart`, `RankingVarianceChart`          |
+|            | _(extras)_ distribution (histogram)            | `HistogramChart`                                           |
 
 ### Tables (IBCS templates T01-T04)
 
@@ -186,7 +187,9 @@ template set** - every standard chart (C01-C13) and table (T01-T04):
   entities, columns = measures (values, embedded variance bars/pins, sparklines).
   A value column can draw the value itself as a magnitude bar or pin
   (`mark: "bar"`), rows can carry intervals (`errors`, drawn as error bars) and
-  columns can shade value bands (`bands`).
+  columns can shade value bands (`bands`). A row's label can lead with icons
+  (`icon`: an item or spell icon with a quality-tinted `border`, never drawn
+  above `naturalSize / pixelRatio`) and take a `labelColor`.
 - **`ComparisonTable`** - the centre-label flanking layout (**T01/T02**): one
   measure with column groups (e.g. month vs YTD), each PY/PL/AC + variance.
 - **`MatrixTable`** - a budget / control matrix: a P&L row tree crossed with an
@@ -242,7 +245,13 @@ uncontrolled mode, as observers.
   Δ bars / AC columns with a PY-solid or PL-frame reference + FY total.
 - **`RankingVarianceChart`** - a sorted horizontal AC + plan-overlay chart with
   ΔPL bar and ΔPL% pin columns and a total row; optional error bars on every
-  mark and shaded value bands (e.g. a group tied with the best).
+  mark, shaded value bands (e.g. a group tied with the best) and icons in the
+  row labels (`icon`, e.g. the chips of the items a variant changes).
+- **`HistogramChart`** - a distribution in classes of identical width on a
+  horizontal value axis, from raw `values` (binned by `computeHistogram`) or an
+  engine's `bins`; the mean's interval (an error bar above the columns) and the
+  spread of the values (a band behind them) drawn apart, with labels instead of
+  grid lines.
 - **`HorizontalWaterfallChart`** - the IBCS horizontal waterfall chart
   (**C05**); plus the
   composites **`ColumnVarianceWaterfallChart`** (**C05**),
@@ -503,6 +512,27 @@ digits and the caller's words:
 <tr>
 <td width="50%" valign="top"><img src="assets/data-table-magnitude-bars.png" alt="DataTable with magnitude bars" width="100%"/><br/><sub><b>DataTable</b> - a value column drawn as magnitude bars (<code>mark: "bar"</code>), one digit throughout.</sub></td>
 <td width="50%" valign="top"><img src="assets/data-table-intervals.png" alt="DataTable with intervals and a band" width="100%"/><br/><sub><b>DataTable</b> - "value ± half-width" text, Δ pins with error bars, a band over the tied rows.</sub></td>
+</tr>
+</table>
+
+## Icons and distributions
+
+`DataTable` rows and `RankingVarianceChart` data take an `icon` - an image
+with its `naturalSize` (and a `pixelRatio` for dense screens), drawn at the
+component's `iconSize` but never above `naturalSize / pixelRatio` CSS px - and
+a `labelColor`; `renderIcon` puts an element of your own in the slot, around
+the component's own icons if you like. `HistogramChart` draws a distribution
+with the mean's interval and the spread of the values apart, so neither is read
+for the other (see [HistogramChart](docs/content/docs/components/histogram.mdx)):
+
+<table>
+<tr>
+<td width="50%" valign="top"><img src="assets/data-table-icons.png" alt="DataTable with icons in its row labels" width="100%"/><br/><sub><b>DataTable</b> - a spell icon per row (<code>icon</code>), an 18 px file drawn at 18 px, a row without an icon aligned with the rest.</sub></td>
+<td width="50%" valign="top"><img src="assets/ranking-icons.png" alt="RankingVarianceChart with icon chips in its row labels" width="100%"/><br/><sub><b>RankingVarianceChart</b> - the chips of the items each variant changes, framed and named in their quality's colour.</sub></td>
+</tr>
+<tr>
+<td width="50%" valign="top"><img src="assets/histogram.png" alt="HistogramChart with the mean's interval and the middle half of the values" width="100%"/><br/><sub><b>HistogramChart</b> - the mean ± its 95% half-width above the columns, the middle half of the fights as a band, in <code>sr-Latn</code> with the caller's words.</sub></td>
+<td width="50%" valign="top"><img src="assets/histogram-engine-bins.png" alt="HistogramChart from an engine's bins, hatched" width="100%"/><br/><sub><b>HistogramChart</b> - an engine's own classes, hatched as a forecast, every count labelled where all fit.</sub></td>
 </tr>
 </table>
 

@@ -23,6 +23,7 @@ import {
   ConformanceReport,
   DataTable,
   ExportMenu,
+  HistogramChart,
   IbcsThemeProvider,
   MatrixTable,
   MiniVarianceMultiples,
@@ -32,7 +33,10 @@ import {
   TrendChart,
   VarianceColumnChart,
   defaultLabels,
+  mergeLabels,
+  useIbcsLabels,
   type IbcsLabels,
+  type IbcsLabelsComplete,
 } from "../../index";
 import { cases, featureCases } from "./fixtures";
 
@@ -49,7 +53,7 @@ function leaves(o: object, path: string[] = []): Array<[string, string]> {
 }
 
 /** The same dictionary with each word replaced by "ζ<n>" (templates keep their placeholders). */
-function sentinelLabels(): IbcsLabels {
+function sentinelLabels(): IbcsLabelsComplete {
   let i = 0;
   const walk = (o: Record<string, unknown>): Record<string, unknown> =>
     Object.fromEntries(
@@ -59,7 +63,7 @@ function sentinelLabels(): IbcsLabels {
         return [k, [`ζ${i++}`, ...placeholders].join(" ")];
       }),
     );
-  return walk(defaultLabels as unknown as Record<string, unknown>) as unknown as IbcsLabels;
+  return walk(defaultLabels as unknown as Record<string, unknown>) as unknown as IbcsLabelsComplete;
 }
 
 const escape = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -190,6 +194,7 @@ describe("labels reach every fixed word", () => {
       "BarVarianceWaterfallChart",
       "ColumnVarianceWaterfallChart",
       "GroupedVarianceChart",
+      "HistogramChart",
       "HorizontalWaterfallChart",
       "IntegratedVarianceChart",
       "PieChart",
@@ -261,6 +266,24 @@ function textOf(element: ReactElement): string {
 }
 
 describe("labels precedence", () => {
+  it("keeps useIbcsLabels typed IbcsLabels, as in 1.5.0, its value holding every word", () => {
+    // A 1.5.0 consumer may type a dictionary by the hook's return type.
+    const dictionary: IbcsLabels = mergeLabels({ total: "Ukupno" });
+    const typed: ReturnType<typeof useIbcsLabels> = dictionary;
+    function Probe() {
+      const words = useIbcsLabels({ total: "Svega" });
+      return <output>{[words.total, words.versus, words.count, words.moreIcons].join("|")}</output>;
+    }
+    render(
+      <IbcsThemeProvider labels={{ versus: "prema" }}>
+        <Probe />
+      </IbcsThemeProvider>,
+    );
+    expect(typed.total).toBe("Ukupno");
+    // The words added after 1.5.0 are filled at run time.
+    expect(screen.getByRole("status").textContent).toBe("Svega|prema|Count|+{count}");
+  });
+
   it("a component's labels win over the provider's, which win over the defaults", () => {
     const html = renderToStaticMarkup(
       <IbcsThemeProvider labels={{ total: "Ukupno", scenario: { PL: "Plan" } }}>
@@ -495,6 +518,35 @@ describe("labels in interactive and conditional states", () => {
     expect(html).toContain(">Razlika plan<");
     expect(html).toContain(">Razlika plan u %<");
     expect(html).not.toContain("Δ");
+  });
+
+  it("writes every HistogramChart word - mean, spread, n, count, share - from the dictionary", () => {
+    const sentinels = sentinelLabels();
+    const element = (
+      <HistogramChart
+        values={[1, 2, 2, 3, 3, 3, 4, 4, 5]}
+        binning={{ bins: 5 }}
+        mean={{ value: 3, halfWidth: 0.4, level: 0.95 }}
+        title="DPS"
+      />
+    );
+    // The defaults, unreplaced: each of the five words is there to be replaced.
+    const plain = render(element);
+    const plainText = plain.container.textContent ?? "";
+    for (const word of ["Mean 3.00", "Middle half 2.00–4.00", "n = 9", "Count", "Share"]) {
+      expect(plainText).toContain(word);
+    }
+    cleanup();
+    const html = renderToStaticMarkup(
+      <IbcsThemeProvider labels={sentinels}>{element}</IbcsThemeProvider>,
+    );
+    const { texts, attributes } = heardStrings(html);
+    expect([...texts, ...attributes].flatMap(offendersIn)).toEqual([]);
+    // Not vacuous: the sentinels took the five words' places.
+    for (const path of ["mean", "spread", "sampleSize", "count", "share"] as const) {
+      const word = sentinels[path].split(" ")[0]!;
+      expect(texts.some((t) => t.startsWith(word))).toBe(true);
+    }
   });
 
   it("lays TrendChart's legend out for longer words without overlap", () => {

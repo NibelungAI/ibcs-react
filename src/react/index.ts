@@ -67,6 +67,14 @@ export { RankingVarianceChart } from "./RankingVarianceChart";
 export type { RankingVarianceChartProps, RankingDatum, RankingBand } from "./RankingVarianceChart";
 export { ErrorBar } from "./ErrorBar";
 export type { ErrorBarProps } from "./ErrorBar";
+export { HistogramChart } from "./HistogramChart";
+export type {
+  HistogramChartProps,
+  HistogramBin,
+  HistogramBins,
+  HistogramMean,
+  HistogramSpread,
+} from "./HistogramChart";
 export { HorizontalWaterfallChart } from "./HorizontalWaterfallChart";
 export type { HorizontalWaterfallChartProps } from "./HorizontalWaterfallChart";
 export { GroupedVarianceChart } from "./GroupedVarianceChart";

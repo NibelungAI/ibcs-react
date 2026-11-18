@@ -63,7 +63,12 @@ export type { CompactSuffixes, FormatOptions, PercentFormatOptions } from "./for
 
 /* ./labels - the words components write themselves (i18n dictionary) */
 export { defaultLabels, fillLabel, mergeLabels } from "./labels";
-export type { IbcsExportLabels, IbcsLabels, IbcsLabelsOverride } from "./labels";
+export type {
+  IbcsExportLabels,
+  IbcsLabels,
+  IbcsLabelsComplete,
+  IbcsLabelsOverride,
+} from "./labels";
 
 /* ./errorBar - value ± half-width as whisker-and-cap geometry */
 export { computeErrorBar, errorBarExtent } from "./errorBar";
@@ -416,3 +421,17 @@ export type {
 /* ./horizontalWaterfall - row bands for the horizontal bridge (rest is ./waterfall) */
 export { rowBands } from "./horizontalWaterfall";
 export type { RowBand, RowBandLayout } from "./horizontalWaterfall";
+
+/* ./histogram - a distribution counted in classes of identical width */
+export { computeHistogram } from "./histogram";
+export type {
+  Histogram,
+  HistogramBin,
+  HistogramBins,
+  HistogramMean,
+  HistogramOptions,
+  HistogramSpread,
+} from "./histogram";
+
+/* ./rowIcon - a small picture (or several) before a row's label */
+export type { RowIcon } from "./rowIcon";

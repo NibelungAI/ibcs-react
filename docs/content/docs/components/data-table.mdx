@@ -5,6 +5,7 @@ description: The IBCS table with hierarchical rows and variance columns (templat
 
 import { DataTable } from "ibcs-react";
 import { regionRows, regionColumns } from "@/lib/demo-data/tables";
+import { EPIC, glyphs } from "@/lib/demo-data/distribution";
 
 The general comparison table: rows are entities (regions, teams, products),
 columns are measures. A column is a plain value, a variance drawn as an
@@ -241,6 +242,107 @@ On an abs variance column drawn as a `bar` the axis is the bar's length |Δ|
 from 0, so its band is given as lengths and a whisker that reaches past zero is
 cut at the axis (an open end). `ComparisonTable` reads the same column type but
 draws marks, error bars and bands in `DataTable` only.
+
+## Icons in row labels
+
+A row's `icon` puts a small picture before its label - an item or spell icon,
+a portrait - or several, left to right, as chips. Each is drawn at the table's
+`iconSize` (default 20, at most 28 in its 34 px rows), but never above
+`naturalSize / pixelRatio` CSS px, the size at which its file stays crisp: an
+18 px file is drawn at 18 px at most, and a 56 px file with `pixelRatio: 2` at
+28 px at most, so it stays sharp on 2× screens. Its `border` - an item's
+quality colour - is a 1 px frame over the icon's edge, so the image keeps its
+full size. A row's `labelColor` colours its label.
+
+<Frame>
+  <DataTable
+    columns={[
+      { key: "dps", label: "DPS", mark: "bar", format: { compact: false, fractionDigits: 1 } },
+      { key: "casts", label: "Casts", format: { compact: false, fractionDigits: 1 } },
+    ]}
+    rows={[
+      {
+        id: "shoot",
+        label: "Shoot",
+        icon: { src: glyphs.arrow, naturalSize: 56 },
+        values: { dps: 215.04, casts: 41.65 },
+      },
+      {
+        id: "raptor",
+        label: "Raptor Strike",
+        icon: { src: glyphs.blade, naturalSize: 56 },
+        values: { dps: 91.04, casts: 30.2 },
+      },
+      {
+        id: "ring",
+        label: "Signet of Embers",
+        labelColor: EPIC,
+        icon: { src: glyphs.ring, naturalSize: 56, border: EPIC },
+        values: { dps: 40.3, casts: 12 },
+      },
+      {
+        id: "trap",
+        label: "Immolation Trap",
+        icon: { src: glyphs.flame, naturalSize: 18 },
+        values: { dps: 31.5, casts: 6 },
+      },
+      { id: "melee", label: "Melee", values: { dps: 20.07, casts: 52.3 } },
+    ]}
+    showTotals
+  />
+</Frame>
+
+```tsx
+<DataTable
+  columns={columns}
+  rows={[
+    {
+      id: "shoot",
+      label: "Shoot",
+      icon: { src: shootIcon, naturalSize: 56 },
+      values: { dps: 215.04 },
+    },
+    {
+      id: "ring",
+      label: "Signet of Embers",
+      labelColor: "#a335ee", // epic
+      icon: { src: ringIcon, naturalSize: 56, border: "#a335ee" },
+      values: { dps: 40.3 },
+    },
+    // An 18 px file is drawn at 18 px, not stretched to 20.
+    {
+      id: "trap",
+      label: "Immolation Trap",
+      icon: { src: trapIcon, naturalSize: 18 },
+      values: { dps: 31.5 },
+    },
+    { id: "melee", label: "Melee", values: { dps: 20.07 } }, // no icon
+  ]}
+/>
+```
+
+- **The label stays the row's name.** An icon is decorative by default - its
+  `alt` is "" - so a screen reader reads the label alone. Give an `alt` when
+  the picture says what the label does not (the items a variant changes); it is
+  read before the label, as the markup orders them, set apart by a hidden
+  comma: "Signet of Embers, Best set".
+- **Labels stay aligned.** Every row keeps the room of the widest row's icons,
+  a row without an icon and the totals row too.
+- **Your own element.** `renderIcon(row, size, icon)` returns an element for a
+  row's slot in place of its `icon` - an icon that opens your own tooltip, a
+  spell icon with its school marker. `icon` is the row's own icons as the table
+  draws them (null for a row without), so a tooltip trigger can wrap them
+  without redrawing them:
+  `(row, size, icon) => icon && <Tip item={row.id}>{icon}</Tip>`. Return null
+  to fall back to the row's `icon`. The element's size and its accessible text
+  are yours.
+- **Contrast.** A quality colour on a label is text: keep it at 4.5:1 against
+  the table's surface. `labelColor` is per-row data, not themed, so check it in
+  every theme you use. On white, epic `#a335ee` (4.9:1) and rare `#0070dd`
+  (4.8:1) pass and the uncommon green `#1eff00` (1.4:1) does not. On
+  `darkTokens`' surface `#262622`, epic is 3.1:1 and rare 3.2:1; tints a
+  quarter of the way to white pass there - epic `#ba68f2` (4.6:1) and rare
+  `#4094e6` (4.8:1) - and the uncommon green does too (11.1:1).
 
 ## Sorting: controlled or uncontrolled
 
