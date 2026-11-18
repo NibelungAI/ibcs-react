@@ -63,7 +63,12 @@ export type { CompactSuffixes, FormatOptions, PercentFormatOptions } from "./for
 
 /* ./labels - the words components write themselves (i18n dictionary) */
 export { defaultLabels, fillLabel, mergeLabels } from "./labels";
-export type { IbcsExportLabels, IbcsLabels, IbcsLabelsOverride } from "./labels";
+export type {
+  IbcsExportLabels,
+  IbcsLabels,
+  IbcsLabelsComplete,
+  IbcsLabelsOverride,
+} from "./labels";
 
 /* ./errorBar - value ± half-width as whisker-and-cap geometry */
 export { computeErrorBar, errorBarExtent } from "./errorBar";

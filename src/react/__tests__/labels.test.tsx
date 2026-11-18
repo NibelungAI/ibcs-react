@@ -33,7 +33,7 @@ import {
   TrendChart,
   VarianceColumnChart,
   defaultLabels,
-  type IbcsLabels,
+  type IbcsLabelsComplete,
 } from "../../index";
 import { cases, featureCases } from "./fixtures";
 
@@ -50,7 +50,7 @@ function leaves(o: object, path: string[] = []): Array<[string, string]> {
 }
 
 /** The same dictionary with each word replaced by "ζ<n>" (templates keep their placeholders). */
-function sentinelLabels(): IbcsLabels {
+function sentinelLabels(): IbcsLabelsComplete {
   let i = 0;
   const walk = (o: Record<string, unknown>): Record<string, unknown> =>
     Object.fromEntries(
@@ -60,7 +60,7 @@ function sentinelLabels(): IbcsLabels {
         return [k, [`ζ${i++}`, ...placeholders].join(" ")];
       }),
     );
-  return walk(defaultLabels as unknown as Record<string, unknown>) as unknown as IbcsLabels;
+  return walk(defaultLabels as unknown as Record<string, unknown>) as unknown as IbcsLabelsComplete;
 }
 
 const escape = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");

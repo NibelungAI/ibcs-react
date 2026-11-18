@@ -23,12 +23,12 @@ import {
 import {
   defaultLabels,
   mergeLabels,
-  type IbcsLabels,
+  type IbcsLabelsComplete,
   type IbcsLabelsOverride,
 } from "../core/labels";
 
 const IbcsThemeContext = createContext<IbcsTokens>(defaultTokens);
-const IbcsLabelsContext = createContext<IbcsLabels>(defaultLabels);
+const IbcsLabelsContext = createContext<IbcsLabelsComplete>(defaultLabels);
 
 export interface IbcsThemeProviderProps {
   /**
@@ -73,7 +73,7 @@ export function useIbcsTokens(override?: IbcsTokensOverride): IbcsTokens {
  * - what every component calls to resolve its `labels` prop. Public so custom
  * charts speak the same words as the built-in ones.
  */
-export function useIbcsLabels(override?: IbcsLabelsOverride): IbcsLabels {
+export function useIbcsLabels(override?: IbcsLabelsOverride): IbcsLabelsComplete {
   const base = useContext(IbcsLabelsContext);
   return useMemo(() => (override ? mergeLabels(override, base) : base), [override, base]);
 }

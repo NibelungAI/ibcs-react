@@ -13,6 +13,13 @@
  * them (the words of components added since, such as `HistogramChart`'s, are
  * new), so nothing changes until you pass words of your own.
  *
+ * Words added after 1.5.0 are optional in {@link IbcsLabels}: a complete
+ * dictionary written for an earlier version still type-checks, and the
+ * defaults fill the words it lacks. Components read
+ * {@link IbcsLabelsComplete}, where every word is present; a translator who
+ * wants TypeScript to name each new word as it arrives types their dictionary
+ * with it.
+ *
  * Two things live elsewhere on purpose:
  *  - the text for a missing number ("n/a") belongs to the number format -
  *    `FormatOptions.notAvailable` - since the formatter writes it;
@@ -87,22 +94,32 @@ export interface IbcsLabels {
   valueNumbered: string;
   /** Share of the whole (pie, structure, a histogram class's share of n). Default "Share". */
   share: string;
-  /** The number of values in a histogram class (table column, tooltip). Default "Count". */
-  count: string;
   /**
-   * `HistogramChart`'s mean label: `{value}` is the mean with its interval,
-   * and the interval's level when given ("910.8 ± 0.9 (95%)"). Default
-   * "Mean {value}".
+   * The number of values in a histogram class (table column, tooltip).
+   * Default "Count". Optional (added in 1.6): the default fills it.
    */
-  mean: string;
+  count?: string;
+  /**
+   * `HistogramChart`'s mean label: `{value}` is the mean, or the mean with its
+   * interval and the interval's level ("910.8 ± 0.9 (95%)"). Default
+   * "Mean {value}". Optional (added in 1.6): the default fills it.
+   */
+  mean?: string;
   /**
    * `HistogramChart`'s caption of its spread band: `{range}` is "from–to".
    * Default "Middle half {range}", which names the default spread (the first
-   * to the third quartile); a spread of your own needs its own words here.
+   * to the third quartile); a spread of your own takes its own words, its
+   * `label` or this word. Optional (added in 1.6): the default fills it.
    */
-  spread: string;
-  /** `HistogramChart`'s number of values. Default "n = {n}". */
-  sampleSize: string;
+  spread?: string;
+  /** `HistogramChart`'s number of values. Default "n = {n}". Optional (added in 1.6): the default fills it. */
+  sampleSize?: string;
+  /**
+   * The chips a ranking row has no room for, after the ones it draws
+   * (`RankingVarianceChart`). Default "+{count}". Optional (added in 1.6): the
+   * default fills it.
+   */
+  moreIcons?: string;
   /** The latest value of `RatioTreeChart`. Default "Latest". */
   latest: string;
   /** A bridge step's own size (waterfalls). Default "Contribution". */
@@ -194,8 +211,17 @@ export interface IbcsLabels {
   export: IbcsExportLabels;
 }
 
-/** The 1.4 words, byte for byte, and the words of components added since (`count`, `mean`, `spread`, `sampleSize`). */
-export const defaultLabels: IbcsLabels = {
+/**
+ * The dictionary as components read it: {@link IbcsLabels} with every word
+ * present, including those added after 1.5.0. {@link mergeLabels} and
+ * `useIbcsLabels` return it. It is also the strict type for a translation: a
+ * dictionary typed with it fails to compile until it names every word, so
+ * TypeScript lists each word a later version adds.
+ */
+export type IbcsLabelsComplete = Required<IbcsLabels>;
+
+/** The 1.4 words, byte for byte, and the words of components added since (`count`, `mean`, `spread`, `sampleSize`, `moreIcons`). */
+export const defaultLabels: IbcsLabelsComplete = {
   scenario: { AC: "AC", PY: "PY", PL: "PL", FC: "FC" },
   scenarioTitle: { AC: "Actual", PY: "PY", PL: "Plan / budget", FC: "Forecast" },
   delta: "Δ{base}",
@@ -211,6 +237,7 @@ export const defaultLabels: IbcsLabels = {
   mean: "Mean {value}",
   spread: "Middle half {range}",
   sampleSize: "n = {n}",
+  moreIcons: "+{count}",
   latest: "Latest",
   contribution: "Contribution",
   runningTotal: "Running total",
@@ -278,23 +305,34 @@ function assignDefined<T extends object>(base: T, override: Partial<T> | undefin
   return out;
 }
 
+/** The words that are optional in {@link IbcsLabels} (added after 1.5.0). */
+const ADDED_WORDS = ["count", "mean", "spread", "sampleSize", "moreIcons"] as const;
+
+/** A dictionary with every word: the defaults fill the optional ones it lacks (the same object when it lacks none). */
+function complete(base: IbcsLabels): IbcsLabelsComplete {
+  if (ADDED_WORDS.every((word) => base[word] !== undefined)) return base as IbcsLabelsComplete;
+  return assignDefined(defaultLabels, base as Partial<IbcsLabelsComplete>);
+}
+
 /**
  * Merge a partial dictionary onto a base one (group by group). The base
  * defaults to {@link defaultLabels}, so overrides compose:
- * `mergeLabels({ total: "Ukupno" }, srLabels)`.
+ * `mergeLabels({ total: "Ukupno" }, srLabels)`. The result has every word: the
+ * defaults fill any optional word that neither gives.
  */
 export function mergeLabels(
   override?: IbcsLabelsOverride,
   base: IbcsLabels = defaultLabels,
-): IbcsLabels {
-  if (!override) return base;
+): IbcsLabelsComplete {
+  const full = complete(base);
+  if (!override) return full;
   const { scenario, scenarioTitle, severity, export: exportLabels, ...words } = override;
   return {
-    ...assignDefined(base, words as Partial<IbcsLabels>),
-    scenario: assignDefined(base.scenario, scenario),
-    scenarioTitle: assignDefined(base.scenarioTitle, scenarioTitle),
-    severity: assignDefined(base.severity, severity),
-    export: assignDefined(base.export, exportLabels),
+    ...assignDefined(full, words as Partial<IbcsLabelsComplete>),
+    scenario: assignDefined(full.scenario, scenario),
+    scenarioTitle: assignDefined(full.scenarioTitle, scenarioTitle),
+    severity: assignDefined(full.severity, severity),
+    export: assignDefined(full.export, exportLabels),
   };
 }
 
