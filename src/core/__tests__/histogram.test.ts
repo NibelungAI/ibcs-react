@@ -289,7 +289,7 @@ describe("computeHistogram - the Freedman-Diaconis rule, bounded (R33)", () => {
   });
 });
 
-describe("computeHistogram - bounded on narrow ranges far from zero", () => {
+describe("computeHistogram - a short last edge closed in bounded steps", () => {
   /**
    * The counting's own guarantees, without "the first and last classes hold a
    * value": when a class is narrower than a double's resolution at that
@@ -365,14 +365,39 @@ describe("computeHistogram - bounded on narrow ranges far from zero", () => {
       [1_763_424_000_000, 60_000],
       [1_763_424_000_000, 1_000],
     ];
-    const t0 = performance.now();
+    // Only the counting is timed. The one-ulp loop spent about a second on
+    // these 140 samples, up to 1.1·10⁸ turns on one; the bounded steps take a
+    // few milliseconds.
+    let ms = 0;
     for (const [centre, spread] of rows) {
       for (let seed = 1; seed <= 20; seed++) {
         const values = sample(200, centre, spread, seed);
-        expectCoverage(values, computeHistogram(values));
+        const t0 = performance.now();
+        const h = computeHistogram(values);
+        ms += performance.now() - t0;
+        expectCoverage(values, h);
       }
     }
-    expect(performance.now() - t0).toBeLessThan(5_000);
+    expect(ms).toBeLessThan(250);
+  });
+
+  it("doubles the step when the first one leaves the last edge short too", () => {
+    // From a search of 3·10⁶ random ranges: 859 needed one doubling, none two.
+    const cases: Array<[number, number, number]> = [
+      [497.0664277636007, 499.44093437777366, 52],
+      [524620408.57070297, 524620408.5901142, 56],
+      [-0.11012181624960997, -0.059444887818199524, 52],
+    ];
+    for (const [min, max, k] of cases) {
+      const plain = max / k - min / k;
+      const last = histogramEdge(min, plain, k);
+      expect(last).toBeLessThan(max);
+      const firstStep = plain + Math.max((max - last) / k, ulpOf(plain));
+      expect(histogramEdge(min, firstStep, k)).toBeLessThan(max);
+      const h = computeHistogram([min, max], { bins: k });
+      expect(h.width).toBeGreaterThan(firstStep);
+      expectCoverage([min, max], h);
+    }
   });
 
   it("ulpOf: the gap to the next double, exact at every exponent", () => {
