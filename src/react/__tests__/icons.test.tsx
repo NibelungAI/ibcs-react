@@ -2,15 +2,15 @@
 /**
  * The icon slot in row labels (`DataTable`, `RankingVarianceChart`): an image
  * or the caller's element per row, drawn at the component's icon size but
- * never above the image's own size or 56 CSS px; the label keeps naming the
- * row, rows without an icon keep the labels aligned, and without icons
- * nothing in the markup changes (the markup snapshots hold the fixtures' 1.5
- * output, byte for byte).
+ * never above `naturalSize / pixelRatio` or 56 CSS px; the label keeps naming
+ * the row, rows without an icon keep the labels aligned, chips without room
+ * are counted, and without icons nothing in the markup changes (the markup
+ * snapshots hold the fixtures' 1.5 output, byte for byte).
  */
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { cleanup, render, screen, within } from "@testing-library/react";
 import { renderToStaticMarkup } from "react-dom/server";
-import type { ReactElement } from "react";
+import { cloneElement, type ReactElement } from "react";
 
 import {
   DataTable,
@@ -19,9 +19,11 @@ import {
   type DataTableColumn,
   type DataTableRow,
   type RankingDatum,
+  type RankingVarianceChartProps,
   type RowIcon,
 } from "../../index";
 import { estTextW } from "../internal/text";
+import { featureCases } from "./fixtures";
 
 afterEach(cleanup);
 
@@ -66,7 +68,7 @@ describe("DataTable - icons in row labels", () => {
     expect(before).not.toContain("<img");
   });
 
-  it("draws each icon at the icon size, never above its own size: never upscaled", () => {
+  it("draws each icon at the icon size, never above its own size", () => {
     const body = ssr(<DataTable columns={columns} rows={rows} />);
     const imgs = [...body.querySelectorAll("img")];
     expect(imgs.map((i) => [i.getAttribute("src"), num(i, "width"), num(i, "height")])).toEqual([
@@ -84,7 +86,7 @@ describe("DataTable - icons in row labels", () => {
     }
   });
 
-  it("frames an icon in its border colour inside its box, and fits a picture that is not square", () => {
+  it("frames an icon with an outline over its edge, so the bitmap keeps the full box size", () => {
     const body = ssr(
       <DataTable
         columns={columns}
@@ -99,12 +101,18 @@ describe("DataTable - icons in row labels", () => {
       />,
     );
     const img = body.querySelector("img")!;
-    expect(img.style.border).toBe("1px solid rgb(163, 53, 238)");
-    expect(img.style.boxSizing).toBe("border-box");
+    // An outline drawn 1 px inside the edge, as the svg frame is: no border
+    // box shrinks the image, so a 20 px icon is drawn on 20 × 20 pixels.
+    expect(img.getAttribute("style")).toContain("outline:1px solid #a335ee;outline-offset:-1px");
+    expect(img.style.border).toBe("");
+    expect(img.style.boxSizing).toBe("");
+    expect([num(img, "width"), num(img, "height")]).toEqual([20, 20]);
     expect(img.style.objectFit).toBe("contain");
     expect(
-      ssr(<DataTable columns={columns} rows={rows} />).querySelector("img")!.style.border,
-    ).toBe("");
+      ssr(<DataTable columns={columns} rows={rows} />)
+        .querySelector("img")!
+        .getAttribute("style"),
+    ).not.toContain("outline");
   });
 
   it("keeps the label the row's name: icons are decorative unless they carry an alt", () => {
@@ -130,8 +138,11 @@ describe("DataTable - icons in row labels", () => {
     expect(screen.getAllByRole("img", { hidden: false }).map((i) => i.getAttribute("alt"))).toEqual(
       ["Signet of Embers", "Runed Greatsword"],
     );
+    // The alts and the label are read apart: a hidden ", " follows each alt.
+    // (The images are blocks, so the name algorithm also puts spaces around
+    // their alts; a screen reader pauses at the commas.)
     expect(
-      screen.getByRole("rowheader", { name: "Signet of Embers Runed Greatsword Best set" }),
+      screen.getByRole("rowheader", { name: "Signet of Embers , Runed Greatsword , Best set" }),
     ).toBeTruthy();
     // Decorative icons are left out of the accessibility tree by their empty alt.
     for (const img of document.querySelectorAll("img[src$='shoot.png'], img[src$='small.png']")) {
@@ -155,7 +166,13 @@ describe("DataTable - icons in row labels", () => {
     );
     expect(slots[2]!.children).toHaveLength(0); // Melee: an empty slot
     expect(slots[4]!.children).toHaveLength(0); // the totals row
-    expect(slots[3]!.style.gap).toBe("2px");
+    // A row's icons side by side in one flex box, 2px apart.
+    const group = slots[3]!.firstElementChild as HTMLElement;
+    expect([group.style.display, group.style.gap, group.children.length]).toEqual([
+      "flex",
+      "2px",
+      2,
+    ]);
   });
 
   it("colours a label with its labelColor, and leaves the others in the theme's colours", () => {
@@ -180,7 +197,7 @@ describe("DataTable - icons in row labels", () => {
   });
 
   it("puts the caller's element in the slot, and falls back to the row's icon when it returns null", () => {
-    const renderIcon = vi.fn((row: DataTableRow, size: number) =>
+    const renderIcon = vi.fn((row: DataTableRow, size: number, _icon: unknown) =>
       row.id === "melee" ? null : (
         <button type="button" aria-label={`About ${row.label}`} style={{ width: size }} />
       ),
@@ -188,11 +205,12 @@ describe("DataTable - icons in row labels", () => {
     render(
       <DataTable columns={columns} rows={rows} renderIcon={renderIcon} showTotals iconSize={24} />,
     );
-    // Called for every row but the totals row, with the row and the icon size.
-    expect(renderIcon.mock.calls.map(([r, s]) => [r.id, s])).toEqual([
-      ["shoot", 24],
-      ["trap", 24],
-      ["melee", 24],
+    // Called for every row but the totals row, with the row, the icon size and
+    // the row's own icons (null for a row without).
+    expect(renderIcon.mock.calls.map(([r, s, icon]) => [r.id, s, icon != null])).toEqual([
+      ["shoot", 24, true],
+      ["trap", 24, true],
+      ["melee", 24, false],
     ]);
     const button = screen.getByRole("button", { name: "About Shoot" });
     const slot = button.parentElement!;
@@ -202,6 +220,42 @@ describe("DataTable - icons in row labels", () => {
     const melee = screen.getByRole("rowheader", { name: "Melee" });
     expect(labelParts(melee)[1]!.style.width).toBe("24px");
     expect(within(melee).queryByRole("img")).toBeNull();
+  });
+
+  it("hands renderIcon the row's own icons, to wrap in a trigger without redrawing them", () => {
+    const body = ssr(
+      <DataTable
+        columns={columns}
+        rows={[
+          ...rows,
+          {
+            id: "two",
+            label: "Two",
+            icon: [big("a.png", { border: "#a335ee", alt: "Ring" }), small],
+            values: { dps: 1 },
+          },
+        ]}
+        renderIcon={(row, _size, icon) => icon && <span data-tip={row.id}>{icon}</span>}
+      />,
+    );
+    const tips = [...body.querySelectorAll("[data-tip]")];
+    expect(tips.map((t) => t.getAttribute("data-tip"))).toEqual(["shoot", "trap", "two"]);
+    // The icons as the table draws them - sized, framed, named - side by side
+    // in one flex box, so the wrapper does not stack them.
+    const group = tips[2]!.firstElementChild as HTMLElement;
+    expect([group.style.display, group.style.gap]).toEqual(["flex", "2px"]);
+    const imgs = [...group.querySelectorAll("img")];
+    expect(
+      imgs.map((i) => [i.getAttribute("src"), num(i, "width"), i.getAttribute("alt")]),
+    ).toEqual([
+      ["a.png", 20, "Ring"],
+      ["small.png", 18, ""],
+    ]);
+    expect(imgs[0]!.getAttribute("style")).toContain("outline:1px solid #a335ee");
+    // Melee has no icon: renderIcon gets null and returns it, so the slot stays empty.
+    const melee = body.querySelectorAll("tbody th")[2]!;
+    expect(melee.textContent).toBe("Melee");
+    expect(melee.querySelector("img, [data-tip]")).toBeNull();
   });
 
   it("does not shrink the slot when the label is cut to maxLabelWidth", () => {
@@ -227,6 +281,37 @@ describe("DataTable - icons in row labels", () => {
   });
 });
 
+describe("icons on dense screens: pixelRatio", () => {
+  it("draws an icon no larger than naturalSize / pixelRatio, in both components", () => {
+    const tableWidth = (icon: RowIcon) =>
+      num(
+        ssr(
+          <DataTable
+            columns={columns}
+            rows={[{ id: "r", label: "R", icon, values: { dps: 1 } }]}
+            iconSize={28}
+          />,
+        ).querySelector("img")!,
+        "width",
+      );
+    expect(tableWidth({ src: "r.png", naturalSize: 36 })).toBe(28);
+    expect(tableWidth({ src: "r.png", naturalSize: 36, pixelRatio: 2 })).toBe(18);
+    const chartWidth = (icon: RowIcon) =>
+      num(
+        ssr(
+          <RankingVarianceChart
+            data={[{ label: "R", AC: 2, base: 1, icon }]}
+            rowHeight={40}
+            iconSize={36}
+          />,
+        ).querySelector("image")!,
+        "width",
+      );
+    expect(chartWidth({ src: "r.png", naturalSize: 56 })).toBe(36);
+    expect(chartWidth({ src: "r.png", naturalSize: 56, pixelRatio: 2 })).toBe(28);
+  });
+});
+
 /* ---------------------------- RankingVarianceChart ---------------------------- */
 
 const ranking: RankingDatum[] = [
@@ -249,6 +334,33 @@ const ranking: RankingDatum[] = [
   { label: "Equipped", AC: 910.84, base: 910.84 },
   { label: "Runed Greatsword", AC: 906.25, base: 910.84, icon: small },
 ];
+
+/**
+ * The ranking chart's panels, from its headers: the AC panel's start and the
+ * three panels' widths, split 44 / 30 / 26 as 1.5 splits them, with 10px gaps.
+ */
+function panelsOf(svg: Element) {
+  const heads = [...svg.querySelectorAll(":scope > text[font-size='10.5']")];
+  const acX0 = num(heads.find((t) => !t.hasAttribute("text-anchor"))!, "x");
+  const absCx = num(
+    heads.find((t) => t.getAttribute("text-anchor") === "middle" && !t.hasAttribute("font-style"))!,
+    "x",
+  );
+  const pctCx = num(heads.find((t) => t.getAttribute("font-style") === "italic")!, "x");
+  // pctCx - absCx = absW / 2 + 10 + pctW / 2 = 0.28 of the panels' room, + 10.
+  const room = (pctCx - absCx - 10) / 0.28;
+  const absW = room * 0.3;
+  const pctW = room * 0.26;
+  return {
+    acX0,
+    absCx,
+    pctCx,
+    acW: absCx - absW / 2 - 10 - acX0,
+    absW,
+    pctW,
+    right: pctCx + pctW / 2,
+  };
+}
 
 /** The row labels (the 12px texts with a native <title>), and the AC header's x. */
 function rankingParts(body: HTMLElement) {
@@ -372,7 +484,7 @@ describe("RankingVarianceChart - icons in row labels", () => {
     );
     const heads = [...container.querySelectorAll("tbody th")].map((t) => t.textContent);
     expect(heads).toEqual([
-      "Signet of Embers Runed Greatsword Best set",
+      "Signet of Embers, Runed Greatsword, Best set",
       "Signet of Embers",
       "Equipped",
       "Runed Greatsword",
@@ -401,6 +513,169 @@ describe("RankingVarianceChart - icons in row labels", () => {
     // Equipped returned null and has no icon: nothing drawn, label still aligned.
     expect(svg.querySelectorAll("image")).toHaveLength(0);
     expect(renderIcon.mock.calls.map(([, s]) => s)).toEqual([16, 16, 16, 16]);
+  });
+
+  it("counts the chips it has no room for in a +N, and names them in the label's tooltip (320px)", () => {
+    const six = Array.from({ length: 6 }, (_, i) => big(`c${i}.png`, { alt: `Item ${i + 1}` }));
+    const data: RankingDatum[] = [
+      { label: "Best set", AC: 914.3, base: 910.84, icon: six },
+      { label: "Equipped", AC: 910.84, base: 910.84 },
+    ];
+    const cases = [
+      [undefined, (n: number) => `+${n}`],
+      [{ moreIcons: "{count} more" }, (n: number) => `${n} more`],
+    ] as const;
+    for (const [labels, more] of cases) {
+      const body = ssr(
+        <RankingVarianceChart data={data} sortBy="none" width={320} labels={labels} />,
+      );
+      const { svg, labels: heads, images } = rankingParts(body);
+      const kept = images.length;
+      expect(kept).toBeGreaterThan(0);
+      expect(kept).toBeLessThan(6);
+      expect(images.map((i) => i.getAttribute("href"))).toEqual(
+        six.slice(0, kept).map((i) => i.src),
+      );
+      // In the label column (the variance panels write their own "+3"s).
+      const plus = [...svg.querySelectorAll("text")].filter(
+        (t) => t.textContent === more(6 - kept) && num(t, "x") < panelsOf(svg).acX0,
+      );
+      expect(plus).toHaveLength(1);
+      const plusX = num(plus[0]!, "x");
+      const last = images[kept - 1]!;
+      // After the last chip and a 3px gap; it ends at least 6px before the
+      // label, which starts where every row's label starts.
+      expect(plusX).toBe(num(last, "x") + num(last, "width") + 3);
+      const plusW = estTextW(more(6 - kept), num(plus[0]!, "font-size"));
+      expect(plusX + plusW).toBeLessThanOrEqual(num(heads[0]!, "x") - 6);
+      expect(num(heads[1]!, "x")).toBe(num(heads[0]!, "x"));
+      // The chips left out are named in the label's tooltip, after the label;
+      // the screen-reader table names all six.
+      expect(heads[0]!.querySelector("title")!.textContent).toBe(
+        ["Best set", ...six.slice(kept).map((i) => i.alt)].join(", "),
+      );
+      expect(heads[1]!.querySelector("title")!.textContent).toBe("Equipped");
+    }
+    cleanup();
+    const { container } = render(
+      <RankingVarianceChart data={data} sortBy="none" width={320} tooltip={false} />,
+    );
+    expect(container.querySelector("tbody th")!.textContent).toBe(
+      [...six.map((i) => i.alt), "Best set"].join(", "),
+    );
+  });
+
+  it("hands renderIcon the chart's own icons, drawn in its box, to wrap without redrawing them", () => {
+    const six = Array.from({ length: 6 }, (_, i) => big(`c${i}.png`));
+    const data: RankingDatum[] = [
+      { label: "Best set", AC: 914.3, base: 910.84, icon: six },
+      { label: "Equipped", AC: 910.84, base: 910.84 },
+      { label: "Signet", AC: 914.05, base: 910.84, icon: big("ring.png", { border: "#a335ee" }) },
+    ];
+    const calls: Array<[string, boolean]> = [];
+    const svg = rankingParts(
+      ssr(
+        <RankingVarianceChart
+          data={data}
+          sortBy="none"
+          width={320}
+          renderIcon={(row, _size, icon) => {
+            calls.push([row.label, icon != null]);
+            return icon && <g data-tip={row.label}>{icon}</g>;
+          }}
+        />,
+      ),
+    ).svg;
+    expect(calls).toEqual([
+      ["Best set", true],
+      ["Equipped", false],
+      ["Signet", true],
+    ]);
+    const tips = [...svg.querySelectorAll("g[data-tip]")];
+    expect(tips.map((g) => g.getAttribute("data-tip"))).toEqual(["Best set", "Signet"]);
+    // In the box's own coordinates: chips from x 0, centred on the box's
+    // middle (20px chips in a 20px box: y 0), then the +N; the frame too.
+    const chips = [...tips[0]!.querySelectorAll("image")];
+    expect(chips.length).toBeGreaterThan(0);
+    expect(chips.length).toBeLessThan(6);
+    expect(chips.map((i) => [num(i, "x"), num(i, "y")])).toEqual(chips.map((_, k) => [k * 22, 0]));
+    expect(tips[0]!.querySelector("text")!.textContent).toBe(`+${6 - chips.length}`);
+    expect(tips[1]!.querySelector("rect")!.getAttribute("stroke")).toBe("#a335ee");
+    // The box itself sits at the label's start, centred on the row.
+    expect(tips[0]!.parentElement!.getAttribute("transform")).toBe("translate(12 33)");
+  });
+
+  it("takes the icon slot from the AC panel: the variance panels keep 1.5's widths (560px)", () => {
+    const fixture = featureCases.find((c) => c.name === "RankingVarianceChart-icons")!
+      .element as ReactElement<RankingVarianceChartProps>;
+    const at = (withIcons: boolean) => {
+      const data = withIcons
+        ? fixture.props.data
+        : fixture.props.data.map(({ icon: _i, ...d }) => d);
+      return ssr(cloneElement(fixture, { width: 560, data })).querySelector("svg")!;
+    };
+    const plain = at(false);
+    const icons = at(true);
+    const [p0, p1] = [panelsOf(plain), panelsOf(icons)];
+    // The label column grew by the slot (two 20px chips, a 2px gap, 6px to the label) ...
+    expect(p1.acX0 - p0.acX0).toBe(48);
+    // ... and the AC panel alone gave it up.
+    expect(p1.acW).toBeCloseTo(p0.acW - 48, 9);
+    expect([p1.absCx, p1.pctCx, p1.right]).toEqual([p0.absCx, p0.pctCx, p0.right]);
+    // So every variance mark and label sits where 1.5 draws it at this width.
+    const deltaSide = (svg: Element, from: number) =>
+      [...svg.querySelectorAll("text, circle, line, rect")]
+        .map((el) => [
+          el.tagName,
+          el.getAttribute("x") ?? el.getAttribute("cx") ?? el.getAttribute("x1"),
+          el.textContent,
+        ])
+        .filter(([, x]) => x != null && Number(x) >= from);
+    const from = p0.absCx - p0.absW / 2;
+    expect(deltaSide(icons, from)).toEqual(deltaSide(plain, from));
+    expect(deltaSide(plain, from).length).toBeGreaterThan(10);
+  });
+
+  it("shrinks the three panels together past half the AC panel, never jumping as the slot grows", () => {
+    // 1000px: the label column may grow by up to 222px, more than half the AC panel.
+    const chips = (n: number): RankingDatum[] => [
+      {
+        label: "Set",
+        AC: 10,
+        base: 9,
+        icon: Array.from({ length: n }, (_, i) => big(`w${i}.png`)),
+      },
+      { label: "One", AC: 9, base: 9 },
+    ];
+    const layouts = Array.from({ length: 13 }, (_, n) =>
+      panelsOf(
+        ssr(<RankingVarianceChart data={chips(n)} sortBy="none" width={1000} />).querySelector(
+          "svg",
+        )!,
+      ),
+    );
+    const plain = layouts[0]!;
+    for (const [n, p] of layouts.entries()) {
+      // The panels always end at the chart's right edge.
+      expect(p.right).toBeCloseTo(1000 - 12, 9);
+      if (n === 0) continue;
+      const prev = layouts[n - 1]!;
+      // One more chip never widens a panel.
+      expect(p.acW).toBeLessThanOrEqual(prev.acW + 1e-9);
+      expect(p.absW).toBeLessThanOrEqual(prev.absW + 1e-9);
+      expect(p.pctW).toBeLessThanOrEqual(prev.pctW + 1e-9);
+      if (p.acW >= plain.acW / 2 - 1e-9) {
+        // Within half the AC panel: the variance panels keep their widths.
+        expect([p.absW, p.pctW]).toEqual([plain.absW, plain.pctW]);
+      } else {
+        // Past it: AC at half, all three shrunk together in 22 : 30 : 26.
+        expect(p.acW / p.absW).toBeCloseTo(0.22 / 0.3, 9);
+        expect(p.absW).toBeLessThan(plain.absW);
+      }
+    }
+    // Both regimes occur.
+    expect(layouts.some((p) => p.absW < plain.absW)).toBe(true);
+    expect(layouts.filter((p) => p.absW === plain.absW).length).toBeGreaterThan(2);
   });
 
   it("sizes icons to the row: at most its height minus 4 and 56, at least 8", () => {

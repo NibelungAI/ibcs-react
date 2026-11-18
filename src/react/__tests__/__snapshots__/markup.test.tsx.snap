@@ -1309,8 +1309,10 @@ exports[`component markup snapshots > DataTable-icons renders stable markup 1`] 
 <span style="display:inline-flex;align-items:center;padding-left:0;min-width:0">
 <span style="width:16px;flex:0 0 auto">
 </span>
-<span style="display:inline-flex;align-items:center;gap:2px;flex:0 0 auto;width:20px;margin-right:6px">
-<img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2256%22%20height%3D%2256%22%20viewBox%3D%220%200%2056%2056%22%3E%3Crect%20width%3D%2256%22%20height%3D%2256%22%20fill%3D%22%2324382c%22%2F%3E%3Cpath%20d%3D%22M13%2043%20L41%2015%20M27%2015%20H41%20V29%22%20stroke%3D%22%23d3e6b5%22%20stroke-width%3D%225%22%20fill%3D%22none%22%2F%3E%3C%2Fsvg%3E" alt="" width="20" height="20" style="display:block;flex:0 0 auto;box-sizing:border-box;object-fit:contain"/>
+<span style="display:inline-flex;align-items:center;flex:0 0 auto;width:20px;margin-right:6px">
+<span style="display:flex;align-items:center;gap:2px">
+<img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2256%22%20height%3D%2256%22%20viewBox%3D%220%200%2056%2056%22%3E%3Crect%20width%3D%2256%22%20height%3D%2256%22%20fill%3D%22%2324382c%22%2F%3E%3Cpath%20d%3D%22M13%2043%20L41%2015%20M27%2015%20H41%20V29%22%20stroke%3D%22%23d3e6b5%22%20stroke-width%3D%225%22%20fill%3D%22none%22%2F%3E%3C%2Fsvg%3E" alt="" width="20" height="20" style="display:block;flex:0 0 auto;object-fit:contain"/>
+</span>
 </span>
 <span title="Shoot" style="font-size:12.5px;font-weight:400;color:#2b2b29">Shoot</span>
 </span>
@@ -1333,8 +1335,10 @@ exports[`component markup snapshots > DataTable-icons renders stable markup 1`] 
 <span style="display:inline-flex;align-items:center;padding-left:0;min-width:0">
 <span style="width:16px;flex:0 0 auto">
 </span>
-<span style="display:inline-flex;align-items:center;gap:2px;flex:0 0 auto;width:20px;margin-right:6px">
-<img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2256%22%20height%3D%2256%22%20viewBox%3D%220%200%2056%2056%22%3E%3Crect%20width%3D%2256%22%20height%3D%2256%22%20fill%3D%22%232f3d4a%22%2F%3E%3Cpath%20d%3D%22M15%2041%20L40%2016%22%20stroke%3D%22%23e9dcb0%22%20stroke-width%3D%226%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M13%2033%20L23%2043%22%20stroke%3D%22%23c7a35a%22%20stroke-width%3D%225%22%2F%3E%3C%2Fsvg%3E" alt="" width="20" height="20" style="display:block;flex:0 0 auto;box-sizing:border-box;object-fit:contain"/>
+<span style="display:inline-flex;align-items:center;flex:0 0 auto;width:20px;margin-right:6px">
+<span style="display:flex;align-items:center;gap:2px">
+<img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2256%22%20height%3D%2256%22%20viewBox%3D%220%200%2056%2056%22%3E%3Crect%20width%3D%2256%22%20height%3D%2256%22%20fill%3D%22%232f3d4a%22%2F%3E%3Cpath%20d%3D%22M15%2041%20L40%2016%22%20stroke%3D%22%23e9dcb0%22%20stroke-width%3D%226%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M13%2033%20L23%2043%22%20stroke%3D%22%23c7a35a%22%20stroke-width%3D%225%22%2F%3E%3C%2Fsvg%3E" alt="" width="20" height="20" style="display:block;flex:0 0 auto;object-fit:contain"/>
+</span>
 </span>
 <span title="Raptor Strike" style="font-size:12.5px;font-weight:400;color:#2b2b29">Raptor Strike</span>
 </span>
@@ -1356,8 +1360,10 @@ exports[`component markup snapshots > DataTable-icons renders stable markup 1`] 
 <th scope="row" style="padding:0 10px;white-space:nowrap;text-align:left;font-weight:400">
 <span style="display:inline-flex;align-items:center;padding-left:0;min-width:0">
 <button type="button" aria-label="Collapse" aria-expanded="true" style="border:none;background:none;cursor:pointer;padding:0;margin-right:4px;width:12px;flex:0 0 auto;color:#6b6a64;font-size:10px;line-height:1;transition:transform 120ms;transform:rotate(90deg)">▶</button>
-<span style="display:inline-flex;align-items:center;gap:2px;flex:0 0 auto;width:20px;margin-right:6px">
-<img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2256%22%20height%3D%2256%22%20viewBox%3D%220%200%2056%2056%22%3E%3Crect%20width%3D%2256%22%20height%3D%2256%22%20fill%3D%22%233a3026%22%2F%3E%3Ccircle%20cx%3D%2228%22%20cy%3D%2233%22%20r%3D%229%22%20fill%3D%22%23d9c3a0%22%2F%3E%3Ccircle%20cx%3D%2217%22%20cy%3D%2221%22%20r%3D%225%22%20fill%3D%22%23d9c3a0%22%2F%3E%3Ccircle%20cx%3D%2228%22%20cy%3D%2216%22%20r%3D%225%22%20fill%3D%22%23d9c3a0%22%2F%3E%3Ccircle%20cx%3D%2239%22%20cy%3D%2221%22%20r%3D%225%22%20fill%3D%22%23d9c3a0%22%2F%3E%3C%2Fsvg%3E" alt="" width="20" height="20" style="display:block;flex:0 0 auto;box-sizing:border-box;object-fit:contain"/>
+<span style="display:inline-flex;align-items:center;flex:0 0 auto;width:20px;margin-right:6px">
+<span style="display:flex;align-items:center;gap:2px">
+<img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2256%22%20height%3D%2256%22%20viewBox%3D%220%200%2056%2056%22%3E%3Crect%20width%3D%2256%22%20height%3D%2256%22%20fill%3D%22%233a3026%22%2F%3E%3Ccircle%20cx%3D%2228%22%20cy%3D%2233%22%20r%3D%229%22%20fill%3D%22%23d9c3a0%22%2F%3E%3Ccircle%20cx%3D%2217%22%20cy%3D%2221%22%20r%3D%225%22%20fill%3D%22%23d9c3a0%22%2F%3E%3Ccircle%20cx%3D%2228%22%20cy%3D%2216%22%20r%3D%225%22%20fill%3D%22%23d9c3a0%22%2F%3E%3Ccircle%20cx%3D%2239%22%20cy%3D%2221%22%20r%3D%225%22%20fill%3D%22%23d9c3a0%22%2F%3E%3C%2Fsvg%3E" alt="" width="20" height="20" style="display:block;flex:0 0 auto;object-fit:contain"/>
+</span>
 </span>
 <span title="Wolf" style="font-size:12.5px;font-weight:400;color:#2b2b29">Wolf</span>
 </span>
@@ -1374,8 +1380,10 @@ exports[`component markup snapshots > DataTable-icons renders stable markup 1`] 
 <span style="display:inline-flex;align-items:center;padding-left:16px;min-width:0">
 <span style="width:16px;flex:0 0 auto">
 </span>
-<span style="display:inline-flex;align-items:center;gap:2px;flex:0 0 auto;width:20px;margin-right:6px">
-<img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2256%22%20height%3D%2256%22%20viewBox%3D%220%200%2056%2056%22%3E%3Crect%20width%3D%2256%22%20height%3D%2256%22%20fill%3D%22%233a3026%22%2F%3E%3Ccircle%20cx%3D%2228%22%20cy%3D%2233%22%20r%3D%229%22%20fill%3D%22%23d9c3a0%22%2F%3E%3Ccircle%20cx%3D%2217%22%20cy%3D%2221%22%20r%3D%225%22%20fill%3D%22%23d9c3a0%22%2F%3E%3Ccircle%20cx%3D%2228%22%20cy%3D%2216%22%20r%3D%225%22%20fill%3D%22%23d9c3a0%22%2F%3E%3Ccircle%20cx%3D%2239%22%20cy%3D%2221%22%20r%3D%225%22%20fill%3D%22%23d9c3a0%22%2F%3E%3C%2Fsvg%3E" alt="" width="20" height="20" style="display:block;flex:0 0 auto;box-sizing:border-box;object-fit:contain"/>
+<span style="display:inline-flex;align-items:center;flex:0 0 auto;width:20px;margin-right:6px">
+<span style="display:flex;align-items:center;gap:2px">
+<img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2256%22%20height%3D%2256%22%20viewBox%3D%220%200%2056%2056%22%3E%3Crect%20width%3D%2256%22%20height%3D%2256%22%20fill%3D%22%233a3026%22%2F%3E%3Ccircle%20cx%3D%2228%22%20cy%3D%2233%22%20r%3D%229%22%20fill%3D%22%23d9c3a0%22%2F%3E%3Ccircle%20cx%3D%2217%22%20cy%3D%2221%22%20r%3D%225%22%20fill%3D%22%23d9c3a0%22%2F%3E%3Ccircle%20cx%3D%2228%22%20cy%3D%2216%22%20r%3D%225%22%20fill%3D%22%23d9c3a0%22%2F%3E%3Ccircle%20cx%3D%2239%22%20cy%3D%2221%22%20r%3D%225%22%20fill%3D%22%23d9c3a0%22%2F%3E%3C%2Fsvg%3E" alt="" width="20" height="20" style="display:block;flex:0 0 auto;object-fit:contain"/>
+</span>
 </span>
 <span title="Bite" style="font-size:12.5px;font-weight:400;color:#6b6a64">Bite</span>
 </span>
@@ -1398,8 +1406,10 @@ exports[`component markup snapshots > DataTable-icons renders stable markup 1`] 
 <span style="display:inline-flex;align-items:center;padding-left:16px;min-width:0">
 <span style="width:16px;flex:0 0 auto">
 </span>
-<span style="display:inline-flex;align-items:center;gap:2px;flex:0 0 auto;width:20px;margin-right:6px">
-<img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2256%22%20height%3D%2256%22%20viewBox%3D%220%200%2056%2056%22%3E%3Crect%20width%3D%2256%22%20height%3D%2256%22%20fill%3D%22%233a3026%22%2F%3E%3Ccircle%20cx%3D%2228%22%20cy%3D%2233%22%20r%3D%229%22%20fill%3D%22%23d9c3a0%22%2F%3E%3Ccircle%20cx%3D%2217%22%20cy%3D%2221%22%20r%3D%225%22%20fill%3D%22%23d9c3a0%22%2F%3E%3Ccircle%20cx%3D%2228%22%20cy%3D%2216%22%20r%3D%225%22%20fill%3D%22%23d9c3a0%22%2F%3E%3Ccircle%20cx%3D%2239%22%20cy%3D%2221%22%20r%3D%225%22%20fill%3D%22%23d9c3a0%22%2F%3E%3C%2Fsvg%3E" alt="" width="20" height="20" style="display:block;flex:0 0 auto;box-sizing:border-box;object-fit:contain"/>
+<span style="display:inline-flex;align-items:center;flex:0 0 auto;width:20px;margin-right:6px">
+<span style="display:flex;align-items:center;gap:2px">
+<img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2256%22%20height%3D%2256%22%20viewBox%3D%220%200%2056%2056%22%3E%3Crect%20width%3D%2256%22%20height%3D%2256%22%20fill%3D%22%233a3026%22%2F%3E%3Ccircle%20cx%3D%2228%22%20cy%3D%2233%22%20r%3D%229%22%20fill%3D%22%23d9c3a0%22%2F%3E%3Ccircle%20cx%3D%2217%22%20cy%3D%2221%22%20r%3D%225%22%20fill%3D%22%23d9c3a0%22%2F%3E%3Ccircle%20cx%3D%2228%22%20cy%3D%2216%22%20r%3D%225%22%20fill%3D%22%23d9c3a0%22%2F%3E%3Ccircle%20cx%3D%2239%22%20cy%3D%2221%22%20r%3D%225%22%20fill%3D%22%23d9c3a0%22%2F%3E%3C%2Fsvg%3E" alt="" width="20" height="20" style="display:block;flex:0 0 auto;object-fit:contain"/>
+</span>
 </span>
 <span title="Claw" style="font-size:12.5px;font-weight:400;color:#6b6a64">Claw</span>
 </span>
@@ -1422,8 +1432,10 @@ exports[`component markup snapshots > DataTable-icons renders stable markup 1`] 
 <span style="display:inline-flex;align-items:center;padding-left:0;min-width:0">
 <span style="width:16px;flex:0 0 auto">
 </span>
-<span style="display:inline-flex;align-items:center;gap:2px;flex:0 0 auto;width:20px;margin-right:6px">
-<img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2256%22%20height%3D%2256%22%20viewBox%3D%220%200%2056%2056%22%3E%3Crect%20width%3D%2256%22%20height%3D%2256%22%20fill%3D%22%234a2a1f%22%2F%3E%3Cpath%20d%3D%22M28%2010%20C40%2024%2040%2034%2028%2046%20C16%2034%2018%2024%2028%2010Z%22%20fill%3D%22%23f0a23a%22%2F%3E%3C%2Fsvg%3E" alt="" width="18" height="18" style="display:block;flex:0 0 auto;box-sizing:border-box;object-fit:contain"/>
+<span style="display:inline-flex;align-items:center;flex:0 0 auto;width:20px;margin-right:6px">
+<span style="display:flex;align-items:center;gap:2px">
+<img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2256%22%20height%3D%2256%22%20viewBox%3D%220%200%2056%2056%22%3E%3Crect%20width%3D%2256%22%20height%3D%2256%22%20fill%3D%22%234a2a1f%22%2F%3E%3Cpath%20d%3D%22M28%2010%20C40%2024%2040%2034%2028%2046%20C16%2034%2018%2024%2028%2010Z%22%20fill%3D%22%23f0a23a%22%2F%3E%3C%2Fsvg%3E" alt="" width="18" height="18" style="display:block;flex:0 0 auto;object-fit:contain"/>
+</span>
 </span>
 <span title="Immolation Trap" style="font-size:12.5px;font-weight:400;color:#2b2b29">Immolation Trap</span>
 </span>
@@ -1446,7 +1458,7 @@ exports[`component markup snapshots > DataTable-icons renders stable markup 1`] 
 <span style="display:inline-flex;align-items:center;padding-left:0;min-width:0">
 <span style="width:16px;flex:0 0 auto">
 </span>
-<span style="display:inline-flex;align-items:center;gap:2px;flex:0 0 auto;width:20px;margin-right:6px">
+<span style="display:inline-flex;align-items:center;flex:0 0 auto;width:20px;margin-right:6px">
 </span>
 <span title="Melee" style="font-size:12.5px;font-weight:400;color:#2b2b29">Melee</span>
 </span>
@@ -1469,7 +1481,7 @@ exports[`component markup snapshots > DataTable-icons renders stable markup 1`] 
 <span style="display:inline-flex;align-items:center;padding-left:0;min-width:0">
 <span style="width:16px;flex:0 0 auto">
 </span>
-<span style="display:inline-flex;align-items:center;gap:2px;flex:0 0 auto;width:20px;margin-right:6px">
+<span style="display:inline-flex;align-items:center;flex:0 0 auto;width:20px;margin-right:6px">
 </span>
 <span title="Total" style="font-size:13px;font-weight:700;color:#2b2b29">Total</span>
 </span>
@@ -3832,13 +3844,13 @@ exports[`component markup snapshots > RankingVarianceChart-icons renders stable 
 </pattern>
 </defs>
 <text x="220.16" y="24" font-size="10.5" fill="#6b6a64">DPS</text>
-<text x="458.98560000000003" y="24" font-size="10.5" fill="#6b6a64" text-anchor="middle">ΔEquipped</text>
-<text x="577.5808000000001" y="24" font-size="10.5" font-style="italic" fill="#6b6a64" text-anchor="middle">ΔEquipped%</text>
+<text x="439.3056" y="24" font-size="10.5" fill="#6b6a64" text-anchor="middle">ΔEquipped</text>
+<text x="571.3408000000002" y="24" font-size="10.5" font-style="italic" fill="#6b6a64" text-anchor="middle">ΔEquipped%</text>
 <line x1="220.16" y1="30" x2="220.16" y2="134" stroke="#c9c8c2" stroke-width="1">
 </line>
-<line x1="458.98560000000003" y1="30" x2="458.98560000000003" y2="134" stroke="#c9c8c2" stroke-width="0.75">
+<line x1="439.3056" y1="30" x2="439.3056" y2="134" stroke="#c9c8c2" stroke-width="0.75">
 </line>
-<line x1="577.5808000000001" y1="30" x2="577.5808000000001" y2="134" stroke="#c9c8c2" stroke-width="0.75">
+<line x1="571.3408000000002" y1="30" x2="571.3408000000002" y2="134" stroke="#c9c8c2" stroke-width="0.75">
 </line>
 <g>
 <rect x="12" y="30" width="616" height="26" fill="transparent">
@@ -3857,49 +3869,49 @@ exports[`component markup snapshots > RankingVarianceChart-icons renders stable 
 </g>
 <text x="60" y="47.08" font-size="12" fill="#2b2b29">Best set<title>Best set</title>
 </text>
-<rect x="220.16" y="36.5" width="122.98662039396811" height="13" fill="#54534e">
+<rect x="220.16" y="36.5" width="96.12037819415713" height="13" fill="#54534e">
 </rect>
-<rect x="220.16" y="34.68" width="122.52157747646815" height="16.64" fill="#fff" fill-opacity="0" stroke="#54534e" stroke-width="1.25">
+<rect x="220.16" y="34.68" width="95.75692320235866" height="16.64" fill="#fff" fill-opacity="0" stroke="#54534e" stroke-width="1.25">
 </rect>
-<rect x="458.98560000000003" y="37.019999999999996" width="8.046885456491623" height="11.96" fill="#3f8f4f">
+<rect x="439.3056" y="37.019999999999996" width="12.805227710658812" height="11.96" fill="#3f8f4f">
 </rect>
-<text x="515.1616" y="46.74" text-anchor="end" font-size="11" font-weight="400" fill="#2b2b29">+3.46</text>
-<line x1="577.5808000000001" y1="43" x2="583.6058958522133" y2="43" stroke="#3f8f4f" stroke-width="2">
+<text x="502.68160000000006" y="46.74" text-anchor="end" font-size="11" font-weight="400" fill="#2b2b29">+3.46</text>
+<line x1="571.3408000000002" y1="43" x2="577.3658958522134" y2="43" stroke="#3f8f4f" stroke-width="2">
 </line>
-<circle cx="583.6058958522133" cy="43" r="3.5" fill="#3f8f4f">
+<circle cx="577.3658958522134" cy="43" r="3.5" fill="#3f8f4f">
 </circle>
-<text x="626" y="46.74" text-anchor="end" font-size="11" font-style="italic" font-weight="400" fill="#3f8f4f">+0.4%</text>
+<text x="626.0000000000001" y="46.74" text-anchor="end" font-size="11" font-style="italic" font-weight="400" fill="#3f8f4f">+0.4%</text>
 <g role="img" aria-label="914.30 ± 0.47">
 <title>914.30 ± 0.47</title>
-<line x1="343.08364078793625" y1="43" x2="343.2096" y2="43" stroke="#fff" stroke-width="3.25" stroke-linecap="round">
+<line x1="316.2311563883142" y1="43" x2="316.3296" y2="43" stroke="#fff" stroke-width="3.25" stroke-linecap="round">
 </line>
-<line x1="343.08364078793625" y1="38" x2="343.08364078793625" y2="48" stroke="#fff" stroke-width="3.25" stroke-linecap="round">
+<line x1="316.2311563883142" y1="38" x2="316.2311563883142" y2="48" stroke="#fff" stroke-width="3.25" stroke-linecap="round">
 </line>
-<line x1="343.2096" y1="38" x2="343.2096" y2="48" stroke="#fff" stroke-width="3.25" stroke-linecap="round">
+<line x1="316.3296" y1="38" x2="316.3296" y2="48" stroke="#fff" stroke-width="3.25" stroke-linecap="round">
 </line>
-<line x1="343.08364078793625" y1="43" x2="343.2096" y2="43" stroke="#2b2b29" stroke-width="1.25">
+<line x1="316.2311563883142" y1="43" x2="316.3296" y2="43" stroke="#2b2b29" stroke-width="1.25">
 </line>
-<line x1="343.08364078793625" y1="38" x2="343.08364078793625" y2="48" stroke="#2b2b29" stroke-width="1.25">
+<line x1="316.2311563883142" y1="38" x2="316.2311563883142" y2="48" stroke="#2b2b29" stroke-width="1.25">
 </line>
-<line x1="343.2096" y1="38" x2="343.2096" y2="48" stroke="#2b2b29" stroke-width="1.25">
+<line x1="316.3296" y1="38" x2="316.3296" y2="48" stroke="#2b2b29" stroke-width="1.25">
 </line>
 </g>
 <g role="img" aria-label="+3.46 ± 0.46">
 <title>+3.46 ± 0.46</title>
-<line x1="465.9569139623794" y1="43" x2="468.1080569506039" y2="43" stroke="#fff" stroke-width="3.25" stroke-linecap="round">
+<line x1="450.39924153540267" y1="43" x2="453.82241388591495" y2="43" stroke="#fff" stroke-width="3.25" stroke-linecap="round">
 </line>
-<line x1="465.9569139623794" y1="38" x2="465.9569139623794" y2="48" stroke="#fff" stroke-width="3.25" stroke-linecap="round">
+<line x1="450.39924153540267" y1="38" x2="450.39924153540267" y2="48" stroke="#fff" stroke-width="3.25" stroke-linecap="round">
 </line>
-<line x1="468.1080569506039" y1="38" x2="468.1080569506039" y2="48" stroke="#fff" stroke-width="3.25" stroke-linecap="round">
+<line x1="453.82241388591495" y1="38" x2="453.82241388591495" y2="48" stroke="#fff" stroke-width="3.25" stroke-linecap="round">
 </line>
-<line x1="465.9569139623794" y1="43" x2="468.1080569506039" y2="43" stroke="#2b2b29" stroke-width="1.25">
+<line x1="450.39924153540267" y1="43" x2="453.82241388591495" y2="43" stroke="#2b2b29" stroke-width="1.25">
 </line>
-<line x1="465.9569139623794" y1="38" x2="465.9569139623794" y2="48" stroke="#2b2b29" stroke-width="1.25">
+<line x1="450.39924153540267" y1="38" x2="450.39924153540267" y2="48" stroke="#2b2b29" stroke-width="1.25">
 </line>
-<line x1="468.1080569506039" y1="38" x2="468.1080569506039" y2="48" stroke="#2b2b29" stroke-width="1.25">
+<line x1="453.82241388591495" y1="38" x2="453.82241388591495" y2="48" stroke="#2b2b29" stroke-width="1.25">
 </line>
 </g>
-<text x="347.2096" y="46.74" text-anchor="start" font-size="11" fill="#2b2b29">914.30</text>
+<text x="320.3296" y="46.74" text-anchor="start" font-size="11" fill="#2b2b29">914.30</text>
 </g>
 <g>
 <rect x="12" y="56" width="616" height="26" fill="transparent">
@@ -3912,77 +3924,77 @@ exports[`component markup snapshots > RankingVarianceChart-icons renders stable 
 </g>
 <text x="60" y="73.08" font-size="12" fill="#a335ee">Signet of Embers<title>Signet of Embers</title>
 </text>
-<rect x="220.16" y="62.5" width="122.95297836178406" height="13" fill="#54534e">
+<rect x="220.16" y="62.5" width="96.09408521329146" height="13" fill="#54534e">
 </rect>
-<rect x="220.16" y="60.68" width="122.52157747646815" height="16.64" fill="#fff" fill-opacity="0" stroke="#54534e" stroke-width="1.25">
+<rect x="220.16" y="60.68" width="95.75692320235866" height="16.64" fill="#fff" fill-opacity="0" stroke="#54534e" stroke-width="1.25">
 </rect>
-<rect x="458.98560000000003" y="63.019999999999996" width="7.464759443339801" height="11.96" fill="#3f8f4f">
+<rect x="439.3056" y="63.019999999999996" width="11.878874751490855" height="11.96" fill="#3f8f4f">
 </rect>
-<text x="515.1616" y="72.74" text-anchor="end" font-size="11" font-weight="400" fill="#2b2b29">+3.21</text>
-<line x1="577.5808000000001" y1="69" x2="583.1700296967584" y2="69" stroke="#3f8f4f" stroke-width="2">
+<text x="502.68160000000006" y="72.74" text-anchor="end" font-size="11" font-weight="400" fill="#2b2b29">+3.21</text>
+<line x1="571.3408000000002" y1="69" x2="576.9300296967585" y2="69" stroke="#3f8f4f" stroke-width="2">
 </line>
-<circle cx="583.1700296967584" cy="69" r="3.5" fill="#3f8f4f">
+<circle cx="576.9300296967585" cy="69" r="3.5" fill="#3f8f4f">
 </circle>
-<text x="626" y="72.74" text-anchor="end" font-size="11" font-style="italic" font-weight="400" fill="#3f8f4f">+0.4%</text>
+<text x="626.0000000000001" y="72.74" text-anchor="end" font-size="11" font-style="italic" font-weight="400" fill="#3f8f4f">+0.4%</text>
 <g role="img" aria-label="914.05 ± 0.45">
 <title>914.05 ± 0.45</title>
-<line x1="343.05229895067555" y1="69" x2="343.1736577728925" y2="69" stroke="#fff" stroke-width="3.25" stroke-linecap="round">
+<line x1="316.2066611282515" y1="69" x2="316.30150929833144" y2="69" stroke="#fff" stroke-width="3.25" stroke-linecap="round">
 </line>
-<line x1="343.05229895067555" y1="64" x2="343.05229895067555" y2="74" stroke="#fff" stroke-width="3.25" stroke-linecap="round">
+<line x1="316.2066611282515" y1="64" x2="316.2066611282515" y2="74" stroke="#fff" stroke-width="3.25" stroke-linecap="round">
 </line>
-<line x1="343.1736577728925" y1="64" x2="343.1736577728925" y2="74" stroke="#fff" stroke-width="3.25" stroke-linecap="round">
+<line x1="316.30150929833144" y1="64" x2="316.30150929833144" y2="74" stroke="#fff" stroke-width="3.25" stroke-linecap="round">
 </line>
-<line x1="343.05229895067555" y1="69" x2="343.1736577728925" y2="69" stroke="#2b2b29" stroke-width="1.25">
+<line x1="316.2066611282515" y1="69" x2="316.30150929833144" y2="69" stroke="#2b2b29" stroke-width="1.25">
 </line>
-<line x1="343.05229895067555" y1="64" x2="343.05229895067555" y2="74" stroke="#2b2b29" stroke-width="1.25">
+<line x1="316.2066611282515" y1="64" x2="316.2066611282515" y2="74" stroke="#2b2b29" stroke-width="1.25">
 </line>
-<line x1="343.1736577728925" y1="64" x2="343.1736577728925" y2="74" stroke="#2b2b29" stroke-width="1.25">
+<line x1="316.30150929833144" y1="64" x2="316.30150929833144" y2="74" stroke="#2b2b29" stroke-width="1.25">
 </line>
 </g>
 <g role="img" aria-label="+3.21 ± 0.44">
 <title>+3.21 ± 0.44</title>
-<line x1="465.42576179844" y1="69" x2="467.4749570882397" y2="69" stroke="#fff" stroke-width="3.25" stroke-linecap="round">
+<line x1="449.55400464902874" y1="69" x2="452.814944853953" y2="69" stroke="#fff" stroke-width="3.25" stroke-linecap="round">
 </line>
-<line x1="465.42576179844" y1="64" x2="465.42576179844" y2="74" stroke="#fff" stroke-width="3.25" stroke-linecap="round">
+<line x1="449.55400464902874" y1="64" x2="449.55400464902874" y2="74" stroke="#fff" stroke-width="3.25" stroke-linecap="round">
 </line>
-<line x1="467.4749570882397" y1="64" x2="467.4749570882397" y2="74" stroke="#fff" stroke-width="3.25" stroke-linecap="round">
+<line x1="452.814944853953" y1="64" x2="452.814944853953" y2="74" stroke="#fff" stroke-width="3.25" stroke-linecap="round">
 </line>
-<line x1="465.42576179844" y1="69" x2="467.4749570882397" y2="69" stroke="#2b2b29" stroke-width="1.25">
+<line x1="449.55400464902874" y1="69" x2="452.814944853953" y2="69" stroke="#2b2b29" stroke-width="1.25">
 </line>
-<line x1="465.42576179844" y1="64" x2="465.42576179844" y2="74" stroke="#2b2b29" stroke-width="1.25">
+<line x1="449.55400464902874" y1="64" x2="449.55400464902874" y2="74" stroke="#2b2b29" stroke-width="1.25">
 </line>
-<line x1="467.4749570882397" y1="64" x2="467.4749570882397" y2="74" stroke="#2b2b29" stroke-width="1.25">
+<line x1="452.814944853953" y1="64" x2="452.814944853953" y2="74" stroke="#2b2b29" stroke-width="1.25">
 </line>
 </g>
-<text x="347.1736577728925" y="72.74" text-anchor="start" font-size="11" fill="#2b2b29">914.05</text>
+<text x="320.30150929833144" y="72.74" text-anchor="start" font-size="11" fill="#2b2b29">914.05</text>
 </g>
 <g>
 <rect x="12" y="82" width="616" height="26" fill="transparent">
 </rect>
 <text x="60" y="99.08" font-size="12" fill="#2b2b29">Equipped<title>Equipped</title>
 </text>
-<rect x="220.16" y="88.5" width="122.52157747646815" height="13" fill="#54534e">
+<rect x="220.16" y="88.5" width="95.75692320235866" height="13" fill="#54534e">
 </rect>
-<rect x="220.16" y="86.68" width="122.52157747646815" height="16.64" fill="#fff" fill-opacity="0" stroke="#54534e" stroke-width="1.25">
+<rect x="220.16" y="86.68" width="95.75692320235866" height="16.64" fill="#fff" fill-opacity="0" stroke="#54534e" stroke-width="1.25">
 </rect>
-<text x="458.98560000000003" y="98.74" text-anchor="middle" font-size="11" font-weight="400" fill="#2b2b29">0.00</text>
-<text x="577.5808000000001" y="98.74" text-anchor="middle" font-size="11" font-style="italic" font-weight="400" fill="#9a9992">0.0%</text>
+<text x="439.3056" y="98.74" text-anchor="middle" font-size="11" font-weight="400" fill="#2b2b29">0.00</text>
+<text x="571.3408000000002" y="98.74" text-anchor="middle" font-size="11" font-style="italic" font-weight="400" fill="#9a9992">0.0%</text>
 <g role="img" aria-label="910.84 ± 0.48">
 <title>910.84 ± 0.48</title>
-<line x1="342.6169029899663" y1="95" x2="342.74625196296995" y2="95" stroke="#fff" stroke-width="3.25" stroke-linecap="round">
+<line x1="315.8663767601347" y1="95" x2="315.96746964458265" y2="95" stroke="#fff" stroke-width="3.25" stroke-linecap="round">
 </line>
-<line x1="342.6169029899663" y1="90" x2="342.6169029899663" y2="100" stroke="#fff" stroke-width="3.25" stroke-linecap="round">
+<line x1="315.8663767601347" y1="90" x2="315.8663767601347" y2="100" stroke="#fff" stroke-width="3.25" stroke-linecap="round">
 </line>
-<line x1="342.74625196296995" y1="90" x2="342.74625196296995" y2="100" stroke="#fff" stroke-width="3.25" stroke-linecap="round">
+<line x1="315.96746964458265" y1="90" x2="315.96746964458265" y2="100" stroke="#fff" stroke-width="3.25" stroke-linecap="round">
 </line>
-<line x1="342.6169029899663" y1="95" x2="342.74625196296995" y2="95" stroke="#2b2b29" stroke-width="1.25">
+<line x1="315.8663767601347" y1="95" x2="315.96746964458265" y2="95" stroke="#2b2b29" stroke-width="1.25">
 </line>
-<line x1="342.6169029899663" y1="90" x2="342.6169029899663" y2="100" stroke="#2b2b29" stroke-width="1.25">
+<line x1="315.8663767601347" y1="90" x2="315.8663767601347" y2="100" stroke="#2b2b29" stroke-width="1.25">
 </line>
-<line x1="342.74625196296995" y1="90" x2="342.74625196296995" y2="100" stroke="#2b2b29" stroke-width="1.25">
+<line x1="315.96746964458265" y1="90" x2="315.96746964458265" y2="100" stroke="#2b2b29" stroke-width="1.25">
 </line>
 </g>
-<text x="346.74625196296995" y="98.74" text-anchor="start" font-size="11" fill="#2b2b29">910.84</text>
+<text x="319.96746964458265" y="98.74" text-anchor="start" font-size="11" fill="#2b2b29">910.84</text>
 </g>
 <g>
 <rect x="12" y="108" width="616" height="26" fill="transparent">
@@ -3995,49 +4007,49 @@ exports[`component markup snapshots > RankingVarianceChart-icons renders stable 
 </g>
 <text x="60" y="125.08" font-size="12" fill="#0070dd">Runed Greatsword<title>Runed Greatsword</title>
 </text>
-<rect x="220.16" y="114.5" width="121.90410292813657" height="13" fill="#54534e">
+<rect x="220.16" y="114.5" width="95.27433504016042" height="13" fill="#54534e">
 </rect>
-<rect x="220.16" y="112.68" width="122.52157747646815" height="16.64" fill="#fff" fill-opacity="0" stroke="#54534e" stroke-width="1.25">
+<rect x="220.16" y="112.68" width="95.75692320235866" height="16.64" fill="#fff" fill-opacity="0" stroke="#54534e" stroke-width="1.25">
 </rect>
-<rect x="448.3011087933935" y="115.02" width="10.684491206606538" height="11.96" fill="#cf3a3a">
+<rect x="422.30307851353416" y="115.02" width="17.002521486465866" height="11.96" fill="#cf3a3a">
 </rect>
-<text x="402.80960000000005" y="124.74" text-anchor="start" font-size="11" font-weight="400" fill="#2b2b29">-4.59</text>
-<line x1="577.5808000000001" y1="121" x2="569.5808000000001" y2="121" stroke="#cf3a3a" stroke-width="2">
+<text x="375.92960000000005" y="124.74" text-anchor="start" font-size="11" font-weight="400" fill="#2b2b29">-4.59</text>
+<line x1="571.3408000000002" y1="121" x2="563.3408000000002" y2="121" stroke="#cf3a3a" stroke-width="2">
 </line>
-<circle cx="569.5808000000001" cy="121" r="3.5" fill="#cf3a3a">
+<circle cx="563.3408000000002" cy="121" r="3.5" fill="#cf3a3a">
 </circle>
-<text x="529.1616" y="124.74" text-anchor="start" font-size="11" font-style="italic" font-weight="400" fill="#cf3a3a">-0.5%</text>
+<text x="516.6816000000001" y="124.74" text-anchor="start" font-size="11" font-style="italic" font-weight="400" fill="#cf3a3a">-0.5%</text>
 <g role="img" aria-label="906.25 ± 0.50">
 <title>906.25 ± 0.50</title>
-<line x1="341.99750488681576" y1="121" x2="342.13070096945734" y2="121" stroke="#fff" stroke-width="3.25" stroke-linecap="round">
+<line x1="315.3822852407738" y1="121" x2="315.48638483954704" y2="121" stroke="#fff" stroke-width="3.25" stroke-linecap="round">
 </line>
-<line x1="341.99750488681576" y1="116" x2="341.99750488681576" y2="126" stroke="#fff" stroke-width="3.25" stroke-linecap="round">
+<line x1="315.3822852407738" y1="116" x2="315.3822852407738" y2="126" stroke="#fff" stroke-width="3.25" stroke-linecap="round">
 </line>
-<line x1="342.13070096945734" y1="116" x2="342.13070096945734" y2="126" stroke="#fff" stroke-width="3.25" stroke-linecap="round">
+<line x1="315.48638483954704" y1="116" x2="315.48638483954704" y2="126" stroke="#fff" stroke-width="3.25" stroke-linecap="round">
 </line>
-<line x1="341.99750488681576" y1="121" x2="342.13070096945734" y2="121" stroke="#2b2b29" stroke-width="1.25">
+<line x1="315.3822852407738" y1="121" x2="315.48638483954704" y2="121" stroke="#2b2b29" stroke-width="1.25">
 </line>
-<line x1="341.99750488681576" y1="116" x2="341.99750488681576" y2="126" stroke="#2b2b29" stroke-width="1.25">
+<line x1="315.3822852407738" y1="116" x2="315.3822852407738" y2="126" stroke="#2b2b29" stroke-width="1.25">
 </line>
-<line x1="342.13070096945734" y1="116" x2="342.13070096945734" y2="126" stroke="#2b2b29" stroke-width="1.25">
+<line x1="315.48638483954704" y1="116" x2="315.48638483954704" y2="126" stroke="#2b2b29" stroke-width="1.25">
 </line>
 </g>
 <g role="img" aria-label="-4.59 ± 0.64">
 <title>-4.59 ± 0.64</title>
-<line x1="446.80960000000005" y1="121" x2="449.792617586787" y2="121" stroke="#fff" stroke-width="3.25" stroke-linecap="round">
+<line x1="419.92960000000005" y1="121" x2="424.6765570270683" y2="121" stroke="#fff" stroke-width="3.25" stroke-linecap="round">
 </line>
-<line x1="446.80960000000005" y1="116" x2="446.80960000000005" y2="126" stroke="#fff" stroke-width="3.25" stroke-linecap="round">
+<line x1="419.92960000000005" y1="116" x2="419.92960000000005" y2="126" stroke="#fff" stroke-width="3.25" stroke-linecap="round">
 </line>
-<line x1="449.792617586787" y1="116" x2="449.792617586787" y2="126" stroke="#fff" stroke-width="3.25" stroke-linecap="round">
+<line x1="424.6765570270683" y1="116" x2="424.6765570270683" y2="126" stroke="#fff" stroke-width="3.25" stroke-linecap="round">
 </line>
-<line x1="446.80960000000005" y1="121" x2="449.792617586787" y2="121" stroke="#2b2b29" stroke-width="1.25">
+<line x1="419.92960000000005" y1="121" x2="424.6765570270683" y2="121" stroke="#2b2b29" stroke-width="1.25">
 </line>
-<line x1="446.80960000000005" y1="116" x2="446.80960000000005" y2="126" stroke="#2b2b29" stroke-width="1.25">
+<line x1="419.92960000000005" y1="116" x2="419.92960000000005" y2="126" stroke="#2b2b29" stroke-width="1.25">
 </line>
-<line x1="449.792617586787" y1="116" x2="449.792617586787" y2="126" stroke="#2b2b29" stroke-width="1.25">
+<line x1="424.6765570270683" y1="116" x2="424.6765570270683" y2="126" stroke="#2b2b29" stroke-width="1.25">
 </line>
 </g>
-<text x="346.13070096945734" y="124.74" text-anchor="start" font-size="11" fill="#2b2b29">906.25</text>
+<text x="319.48638483954704" y="124.74" text-anchor="start" font-size="11" fill="#2b2b29">906.25</text>
 </g>
 </svg>
 <div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0">
@@ -4055,7 +4067,7 @@ exports[`component markup snapshots > RankingVarianceChart-icons renders stable 
 </thead>
 <tbody>
 <tr>
-<th scope="row">Signet of Embers Runed Greatsword Best set</th>
+<th scope="row">Signet of Embers, Runed Greatsword, Best set</th>
 <td>914.30 ± 0.47</td>
 <td>910.84</td>
 <td>+3.46 ± 0.46</td>

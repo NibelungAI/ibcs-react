@@ -148,16 +148,20 @@ export interface DataTableRow {
   /**
    * A small picture before the label - an item or spell icon, a portrait - or
    * several, drawn left to right as chips. Drawn at the table's `iconSize`,
-   * never above the image's own `naturalSize` (never upscaled). The label
-   * stays the row's name; an icon's `alt` (default "") is read before it. When
+   * never above `naturalSize / pixelRatio` CSS px (the size at which the file
+   * stays crisp). The label stays the row's name; an icon's `alt` (default "")
+   * is read before it, set apart by a comma. When
    * any row has icons, rows without them keep the same room, so the labels
    * stay aligned. See {@link RowIcon}.
    */
   icon?: RowIcon | readonly RowIcon[];
   /**
    * The label's colour - e.g. an item's quality colour. Default the theme's
-   * text colour (muted for nested rows). Pick one that keeps enough contrast
-   * on the table's surface.
+   * text colour (muted for nested rows). It is data, not themed: pick one that
+   * keeps enough contrast on the table's surface in every theme you use. The
+   * epic purple `#a335ee` is 4.9:1 on white but 3.1:1 on `darkTokens`' surface
+   * (`#262622`), where a tint a quarter of the way to white, `#ba68f2`, is
+   * 4.6:1.
    */
   labelColor?: string;
   /** Per-measure values (number = AC, or a scenario object). */

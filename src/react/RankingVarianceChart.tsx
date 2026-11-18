@@ -1,7 +1,7 @@
 import { forwardRef, useId, useMemo, type CSSProperties, type ReactNode } from "react";
 import { SCENARIO_KEYS, type ScenarioKey } from "../core/types";
 import type { IbcsTokensOverride } from "../core/tokens";
-import { deltaHeading, scenarioHeadings, type IbcsLabelsOverride } from "../core/labels";
+import { deltaHeading, fillLabel, scenarioHeadings, type IbcsLabelsOverride } from "../core/labels";
 import {
   computeRankingVariance,
   type RankingBand,
@@ -22,10 +22,10 @@ import {
 import { resolveValueBand } from "../core/reference";
 import {
   ROW_ICON_MAX_PX,
+  ROW_ICON_MORE_GAP,
   fitRowIcons,
   rowIconsOf,
   rowIconsWidth,
-  type RowIcon,
 } from "../core/rowIcon";
 import { ErrorBar } from "./ErrorBar";
 import { ValueBandRects } from "./internal/valueBand";
@@ -76,20 +76,25 @@ export interface RankingVarianceChartProps {
    * The size of the row icons (a datum's `icon`), and of the box
    * `renderIcon` fills, in CSS px: default 20 (less on rows under 26 px), at
    * least 8, at most the row height minus 4 and never above 56. An icon is
-   * never drawn above its own `naturalSize`. The label column grows by the
-   * widest row's icons; chips that would leave its label less than 24 px are
-   * left out, from the end.
+   * never drawn above `naturalSize / pixelRatio`. The label column grows by
+   * the widest row's icons, taking the room from the AC panel first; chips
+   * that would leave a label less than 24 px are left out, from the end, and
+   * a "+N" (`labels.moreIcons`) counts them, their `alt`s in the label's
+   * tooltip.
    */
   iconSize?: number;
   /**
    * An svg element for a row's icon slot, in place of its datum's `icon`:
-   * drawn in a `size` × `size` box whose top-left corner is the origin (the
-   * chart translates it to the start of the row's label). Return null to fall
-   * back to the `icon`. It is part of the chart's image, so its text is not
-   * read: the row's label (and its icons' `alt`) name the row in the
-   * screen-reader table.
+   * drawn in a box `size` px tall, at least `size` wide, whose top-left corner
+   * is the origin (the chart translates it to the start of the row's label).
+   * `icon` is the row's own icons as the chart would draw them in that box
+   * (or null), so you can wrap them - in a tooltip trigger, say - without
+   * redrawing them. Return null to fall back to the datum's `icon`. It is part
+   * of the chart's image, so its text is not read: the row's label (and its
+   * icons' `alt`) name the row in the screen-reader table. `onHover` fires
+   * near a row's marks, not over its label or icon.
    */
-  renderIcon?: (row: RankingRow, size: number) => ReactNode;
+  renderIcon?: (row: RankingRow, size: number, icon: ReactNode) => ReactNode;
   /**
    * Vertical band layout - the row spacing and the top/bottom gutter of the row
    * body. Omit for the default (rows packed flush, top to bottom); pass e.g.
@@ -263,11 +268,15 @@ export const RankingVarianceChart = forwardRef<SVGSVGElement, RankingVarianceCha
     const innerW = width - padL - padR;
     const baseLabelW = Math.max(56, Math.min(168, innerW * 0.26));
 
+    const valFont = Math.max(9, Math.min(11, rowH * 0.46));
+    const labelFont = Math.max(9, Math.min(12, rowH * 0.5));
+
     // Row icons: one size, and a slot before the labels as wide as the widest
     // row's icons (or the `renderIcon` box), which the label column grows by,
     // up to 40% of the chart. Chips that would leave a label under
-    // MIN_LABEL_TEXT are left out, from the end. With neither, the slot is 0
-    // and the layout is 1.5's.
+    // MIN_LABEL_TEXT are left out, from the end, and a "+N" (`moreIcons`)
+    // counts them; their `alt`s join the label's tooltip. With neither icons nor
+    // `renderIcon`, the slot is 0 and the layout is 1.5's.
     const iconMax = Math.min(ROW_ICON_MAX_PX, rowH - 4);
     const iconPx =
       !showRowText || iconMax < ICON_MIN
@@ -279,38 +288,71 @@ export const RankingVarianceChart = forwardRef<SVGSVGElement, RankingVarianceCha
               Math.round(Number.isFinite(iconSize) ? iconSize! : Math.min(20, rowH - 6)),
             ),
           );
-    const iconElements = rows.map((r) => {
-      const el = iconPx > 0 && renderIcon ? renderIcon(r, iconPx) : null;
-      return el == null || typeof el === "boolean" ? null : el;
-    });
     const iconLists = rows.map((r) => (iconPx > 0 ? rowIconsOf(r.icon) : []));
-    const slotOf = (i: number, icons: readonly RowIcon[]) =>
-      iconElements[i] != null ? iconPx : rowIconsWidth(icons, iconPx);
-    const wantSlot = rows.reduce((w, _, i) => Math.max(w, slotOf(i, iconLists[i]!)), 0);
+    const moreText = (count: number) => fillLabel(words.moreIcons, { count });
+    const moreWidth = (count: number) => estTextW(moreText(count), valFont);
+    const wantSlot = rows.reduce(
+      (w, _, i) =>
+        Math.max(w, rowIconsWidth(iconLists[i]!, iconPx), renderIcon && iconPx > 0 ? iconPx : 0),
+      0,
+    );
     const labelCap = Math.max(baseLabelW, innerW * 0.4);
     const maxSlot =
       Math.min(baseLabelW + wantSlot + ICON_LABEL_GAP, labelCap) -
       6 -
       ICON_LABEL_GAP -
       MIN_LABEL_TEXT;
-    const rowIcons = iconLists.map((list) => fitRowIcons(list, iconPx, maxSlot));
+    const fitted = iconLists.map((list) => fitRowIcons(list, iconPx, maxSlot, moreWidth));
+    // A row's icons as the chart draws them, from `x`: the kept chips, then the "+N".
+    const drawIcons = (i: number, x: number, cy: number) => {
+      const f = fitted[i]!;
+      if (f.kept.length === 0 && !f.more) return null;
+      const keptW = rowIconsWidth(f.kept, iconPx);
+      return (
+        <>
+          <RowIconImagesSvg icons={f.kept} size={iconPx} x={x} cy={cy} />
+          {f.more && (
+            <text
+              x={x + keptW + (f.kept.length > 0 ? ROW_ICON_MORE_GAP : 0)}
+              y={cy + valFont * 0.34}
+              fontSize={valFont}
+              fill={tokens.color.textMuted}
+            >
+              {moreText(f.dropped.length)}
+            </text>
+          )}
+        </>
+      );
+    };
+    // The caller's element, given the chart's own icons (box coordinates) to wrap.
+    const iconElements = rows.map((r, i) => {
+      if (!(iconPx > 0) || !renderIcon) return null;
+      const el = renderIcon(r, iconPx, drawIcons(i, 0, iconPx / 2));
+      return el == null || typeof el === "boolean" ? null : el;
+    });
     const drawsElement = (i: number) => iconElements[i] != null && iconPx <= maxSlot;
-    const slotW =
-      wantSlot > 0
-        ? rows.reduce(
-            (w, _, i) =>
-              Math.max(w, drawsElement(i) ? iconPx : rowIconsWidth(rowIcons[i]!, iconPx)),
-            0,
-          )
-        : 0;
+    const rowSlot = (i: number) =>
+      drawsElement(i) ? Math.max(iconPx, fitted[i]!.width) : fitted[i]!.width;
+    const slotW = wantSlot > 0 ? rows.reduce((w, _, i) => Math.max(w, rowSlot(i)), 0) : 0;
     const labelW = slotW > 0 ? Math.min(baseLabelW + slotW + ICON_LABEL_GAP, labelCap) : baseLabelW;
     // Where a row's label (and the total's) starts: past the slot.
     const labelInset = slotW > 0 ? slotW + ICON_LABEL_GAP : 0;
     const gap = 10;
-    const avail = Math.max(innerW - labelW - gap * 2, 60);
-    const acPanelW = avail * 0.44;
-    const absPanelW = avail * 0.3;
-    const pctPanelW = avail * 0.26;
+    // The panels as 1.5 sized them for the label column alone (44%, 30% and
+    // 26% of the room left). The icon slot comes out of the AC panel, down to
+    // half of it, so the variance panels - where labels sit beside pins - keep
+    // their widths; past that, the three panels shrink together from there, in
+    // the same proportions, so the layout never jumps as the slot grows.
+    const availBase = Math.max(innerW - baseLabelW - gap * 2, 60);
+    const extraLabelW = labelW - baseLabelW;
+    const acHalfW = availBase * 0.22;
+    const fromAcPanel = extraLabelW <= acHalfW;
+    const shrink = fromAcPanel
+      ? 1
+      : Math.min(1, Math.max(innerW - labelW - gap * 2, 60) / (availBase - acHalfW));
+    const acPanelW = fromAcPanel ? availBase * 0.44 - extraLabelW : acHalfW * shrink;
+    const absPanelW = availBase * 0.3 * shrink;
+    const pctPanelW = availBase * 0.26 * shrink;
 
     const labelX0 = padL;
     const acX0 = padL + labelW;
@@ -322,9 +364,6 @@ export const RankingVarianceChart = forwardRef<SVGSVGElement, RankingVarianceCha
 
     const absCx = absX0 + absPanelW / 2;
     const pctCx = pctX0 + pctPanelW / 2;
-
-    const valFont = Math.max(9, Math.min(11, rowH * 0.46));
-    const labelFont = Math.max(9, Math.min(12, rowH * 0.5));
 
     // AC bars grow from the left axis; reference frame is a touch taller so its
     // outline stays visible around the solid AC bar.
@@ -623,7 +662,7 @@ export const RankingVarianceChart = forwardRef<SVGSVGElement, RankingVarianceCha
       // An icon's `alt` is read before the label, as a table's markup reads it.
       label: [...rowIconsOf(r.icon).map((icon) => icon.alt ?? ""), r.label]
         .filter(Boolean)
-        .join(" "),
+        .join(", "),
       cells: [
         formatInterval(r.ac, r.acError, format),
         formatValue(r.base, format),
@@ -869,7 +908,7 @@ export const RankingVarianceChart = forwardRef<SVGSVGElement, RankingVarianceCha
                       {iconElements[i]}
                     </g>
                   ) : (
-                    <RowIconImagesSvg icons={rowIcons[i]!} size={iconPx} x={labelX0} cy={cy} />
+                    drawIcons(i, labelX0, cy)
                   ))}
                 {showRowText && (
                   <text
@@ -879,7 +918,11 @@ export const RankingVarianceChart = forwardRef<SVGSVGElement, RankingVarianceCha
                     fill={r.labelColor ?? tokens.color.text}
                   >
                     {fitLabel(r.label, labelW - 6 - labelInset, labelFont)}
-                    <title>{r.label}</title>
+                    <title>
+                      {[r.label, ...fitted[i]!.dropped.map((icon) => icon.alt ?? "")]
+                        .filter(Boolean)
+                        .join(", ")}
+                    </title>
                   </text>
                 )}
                 {renderMarks(r, cy, false, true, true)}

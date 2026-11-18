@@ -16,7 +16,7 @@ import {
 import type { IbcsTokens, IbcsTokensOverride } from "../core/tokens";
 import type { IbcsLabelsOverride } from "../core/labels";
 import type { ValueBand } from "../core/reference";
-import { ROW_ICON_GAP, rowIconsOf, rowIconsWidth } from "../core/rowIcon";
+import { rowIconsOf, rowIconsWidth } from "../core/rowIcon";
 import type { ScenarioKey } from "../core/types";
 import {
   formatInterval,
@@ -102,18 +102,20 @@ export interface DataTableProps {
   /**
    * The size of the row icons (`row.icon`), and of the box `renderIcon`
    * fills, in CSS px: an integer from 8 to 28 (the rows are 34 px tall).
-   * Default 20. An icon is never drawn above its own `naturalSize`.
+   * Default 20. An icon is never drawn above `naturalSize / pixelRatio`.
    */
   iconSize?: number;
   /**
    * An element for a row's icon slot in place of its `row.icon` - an icon that
-   * opens your own tooltip, a spell icon with its school marker. Called with
-   * the row and the icon size for every row but the totals row; return null
-   * to fall back to `row.icon`. The element sits before the label in a box
-   * `size` px tall and at least as wide as the widest `row.icon` slot; its
-   * size and its accessible text are yours.
+   * opens your own tooltip, a spell icon with its school marker. Called for
+   * every row but the totals row with the row, the icon size and `icon`, the
+   * row's own icons as the table would draw them (or null), so you can wrap
+   * them in a trigger without redrawing them; return null to fall back to
+   * `row.icon`. The element sits before the label in a box `size` px tall and
+   * at least as wide as the widest `row.icon` slot; its size and its
+   * accessible text are yours.
    */
-  renderIcon?: (row: DataTableRow, size: number) => ReactNode;
+  renderIcon?: (row: DataTableRow, size: number, icon: ReactNode) => ReactNode;
   /**
    * A short description of the table, rendered as a visually-hidden
    * `<caption>` - screen-reader users get a name for the table without any
@@ -591,7 +593,9 @@ function IconSlot({
   slotW: number;
   renderIcon: DataTableProps["renderIcon"];
 }) {
-  const element = isTotal ? null : renderIcon?.(row, size);
+  const icons = isTotal ? [] : rowIconsOf(row.icon);
+  const own = icons.length > 0 ? <RowIconImages icons={icons} size={size} /> : null;
+  const element = isTotal ? null : renderIcon?.(row, size, own);
   if (element != null && typeof element !== "boolean") {
     return (
       <span
@@ -613,13 +617,12 @@ function IconSlot({
       style={{
         display: "inline-flex",
         alignItems: "center",
-        gap: ROW_ICON_GAP,
         flex: "0 0 auto",
         width: slotW,
         marginRight: ICON_LABEL_GAP,
       }}
     >
-      {!isTotal && <RowIconImages icons={rowIconsOf(row.icon)} size={size} />}
+      {own}
     </span>
   );
 }

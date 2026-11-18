@@ -1,38 +1,50 @@
+import { Fragment } from "react";
 import { ROW_ICON_GAP, rowIconSize, type RowIcon } from "../../core/rowIcon";
+import { srOnly } from "../a11y";
 
 /**
  * The row-icon slot of a label, drawn two ways: as `<img>` elements for an
  * HTML table cell, and as `<image>` elements inside a chart's svg. Both draw
- * each icon at `rowIconSize` - never above its `naturalSize` or 56 px - with
- * its `border` as a 1 px frame inside its box.
+ * each icon at `rowIconSize` - never above `naturalSize / pixelRatio` or 56
+ * CSS px - with its `border` as a 1 px frame over the edge of its box, so the
+ * bitmap itself is drawn at the full box size in both.
  *
  * Internal module: not part of the public API surface.
  */
 
-/** The icons of one table row, left to right, as `<img>` elements (decorative unless `alt` is set). */
+/**
+ * The icons of one table row, left to right, as `<img>` elements in one flex
+ * box - so a caller can wrap the whole group in an element of their own and
+ * the icons stay side by side. Each is decorative unless `alt` is set; a
+ * visually hidden ", " follows each icon with an `alt`, so the row header's
+ * name reads the alts and the label apart ("Signet of Embers, Best set").
+ */
 export function RowIconImages({ icons, size }: { icons: readonly RowIcon[]; size: number }) {
   return (
-    <>
+    <span style={{ display: "flex", alignItems: "center", gap: ROW_ICON_GAP }}>
       {icons.map((icon, i) => {
         const d = rowIconSize(icon, size);
         return (
-          <img
-            key={i}
-            src={icon.src}
-            alt={icon.alt ?? ""}
-            width={d}
-            height={d}
-            style={{
-              display: "block",
-              flex: "0 0 auto",
-              boxSizing: "border-box",
-              objectFit: "contain",
-              ...(icon.border ? { border: `1px solid ${icon.border}` } : null),
-            }}
-          />
+          <Fragment key={i}>
+            <img
+              src={icon.src}
+              alt={icon.alt ?? ""}
+              width={d}
+              height={d}
+              style={{
+                display: "block",
+                flex: "0 0 auto",
+                objectFit: "contain",
+                ...(icon.border
+                  ? { outline: `1px solid ${icon.border}`, outlineOffset: -1 }
+                  : null),
+              }}
+            />
+            {icon.alt ? <span style={srOnly}>, </span> : null}
+          </Fragment>
         );
       })}
-    </>
+    </span>
   );
 }
 

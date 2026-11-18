@@ -26,13 +26,17 @@ export interface RankingDatum {
   /**
    * A small picture before the label - an item icon, a portrait - or several,
    * left to right, as chips (the items a variant changes). Drawn at the
-   * chart's `iconSize`, never above the image's own `naturalSize`; an icon's
-   * `alt` joins the label in the screen-reader table. See {@link RowIcon}.
+   * chart's `iconSize`, never above `naturalSize / pixelRatio` CSS px; an
+   * icon's `alt` joins the label in the screen-reader table. See
+   * {@link RowIcon}.
    */
   icon?: RowIcon | readonly RowIcon[];
   /**
    * The label's colour - e.g. an item's quality colour. Default the theme's
-   * text colour. Pick one that keeps enough contrast on the chart's surface.
+   * text colour. It is data, not themed: pick one that keeps enough contrast
+   * on the chart's surface in every theme you use (the epic purple `#a335ee`
+   * is 4.9:1 on white, 3.1:1 on `darkTokens`' `#262622`; `#ba68f2` is 4.6:1
+   * there).
    */
   labelColor?: string;
   /** Actual value (AC). */
