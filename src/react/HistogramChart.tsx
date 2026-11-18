@@ -28,7 +28,7 @@ import type { ChartHover } from "./hooks";
 import { markInteraction, type MarkRect } from "./internal/hover";
 import { ChartTooltip, type ChartTooltipRow } from "./ChartTooltip";
 import { ChartDataTable, type ChartDataRow } from "./a11y";
-import { useIbcsLabels, useIbcsTokens } from "./theme";
+import { useIbcsTokens, useResolvedLabels } from "./theme";
 import { clampTo, estTextW, fitLabel, svgSafeId } from "./internal/text";
 import { VALUE_BAND_OPACITY } from "./internal/valueBand";
 
@@ -240,7 +240,7 @@ export const HistogramChart = forwardRef<SVGSVGElement, HistogramChartProps>(
     ref,
   ) {
     const tokens = useIbcsTokens(tokenOverride);
-    const words = useIbcsLabels(labels);
+    const words = useResolvedLabels(labels);
     const hatchId = svgSafeId(useId());
     const hover = useChartHover<HistogramBin>();
     const marks = markInteraction(hover, tooltip, onHover);

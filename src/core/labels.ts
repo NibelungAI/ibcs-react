@@ -15,10 +15,11 @@
  *
  * Words added after 1.5.0 are optional in {@link IbcsLabels}: a complete
  * dictionary written for an earlier version still type-checks, and the
- * defaults fill the words it lacks. Components read
- * {@link IbcsLabelsComplete}, where every word is present; a translator who
- * wants TypeScript to name each new word as it arrives types their dictionary
- * with it.
+ * defaults fill the words it lacks. `defaultLabels`, `mergeLabels` and
+ * `useIbcsLabels` keep their 1.5.0 type, `IbcsLabels`, though their values
+ * hold every word. Components read {@link IbcsLabelsComplete}, where every word
+ * is present; a translator who wants TypeScript to name each new word as it
+ * arrives types their dictionary with it.
  *
  * Two things live elsewhere on purpose:
  *  - the text for a missing number ("n/a") belongs to the number format -
@@ -213,15 +214,14 @@ export interface IbcsLabels {
 
 /**
  * The dictionary as components read it: {@link IbcsLabels} with every word
- * present, including those added after 1.5.0. {@link mergeLabels} and
- * `useIbcsLabels` return it. It is also the strict type for a translation: a
- * dictionary typed with it fails to compile until it names every word, so
- * TypeScript lists each word a later version adds.
+ * present, including those added after 1.5.0. It is also the strict type for
+ * a translation: a dictionary typed with it fails to compile until it names
+ * every word, so TypeScript lists each word a later version adds.
  */
 export type IbcsLabelsComplete = Required<IbcsLabels>;
 
 /** The 1.4 words, byte for byte, and the words of components added since (`count`, `mean`, `spread`, `sampleSize`, `moreIcons`). */
-export const defaultLabels: IbcsLabelsComplete = {
+const allWords: IbcsLabelsComplete = {
   scenario: { AC: "AC", PY: "PY", PL: "PL", FC: "FC" },
   scenarioTitle: { AC: "Actual", PY: "PY", PL: "Plan / budget", FC: "Forecast" },
   delta: "Δ{base}",
@@ -289,6 +289,13 @@ export const defaultLabels: IbcsLabelsComplete = {
 };
 
 /**
+ * The library's words: the 1.4 words, byte for byte, and those of components
+ * added since. Typed {@link IbcsLabels}, as in 1.5.0; the value holds every
+ * word.
+ */
+export const defaultLabels: IbcsLabels = allWords;
+
+/**
  * The shape of the `labels` prop: any subset of {@link IbcsLabels}, merged
  * onto the active dictionary by {@link mergeLabels}.
  */
@@ -311,18 +318,32 @@ const ADDED_WORDS = ["count", "mean", "spread", "sampleSize", "moreIcons"] as co
 /** A dictionary with every word: the defaults fill the optional ones it lacks (the same object when it lacks none). */
 function complete(base: IbcsLabels): IbcsLabelsComplete {
   if (ADDED_WORDS.every((word) => base[word] !== undefined)) return base as IbcsLabelsComplete;
-  return assignDefined(defaultLabels, base as Partial<IbcsLabelsComplete>);
+  return assignDefined(allWords, base as Partial<IbcsLabelsComplete>);
 }
 
 /**
  * Merge a partial dictionary onto a base one (group by group). The base
  * defaults to {@link defaultLabels}, so overrides compose:
  * `mergeLabels({ total: "Ukupno" }, srLabels)`. The result has every word: the
- * defaults fill any optional word that neither gives.
+ * defaults fill any optional word that neither gives. It is typed
+ * {@link IbcsLabels}, as in 1.5.0.
  */
 export function mergeLabels(
   override?: IbcsLabelsOverride,
   base: IbcsLabels = defaultLabels,
+): IbcsLabels {
+  return resolveLabels(override, base);
+}
+
+/**
+ * {@link mergeLabels}, typed as components read its result: every word
+ * present.
+ *
+ * Internal plumbing shared by the components - not part of the public surface.
+ */
+export function resolveLabels(
+  override?: IbcsLabelsOverride,
+  base: IbcsLabels = allWords,
 ): IbcsLabelsComplete {
   const full = complete(base);
   if (!override) return full;

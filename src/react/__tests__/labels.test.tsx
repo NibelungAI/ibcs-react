@@ -33,6 +33,9 @@ import {
   TrendChart,
   VarianceColumnChart,
   defaultLabels,
+  mergeLabels,
+  useIbcsLabels,
+  type IbcsLabels,
   type IbcsLabelsComplete,
 } from "../../index";
 import { cases, featureCases } from "./fixtures";
@@ -263,6 +266,24 @@ function textOf(element: ReactElement): string {
 }
 
 describe("labels precedence", () => {
+  it("keeps useIbcsLabels typed IbcsLabels, as in 1.5.0, its value holding every word", () => {
+    // A 1.5.0 consumer may type a dictionary by the hook's return type.
+    const dictionary: IbcsLabels = mergeLabels({ total: "Ukupno" });
+    const typed: ReturnType<typeof useIbcsLabels> = dictionary;
+    function Probe() {
+      const words = useIbcsLabels({ total: "Svega" });
+      return <output>{[words.total, words.versus, words.count, words.moreIcons].join("|")}</output>;
+    }
+    render(
+      <IbcsThemeProvider labels={{ versus: "prema" }}>
+        <Probe />
+      </IbcsThemeProvider>,
+    );
+    expect(typed.total).toBe("Ukupno");
+    // The words added after 1.5.0 are filled at run time.
+    expect(screen.getByRole("status").textContent).toBe("Svega|prema|Count|+{count}");
+  });
+
   it("a component's labels win over the provider's, which win over the defaults", () => {
     const html = renderToStaticMarkup(
       <IbcsThemeProvider labels={{ total: "Ukupno", scenario: { PL: "Plan" } }}>

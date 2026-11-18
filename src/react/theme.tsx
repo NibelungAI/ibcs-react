@@ -21,14 +21,14 @@ import {
   type IbcsTokensOverride,
 } from "../core/tokens";
 import {
-  defaultLabels,
-  mergeLabels,
+  resolveLabels,
+  type IbcsLabels,
   type IbcsLabelsComplete,
   type IbcsLabelsOverride,
 } from "../core/labels";
 
 const IbcsThemeContext = createContext<IbcsTokens>(defaultTokens);
-const IbcsLabelsContext = createContext<IbcsLabelsComplete>(defaultLabels);
+const IbcsLabelsContext = createContext<IbcsLabelsComplete>(resolveLabels());
 
 export interface IbcsThemeProviderProps {
   /**
@@ -50,7 +50,7 @@ export function IbcsThemeProvider({ tokens, labels, children }: IbcsThemeProvide
   const parent = useContext(IbcsThemeContext);
   const value = useMemo(() => mergeTokens(tokens, parent), [tokens, parent]);
   const parentLabels = useContext(IbcsLabelsContext);
-  const words = useMemo(() => mergeLabels(labels, parentLabels), [labels, parentLabels]);
+  const words = useMemo(() => resolveLabels(labels, parentLabels), [labels, parentLabels]);
   return (
     <IbcsThemeContext.Provider value={value}>
       <IbcsLabelsContext.Provider value={words}>{children}</IbcsLabelsContext.Provider>
@@ -71,9 +71,20 @@ export function useIbcsTokens(override?: IbcsTokensOverride): IbcsTokens {
 /**
  * The active word dictionary with an optional per-component override applied
  * - what every component calls to resolve its `labels` prop. Public so custom
- * charts speak the same words as the built-in ones.
+ * charts speak the same words as the built-in ones. Typed `IbcsLabels`, as in
+ * 1.5.0; the value holds every word, those added since included.
  */
-export function useIbcsLabels(override?: IbcsLabelsOverride): IbcsLabelsComplete {
+export function useIbcsLabels(override?: IbcsLabelsOverride): IbcsLabels {
+  return useResolvedLabels(override);
+}
+
+/**
+ * {@link useIbcsLabels}, typed as the components that write the words added
+ * after 1.5.0 read it: every word present.
+ *
+ * Internal plumbing - not part of the public surface.
+ */
+export function useResolvedLabels(override?: IbcsLabelsOverride): IbcsLabelsComplete {
   const base = useContext(IbcsLabelsContext);
-  return useMemo(() => (override ? mergeLabels(override, base) : base), [override, base]);
+  return useMemo(() => (override ? resolveLabels(override, base) : base), [override, base]);
 }

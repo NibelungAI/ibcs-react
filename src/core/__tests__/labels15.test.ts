@@ -2,7 +2,9 @@
  * A complete dictionary written for 1.5.0 keeps compiling and working. The
  * repository's `typecheck` compiles this file, so the type half of the check
  * is `tsc` itself: `srLabels` below names every 1.5.0 word and nothing more,
- * typed as `IbcsLabels`; the `@ts-expect-error` line fails the build if the
+ * typed as `IbcsLabels`. It must also fit the types 1.5.0 code could derive
+ * from the dictionary's helpers (`typeof defaultLabels`, the return type of
+ * `mergeLabels`), and the `@ts-expect-error` line fails the build if the
  * strict `IbcsLabelsComplete` stops listing the words added since.
  */
 import { describe, expect, it } from "vitest";
@@ -75,6 +77,10 @@ const srLabels: IbcsLabels = {
 // @ts-expect-error The strict type lists the words added after 1.5.0, which srLabels lacks.
 const strict: IbcsLabelsComplete = srLabels;
 
+// Types a 1.5.0 consumer derives from the helpers still take a 1.5.0 dictionary.
+const viaDefaults: typeof defaultLabels = srLabels;
+const viaMerge: ReturnType<typeof mergeLabels> = srLabels;
+
 describe("a complete 1.5.0 dictionary", () => {
   it("compiles as IbcsLabels and merges, the defaults filling the words added since", () => {
     const merged = mergeLabels({ total: "Svega" }, srLabels);
@@ -99,5 +105,6 @@ describe("a complete 1.5.0 dictionary", () => {
     expect(mergeLabels(undefined, defaultLabels)).toBe(defaultLabels);
     // The strict type and the defaults agree at run time too.
     expect(Object.keys(strict).length).toBeLessThan(Object.keys(defaultLabels).length);
+    expect([viaDefaults.total, viaMerge.total]).toEqual(["Ukupno", "Ukupno"]);
   });
 });

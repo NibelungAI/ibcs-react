@@ -37,7 +37,7 @@ import { markInteraction, type MarkRect } from "./internal/hover";
 import { ChartTooltip, type ChartTooltipRow } from "./ChartTooltip";
 import { ChartDataTable, type ChartDataRow } from "./a11y";
 import { clampTo, estTextW, fitLabel, svgSafeId } from "./internal/text";
-import { useIbcsLabels, useIbcsTokens } from "./theme";
+import { useIbcsTokens, useResolvedLabels } from "./theme";
 
 export type { RankingBand, RankingDatum } from "../core/rankingVariance";
 
@@ -207,7 +207,7 @@ export const RankingVarianceChart = forwardRef<SVGSVGElement, RankingVarianceCha
     ref,
   ) {
     const tokens = useIbcsTokens(tokenOverride);
-    const words = useIbcsLabels(labels);
+    const words = useResolvedLabels(labels);
     const pctFmt = percentFormatOf(format);
     const na = notAvailableOf(format);
     // Sanitised so the id stays a valid selector after an SVG export/serialization.

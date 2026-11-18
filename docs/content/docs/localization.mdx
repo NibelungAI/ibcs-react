@@ -136,6 +136,8 @@ A full translation can be typed `IbcsLabelsComplete`, which requires every
 word, so the compiler names the words a new version adds. `IbcsLabels` itself
 keeps the words added after 1.5.0 optional - the defaults fill the ones a
 dictionary lacks - so a dictionary written for 1.5.0 still compiles.
+`defaultLabels`, `mergeLabels` and `useIbcsLabels` keep the type `IbcsLabels`
+as well, though their values hold every word.
 
 A header never goes blank: where an empty scenario word would name a column, a
 row or a selectable mark, the scenario's `scenarioTitle` ("Actual") is
