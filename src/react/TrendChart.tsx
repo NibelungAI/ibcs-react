@@ -22,10 +22,25 @@ import {
   selectableMarkProps,
   type ChartDataRow,
 } from "./a11y";
-import { useIbcsLabels, useIbcsTokens } from "./theme";
-import { clampTo, estTextW, fitLabel, svgSafeId } from "./internal/text";
+import { useIbcsTokens, useResolvedLabels } from "./theme";
+import { clampTo, estTextW, fitLabel, svgSafeId, wrapText } from "./internal/text";
+import { calloutSides, type PointCallout } from "../core/callout";
+import type { PlacementBox, PlacementSegment, PlacementSide } from "../core/labelPlacement";
+import {
+  CALLOUT_FONT,
+  CALLOUT_LINE_H,
+  CalloutLeaders,
+  CalloutMarks,
+  allPlaced,
+  calloutNotes,
+  dotBox,
+  resolveCallouts,
+  type CalloutSpec,
+} from "./internal/callouts";
+import { NoteList, layoutNotes, notesHeight } from "./internal/notes";
 
 export type { TrendDatum } from "../core/trend";
+export type { PointCallout } from "../core/callout";
 
 export interface TrendChartProps {
   /** The periods, in order. Designed for ~13 (a year + total), but any length. */
@@ -49,7 +64,25 @@ export interface TrendChartProps {
   referenceLines?: ScenarioKey[];
   /** Print the current value above each column. Default true. */
   showValueLabels?: boolean;
+  /**
+   * Labelled periods (GTM p. 4) - a gear change in a run of results: each
+   * names a period and, optionally, a drawn reference line ("PY", "PL";
+   * default the column), and its text - "\n" for a new line - is written above
+   * the column's value label (below a negative column), or beside the line's
+   * point, marked with a dot. Labels are placed clear of every column, label,
+   * line and other callout, moved away with a leader where they must be; the
+   * plot keeps room above its tallest column for them. A callout with no room
+   * anywhere is numbered at its point and written under the chart (the svg
+   * grows by that list), so none is left out. The screen-reader table carries
+   * each callout's text in its period's row (`labels.note`). A callout on a
+   * period without that value is not drawn.
+   */
+  callouts?: PointCallout[];
   width?: number;
+  /**
+   * Height in px. Default 360. A chart whose callouts could not all be placed
+   * beside their periods grows by the list of their notes.
+   */
   height?: number;
   /**
    * Horizontal band layout - the gap between columns and the lead-in/out gutter.
@@ -96,6 +129,9 @@ export interface TrendChartProps {
   tooltip?: boolean;
 }
 
+/** The space between a column's end (or its value label) and the tie of its callout, px. */
+const TIE_CLEAR = 2;
+
 /** Build polyline segments, breaking the line wherever a period lacks the value. */
 function segments(
   points: Array<{ x: number; y: number } | null>,
@@ -139,6 +175,7 @@ export const TrendChart = forwardRef<SVGSVGElement, TrendChartProps>(function Tr
     variance = "abs",
     referenceLines = ["PY", "PL"],
     showValueLabels = true,
+    callouts,
     width = 720,
     height = 360,
     bandPadding,
@@ -156,7 +193,7 @@ export const TrendChart = forwardRef<SVGSVGElement, TrendChartProps>(function Tr
   ref,
 ) {
   const tokens = useIbcsTokens(tokenOverride);
-  const words = useIbcsLabels(labels);
+  const words = useResolvedLabels(labels);
   const S = scenarioHeadings(words);
   const cmpName = S[comparison];
   const pctFmt = percentFormatOf(format);
@@ -204,15 +241,18 @@ export const TrendChart = forwardRef<SVGSVGElement, TrendChartProps>(function Tr
   const topH =
     height - padT - labelH - negLabelH - (showVariancePanel ? varH + gap + varLabelH : 0);
   const plotBottom = padT + topH;
-  const plotTop = padT + labelTopH;
-  const scaleH = Math.max(plotBottom - plotTop, 1);
-
-  const vRange = domainMax - domainMin || 1;
-  const y = (v: number) => plotBottom - ((v - domainMin) / vRange) * scaleH;
-  const zeroY = y(0);
-  // Grow columns and lines up from the zero baseline on mount / data change.
-  const yA = (v: number) => zeroY + (y(v) - zeroY) * grow;
-
+  // Callouts, as lines of text: the plot keeps room above its tallest column
+  // for the tallest of them (without any, it keeps none).
+  const calloutMaxW = Math.max(60, Math.min(180, innerW * 0.6));
+  const calloutLines = (callouts ?? []).map((c) =>
+    c && typeof c.label === "string" && c.label.trim() !== ""
+      ? wrapText(c.label, calloutMaxW, CALLOUT_FONT)
+      : null,
+  );
+  const tallestCallout = calloutLines.reduce(
+    (h, ls) => (ls ? Math.max(h, ls.length * CALLOUT_LINE_H) : h),
+    0,
+  );
   const n = cells.length || 1;
   // Band layout (column placement). Default reproduces the historical centred
   // look exactly (bar width = 0.5·step, half-band gutter); `bandPadding` lets a
@@ -222,6 +262,183 @@ export const TrendChart = forwardRef<SVGSVGElement, TrendChartProps>(function Tr
   const cxOf = (i: number) => scale.center(i);
   const colW = Math.min(scale.bandwidth, 30);
   const sumColW = Math.min(band * 0.62, 38);
+  const pyLineColor = tokens.color.neutral;
+  const plLineColor = tokens.scenario.PL.stroke;
+  const vRange = domainMax - domainMin || 1;
+
+  // The value scale for a given room above the tallest column (`headroom`)
+  // and below the lowest one (`footroom`); with neither, the plot's own.
+  const scaleFor = (headroom: number, footroom: number) => {
+    const plotTop = padT + labelTopH + headroom;
+    const scaleBottom = plotBottom - footroom;
+    const scaleH = Math.max(scaleBottom - plotTop, 1);
+    const y = (v: number) => scaleBottom - ((v - domainMin) / vRange) * scaleH;
+    return { plotTop, scaleBottom, y, zeroY: y(0) };
+  };
+
+  // --- callouts: placed clear of the columns, labels and lines ------------------
+  // The plot keeps room above its tallest column for the tallest callout: its
+  // tie, its 2 px clearance and its label - and as much below its lowest one
+  // when a callout names a negative column. When some label still finds no
+  // place, the room grows by as much again, at most twice, before the label is
+  // written as a numbered note. Without callouts the plot keeps no room at all.
+  const placeCallouts = (headroom: number, footroom: number) => {
+    const { plotTop, scaleBottom, y, zeroY } = scaleFor(headroom, footroom);
+    // A column's finished top (a capped summary's at the plot edge), and its
+    // value label's text box when one is written - the callouts keep clear of
+    // both, and a column's callout starts above its label.
+    const columnTop = (c: (typeof cells)[number]) =>
+      c.current == null
+        ? zeroY
+        : c.offScale
+          ? c.current >= 0
+            ? plotTop
+            : scaleBottom
+          : y(c.current);
+    const valueLabelBox = (c: (typeof cells)[number], i: number): PlacementBox | null => {
+      if (!showValueLabels || c.current == null) return null;
+      const lw = estTextW(formatValue(c.current, format), 9);
+      if (lw > band - 1) return null;
+      const lx = clampTo(cxOf(i), padL + lw / 2, width - padR - lw / 2);
+      const base = Math.min(zeroY, columnTop(c)) - 4;
+      return { left: lx - lw / 2, top: base - 7.2, right: lx + lw / 2, bottom: base + 2 };
+    };
+    const calloutSpecs: CalloutSpec[] = [];
+    const calloutTexts = new Map<number, string[]>();
+    (callouts ?? []).forEach((co, ci) => {
+      const textLines = calloutLines[ci];
+      if (!co || !textLines || !Number.isInteger(co.index)) return;
+      const c = cells[co.index];
+      if (!c) return;
+      const i = co.index;
+      const note = co.label
+        .split("\n")
+        .map((t) => t.trim())
+        .filter(Boolean)
+        .join(", ");
+      const line =
+        co.series === "PY" && showPyLine ? "PY" : co.series === "PL" && showPlLine ? "PL" : null;
+      if (co.series === "PY" || co.series === "PL") {
+        // A point of a drawn reference line, marked with a dot of its colour.
+        const v = line ? c[line] : undefined;
+        if (line == null || v == null || c.summary) return;
+        const neighbour = (k: number) => {
+          const d = cells[k];
+          return d && !d.summary ? d[line] : undefined;
+        };
+        calloutSpecs.push({
+          x: cxOf(i),
+          y: y(v),
+          lines: textLines,
+          sides: calloutSides(v, neighbour(i - 1), neighbour(i + 1), co.placement),
+          dot: line === "PY" ? pyLineColor : plLineColor,
+          note,
+          where: c.category,
+        });
+      } else {
+        // The column: past its end, above its value label - 2 px clear of it, so
+        // the tie that links them never touches the label's digits.
+        if (c.current == null) return;
+        const label = valueLabelBox(c, i);
+        const up = c.current >= 0;
+        const anchorY = up
+          ? Math.min(label?.top ?? Infinity, columnTop(c)) - TIE_CLEAR
+          : columnTop(c) + TIE_CLEAR;
+        const sides: PlacementSide[] = up
+          ? [co.placement === "below" ? "below" : "above"]
+          : [co.placement === "above" ? "above" : "below"];
+        calloutSpecs.push({
+          x: cxOf(i),
+          y: anchorY,
+          lines: textLines,
+          sides,
+          dot: null,
+          note,
+          where: c.category,
+        });
+      }
+      calloutTexts.set(i, [...(calloutTexts.get(i) ?? []), note]);
+    });
+    const resolvedCallouts = (() => {
+      if (calloutSpecs.length === 0) return [];
+      const boxes: PlacementBox[] = [];
+      const lineSegs: PlacementSegment[] = [];
+      for (const [i, c] of cells.entries()) {
+        if (c.current == null) continue;
+        const w = c.summary ? sumColW : colW;
+        const top = columnTop(c);
+        boxes.push({
+          left: cxOf(i) - w / 2,
+          top: Math.min(zeroY, top),
+          right: cxOf(i) + w / 2,
+          bottom: Math.max(zeroY, top),
+        });
+        const label = valueLabelBox(c, i);
+        if (label) boxes.push(label);
+        if (c.summary) {
+          const x0 = cxOf(i) - band / 2;
+          lineSegs.push({ x1: x0, y1: padT, x2: x0, y2: plotBottom, pad: 0.5 });
+        }
+      }
+      const pts = (key: "PY" | "PL") =>
+        cells.map((c, i) => (c[key] != null && !c.summary ? { x: cxOf(i), y: y(c[key]!) } : null));
+      const linePts: Array<[Array<{ x: number; y: number } | null>, number]> = [];
+      if (showPlLine) linePts.push([pts("PL"), 1.25 / 2]);
+      if (showPyLine) linePts.push([pts("PY"), 1.75 / 2]);
+      for (const [points, pad] of linePts) {
+        for (const run of segments(points)) {
+          for (let k = 1; k < run.length; k++) {
+            const a = run[k - 1]!;
+            const b = run[k]!;
+            lineSegs.push({ x1: a.x, y1: a.y, x2: b.x, y2: b.y, pad });
+          }
+        }
+      }
+      if (showPyLine) {
+        for (const p of pts("PY")) {
+          if (p)
+            boxes.push({ left: p.x - 3.2, top: p.y - 3.2, right: p.x + 3.2, bottom: p.y + 3.2 });
+        }
+      }
+      lineSegs.push({ x1: padL, y1: zeroY, x2: width - padR, y2: zeroY, pad: 0.5 });
+      for (const s of calloutSpecs) if (s.dot) boxes.push(dotBox(s.x, s.y));
+      return resolveCallouts(
+        calloutSpecs,
+        { boxes, segments: lineSegs },
+        { left: padL, top: padT, right: width - padR, bottom: plotBottom },
+        estTextW,
+      );
+    })();
+    return { calloutTexts, resolvedCallouts };
+  };
+  const roomStep = tallestCallout > 0 ? tallestCallout + 10 : 0;
+  // Head- and footroom together never take more than 60% of the plot.
+  const roomMax = (plotBottom - padT - labelTopH) * 0.6;
+  const belowNeeded = (callouts ?? []).some(
+    (co, ci) =>
+      co != null &&
+      calloutLines[ci] != null &&
+      co.series !== "PY" &&
+      co.series !== "PL" &&
+      Number.isInteger(co.index) &&
+      (cells[co.index]?.current ?? 0) < 0,
+  );
+  const share = belowNeeded ? 0.5 : 1;
+  let calloutHeadroom = Math.min(roomStep, roomMax * share);
+  let calloutFootroom = belowNeeded ? Math.min(roomStep, roomMax * share) : 0;
+  let placed = placeCallouts(calloutHeadroom, calloutFootroom);
+  for (let retry = 0; retry < 2 && !allPlaced(placed.resolvedCallouts); retry++) {
+    const head = Math.min(calloutHeadroom + roomStep, roomMax * share);
+    const foot = belowNeeded ? Math.min(calloutFootroom + roomStep, roomMax * share) : 0;
+    if (!(head > calloutHeadroom || foot > calloutFootroom)) break;
+    calloutHeadroom = head;
+    calloutFootroom = foot;
+    placed = placeCallouts(calloutHeadroom, calloutFootroom);
+  }
+  const { calloutTexts, resolvedCallouts } = placed;
+  const { plotTop, scaleBottom, y, zeroY } = scaleFor(calloutHeadroom, calloutFootroom);
+  // Grow columns and lines up from the zero baseline on mount / data change.
+  const yA = (v: number) => zeroY + (y(v) - zeroY) * grow;
 
   // Reference-line point sets (null where the period lacks the scenario).
   // Summary periods are excluded: the lines trace the run of periods, and a
@@ -279,8 +496,8 @@ export const TrendChart = forwardRef<SVGSVGElement, TrendChartProps>(function Tr
 
   const varMid = plotBottom + gap + varH / 2;
 
-  const pyLineColor = tokens.color.neutral;
-  const plLineColor = tokens.scenario.PL.stroke;
+  const noteLines = layoutNotes(calloutNotes(resolvedCallouts), width - padL * 2);
+  const svgH = height + notesHeight(noteLines);
 
   // Built-in tooltip rows for the hovered period: current value, the comparison
   // value, and the signed Δ (impact-coloured), reusing the cell's variance.
@@ -328,8 +545,9 @@ export const TrendChart = forwardRef<SVGSVGElement, TrendChartProps>(function Tr
     ...(showVariancePanel
       ? [deltaHeading(words, cmpName), deltaHeading(words, cmpName, true)]
       : []),
+    ...(calloutTexts.size > 0 ? [words.note] : []),
   ];
-  const a11yRows: ChartDataRow[] = cells.map((c) => {
+  const a11yRows: ChartDataRow[] = cells.map((c, i) => {
     const cells_: Array<string | number> = [
       c.current != null ? formatValue(c.current, format) : na,
     ];
@@ -339,6 +557,7 @@ export const TrendChart = forwardRef<SVGSVGElement, TrendChartProps>(function Tr
       cells_.push(c.variance ? formatSigned(c.variance.abs, format) : na);
       cells_.push(c.variance ? formatPercent(c.variance.pct, pctFmt) : na);
     }
+    if (calloutTexts.size > 0) cells_.push((calloutTexts.get(i) ?? []).join("; "));
     return { label: c.isForecast ? `${c.category} (${S.FC})` : c.category, cells: cells_ };
   });
 
@@ -360,8 +579,8 @@ export const TrendChart = forwardRef<SVGSVGElement, TrendChartProps>(function Tr
       <svg
         ref={ref}
         width={width}
-        height={height}
-        viewBox={`0 0 ${width} ${height}`}
+        height={svgH}
+        viewBox={`0 0 ${width} ${svgH}`}
         className={className}
         // Interactive charts carry their semantics on the marks themselves
         // (`selectableMarkProps`), so the svg stays an unlabelled container;
@@ -457,6 +676,9 @@ export const TrendChart = forwardRef<SVGSVGElement, TrendChartProps>(function Tr
           strokeWidth={1}
         />
 
+        {/* Callout leaders, beneath the columns and lines so every mark stays whole. */}
+        <CalloutLeaders callouts={resolvedCallouts} tokens={tokens} />
+
         {/* Current-series columns */}
         {cells.map((c, i) => {
           // `cells` is `data.map(…)`, so the datum at this index always exists.
@@ -467,7 +689,7 @@ export const TrendChart = forwardRef<SVGSVGElement, TrendChartProps>(function Tr
           // Off-scale summaries cap at the plot edge - the break glyph and the
           // value label carry the magnitude; everything else follows the
           // shared period scale.
-          const targetTop = c.offScale ? (c.current >= 0 ? plotTop : plotBottom) : y(c.current);
+          const targetTop = c.offScale ? (c.current >= 0 ? plotTop : scaleBottom) : y(c.current);
           const top = zeroY + (targetTop - zeroY) * grow;
           const h = Math.abs(top - zeroY);
           const colY = c.current >= 0 ? top : zeroY;
@@ -606,6 +828,11 @@ export const TrendChart = forwardRef<SVGSVGElement, TrendChartProps>(function Tr
           </>
         )}
 
+        {/* Callouts: their dots, their labels, and the numbers of those written as notes. */}
+        {resolvedCallouts.length > 0 && (
+          <CalloutMarks callouts={resolvedCallouts} tokens={tokens} />
+        )}
+
         {/* Period labels */}
         {cells.map((c, i) => (
           <text
@@ -680,6 +907,9 @@ export const TrendChart = forwardRef<SVGSVGElement, TrendChartProps>(function Tr
             })}
           </>
         )}
+
+        {/* The callouts that found no place beside their periods, by number. */}
+        <NoteList lines={noteLines} x={padL} y={height} tokens={tokens} />
       </svg>
       <ChartDataTable
         caption={

@@ -30,6 +30,44 @@ export function estTextW(s: string, fontPx: number): number {
   return [...s].length * fontPx * 0.6;
 }
 
+/**
+ * Break `text` into lines no wider than `maxPx` by `measure`: at each "\n"
+ * first, then between words; a word wider than a line is cut into pieces of
+ * whole characters (at least one per line). So no text is ever cut short,
+ * and the loop ends after at most one line per character. SSR-safe.
+ */
+export function wrapText(
+  text: string,
+  maxPx: number,
+  fontPx: number,
+  measure: (s: string, fontPx: number) => number = estTextW,
+): string[] {
+  const out: string[] = [];
+  for (const paragraph of text.split("\n")) {
+    let line = "";
+    for (const word of paragraph.split(/\s+/).filter(Boolean)) {
+      const joined = line ? `${line} ${word}` : word;
+      if (measure(joined, fontPx) <= maxPx) {
+        line = joined;
+        continue;
+      }
+      if (line) out.push(line);
+      // A word wider than a whole line: cut it, whole characters at a time.
+      let rest = [...word];
+      line = "";
+      while (rest.length > 0 && measure(rest.join(""), fontPx) > maxPx) {
+        let n = 1;
+        while (n < rest.length && measure(rest.slice(0, n + 1).join(""), fontPx) <= maxPx) n++;
+        out.push(rest.slice(0, n).join(""));
+        rest = rest.slice(n);
+      }
+      line = rest.join("");
+    }
+    out.push(line);
+  }
+  return out;
+}
+
 /** Clamp v into [lo, hi]; if the range is degenerate, fall back to its midpoint. */
 export function clampTo(v: number, lo: number, hi: number): number {
   if (!(hi > lo)) return (lo + hi) / 2;
