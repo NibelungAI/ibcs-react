@@ -126,10 +126,16 @@ Nearest wins: a component's own word prop (`totalsLabel`, `emptyMessage`,
 the nearest provider's, then `defaultLabels` - the library's IBCS English. A
 `baseLabel` that names a scenario (`"PY"`) is the exception: it takes that
 scenario's word from `labels`. Entries such as `"Point {n}"`, `"+{count} more"`,
-the variance headers `delta` ("Δ{base}") and `deltaPct` ("Δ{base}%") or
+the variance headers `delta` ("Δ{base}") and `deltaPct` ("Δ{base}%"),
 `HistogramChart`'s `mean` ("Mean {value}"), `spread` ("Middle half {range}")
-and `sampleSize` ("n = {n}") are templates: keep the placeholders in your words
-and the component fills them in.
+and `sampleSize` ("n = {n}") or the ranking chart's `moreIcons` ("+{count}")
+are templates: keep the placeholders in your words and the component fills
+them in.
+
+A full translation can be typed `IbcsLabelsComplete`, which requires every
+word, so the compiler names the words a new version adds. `IbcsLabels` itself
+keeps the words added after 1.5.0 optional - the defaults fill the ones a
+dictionary lacks - so a dictionary written for 1.5.0 still compiles.
 
 A header never goes blank: where an empty scenario word would name a column, a
 row or a selectable mark, the scenario's `scenarioTitle` ("Actual") is

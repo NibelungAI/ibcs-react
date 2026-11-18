@@ -188,8 +188,8 @@ template set** - every standard chart (C01-C13) and table (T01-T04):
   A value column can draw the value itself as a magnitude bar or pin
   (`mark: "bar"`), rows can carry intervals (`errors`, drawn as error bars) and
   columns can shade value bands (`bands`). A row's label can lead with icons
-  (`icon`: an item or spell icon with a quality-tinted `border`, never
-  upscaled) and take a `labelColor`.
+  (`icon`: an item or spell icon with a quality-tinted `border`, never drawn
+  above `naturalSize / pixelRatio`) and take a `labelColor`.
 - **`ComparisonTable`** - the centre-label flanking layout (**T01/T02**): one
   measure with column groups (e.g. month vs YTD), each PY/PL/AC + variance.
 - **`MatrixTable`** - a budget / control matrix: a P&L row tree crossed with an
@@ -518,11 +518,12 @@ digits and the caller's words:
 ## Icons and distributions
 
 `DataTable` rows and `RankingVarianceChart` data take an `icon` - an image
-with its `naturalSize`, drawn at the component's `iconSize` but never above
-that, so never upscaled - and a `labelColor`; `renderIcon` puts an element of
-your own in the slot. `HistogramChart` draws a distribution with the mean's
-interval and the spread of the values apart, so neither is read for the other
-(see [HistogramChart](docs/content/docs/components/histogram.mdx)):
+with its `naturalSize` (and a `pixelRatio` for dense screens), drawn at the
+component's `iconSize` but never above `naturalSize / pixelRatio` CSS px - and
+a `labelColor`; `renderIcon` puts an element of your own in the slot, around
+the component's own icons if you like. `HistogramChart` draws a distribution
+with the mean's interval and the spread of the values apart, so neither is read
+for the other (see [HistogramChart](docs/content/docs/components/histogram.mdx)):
 
 <table>
 <tr>

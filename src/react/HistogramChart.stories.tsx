@@ -43,9 +43,8 @@ export const EngineBins: Story = {
     values: undefined,
     bins: { start: 850, width: 10, counts: [4, 19, 61, 152, 288, 401, 395, 301, 170, 72, 25, 6] },
     mean: { value: 909.6, halfWidth: 0.7, level: 0.95 },
-    spread: { from: 877.2, to: 942.4 },
+    spread: { from: 877.2, to: 942.4, label: "10th to 90th percentile {range}" },
     scenario: "FC",
-    labels: { spread: "10th to 90th percentile {range}" },
     height: 260,
   },
 };

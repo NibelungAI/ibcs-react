@@ -119,10 +119,14 @@ width there - that is the honest picture; the ΔPL panel is where it reads.
 A datum's `icon` puts a small picture before its label, or several as chips -
 here the items each variant changes - and its `labelColor` colours the label.
 Icons are drawn at `iconSize` (default 20; at most the row height minus 4, and
-never above 56), never above the image's own `naturalSize`, with an optional
-`border` inside the box. The label column grows by the widest row's icons, up
-to 40% of the chart, and every label, the total's too, starts past them; a chip
-that would leave a label less than 24 px is left out, from the end.
+never above 56), never above `naturalSize / pixelRatio` CSS px, with an
+optional `border` framing the box. The label column grows by the widest row's
+icons, up to 40% of the chart, and every label, the total's too, starts past
+them. The room comes out of the AC panel first, down to half of it, so the
+variance panels - where labels sit beside the pins - keep their widths. A chip
+that would leave a label less than 24 px is left out, from the end: a "+N"
+(the word `moreIcons`) counts the chips left out, and the label's tooltip names
+them.
 
 <Frame center>
   <RankingVarianceChart
@@ -184,10 +188,14 @@ const sword = { src: swordIcon, naturalSize: 56, border: "#0070dd", alt: "Runed 
 ```
 
 The icons are part of the chart's image; the screen-reader table names each row
-by its label, after its icons' `alt` ("Signet of Embers Runed Greatsword Best
-set"). `renderIcon(row, size)` draws an svg element of your own in a
-`size` × `size` box at the start of the label instead - return null to fall back
-to the datum's `icon`. For a tooltip of your own, `onHover` hands you the row.
+by its label, after its icons' `alt` ("Signet of Embers, Runed Greatsword, Best
+set"). `renderIcon(row, size, icon)` draws an svg element of your own at the
+start of the label instead, in a box `size` px tall whose top-left corner is
+the origin. `icon` is the row's own icons as the chart draws them in that box
+(null for a row without), so you can wrap them - in a `<g>` that opens your
+tooltip, say - without redrawing them. Return null to fall back to the datum's
+`icon`. `onHover` hands you a row when the pointer is near its marks, not over
+its label or icons: for a tooltip on an icon, wrap it with `renderIcon`.
 
 A PNG export or copy of the chart draws its svg as an image, and a browser
 loads no remote file inside one: there, only icons given as `data:` URIs
