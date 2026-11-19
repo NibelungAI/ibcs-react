@@ -239,12 +239,20 @@ export function computeTicks(min: number, max: number, count = 5): number[] {
 
   const decimals = stepDecimals(step);
   const ticks: number[] = [];
-  for (let i = first; i <= last; i++) {
+  // Bounded by the count, never by the values: past 2^53 an integer index
+  // cannot move (`i + 1 === i`), so a narrow range far from zero - 1e17 to
+  // 1e17 + 16 - once looped forever. The error-based step gives at most about
+  // √2·count + 2 ticks, so 4·count + 3 never cuts a real axis short; a value
+  // that does not increase ends the walk.
+  const most = Math.min(last - first, 4 * count + 2);
+  for (let k = 0; k <= most; k++) {
     // toFixed at the step's own precision snaps away the multiplication residue
     // (and makes the zero tick exactly 0).
-    ticks.push(Number((i * step).toFixed(decimals)));
+    const v = Number(((first + k) * step).toFixed(decimals));
+    if (ticks.length > 0 && v <= ticks[ticks.length - 1]!) break;
+    ticks.push(v);
   }
-  return ticks;
+  return ticks.length > 0 ? ticks : [min];
 }
 
 /**

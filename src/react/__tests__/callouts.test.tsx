@@ -2,8 +2,8 @@
 /**
  * Point callouts on LineChart and TrendChart, and LineChart's fans, as
  * rendered: every callout's label beside its point and clear of every line,
- * marker, label and leader - or, with no room, numbered at its point and
- * written under the chart, so none is left out; the plot's room for them; the
+ * marker, label and leader - or, with no room or no point, numbered and
+ * written under the chart, so none on a period is left out; the plot's room for them; the
  * fans' edges on the lines' scale, broken at gaps, captioned and tied to the
  * edge they name; and the screen-reader table's columns for both. Geometry is
  * read from the server markup.
@@ -197,22 +197,79 @@ describe("LineChart callouts: beside their points", () => {
     expect([...named.querySelectorAll("tbody tr")][0]!.lastElementChild!.textContent).toBe("");
   });
 
-  it("draws no callout on a period without a value for its series, nor an empty one", () => {
+  /** The notes' texts under a chart `height` px tall, in order. */
+  const notesUnder = (svg: Element, height: number) =>
+    [...svg.querySelectorAll("text")]
+      .filter((t) => num(t, "y") > height && t.getAttribute("font-size") === "10.5")
+      .map((t) => t.textContent);
+
+  it("writes a callout on a period without a value as a note naming its period, and in the table", () => {
+    // Nothing vanishes: the callout on the gap is under the chart and in
+    // period b's row, though there is no point to draw it beside.
+    const b = ssr(
+      <LineChart
+        data={[{ category: "a", AC: 1 }, { category: "b" }, { category: "c", AC: 3 }]}
+        callouts={[
+          { index: 1, label: "On the gap" },
+          { index: 2, label: "Kept" },
+        ]}
+      />,
+    );
+    const svg = b.querySelector("svg")!;
+    const c = callouts(svg);
+    expect(c.labels.map((l) => l.s)).toEqual(["Kept"]);
+    expect(c.dots.length).toBe(1);
+    expect(notesUnder(svg, 360)).toEqual(["b: On the gap"]);
+    expect(c.discs.filter((d) => num(d, "cy") <= 360).length).toBe(0);
+    expect(num(svg, "height")).toBeGreaterThan(360);
+    const cells = [...b.querySelectorAll("tbody tr")].map((tr) => tr.lastElementChild!.textContent);
+    expect(cells).toEqual(["", "On the gap", "Kept"]);
+  });
+
+  it("writes one on a series it does not draw the same way, and ignores one that names no period", () => {
     const b = ssr(
       <LineChart
         data={[{ category: "a", AC: 1 }, { category: "b" }, { category: "c", AC: 3, PY: 2 }]}
         callouts={[
           { index: 1, label: "missing value" },
           { index: 9, label: "no such period" },
+          { index: -1, label: "before the first" },
+          { index: 1.5, label: "between two" },
           { index: 0, label: "  " },
           { index: 2, series: "PL", label: "no such series" },
           { index: 2, series: "PY", label: "on PY" },
         ]}
       />,
     );
-    const c = callouts(b.querySelector("svg")!);
+    const svg = b.querySelector("svg")!;
+    const c = callouts(svg);
     expect(c.labels.map((l) => l.s)).toEqual(["on PY"]);
+    expect(c.dots.length).toBe(1);
     expect(c.dots[0]!.getAttribute("fill")).toBe(T.color.neutral);
+    // Numbered in the order given, each after the name of its period.
+    expect(notesUnder(svg, 360)).toEqual(["b: missing value", "c: no such series"]);
+    const cells = [...b.querySelectorAll("tbody tr")].map((tr) => tr.lastElementChild!.textContent);
+    expect(cells).toEqual(["", "missing value", "no such series; on PY"]);
+  });
+
+  it("keeps no room above the plot for a callout without a point", () => {
+    const data: LineDatum[] = [
+      { category: "a", AC: 1 },
+      { category: "b" },
+      { category: "c", AC: 3 },
+    ];
+    const top = (b: HTMLElement) =>
+      Math.min(
+        ...[
+          ...b
+            .querySelector(`path[stroke='${T.scenario.AC.stroke}']`)!
+            .getAttribute("d")!
+            .matchAll(/,([\d.-]+)/g),
+        ].map((m) => Number(m[1])),
+      );
+    const plain = ssr(<LineChart data={data} />);
+    const noted = ssr(<LineChart data={data} callouts={[{ index: 1, label: "On the gap" }]} />);
+    expect(top(noted)).toBe(top(plain));
   });
 });
 
@@ -316,13 +373,16 @@ describe("LineChart callouts: nothing touches them, and none is left out", () =>
                 ).toBe(false);
               }
             }
-            // Every callout with a point is on the chart: as a label, or numbered under it.
+            // Every callout on a period is on the chart: a label beside its
+            // point, or numbered under the chart - one without a point (PY
+            // on the runs, which have none) after the name of its period.
             const drawable = given.filter((c) => data[c.index]?.[c.series ?? "AC"] != null).length;
+            const onPeriod = given.filter((c) => data[c.index] != null).length;
             const noteNumbers = [...svg.querySelectorAll("circle")].filter(
               (c) => c.getAttribute("fill") === T.color.text && num(c, "cy") > h,
             );
             expect(dots.length).toBe(drawable);
-            expect(labels.length + noteNumbers.length).toBe(drawable);
+            expect(labels.length + noteNumbers.length).toBe(onPeriod);
             expect(discs.filter((c) => num(c, "cy") <= h).length).toBeLessThanOrEqual(
               noteNumbers.length,
             );
@@ -359,6 +419,37 @@ describe("LineChart callouts: numbered notes when there is no room", () => {
     expect(listed.length).toBe(8 - labels.length);
     expect(listed.every((t) => /Change \d, more$/.test(t ?? ""))).toBe(true);
     expect(num(svg, "height")).toBeGreaterThan(140);
+  });
+
+  it("numbers a callout without a point in the order given, each disc beside its own point", () => {
+    // First in order and without a point (the runs have no PY): number 1,
+    // named by its period. The crowded ones after it keep their discs at
+    // their own points.
+    const given: PointCallout[] = [
+      { index: 5, series: "PY", label: "No PY here" },
+      ...Array.from({ length: 8 }, (_, k) => ({ index: 6 + k, label: `Change ${k + 1}\nmore` })),
+    ];
+    const svg = ssr(
+      <LineChart data={runData} width={240} height={140} callouts={given} />,
+    ).querySelector("svg")!;
+    const ac = svg.querySelector(`path[stroke='${T.scenario.AC.stroke}']`)!.getAttribute("d")!;
+    const xs = [...ac.matchAll(/[ML]([\d.-]+),/g)].map((m) => Number(m[1]));
+    const listed = [...svg.querySelectorAll("text")]
+      .filter((t) => num(t, "y") > 140 && t.getAttribute("font-size") === "10.5")
+      .map((t) => t.textContent);
+    expect(listed[0]).toBe("6: No PY here");
+    const placed = new Set(callouts(svg).labels.map((l) => l.s));
+    // The test's labels read their lines joined by " / ".
+    const unplaced = given.slice(1).filter((c) => !placed.has(c.label.split("\n").join(" / ")));
+    expect(unplaced.length).toBeLessThan(8);
+    const inPlot = callouts(svg).discs.filter((d) => num(d, "cy") <= 140);
+    expect(inPlot.length).toBeGreaterThan(0);
+    for (const d of inPlot) {
+      const n = Number(d.parentElement!.querySelector("text")!.textContent);
+      // Number 1 is the callout without a point; 2 on, the unplaced ones in order.
+      const own = unplaced[n - 2]!;
+      expect(num(d, "cx")).toBeCloseTo(xs[own.index]!, 1);
+    }
   });
 
   it("draws each note's number beside its point, clear of the labels, or names its period", () => {
@@ -540,6 +631,62 @@ describe("TrendChart callouts", () => {
     }
   }
 
+  it("writes a callout on a period without its point as a note naming its period, and in the table", () => {
+    // A run without a figure is where a caller writes why; a line that is
+    // not drawn, or a summary column's line, has no point either.
+    const body = ssr(
+      <TrendChart
+        data={[
+          { category: "R1", AC: 900, PY: 880 },
+          { category: "R2", PY: 885 },
+          { category: "R3", AC: 905, PY: 890 },
+          { category: "FY", AC: 2705, PY: 2655, summary: true },
+        ]}
+        variance="none"
+        referenceLines={["PY"]}
+        callouts={[
+          { index: 1, label: "Missing" },
+          { index: 0, label: "Kept" },
+          { index: 2, series: "PL", label: "PL is not drawn" },
+          { index: 3, series: "PY", label: "No line on a total" },
+          { index: 7, label: "No such run" },
+        ]}
+        width={480}
+      />,
+    );
+    const svg = body.querySelector("svg")!;
+    const { labels, dots } = callouts(svg);
+    expect(labels.map((l) => l.s)).toEqual(["Kept"]);
+    expect(dots.length).toBe(0);
+    const notes = [...svg.querySelectorAll("text")]
+      .filter((t) => num(t, "y") > 360 && t.getAttribute("font-size") === "10.5")
+      .map((t) => t.textContent);
+    expect(notes).toEqual(["R2: Missing", "R3: PL is not drawn", "FY: No line on a total"]);
+    const cells = [...body.querySelectorAll("tbody tr")].map(
+      (tr) => tr.lastElementChild!.textContent,
+    );
+    expect(cells).toEqual(["Kept", "Missing", "PL is not drawn", "No line on a total"]);
+  });
+
+  it("keeps no room above the columns for a callout without a point", () => {
+    const columnTops = (b: HTMLElement) =>
+      [...b.querySelectorAll("svg rect")]
+        .filter((r) => r.getAttribute("fill") === T.scenario.AC.fill)
+        .filter((r) => !r.parentElement!.hasAttribute("transform"))
+        .map((r) => num(r, "y"));
+    const gap = trend.map((d, i) => (i === 3 ? { category: d.category, PY: d.PY } : d));
+    const chart = (given: PointCallout[]) =>
+      ssr(<TrendChart data={gap} variance="none" width={480} height={240} callouts={given} />);
+    const missing: PointCallout[] = [
+      { index: 3, label: "Missing" },
+      { index: 5, series: "PL", label: "PL is not drawn" },
+    ];
+    expect(columnTops(chart(missing))).toEqual(columnTops(chart([])));
+    // Beside a callout that has its place, they never make the room grow either.
+    const kept: PointCallout = { index: 8, label: "Kept" };
+    expect(columnTops(chart([kept, ...missing]))).toEqual(columnTops(chart([kept])));
+  });
+
   it("carries each callout's text in its period's row of the table", () => {
     const body = ssr(
       <TrendChart
@@ -650,6 +797,47 @@ describe("LineChart fans", () => {
     );
   });
 
+  it("writes a band's two ends apart in the table: in full by default, never 1.4K-1.4K", () => {
+    // A fan of DPS per moment: the default format is compact, and 1,397 and
+    // 1,413 both read "1.4K" in it.
+    const dps: LineDatum[] = [1405, 1408, 1404].map((v, i) => ({ category: `${i * 10} s`, AC: v }));
+    const fan: FanBand = { from: [1397, 1399, 1396], to: [1413, 1416, 1412], label: "p10-p90" };
+    const cells = (b: HTMLElement) =>
+      [...b.querySelectorAll("tbody tr")].map((tr) => tr.lastElementChild!.textContent);
+    expect(cells(ssr(<LineChart data={dps} fans={[fan]} />))).toEqual([
+      "1,397–1,413",
+      "1,399–1,416",
+      "1,396–1,412",
+    ]);
+    // Compact when asked for, at the fewest digits that keep every band's ends apart.
+    expect(cells(ssr(<LineChart data={dps} fans={[fan]} format={{ compact: true }} />))).toEqual([
+      "1.40K–1.41K",
+      "1.40K–1.42K",
+      "1.40K–1.41K",
+    ]);
+  });
+
+  it("grows the value axis down for a band below the lines: its low edge stays in the plot", () => {
+    const b = ssr(
+      <LineChart
+        data={data}
+        fans={[{ from: data.map(() => -60), to: data.map((d) => d.AC! - 40) }]}
+        width={600}
+        height={300}
+      />,
+    );
+    const band = [...b.querySelectorAll("svg > g > path")].find(
+      (e) => e.getAttribute("opacity") === "0.2",
+    )!;
+    const ys = [...band.getAttribute("d")!.matchAll(/,([\d.-]+)/g)].map((m) => Number(m[1]));
+    const zero = [...b.querySelectorAll("svg > line")].find(
+      (l) => l.getAttribute("stroke") === T.color.axis,
+    )!;
+    // Below the zero line, and above the period labels' strip (22 px).
+    expect(Math.max(...ys)).toBeGreaterThan(num(zero, "y1") + 10);
+    expect(Math.max(...ys)).toBeLessThanOrEqual(300 - 22 + 0.05);
+  });
+
   it("draws a lone period between gaps as a narrow strip, in the band's colour", () => {
     const b = ssr(
       <LineChart
@@ -700,7 +888,31 @@ describe("LineChart period labels", () => {
     expect(labels.length).toBeGreaterThan(5);
     for (const [k, l] of labels.entries()) {
       expect(l.left).toBeGreaterThanOrEqual(0);
+      expect(l.right).toBeLessThanOrEqual(480);
       if (k > 0) expect(l.left).toBeGreaterThanOrEqual(labels[k - 1]!.right);
     }
   });
+
+  for (const width of [320, 480, 960, 1280, 1600, 1920]) {
+    it(`keeps every thinned label inside both edges at ${width}px, for 13 to 61 periods`, () => {
+      // 27 characters a label: at 1,280 px, "Run 13 of the Fire Mage set" once
+      // ended 16 px past the svg's right edge.
+      for (const n of [13, 25, 37, 49, 61]) {
+        const data = Array.from({ length: n }, (_, i) => ({
+          category: `Run ${String(i + 1).padStart(2, "0")} of the Fire Mage set`,
+          AC: 900 + i,
+        }));
+        const body = ssr(<LineChart data={data} width={width} height={240} />);
+        const labels = [...body.querySelectorAll("svg text")]
+          .filter((t) => t.getAttribute("font-size") === "10.5")
+          .map((t) => textBox(t, lineTextW));
+        expect(labels.length).toBeGreaterThan(1);
+        for (const [k, l] of labels.entries()) {
+          expect(l.left, `"${l.s}", ${n} periods`).toBeGreaterThanOrEqual(0);
+          expect(l.right, `"${l.s}", ${n} periods`).toBeLessThanOrEqual(width);
+          if (k > 0) expect(l.left).toBeGreaterThanOrEqual(labels[k - 1]!.right);
+        }
+      }
+    });
+  }
 });

@@ -14,7 +14,9 @@ import type { ReactElement } from "react";
 import {
   TimelineChart,
   defaultTokens,
+  type ChartHover,
   type TimelineAnnotation,
+  type TimelineMark,
   type TimelineRow,
 } from "../../index";
 import { estTextW } from "../internal/text";
@@ -109,8 +111,10 @@ describe("TimelineChart: marks on one time scale", () => {
     }
   });
 
-  it("draws ticks as one halo path and one ink path per row, however many casts", () => {
-    expect(rows[0]!.querySelectorAll("path").length).toBe(2);
+  it("draws ticks as one ink path per row, however many casts", () => {
+    const paths = rows[0]!.querySelectorAll("path");
+    expect(paths.length).toBe(1);
+    expect(paths[0]!.getAttribute("stroke")).toBe(defaultTokens.color.text);
     expect(rows[0]!.querySelectorAll("line").length).toBe(0);
   });
 
@@ -127,6 +131,77 @@ describe("TimelineChart: marks on one time scale", () => {
     expect(bar!.fill).toBe(defaultTokens.scenario.AC.fill);
     expect(bar!.x).toBeCloseTo(xOf(30), 6);
     expect(bar!.width).toBeCloseTo(xOf(45) - xOf(30), 6);
+  });
+});
+
+describe("TimelineChart: a cast never splits a bar", () => {
+  // A buff refreshed while it is up: one bar from 0 to 57 s, crossed by
+  // three casts. Drawn over a halo in the surface colour, each cast cut the
+  // bar, and an uptime that never dropped read as three drops.
+  const scene: TimelineRow[] = [
+    { label: "Serpent Sting", ticks: [0, 14, 28, 42], spans: [{ from: 0, to: 57 }] },
+    { label: "Haste Potion", ticks: [30], spans: [{ from: 30, to: 45 }] },
+    {
+      label: "Aimed Shot",
+      ticks: [5, 20, 35, 50],
+      spans: [5, 20, 35, 50].map((t) => ({ from: t, to: t + 6, kind: "waiting" as const })),
+    },
+  ];
+  for (const rowHeight of [14, 18, 22, 30]) {
+    it(`draws nothing in the surface colour across a span, at rows ${rowHeight} px tall`, () => {
+      const body = ssr(
+        <TimelineChart rows={scene} domain={[0, 60]} width={480} rowHeight={rowHeight} />,
+      );
+      const { rows } = parts(body);
+      const spans = rows.flatMap((g) =>
+        [...g.querySelectorAll(":scope > rect")].map((r) => ({
+          left: num(r, "x"),
+          right: num(r, "x") + num(r, "width"),
+          top: num(r, "y"),
+          bottom: num(r, "y") + num(r, "height"),
+        })),
+      );
+      expect(spans.length).toBe(6);
+      const surface = defaultTokens.color.surface;
+      const surfaced = [...body.querySelectorAll("svg [stroke]")].filter(
+        (el) => el.getAttribute("stroke") === surface,
+      );
+      // Badges keep their surface ring, but they sit above the rows.
+      for (const el of surfaced) {
+        const d = el.getAttribute("d") ?? "";
+        for (const m of d.matchAll(/M([\d.-]+),([\d.-]+)v([\d.-]+)/g)) {
+          const [x, y0, h] = [Number(m[1]), Number(m[2]), Number(m[3])];
+          for (const sp of spans) {
+            const crosses = x >= sp.left && x <= sp.right && y0 <= sp.bottom && y0 + h >= sp.top;
+            expect(crosses).toBe(false);
+          }
+        }
+      }
+      expect(surfaced.filter((el) => el.tagName === "path").length).toBe(0);
+    });
+  }
+
+  it("draws the refreshed buff as one unbroken bar, its casts standing out of it", () => {
+    const body = ssr(<TimelineChart rows={scene} domain={[0, 60]} width={480} />);
+    const { x0, x1, rows } = parts(body);
+    const xOf = (t: number) => x0 + (t / 60) * (x1 - x0);
+    const sting = rows[0]!;
+    const bars = [...sting.querySelectorAll(":scope > rect")];
+    expect(bars.length).toBe(1);
+    const bar = bars[0]!;
+    expect(num(bar, "x")).toBeCloseTo(xOf(0), 6);
+    expect(num(bar, "x") + num(bar, "width")).toBeCloseTo(xOf(57), 6);
+    // Each tick is taller than the bar: 3 px of ink above it and below it.
+    const ink = [...sting.querySelectorAll("path")];
+    expect(ink.length).toBe(1);
+    const ticks = [...ink[0]!.getAttribute("d")!.matchAll(/M([\d.-]+),([\d.-]+)v([\d.-]+)/g)];
+    expect(ticks.length).toBe(4);
+    for (const m of ticks) {
+      const top = Number(m[2]);
+      const bottom = top + Number(m[3]);
+      expect(num(bar, "y") - top).toBeCloseTo(3, 6);
+      expect(bottom - (num(bar, "y") + num(bar, "height"))).toBeCloseTo(3, 6);
+    }
   });
 });
 
@@ -239,6 +314,53 @@ describe("TimelineChart: the time axis", () => {
     expect(texts).toContain("1.000 s");
     expect(texts.some((t) => /K/.test(t ?? ""))).toBe(false);
   });
+
+  it("writes compact times with the digits that tell neighbours apart, on the axis and in the table", () => {
+    // 1,000 to 1,100 s compact: six axis labels once all read "1K", and two
+    // casts 35 s apart read alike in the table.
+    const body = ssr(
+      <TimelineChart
+        rows={[{ label: "A", ticks: [1012, 1047], spans: [{ from: 1000, to: 1100 }] }]}
+        domain={[1000, 1100]}
+        format={{ compact: true }}
+        width={640}
+      />,
+    );
+    const { svg, axisY } = parts(body);
+    const labels = [...svg.querySelectorAll("g > text")]
+      .filter((t) => Math.abs(num(t, "y") - (axisY + 15)) < 0.01)
+      .map((t) => t.textContent);
+    expect(labels).toEqual(["1.00K", "1.02K", "1.04K", "1.06K", "1.08K", "1.10K"]);
+    const cells = [...body.querySelectorAll("tbody td")].map((td) => td.textContent);
+    expect(cells).toEqual(["1.01K, 1.05K", "1.00K–1.10K", ""]);
+    expect(svg.getAttribute("aria-label")).toBe("Timeline of 1 rows, 1.00K to 1.10K");
+  });
+
+  for (const w of widths) {
+    it(`never writes two neighbouring compact axis labels alike, at ${w}px`, () => {
+      for (const [a, b] of [
+        [1000, 1100],
+        [0, 0.9],
+        [999_000, 1_001_000],
+        [1.7e12, 1.7e12 + 5e6],
+      ] as const) {
+        const body = ssr(
+          <TimelineChart
+            rows={[{ label: "A", ticks: [a, b] }]}
+            domain={[a, b]}
+            format={{ compact: true }}
+            width={w}
+          />,
+        );
+        const { svg, axisY } = parts(body);
+        const labels = [...svg.querySelectorAll("g > text")]
+          .filter((t) => Math.abs(num(t, "y") - (axisY + 15)) < 0.01)
+          .map((t) => t.textContent);
+        expect(labels.length).toBeGreaterThan(0);
+        for (const [i, l] of labels.entries()) if (i > 0) expect(l).not.toBe(labels[i - 1]);
+      }
+    });
+  }
 });
 
 const notes: TimelineAnnotation[] = [
@@ -445,5 +567,48 @@ describe("TimelineChart: words, table and tooltip", () => {
     const body = ssr(<TimelineChart rows={[]} width={400} />);
     expect(parts(body).rows.length).toBe(0);
     expect(body.querySelectorAll("tbody tr").length).toBe(0);
+  });
+});
+
+describe("TimelineChart: hover", () => {
+  it("redraws none of its rows on a hover change: the tooltip alone follows the pointer", () => {
+    // renderIcon is called once per row each time the rows are drawn.
+    let drawn = 0;
+    const renderIcon = () => {
+      drawn += 1;
+      return null;
+    };
+    const { container } = render(
+      <TimelineChart rows={fight} width={600} renderIcon={renderIcon} />,
+    );
+    expect(drawn).toBe(fight.length);
+    const targets = [...container.querySelectorAll("svg rect[fill='transparent']")];
+    // Seven casts in the first row, two and two cooldowns in the second, one and a buff in the third.
+    expect(targets.length).toBe(13);
+    for (const t of targets) {
+      fireEvent.pointerMove(t, { clientX: 10, clientY: 10, pointerType: "mouse" });
+      expect(screen.getByRole("tooltip")).toBeTruthy();
+    }
+    fireEvent.pointerLeave(targets[0]!, { pointerType: "mouse" });
+    expect(screen.queryByRole("tooltip")).toBeNull();
+    expect(drawn).toBe(fight.length);
+  });
+
+  it("reports to the onHover of the latest render, though its targets were drawn before it", () => {
+    const seen = (into: Array<string | null>) => (h: ChartHover<TimelineMark> | null) => {
+      into.push(h ? `${h.category} ${h.datum.kind} ${h.datum.from}` : null);
+    };
+    const first: Array<string | null> = [];
+    const latest: Array<string | null> = [];
+    const { container, rerender } = render(
+      <TimelineChart rows={fight} width={600} tooltip={false} onHover={seen(first)} />,
+    );
+    rerender(<TimelineChart rows={fight} width={600} tooltip={false} onHover={seen(latest)} />);
+    const target = container.querySelector("svg rect[fill='transparent']")!;
+    fireEvent.pointerMove(target, { clientX: 10, clientY: 10, pointerType: "mouse" });
+    fireEvent.pointerLeave(target, { pointerType: "mouse" });
+    expect(first).toEqual([]);
+    expect(latest).toEqual(["Auto Shot event 0", null]);
+    expect(screen.queryByRole("tooltip")).toBeNull();
   });
 });

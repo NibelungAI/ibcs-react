@@ -5,7 +5,7 @@ import { fillLabel, type IbcsLabelsOverride } from "../core/labels";
 import { formatValue, type FormatOptions } from "../core/format";
 import { rowIconsOf } from "../core/rowIcon";
 import { computeRangeBars, type RangeDatum, type RangeRow } from "../core/rangeBar";
-import { placeLabels, type PlacementBox } from "../core/labelPlacement";
+import { boxesTouch, placeLabels, type PlacementBox } from "../core/labelPlacement";
 import { bandScale, resolveBandPadding } from "../core/bandScale";
 import { useChartHover } from "./hooks";
 import type { ChartHover } from "./hooks";
@@ -15,13 +15,14 @@ import { ChartDataTable, type ChartDataRow } from "./a11y";
 import { useIbcsTokens, useResolvedLabels } from "./theme";
 import { clampTo, estTextW, fitLabel, svgSafeId } from "./internal/text";
 import { layoutRowLabelIcons, rowIconPx } from "./internal/rowLabelIcons";
+import { rangeFormat } from "./internal/rangeFormat";
 
 export type { RangeDatum, RangeRow } from "../core/rangeBar";
 
 export interface RangeBarChartProps {
   /**
    * The categories, in order: each with the two ends of its range (`from`,
-   * `to`) and an optional `mark` across it - e.g. a variant's 10th and 90th
+   * `to`) and an optional `mark` on it - e.g. a variant's 10th and 90th
    * percentiles and its mean, or an estimate ± its half-width per wave.
    */
   data: RangeDatum[];
@@ -31,9 +32,11 @@ export interface RangeBarChartProps {
    * row labels. `"columns"`: one column per category, left to right - for a
    * sequence in time, such as the waves of a simulation narrowing (UN 3.3).
    * There an end label that would touch another label, a column or a dot moves
-   * away from its end, with a leader; when the columns are too narrow for
-   * every end label (about two thirds of a label's width each), only the first
-   * and the last column's ends are labelled, and every value stays in the
+   * away from its end, with a leader, and the rows above and below the plot
+   * grow - up to three each - to make room. When the columns are too crowded
+   * for every end label, only the first and the last column's ends are
+   * labelled; an end label that finds no place even then is left out, never
+   * drawn over a column or past the chart's edge. Every value stays in the
    * tooltip and the screen-reader table.
    */
   orientation?: "bars" | "columns";
@@ -121,51 +124,21 @@ const LANE_GAP = 8;
 const MIN_LABEL_TEXT = 24;
 
 /**
- * The options the chart writes its values with. In full unless the caller
- * sets `compact: true`: at the caller's `fractionDigits`, else at one decimal
- * place past the first significant digit of the narrowest range (a range
- * 1.5 wide → 1 digit, 82.2 wide → 0), so its two ends are at least ten units
- * of the last digit apart and never read alike, and a narrowing range keeps
- * its width readable. With `compact: true`, at the caller's digits or more:
- * the fewest (up to 20) at which every range's two ends read apart.
- */
-function rangeFormat(format: FormatOptions, rows: readonly RangeRow[]): FormatOptions {
-  const callerDigits = Number.isFinite(format.fractionDigits)
-    ? Math.min(20, Math.max(0, Math.round(format.fractionDigits!)))
-    : undefined;
-  const ranges = rows.filter((r) => Number.isFinite(r.low) && r.high > r.low);
-  if (format.compact !== true) {
-    const narrowest = ranges.reduce((w, r) => Math.min(w, r.high / 2 - r.low / 2), Infinity) * 2;
-    const widthDigits =
-      Number.isFinite(narrowest) && narrowest > 0
-        ? Math.min(20, Math.max(0, Math.ceil(-Math.log10(narrowest)) + 1))
-        : 0;
-    return { ...format, compact: false, fractionDigits: callerDigits ?? widthDigits };
-  }
-  const apart = (o: FormatOptions) =>
-    ranges.every((r) => formatValue(r.low, o) !== formatValue(r.high, o));
-  for (let d = callerDigits ?? 0; d < 20; d++) {
-    const o = { ...format, compact: true, fractionDigits: d };
-    if (apart(o)) return o;
-  }
-  return { ...format, compact: true, fractionDigits: 20 };
-}
-
-/**
  * RangeBarChart - floating bars from one end of a range to the other, with a
- * value marked across each and both ends labelled, after J.P. Morgan's Guide
- * to the Markets: the 10th to the 90th percentile of each variant's fights
- * with their mean (its manager dispersion, p. 67), or an estimate ± its
- * half-width per wave of a simulation, narrowing as the waves come in (the
- * floating ranges of p. 60).
+ * value marked on each and both ends labelled, after J.P. Morgan's Guide to
+ * the Markets: the 10th to the 90th percentile of each variant's fights with
+ * their mean (its manager dispersion, p. 67), or an estimate ± its half-width
+ * per wave of a simulation, narrowing as the waves come in (the floating
+ * ranges of p. 60).
  *
  * The bars float: their length is the range, not a value from zero, so the
  * value axis spans the data, and the end labels stand in for it (IBCS SI
- * 3.1: labels instead of axes and grid lines). The mark is a line across its
- * bar over a thin halo, so it reads on any fill. In `"bars"` orientation each
- * row has its label - with icons, as `DataTable`'s - and its two end labels
- * in a band of its own; in `"columns"` orientation an end label that would
- * touch another label or a column moves away from its end, with a leader.
+ * 3.1: labels instead of axes and grid lines). The mark is a hollow dot on
+ * its bar, so it reads on any fill and never splits the bar in two. In
+ * `"bars"` orientation each row has its label - with icons, as `DataTable`'s
+ * - and its two end labels in a band of its own; in `"columns"` orientation
+ * an end label that would touch another label or a column moves away from
+ * its end, with a leader.
  *
  * The chart draws the ends and the marks it is given: which percentiles,
  * interval or mean they are is the caller's to compute and to name (`labels`).
@@ -321,11 +294,11 @@ export const RangeBarChart = forwardRef<SVGSVGElement, RangeBarChartProps>(funct
     const labelW = (s: string) => estTextW(s, FONT_VALUE) + 2;
     // End labels are placed clear of every column, mark and other label: right
     // beside their end where there is room, else moved away with a leader. The
-    // rows above and below the plot grow until every label has a place. When
-    // the columns are too narrow for that - about two thirds of a label each -
-    // only the first and the last column's ends are labelled, the start and the
-    // end of the sequence, as the histogram labels its tallest count alone;
-    // every value stays in the tooltip and the screen-reader table.
+    // rows above and below the plot grow, up to three each, until every label
+    // has a place. When the columns are too crowded for that, only the first
+    // and the last column's ends are labelled, the start and the end of the
+    // sequence, as the histogram labels its tallest count alone; every value
+    // stays in the tooltip and the screen-reader table.
     const drawableRows = rows.filter(drawable);
     const ends = new Set([drawableRows[0], drawableRows[drawableRows.length - 1]]);
     const tryLayout = (extraRows: number, labelled: (r: RangeRow) => boolean) => {
@@ -391,27 +364,67 @@ export const RangeBarChart = forwardRef<SVGSVGElement, RangeBarChartProps>(funct
         },
         { margin: 1 },
       );
-      return { top, plotH, yOf, highY, lowY, placed };
+      return { top, plotH, yOf, highY, lowY, placed, colBoxes };
+    };
+    const unplaced = (l: ReturnType<typeof tryLayout>) => l.placed.filter((p) => p == null).length;
+    // The rows grow until every label has a place; of the four layouts, the
+    // one that places the most labels is kept, with the fewest rows.
+    const layoutFor = (labelled: (r: RangeRow) => boolean) => {
+      let best = tryLayout(0, labelled);
+      for (let extra = 1; extra <= 3 && unplaced(best) > 0; extra++) {
+        const next = tryLayout(extra, labelled);
+        if (unplaced(next) < unplaced(best)) best = next;
+      }
+      return best;
     };
     const every = () => true;
-    let labelled: (r: RangeRow) => boolean = every;
-    let tries = 0;
-    let lay = tryLayout(0, labelled);
-    while (lay.placed.some((p) => p == null) && tries < 3) {
-      tries += 1;
-      lay = tryLayout(tries, labelled);
+    const endsOnly = (r: RangeRow) => ends.has(r);
+    // Labels never overlap, so when their boxes together outgrow the whole
+    // chart not all of them can be placed: the ends alone are tried at once,
+    // and a thousand columns cost four labels' placing, not two thousand's.
+    const labelArea = drawableRows.reduce(
+      (a, r) => a + (labelW(value(r.high)) + labelW(value(r.low))) * VALUE_H,
+      0,
+    );
+    let labelled: (r: RangeRow) => boolean = labelArea > width * height ? endsOnly : every;
+    let lay = layoutFor(labelled);
+    if (labelled === every && unplaced(lay) > 0) {
+      labelled = endsOnly;
+      lay = layoutFor(labelled);
     }
-    if (lay.placed.some((p) => p == null)) {
-      labelled = (r) => ends.has(r);
-      lay = tryLayout(0, labelled);
-    }
-    const { top, plotH, yOf, highY, lowY, placed } = lay;
+    const { top, plotH, yOf, highY, lowY, placed, colBoxes } = lay;
+    // Where each end label is written: in its place; else right beside its
+    // end, if that lies inside the chart and touches no column, dot or other
+    // label; else nowhere - the tooltip and the table still carry its value.
+    const taken: PlacementBox[] = placed.flatMap((p) => (p ? [p.box] : []));
+    const beside = (x: number, w: number, baseline: number): PlacementBox | null => {
+      const box = {
+        left: x - w / 2,
+        right: x + w / 2,
+        top: baseline + 3 - VALUE_H,
+        bottom: baseline + 3,
+      };
+      const inside = box.left >= 0 && box.right <= width && box.top >= 0 && box.bottom <= height;
+      if (
+        !inside ||
+        colBoxes.some((b) => boxesTouch(box, b)) ||
+        taken.some((b) => boxesTouch(box, b))
+      ) {
+        return null;
+      }
+      taken.push(box);
+      return box;
+    };
     let k = 0;
-    const labelOf = rows.map((r) => {
+    const labelOf = rows.map((r, i) => {
       if (!drawable(r) || !labelled(r)) return null;
       const hi = placed[k++] ?? null;
       const lo = placed[k++] ?? null;
-      return { hi, lo };
+      return {
+        hi: hi?.box ?? beside(cx(i), labelW(value(r.high)), highY(r) - END_GAP),
+        lo: lo?.box ?? beside(cx(i), labelW(value(r.low)), lowY(r) + END_GAP + FONT_VALUE),
+        leaders: [hi?.leader, lo?.leader],
+      };
     });
 
     return (
@@ -430,7 +443,7 @@ export const RangeBarChart = forwardRef<SVGSVGElement, RangeBarChartProps>(funct
           {titleText}
           {/* Leaders first, under the columns, so every column stays whole. */}
           {labelOf.flatMap((l, i) =>
-            [l?.hi?.leader, l?.lo?.leader].flatMap((leader, j) =>
+            (l?.leaders ?? []).flatMap((leader, j) =>
               leader
                 ? [
                     <line
@@ -464,10 +477,6 @@ export const RangeBarChart = forwardRef<SVGSVGElement, RangeBarChartProps>(funct
             const y0 = yOf(r.high);
             const y1 = Math.max(yOf(r.low), y0 + 1);
             const l = labelOf[i];
-            // An end label that found no place is written beside its end anyway.
-            const hiBox = l?.hi?.box;
-            const loBox = l?.lo?.box;
-            const withLabels = l != null;
             return (
               <g key={`col-${i}`}>
                 <rect
@@ -480,27 +489,27 @@ export const RangeBarChart = forwardRef<SVGSVGElement, RangeBarChartProps>(funct
                   strokeWidth={barStroke ? 1 : undefined}
                 />
                 {r.mark != null && markDot(`mark-${i}`, cx(i), yOf(r.mark), markR)}
-                {withLabels && (
-                  <>
-                    <text
-                      x={hiBox ? (hiBox.left + hiBox.right) / 2 : cx(i)}
-                      y={hiBox ? hiBox.bottom - 3 : highY(r) - END_GAP}
-                      fontSize={FONT_VALUE}
-                      fill={tokens.color.text}
-                      textAnchor="middle"
-                    >
-                      {value(r.high)}
-                    </text>
-                    <text
-                      x={loBox ? (loBox.left + loBox.right) / 2 : cx(i)}
-                      y={loBox ? loBox.bottom - 3 : lowY(r) + END_GAP + FONT_VALUE}
-                      fontSize={FONT_VALUE}
-                      fill={tokens.color.text}
-                      textAnchor="middle"
-                    >
-                      {value(r.low)}
-                    </text>
-                  </>
+                {l?.hi && (
+                  <text
+                    x={(l.hi.left + l.hi.right) / 2}
+                    y={l.hi.bottom - 3}
+                    fontSize={FONT_VALUE}
+                    fill={tokens.color.text}
+                    textAnchor="middle"
+                  >
+                    {value(r.high)}
+                  </text>
+                )}
+                {l?.lo && (
+                  <text
+                    x={(l.lo.left + l.lo.right) / 2}
+                    y={l.lo.bottom - 3}
+                    fontSize={FONT_VALUE}
+                    fill={tokens.color.text}
+                    textAnchor="middle"
+                  >
+                    {value(r.low)}
+                  </text>
                 )}
               </g>
             );

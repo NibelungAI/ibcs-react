@@ -61,8 +61,8 @@ function scene() {
         mean={{ value: 1.4, halfWidth: 0.2, level: 0.95 }}
         width={300}
       />
-      {/* Hollow plan range bars and their mark dots, the ticks' halos, the
-        annotations' and the callouts' numbered discs: surface colour, not white. */}
+      {/* Hollow plan range bars and their mark dots, the annotations' and the
+        callouts' numbered discs: surface colour, not white. */}
       <RangeBarChart
         data={[{ label: "A", from: 1, to: 3, mark: 2 }]}
         scenario="PL"

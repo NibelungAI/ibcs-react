@@ -15,7 +15,7 @@
 
 import type { RowIcon } from "./rowIcon";
 
-/** One category's range: two ends and, optionally, a value marked across it. */
+/** One category's range: two ends and, optionally, a value marked on it. */
 export interface RangeDatum {
   /** The category's name: a variant, a wave. */
   label: string;
@@ -23,7 +23,7 @@ export interface RangeDatum {
   from: number;
   /** The other end - e.g. the 90th percentile (order does not matter). */
   to: number;
-  /** A value marked across the bar - the mean, a median, the estimate. */
+  /** A value marked on the bar, as a hollow dot - the mean, a median, the estimate. */
   mark?: number;
   /**
    * A small picture before the label (bar orientation) - an item icon - or

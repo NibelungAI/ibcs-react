@@ -155,6 +155,26 @@ describe("RangeBarChart: the digits", () => {
     }
   });
 
+  it("writes ranges of no width at the digits that tell their values apart", () => {
+    // Two ranges of zero width at 910.84 and 911.26: their four ends once all
+    // read "911".
+    expect(
+      values([
+        { label: "A", from: 910.84, to: 910.84 },
+        { label: "B", from: 911.26, to: 911.26 },
+      ]),
+    ).toEqual(["910.84", "910.84", "911.26", "911.26"]);
+    expect(
+      values(
+        [
+          { label: "A", from: 1300, to: 1300 },
+          { label: "B", from: 1304, to: 1304 },
+        ],
+        { compact: true },
+      ),
+    ).toEqual(["1.300K", "1.300K", "1.304K", "1.304K"]);
+  });
+
   it("takes the caller's digits and locale, in full unless compact is asked for", () => {
     expect(values(variants.slice(0, 1), { fractionDigits: 2, locale: "sr-Latn" })).toEqual([
       "870,20",
@@ -282,6 +302,116 @@ describe("RangeBarChart: nothing overlaps", () => {
     expect(bars.length).toBe(30);
     expect(body.querySelectorAll("tbody tr").length).toBe(30);
     expect(body.querySelectorAll("tbody tr")[14]!.textContent).toContain("911.53");
+  });
+
+  // Crowded columns, where end labels found no place: a narrowing ladder (its
+  // first column's labels once started left of the svg), alternating ranges
+  // (once written across a neighbour), a level run and a rising one.
+  const crowdedShapes: Array<[string, (n: number) => RangeDatum[]]> = [
+    [
+      "a narrowing ladder",
+      (n) =>
+        Array.from({ length: n }, (_, i) => ({
+          label: `W${i + 1}`,
+          from: 911 - 9 / (i + 1),
+          to: 911 + 8 / (i + 1),
+          mark: 911,
+        })),
+    ],
+    [
+      "alternating ranges",
+      (n) =>
+        Array.from({ length: n }, (_, i) => ({
+          label: `A${i + 1}`,
+          from: i % 2 ? 905.2 : 898.4,
+          to: i % 2 ? 912.6 : 919.9,
+          mark: i % 2 ? 908.1 : 909.3,
+        })),
+    ],
+    [
+      "a level run",
+      (n) => Array.from({ length: n }, (_, i) => ({ label: `L${i + 1}`, from: 900.5, to: 910.5 })),
+    ],
+    [
+      "a rising run",
+      (n) =>
+        Array.from({ length: n }, (_, i) => ({
+          label: `R${i + 1}`,
+          from: 880 + i * 1.5,
+          to: 890 + i * 1.5,
+          mark: 885 + i * 1.5,
+        })),
+    ],
+  ];
+  for (const [name, make] of crowdedShapes) {
+    for (const n of [20, 30, 40]) {
+      it(`columns: ${name}, ${n} columns at 260-560px: no label over a column or past the svg`, () => {
+        for (const w of [260, 330, 400, 560]) {
+          const { bars, dots, texts } = marks(
+            ssr(<RangeBarChart data={make(n)} orientation="columns" width={w} height={260} />),
+          );
+          const labels = texts.map(textBox);
+          // The first and the last column keep both their ends, at least.
+          expect(labels.length, `${w}px`).toBeGreaterThanOrEqual(4);
+          const shapes = [...bars.map((b) => rectBox(b)), ...dots.map(dotBox)];
+          for (const l of labels) {
+            expect(l.left, `"${l.s}" at ${w}px`).toBeGreaterThanOrEqual(0);
+            expect(l.right, `"${l.s}" at ${w}px`).toBeLessThanOrEqual(w);
+            expect(l.top).toBeGreaterThanOrEqual(0);
+            expect(l.bottom).toBeLessThanOrEqual(260);
+            for (const sh of shapes)
+              expect(touch(l, sh), `"${l.s}" on a ${sh.s} at ${w}px`).toBe(false);
+            for (const m of labels)
+              if (m !== l) expect(touch(l, m), `"${l.s}" on "${m.s}" at ${w}px`).toBe(false);
+          }
+        }
+      });
+    }
+  }
+
+  it("columns: an end label with no place is left out, never written past the chart's edge", () => {
+    // Values wider than a 60 px chart: no place holds them, and right beside
+    // their ends they would start left of the svg. The table keeps them.
+    const body = ssr(
+      <RangeBarChart
+        data={[
+          { label: "A", from: 1_234_567.891, to: 1_234_569.123 },
+          { label: "B", from: 1_234_568.25, to: 1_234_568.75 },
+        ]}
+        orientation="columns"
+        width={60}
+        height={160}
+      />,
+    );
+    const { bars, texts } = marks(body);
+    expect(bars.length).toBe(2);
+    for (const l of texts.map(textBox)) {
+      expect(l.left, l.s).toBeGreaterThanOrEqual(0);
+      expect(l.right, l.s).toBeLessThanOrEqual(60);
+    }
+    // At two digits: the narrowest range is 0.5 wide.
+    const cells = [...body.querySelectorAll("tbody tr")[0]!.querySelectorAll("td")];
+    expect(cells.map((td) => td.textContent)).toEqual(["1,234,567.89", "1,234,569.12"]);
+  });
+
+  it("columns: a thousand at 200px label their first and last ends at once, inside the chart", () => {
+    // Two thousand labels cannot fit in a chart 200 px wide: the ends alone are
+    // tried, at once (2.2 s here when every label was tried first).
+    const thousand = crowdedShapes[0]![1](1000);
+    const t0 = performance.now();
+    const html = renderToStaticMarkup(
+      <RangeBarChart data={thousand} orientation="columns" width={200} height={260} />,
+    );
+    expect(performance.now() - t0).toBeLessThan(1000);
+    const { bars, texts } = marks(new DOMParser().parseFromString(html, "text/html").body);
+    expect(bars.length).toBe(1000);
+    const labels = texts.map(textBox);
+    expect(labels.length).toBeGreaterThan(0);
+    expect(labels.length).toBeLessThanOrEqual(4);
+    for (const l of labels) {
+      expect(l.left).toBeGreaterThanOrEqual(0);
+      expect(l.right).toBeLessThanOrEqual(200);
+    }
   });
 
   it("columns: a label moved away from its end has a leader back to it", () => {

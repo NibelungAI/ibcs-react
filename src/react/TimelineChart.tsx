@@ -1,6 +1,17 @@
-import { forwardRef, useMemo, type CSSProperties, type ReactNode } from "react";
-import type { IbcsTokensOverride } from "../core/tokens";
-import { fillLabel, type IbcsLabelsOverride } from "../core/labels";
+import {
+  forwardRef,
+  memo,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  type CSSProperties,
+  type ReactNode,
+  type Ref,
+} from "react";
+import type { IbcsTokens, IbcsTokensOverride } from "../core/tokens";
+import { fillLabel, type IbcsLabelsComplete, type IbcsLabelsOverride } from "../core/labels";
 import { formatValue, type FormatOptions } from "../core/format";
 import { rowIconsOf } from "../core/rowIcon";
 import {
@@ -9,19 +20,26 @@ import {
   timeStepDigits,
   timeTicks,
   type TimelineAnnotation,
+  type TimelineLayout,
   type TimelineLayoutRow,
   type TimelineMark,
   type TimelineRow,
 } from "../core/timeline";
 import { useChartHover } from "./hooks";
-import type { ChartHover } from "./hooks";
-import { markInteraction } from "./internal/hover";
-import { ChartTooltip, type ChartTooltipRow } from "./ChartTooltip";
+import type { ChartHover, ChartHoverInfo } from "./hooks";
+import {
+  markInteraction,
+  type MarkHandlerProps,
+  type MarkInteraction,
+  type MarkRect,
+} from "./internal/hover";
+import { ChartTooltip } from "./ChartTooltip";
 import { ChartDataTable, type ChartDataRow } from "./a11y";
 import { useIbcsTokens, useResolvedLabels } from "./theme";
 import { clampTo, estTextW, fitLabel } from "./internal/text";
 import { layoutRowLabelIcons, rowIconPx } from "./internal/rowLabelIcons";
 import { NoteBadge, NoteList, badgeRadius, layoutNotes, notesHeight } from "./internal/notes";
+import { callerDigits, digitsApart, neighbours } from "./internal/rangeFormat";
 
 export type {
   TimelineAnnotation,
@@ -90,7 +108,10 @@ export interface TimelineChartProps {
    * Number formatting of the times and their `locale`. Times are written in
    * full unless `compact` is `true`. The axis labels take the digits of the
    * axis step; the tooltip and the screen-reader table take `fractionDigits`
-   * (on a clock, default 1: "1:05.5").
+   * (on a clock, default 1: "1:05.5"). Compact times take more digits where
+   * two neighbours would read alike - six axis labels from 1,000 to 1,100
+   * read "1.00K" to "1.10K", never "1K" six times - the fewest that tell
+   * them apart, up to 20.
    */
   format?: FormatOptions;
   tokens?: IbcsTokensOverride;
@@ -146,77 +167,141 @@ const FONT_AXIS = 10;
 const HIT_W = 6;
 
 /**
- * TimelineChart - a Gantt chart of one run: time runs horizontally (IBCS UN
- * 3.3) and each ability or buff has a row of its own (UN 3.4). Casts are
- * ticks; a buff's uptime is a bar; a cooldown is a thin line. Numbered
- * annotations sit on the moments they explain, with an assisting line down to
- * the mark, and their text is listed under the chart by number (UN 2.4).
- *
- * It draws the rows it is given and derives nothing: the caller turns a
- * combat log - or a plan - into rows. The time axis is labelled at nice steps
- * (seconds, or minutes and seconds with `timeFormat="clock"`), with no grid
- * line. Rows carry icons before their labels, as `DataTable`'s do.
- *
- * Pure SVG, SSR-safe. A screen-reader table lists every row's moments and
- * intervals; its caption carries the notes.
+ * `useLayoutEffect` in the browser, `useEffect` on the server, where React
+ * warns about layout effects - as `useElementSize` does.
  */
-export const TimelineChart = forwardRef<SVGSVGElement, TimelineChartProps>(function TimelineChart(
-  {
-    rows: rowsProp,
-    annotations,
-    domain,
-    timeFormat = "number",
-    width = 640,
-    rowHeight = 22,
-    iconSize,
-    renderIcon,
-    format = {},
-    tokens: tokenOverride,
-    labels,
-    title,
-    ariaLabel,
-    className,
-    style,
-    tooltip = true,
-    onHover,
-  },
-  ref,
-) {
-  const tokens = useIbcsTokens(tokenOverride);
-  const words = useResolvedLabels(labels);
-  const hover = useChartHover<TimelineMark>();
-  const marks = markInteraction(hover, tooltip, onHover);
+const useIsoLayoutEffect = typeof window === "undefined" ? useEffect : useLayoutEffect;
 
-  const domainStart = domain?.[0];
-  const domainEnd = domain?.[1];
-  const layout = useMemo(
-    () =>
-      computeTimeline(
-        rowsProp ?? [],
-        annotations ?? [],
-        domainStart != null && domainEnd != null ? { domain: [domainStart, domainEnd] } : {},
-      ),
-    [rowsProp, annotations, domainStart, domainEnd],
-  );
+/** How the chart writes its times. */
+interface TimeWriter {
+  /** Whether times are minutes and seconds (`timeFormat="clock"`). */
+  clock: boolean;
+  /** A moment, in the tooltip, the screen-reader table and the description. */
+  text: (t: number) => string;
+  /** An interval, "from–to". */
+  range: (from: number, to: number) => string;
+  /** The labels of the axis ticks at one step: the step's digits, more where compact labels would read alike. */
+  axis: (ticks: readonly number[]) => string[];
+}
+
+/** Every moment the chart writes as text, but the axis's: the range's ends, the ticks, the spans' ends. */
+function writtenTimes(layout: TimelineLayout): number[] {
+  const out = [layout.start, layout.end];
+  for (const r of layout.rows) {
+    for (const t of r.ticks) out.push(t);
+    for (const sp of r.spans) out.push(sp.from, sp.to);
+  }
+  return out;
+}
+
+/**
+ * The chart's way of writing times. Compact numbers name thousands ("1K"),
+ * so 1,012 s and 1,047 s would read alike: then every time takes the fewest
+ * more digits (up to 20) at which no two neighbouring moments do, and the
+ * axis labels the same, tick by tick.
+ */
+function timeWriter(layout: TimelineLayout, format: FormatOptions, clock: boolean): TimeWriter {
+  const stepOf = (ticks: readonly number[]) => (ticks.length > 1 ? ticks[1]! - ticks[0]! : 0);
+  if (clock) {
+    const text = (t: number) =>
+      formatClock(t, {
+        fractionDigits: format.fractionDigits ?? 1,
+        locale: format.locale,
+        notAvailable: format.notAvailable,
+      });
+    return {
+      clock,
+      text,
+      range: (from, to) => `${text(from)}–${text(to)}`,
+      axis: (ticks) => {
+        const digits = timeStepDigits(stepOf(ticks));
+        return ticks.map((t) => formatClock(t, { fractionDigits: digits, locale: format.locale }));
+      },
+    };
+  }
+  const compact = format.compact === true;
+  let textFormat: FormatOptions = { ...format, compact };
+  if (compact) {
+    const pairs = neighbours(writtenTimes(layout));
+    const alike = pairs.some(([a, b]) => formatValue(a, textFormat) === formatValue(b, textFormat));
+    if (alike) {
+      const digits = digitsApart(
+        pairs,
+        (v, d) => formatValue(v, { ...format, compact: true, fractionDigits: d }),
+        callerDigits(format) ?? 1,
+      );
+      textFormat = { ...format, compact: true, fractionDigits: digits };
+    }
+  }
+  const text = (t: number) => formatValue(t, textFormat);
+  const at = (t: number, digits: number) =>
+    formatValue(t, { ...format, compact, fractionDigits: digits });
+  return {
+    clock,
+    text,
+    range: (from, to) => `${text(from)}–${text(to)}`,
+    axis: (ticks) => {
+      const step = timeStepDigits(stepOf(ticks));
+      const digits = compact
+        ? digitsApart(
+            ticks.slice(1).map((t, i) => [ticks[i]!, t] as const),
+            at,
+            step,
+          )
+        : step;
+      return ticks.map((t) => at(t, digits));
+    },
+  };
+}
+
+/** What the drawing needs: the props it draws, resolved, and the hover's targets. */
+interface TimelineDrawingProps {
+  layout: TimelineLayout;
+  write: TimeWriter;
+  tokens: IbcsTokens;
+  words: IbcsLabelsComplete;
+  width: number;
+  rowHeight: number;
+  iconSize?: number;
+  renderIcon?: TimelineChartProps["renderIcon"];
+  title?: string;
+  ariaLabel?: string;
+  className?: string;
+  style?: CSSProperties;
+  /** Whether hover targets are drawn: something consumes the hover. */
+  targets: boolean;
+  /** One mark's hover handlers, stable across hover changes. */
+  forMark: (info: ChartHoverInfo<TimelineMark>, rects: readonly MarkRect[]) => MarkHandlerProps;
+  svgRef: Ref<SVGSVGElement>;
+}
+
+/**
+ * Everything the chart draws but its tooltip: the rows and their marks, the
+ * axis, the annotations, the hover targets and the screen-reader table. None
+ * of it changes with the hover, so it is memoized: a hover change re-renders
+ * the tooltip alone, at 2,784 marks as at 50, and each target keeps its mark
+ * from one hover to the next.
+ */
+const TimelineDrawing = memo(function TimelineDrawing({
+  layout,
+  write,
+  tokens,
+  words,
+  width,
+  rowHeight,
+  iconSize,
+  renderIcon,
+  title,
+  ariaLabel,
+  className,
+  style,
+  targets,
+  forMark,
+  svgRef,
+}: TimelineDrawingProps) {
   const { start, end, rows } = layout;
   const notes = layout.annotations;
-
-  // --- times as text ---------------------------------------------------------
-  const clock = timeFormat === "clock";
-  const compact = format.compact === true;
-  const timeText = (t: number) =>
-    clock
-      ? formatClock(t, {
-          fractionDigits: format.fractionDigits ?? 1,
-          locale: format.locale,
-          notAvailable: format.notAvailable,
-        })
-      : formatValue(t, { ...format, compact });
-  const axisText = (t: number, digits: number) =>
-    clock
-      ? formatClock(t, { fractionDigits: digits, locale: format.locale })
-      : formatValue(t, { ...format, compact, fractionDigits: digits });
-  const rangeText = (from: number, to: number) => `${timeText(from)}–${timeText(to)}`;
+  const { clock, text: timeText, range: rangeText } = write;
 
   // --- vertical layout ---------------------------------------------------------
   const rowH = Math.max(14, Number.isFinite(rowHeight) ? rowHeight : 22);
@@ -227,7 +312,9 @@ export const TimelineChart = forwardRef<SVGSVGElement, TimelineChartProps>(funct
   const rowsTop = stripTop + stripH;
   const axisY = rowsTop + n * rowH;
   const rowCy = (i: number) => rowsTop + i * rowH + rowH / 2;
-  const tickH = Math.max(6, Math.min(12, rowH - 8));
+  // A cast's tick is taller than a bar, so it stands out of the bar it falls
+  // on - in ink alone, never over a halo that would cut the bar in two.
+  const tickH = Math.max(6, Math.min(14, rowH - 8));
   const activeH = Math.max(4, Math.min(8, rowH - 12));
   const waitingH = 2;
   const labelFont = Math.max(9, Math.min(11, rowH * 0.5));
@@ -263,10 +350,9 @@ export const TimelineChart = forwardRef<SVGSVGElement, TimelineChartProps>(funct
   // the gap. One label always fits.
   const axisTicks = (() => {
     const place = (ticks: number[]) => {
-      const step = ticks.length > 1 ? ticks[1]! - ticks[0]! : 0;
-      const digits = timeStepDigits(step);
-      return ticks.map((t) => {
-        const text = axisText(t, digits);
+      const texts = write.axis(ticks);
+      return ticks.map((t, i) => {
+        const text = texts[i]!;
         const w = estTextW(text, FONT_AXIS);
         return { t, text, w, x: clampTo(xOf(t), w / 2 + 2, width - 2 - w / 2) };
       });
@@ -344,40 +430,12 @@ export const TimelineChart = forwardRef<SVGSVGElement, TimelineChartProps>(funct
     ],
   }));
 
-  const renderTooltip = () => {
-    const h = hover.hovered;
-    if (!tooltip || !h) return null;
-    const m = h.datum;
-    const row = rows[m.row];
-    if (!row) return null;
-    const tip: ChartTooltipRow[] =
-      m.kind === "event"
-        ? [{ label: words.event, value: timeText(m.from), strong: true }]
-        : [
-            {
-              label: m.kind === "active" ? words.active : words.waiting,
-              value: rangeText(m.from, m.to),
-              strong: true,
-            },
-          ];
-    return (
-      <ChartTooltip
-        ref={hover.tooltipRef}
-        x={h.x}
-        y={h.y}
-        title={row.label}
-        rows={tip}
-        tokens={tokens}
-      />
-    );
-  };
-
   const clipX = (x: number) => Math.min(laneX1, Math.max(laneX0, x));
 
   return (
     <>
       <svg
-        ref={ref}
+        ref={svgRef}
         width={width}
         height={svgH}
         viewBox={`0 0 ${width} ${svgH}`}
@@ -474,20 +532,17 @@ export const TimelineChart = forwardRef<SVGSVGElement, TimelineChartProps>(funct
                   fill={tokens.scenario.AC.fill}
                 />
               ))}
-              {/* Ticks over a thin surface halo, so a cast reads on a bar too:
-                one path for the halos and one for the ink, however many casts. */}
-              {ticks.length > 0 &&
-                (() => {
-                  const d = ticks
+              {/* The casts: one ink path for every tick of the row. */}
+              {ticks.length > 0 && (
+                <path
+                  d={ticks
                     .map((t) => `M${xOf(t).toFixed(2)},${(cy - tickH / 2).toFixed(2)}v${tickH}`)
-                    .join("");
-                  return (
-                    <>
-                      <path d={d} fill="none" stroke={tokens.color.surface} strokeWidth={3.5} />
-                      <path d={d} fill="none" stroke={tokens.color.text} strokeWidth={1.5} />
-                    </>
-                  );
-                })()}
+                    .join("")}
+                  fill="none"
+                  stroke={tokens.color.text}
+                  strokeWidth={1.5}
+                />
+              )}
             </g>
           );
         })}
@@ -534,7 +589,7 @@ export const TimelineChart = forwardRef<SVGSVGElement, TimelineChartProps>(funct
         <NoteList lines={noteLines} x={PAD_X} y={axisY + AXIS_H} tokens={tokens} />
 
         {/* Hover targets: one per drawn mark. */}
-        {marks.enabled &&
+        {targets &&
           rows.flatMap((row, i) => {
             const top = rowsTop + i * rowH;
             const target = (key: string, m: TimelineMark, x0: number, x1: number) => {
@@ -549,7 +604,7 @@ export const TimelineChart = forwardRef<SVGSVGElement, TimelineChartProps>(funct
                   width={w}
                   height={rowH}
                   fill="transparent"
-                  {...marks.forMark({ category: row.label, value: m.from, datum: m }, [markRect])}
+                  {...forMark({ category: row.label, value: m.from, datum: m }, [markRect])}
                 />
               );
             };
@@ -584,6 +639,131 @@ export const TimelineChart = forwardRef<SVGSVGElement, TimelineChartProps>(funct
         ].join(". ")}
         columns={[words.events, words.active, words.waiting]}
         rows={a11yRows}
+      />
+    </>
+  );
+});
+
+/**
+ * TimelineChart - a Gantt chart of one run: time runs horizontally (IBCS UN
+ * 3.3) and each ability or buff has a row of its own (UN 3.4). Casts are
+ * ticks; a buff's uptime is a bar; a cooldown is a thin line. Numbered
+ * annotations sit on the moments they explain, with an assisting line down to
+ * the mark, and their text is listed under the chart by number (UN 2.4).
+ *
+ * It draws the rows it is given and derives nothing: the caller turns a
+ * combat log - or a plan - into rows. The time axis is labelled at nice steps
+ * (seconds, or minutes and seconds with `timeFormat="clock"`), with no grid
+ * line. Rows carry icons before their labels, as `DataTable`'s do.
+ *
+ * Pure SVG, SSR-safe. A screen-reader table lists every row's moments and
+ * intervals; its caption carries the notes.
+ */
+export const TimelineChart = forwardRef<SVGSVGElement, TimelineChartProps>(function TimelineChart(
+  {
+    rows: rowsProp,
+    annotations,
+    domain,
+    timeFormat = "number",
+    width = 640,
+    rowHeight = 22,
+    iconSize,
+    renderIcon,
+    format,
+    tokens: tokenOverride,
+    labels,
+    title,
+    ariaLabel,
+    className,
+    style,
+    tooltip = true,
+    onHover,
+  },
+  ref,
+) {
+  const tokens = useIbcsTokens(tokenOverride);
+  const words = useResolvedLabels(labels);
+  const hover = useChartHover<TimelineMark>();
+  const marks = markInteraction(hover, tooltip, onHover);
+  // The drawing's targets reach the current hover through this ref - set
+  // after each render, never during one - so they stay the same from one
+  // hover change to the next.
+  const marksRef = useRef<MarkInteraction<TimelineMark> | null>(null);
+  useIsoLayoutEffect(() => {
+    marksRef.current = marks;
+  });
+  const forMark = useCallback(
+    (info: ChartHoverInfo<TimelineMark>, rects: readonly MarkRect[]): MarkHandlerProps => {
+      const live = () => marksRef.current?.forMark(info, rects);
+      return {
+        onPointerMove: (event) => live()?.onPointerMove?.(event),
+        onPointerLeave: (event) => live()?.onPointerLeave?.(event),
+        onPointerDown: (event) => live()?.onPointerDown?.(event),
+        onFocus: (event) => live()?.onFocus?.(event),
+        onBlur: () => live()?.onBlur?.(),
+      };
+    },
+    [],
+  );
+
+  const domainStart = domain?.[0];
+  const domainEnd = domain?.[1];
+  const layout = useMemo(
+    () =>
+      computeTimeline(
+        rowsProp ?? [],
+        annotations ?? [],
+        domainStart != null && domainEnd != null ? { domain: [domainStart, domainEnd] } : {},
+      ),
+    [rowsProp, annotations, domainStart, domainEnd],
+  );
+  const write = useMemo(
+    () => timeWriter(layout, format ?? {}, timeFormat === "clock"),
+    [layout, format, timeFormat],
+  );
+
+  // The tooltip: the hovered mark's row, and its moment or its interval.
+  const renderTooltip = () => {
+    const h = tooltip ? hover.hovered : null;
+    const row = h ? layout.rows[h.datum.row] : undefined;
+    if (!h || !row) return null;
+    return (
+      <ChartTooltip
+        ref={hover.tooltipRef}
+        x={h.x}
+        y={h.y}
+        title={row.label}
+        rows={[
+          h.datum.kind === "event"
+            ? { label: words.event, value: write.text(h.datum.from), strong: true }
+            : {
+                label: h.datum.kind === "active" ? words.active : words.waiting,
+                value: write.range(h.datum.from, h.datum.to),
+                strong: true,
+              },
+        ]}
+        tokens={tokens}
+      />
+    );
+  };
+  return (
+    <>
+      <TimelineDrawing
+        layout={layout}
+        write={write}
+        tokens={tokens}
+        words={words}
+        width={width}
+        rowHeight={rowHeight}
+        iconSize={iconSize}
+        renderIcon={renderIcon}
+        title={title}
+        ariaLabel={ariaLabel}
+        className={className}
+        style={style}
+        targets={marks.enabled}
+        forMark={forMark}
+        svgRef={ref}
       />
       {renderTooltip()}
     </>

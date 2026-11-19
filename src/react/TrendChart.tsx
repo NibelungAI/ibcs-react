@@ -73,9 +73,12 @@ export interface TrendChartProps {
    * line and other callout, moved away with a leader where they must be; the
    * plot keeps room above its tallest column for them. A callout with no room
    * anywhere is numbered at its point and written under the chart (the svg
-   * grows by that list), so none is left out. The screen-reader table carries
-   * each callout's text in its period's row (`labels.note`). A callout on a
-   * period without that value is not drawn.
+   * grows by that list). A callout on a period without its point - a column
+   * without a value, a line that is not drawn, a summary column's line - is
+   * written under the chart too, after the name of its period ("R2:
+   * Missing"). So none on a period is left out, and the screen-reader table
+   * carries each one's text in its period's row (`labels.note`). An `index`
+   * that names no period (-1, 1.5, past the end) is ignored.
    */
   callouts?: PointCallout[];
   width?: number;
@@ -249,8 +252,17 @@ export const TrendChart = forwardRef<SVGSVGElement, TrendChartProps>(function Tr
       ? wrapText(c.label, calloutMaxW, CALLOUT_FONT)
       : null,
   );
+  // Whether a callout's point is drawn: its column's value, or its reference
+  // line's point - a drawn line, never on a summary column.
+  const pointDrawn = (co: PointCallout): boolean => {
+    const c = Number.isInteger(co.index) ? cells[co.index] : undefined;
+    if (!c) return false;
+    if (co.series === "PY") return showPyLine && c.PY != null && !c.summary;
+    if (co.series === "PL") return showPlLine && c.PL != null && !c.summary;
+    return c.current != null;
+  };
   const tallestCallout = calloutLines.reduce(
-    (h, ls) => (ls ? Math.max(h, ls.length * CALLOUT_LINE_H) : h),
+    (h, ls, ci) => (ls && pointDrawn(callouts![ci]!) ? Math.max(h, ls.length * CALLOUT_LINE_H) : h),
     0,
   );
   const n = cells.length || 1;
@@ -316,12 +328,26 @@ export const TrendChart = forwardRef<SVGSVGElement, TrendChartProps>(function Tr
         .map((t) => t.trim())
         .filter(Boolean)
         .join(", ");
-      const line =
-        co.series === "PY" && showPyLine ? "PY" : co.series === "PL" && showPlLine ? "PL" : null;
+      // The table carries every callout on a period, its point drawn or not.
+      calloutTexts.set(i, [...(calloutTexts.get(i) ?? []), note]);
+      if (!pointDrawn(co)) {
+        // No point there: a note that names its period.
+        calloutSpecs.push({
+          x: cxOf(i),
+          y: zeroY,
+          lines: textLines,
+          sides: [],
+          dot: null,
+          note,
+          where: c.category,
+          drawn: false,
+        });
+        return;
+      }
       if (co.series === "PY" || co.series === "PL") {
         // A point of a drawn reference line, marked with a dot of its colour.
-        const v = line ? c[line] : undefined;
-        if (line == null || v == null || c.summary) return;
+        const line = co.series;
+        const v = c[line]!;
         const neighbour = (k: number) => {
           const d = cells[k];
           return d && !d.summary ? d[line] : undefined;
@@ -338,9 +364,8 @@ export const TrendChart = forwardRef<SVGSVGElement, TrendChartProps>(function Tr
       } else {
         // The column: past its end, above its value label - 2 px clear of it, so
         // the tie that links them never touches the label's digits.
-        if (c.current == null) return;
         const label = valueLabelBox(c, i);
-        const up = c.current >= 0;
+        const up = c.current! >= 0;
         const anchorY = up
           ? Math.min(label?.top ?? Infinity, columnTop(c)) - TIE_CLEAR
           : columnTop(c) + TIE_CLEAR;
@@ -357,7 +382,6 @@ export const TrendChart = forwardRef<SVGSVGElement, TrendChartProps>(function Tr
           where: c.category,
         });
       }
-      calloutTexts.set(i, [...(calloutTexts.get(i) ?? []), note]);
     });
     const resolvedCallouts = (() => {
       if (calloutSpecs.length === 0) return [];

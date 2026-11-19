@@ -1,5 +1,21 @@
 import { describe, it, expect } from "vitest";
+import { ulpOf } from "../histogram";
 import { computeTicks, assignGroupColors, distinctGroups, computeXyScale } from "../xy";
+
+/**
+ * Node's `vm`, whose `timeout` stops even a loop that never yields. The
+ * library's tsconfig has no Node types, so it is reached as
+ * `exportMenu.test.tsx` reaches `process`: through `globalThis`, typed here.
+ */
+const vm = (
+  globalThis as unknown as {
+    process: {
+      getBuiltinModule(id: "node:vm"): {
+        runInNewContext(code: string, context: object, options: { timeout: number }): unknown;
+      };
+    };
+  }
+).process.getBuiltinModule("node:vm");
 
 describe("computeTicks - tick count", () => {
   it("returns about the requested number of ticks (D3 error-based step)", () => {
@@ -76,6 +92,43 @@ describe("computeTicks - degenerate input", () => {
 
   it("survives an infinite tick count request", () => {
     expect(computeTicks(0, 10, Infinity)).toEqual([0]);
+  });
+
+  it("returns on narrow ranges far from zero, its ticks strictly increasing", () => {
+    // Up to 1.6, `computeTicks(1e17, 1e17 + 16)` never returned: past 2^53 its
+    // integer step index could not move. The call runs under a vm deadline, so
+    // a loop that never ends fails this test instead of hanging the run.
+    const cases: Array<[number, number]> = [
+      [1e17, 1e17 + 16],
+      [2 ** 53, 2 ** 53 + 8],
+      [1e300, 1e300 + ulpOf(1e300) * 4],
+      [1.7e18, 1.7e18 + 1e3],
+      [1e6, 1e6 + ulpOf(1e6)],
+      [-Number.MAX_VALUE, Number.MAX_VALUE],
+      [5e-324, 1e-323],
+    ];
+    for (const [min, max] of cases) {
+      const t0 = performance.now();
+      const ticks = vm.runInNewContext(
+        "computeTicks(min, max)",
+        { computeTicks, min, max },
+        { timeout: 2000 },
+      ) as number[];
+      expect(performance.now() - t0).toBeLessThan(50);
+      expect(ticks.length).toBeGreaterThan(0);
+      for (const [i, t] of ticks.entries()) {
+        expect(Number.isFinite(t)).toBe(true);
+        if (i > 0) expect(t).toBeGreaterThan(ticks[i - 1]!);
+      }
+    }
+    expect(computeTicks(1e17, 1e17 + 16)).toEqual([1e17]);
+    expect(computeTicks(2 ** 53, 2 ** 53 + 8)).toEqual([
+      2 ** 53,
+      2 ** 53 + 2,
+      2 ** 53 + 4,
+      2 ** 53 + 6,
+      2 ** 53 + 8,
+    ]);
   });
 });
 

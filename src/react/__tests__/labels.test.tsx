@@ -214,8 +214,10 @@ describe("labels reach every fixed word", () => {
       expect(shown).toContain(name);
     }
     // It hovers every hit target of every fixture - the timeline fixture alone
-    // has one per cast and per span - so it outlasts the 5 s default on a slow
-    // CI runner: 1.9 s on a laptop, more than 5 s on GitHub's Node 22 runner.
+    // has one per cast and per span - so its time grows with each fixture. On
+    // GitHub's Node 22 runner it took 6.3 s on one run and 3.7 s on the next,
+    // when each timeline hover still redrew the chart: past and near the 5 s
+    // default. On one worker of a laptop it now takes 1.2-1.3 s.
   }, 30_000);
 
   it("writes StatementTable's tooltip Δ caption from the delta template once one is set", () => {

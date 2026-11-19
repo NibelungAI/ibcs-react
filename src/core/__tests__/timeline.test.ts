@@ -158,7 +158,11 @@ describe("timeTicks", () => {
       expect(performance.now() - t0).toBeLessThan(50);
       expect(ticks.length).toBeGreaterThan(0);
       expect(ticks.length).toBeLessThanOrEqual(10);
+      // Never the same moment twice: past 2^53 the walk stops where a tick
+      // would not move.
+      for (const [i, t] of ticks.entries()) if (i > 0) expect(t).toBeGreaterThan(ticks[i - 1]!);
     }
+    expect(timeTicks(1e17, 1e17 + 16, 8)).toEqual([1e17]);
   });
 
   it("gives the start alone for a range of zero width, and nothing for one that is not finite", () => {

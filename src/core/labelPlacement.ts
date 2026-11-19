@@ -13,8 +13,9 @@
  * label with no free place on any of its sides is not placed (null): the
  * caller writes it as a numbered note instead, so nothing is left out.
  *
- * Every loop is bounded by the height of the bounds over the step and by the
- * number of labels and obstacles, never by the values themselves.
+ * Every loop is bounded by the tries per side - the height of the bounds over
+ * the step, and never more than 512 - and by the number of labels and
+ * obstacles, never by the values themselves.
  *
  * Pure geometry in pixels (svg units, y growing downward). SSR-safe.
  * Internal plumbing shared by the renderers - not part of the public surface.
@@ -159,6 +160,14 @@ function shortened(s: PlacementSegment, gap: number): PlacementSegment {
   return { ...s, x1: s.x1 + (s.x2 - s.x1) * t, y1: s.y1 + (s.y2 - s.y1) * t };
 }
 
+/**
+ * The most tries per side: a label moves at most this many steps from its
+ * point (about 1,000 px at the default step), however tall the bounds - a
+ * label further away names nothing, and a plot 10^6 px tall costs no more
+ * than one of 1,000 px.
+ */
+const MAX_TRIES = 512;
+
 /** Width of one column of the segment index, px. */
 const BUCKET_W = 16;
 /** The most columns the index uses, whatever the bounds. */
@@ -214,7 +223,10 @@ export function placeLabels(
   const placedBoxes: PlacementBox[] = [];
   const leaders: PlacementSegment[] = [];
   const boundsW = bounds.right - bounds.left;
-  const tries = Math.max(1, Math.ceil(Math.max(0, bounds.bottom - bounds.top) / step) + 1);
+  const tries = Math.min(
+    MAX_TRIES,
+    Math.max(1, Math.ceil(Math.max(0, bounds.bottom - bounds.top) / step) + 1),
+  );
 
   const free = (box: PlacementBox, leader: PlacementSegment | null): boolean => {
     for (const b of boxes) if (boxesTouch(box, b, margin)) return false;

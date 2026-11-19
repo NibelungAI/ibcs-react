@@ -48,6 +48,7 @@ import {
 } from "./internal/callouts";
 import { NoteList, layoutNotes, notesHeight } from "./internal/notes";
 import { wrapText } from "./internal/text";
+import { rangeFormat } from "./internal/rangeFormat";
 
 export type { LineDatum } from "../core/lineArea";
 export type { Reference, ReferenceLine, ReferenceBand } from "../core/reference";
@@ -106,9 +107,12 @@ export interface LineChartProps {
    * beside the point (above a peak, below a trough), else moved away with a
    * leader; the plot keeps room above its highest point for them. A callout
    * with no room anywhere is numbered at its point and written under the
-   * chart (the svg grows by that list), so none is left out. The screen-reader
-   * table carries each callout's text in its period's row (`labels.note`). A
-   * callout on a period without a value for its series is not drawn.
+   * chart (the svg grows by that list). A callout on a period where its
+   * series draws no point - no value there, or the series is not drawn - is
+   * written under the chart too, after the name of its period ("b: On the
+   * gap"). So none on a period is left out, and the screen-reader table
+   * carries each one's text in its period's row (`labels.note`). An `index`
+   * that names no period (-1, 1.5, past the end) is ignored.
    */
   callouts?: PointCallout[];
   /**
@@ -360,8 +364,27 @@ export const LineChart = forwardRef<SVGSVGElement, LineChartProps>(function Line
     }
   }
 
+  // Each callout's point: its series' value at its period - undefined for a
+  // callout that names no period, null where its series draws no point.
+  const seriesValues = new Map(
+    lines.map((s) => [s.scenario, new Map(s.points.map((p) => [p.index, p.value]))]),
+  );
+  const calloutPoints = (callouts ?? []).map((c) => {
+    if (!c || !Number.isInteger(c.index) || c.index < 0 || c.index >= categories.length) {
+      return undefined;
+    }
+    const s =
+      c.series != null
+        ? lines.find((l) => l.scenario === c.series)
+        : (lines.find((l) => l.scenario === "AC") ?? lines[0]);
+    const values = s ? seriesValues.get(s.scenario) : undefined;
+    const v = values?.get(c.index);
+    return s && values && v != null ? { s, values, v } : null;
+  });
+
   // Callouts and fan captions, as lines of text: the plot keeps room above its
-  // highest point for the tallest of them (without any, it keeps none).
+  // highest point for the tallest of those beside a point (without any, it
+  // keeps none).
   const calloutMaxW = Math.max(60, Math.min(180, innerW * 0.6));
   const calloutLines = (callouts ?? []).map((c) =>
     c && typeof c.label === "string" && c.label.trim() !== ""
@@ -371,10 +394,10 @@ export const LineChart = forwardRef<SVGSVGElement, LineChartProps>(function Line
   const captionLines = fanList.map((f) =>
     f?.label ? wrapText(f.label, calloutMaxW, CALLOUT_FONT, textWidthPx) : null,
   );
-  const tallest = [...calloutLines, ...captionLines].reduce(
-    (h, ls) => (ls ? Math.max(h, ls.length * CALLOUT_LINE_H) : h),
-    0,
-  );
+  const tallest = [
+    ...calloutLines.filter((_, ci) => calloutPoints[ci] != null),
+    ...captionLines,
+  ].reduce((h, ls) => (ls ? Math.max(h, ls.length * CALLOUT_LINE_H) : h), 0);
   const headroom = tallest > 0 ? Math.min(tallest + 12, topH * 0.4) : 0;
   const scaleH = topH - headroom;
 
@@ -472,26 +495,34 @@ export const LineChart = forwardRef<SVGSVGElement, LineChartProps>(function Line
   };
 
   // --- callouts and fan captions: placed clear of everything else ------------
-  const seriesValues = new Map(
-    lines.map((s) => [s.scenario, new Map(s.points.map((p) => [p.index, p.value]))]),
-  );
   const calloutSpecs: CalloutSpec[] = [];
   const calloutTexts = new Map<number, string[]>();
   (callouts ?? []).forEach((c, ci) => {
     const textLines = calloutLines[ci];
-    if (!c || !textLines || !Number.isInteger(c.index)) return;
-    const s =
-      c.series != null
-        ? lines.find((l) => l.scenario === c.series)
-        : (lines.find((l) => l.scenario === "AC") ?? lines[0]);
-    const values = s ? seriesValues.get(s.scenario) : undefined;
-    const v = values?.get(c.index);
-    if (!s || !values || v == null) return;
+    const point = calloutPoints[ci];
+    if (!c || !textLines || point === undefined) return;
     const note = c.label
       .split("\n")
       .map((t) => t.trim())
       .filter(Boolean)
       .join(", ");
+    const where = categories[c.index]!;
+    // The table carries every callout on a period, its point drawn or not.
+    calloutTexts.set(c.index, [...(calloutTexts.get(c.index) ?? []), note]);
+    if (point === null) {
+      calloutSpecs.push({
+        x: x(c.index),
+        y: plotBottom,
+        lines: textLines,
+        sides: [],
+        dot: null,
+        note,
+        where,
+        drawn: false,
+      });
+      return;
+    }
+    const { s, values, v } = point;
     calloutSpecs.push({
       x: x(c.index),
       y: y(v),
@@ -499,9 +530,8 @@ export const LineChart = forwardRef<SVGSVGElement, LineChartProps>(function Line
       sides: calloutSides(v, values.get(c.index - 1), values.get(c.index + 1), c.placement),
       dot: lineStyle(s.scenario, tokens).stroke,
       note,
-      where: categories[c.index] ?? String(c.index + 1),
+      where,
     });
-    calloutTexts.set(c.index, [...(calloutTexts.get(c.index) ?? []), note]);
   });
   fanList.forEach((f, fi) => {
     const textLines = captionLines[fi];
@@ -591,6 +621,9 @@ export const LineChart = forwardRef<SVGSVGElement, LineChartProps>(function Line
   const lineByIndex = lines.map((s) => new Map(s.points.map((p) => [p.index, p.value])));
   const varByIndex = new Map(variancePoints.map((vp) => [vp.index, vp.variance]));
   const fanByIndex = fanPoints.map((runs) => new Map(runs.flat().map((p) => [p.index, p])));
+  // A band's two ends never read alike ("1.4K–1.4K"): in full unless the
+  // caller asks for compact, at the digits of the narrowest band.
+  const fanFmt = rangeFormat(format, fanPoints.flat(2));
   const na = notAvailableOf(format);
   const a11yRows: ChartDataRow[] = categories.map((c, i) => {
     const cells: Array<string | number> = lineByIndex.map((byIndex, si) => {
@@ -605,7 +638,7 @@ export const LineChart = forwardRef<SVGSVGElement, LineChartProps>(function Line
     }
     for (const byIndex of fanByIndex) {
       const p = byIndex.get(i);
-      cells.push(p ? `${formatValue(p.low, format)}–${formatValue(p.high, format)}` : na);
+      cells.push(p ? `${formatValue(p.low, fanFmt)}–${formatValue(p.high, fanFmt)}` : na);
     }
     if (hasNotes) cells.push((calloutTexts.get(i) ?? []).join("; "));
     return { label: c, cells };
@@ -874,8 +907,10 @@ export const LineChart = forwardRef<SVGSVGElement, LineChartProps>(function Line
               {fitText(
                 c,
                 // A thinned label takes the room of the periods it stands for,
-                // and never reaches past the chart's left edge.
-                labelStep > 1 ? Math.min(band * labelStep - 2, 2 * x(i) - 2) : band,
+                // and never reaches past the chart's left or right edge.
+                labelStep > 1
+                  ? Math.min(band * labelStep - 2, 2 * x(i) - 2, 2 * (width - x(i)) - 2)
+                  : band,
                 10.5,
               )}
             </text>

@@ -260,4 +260,26 @@ describe("placeLabels", () => {
     expect(performance.now() - t0).toBeLessThan(50);
     expect(p).toBeNull();
   });
+
+  it("moves a label at most 512 steps from its point, however tall the bounds", () => {
+    // Horizontal lines 5 px apart above the point leave no room for a label
+    // 10 px tall until past the topmost; a leader may cross them. Past 512
+    // tries of 2 px - about 1,000 px - the label is left for a note.
+    const y = 1e6 - 5;
+    const tall = { left: 0, top: 0, right: 100, bottom: 1e6 };
+    const lines = (reach: number): PlacementSegment[] =>
+      Array.from({ length: Math.floor((reach - 10) / 5) + 1 }, (_, j) => ({
+        x1: 0,
+        y1: y - 10 - 5 * j,
+        x2: 100,
+        y2: y - 10 - 5 * j,
+        pad: 0.5,
+      }));
+    const label = { x: 50, y, width: 20, height: 10, clearance: 2, sides: ["above" as const] };
+    const [near] = placeLabels([label], { boxes: [], segments: lines(900) }, tall);
+    expect(near).not.toBeNull();
+    expect(near!.box.bottom).toBeLessThan(y - 900);
+    const [far] = placeLabels([label], { boxes: [], segments: lines(1100) }, tall);
+    expect(far).toBeNull();
+  });
 });

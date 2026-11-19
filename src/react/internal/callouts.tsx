@@ -18,8 +18,10 @@ import { NoteBadge, badgeRadius } from "./notes";
  * the mark. A callout with no free place gets a number instead: a disc beside
  * its point, placed the same way, and its text in the chart's list of notes.
  * When even the disc has no place, no disc is drawn - nothing is drawn over
- * another mark - and its note names its period instead ("R6: T1 gloves"). So
- * every callout is on the chart.
+ * another mark - and its note names its period instead ("R6: T1 gloves"). A
+ * callout whose point is not drawn - its period has no value, or its series
+ * is not drawn - is such a note from the start ("b: On the gap"). So every
+ * callout on a period is on the chart.
  *
  * Internal module: not part of the public API surface.
  */
@@ -59,6 +61,12 @@ export interface CalloutSpec {
   note: string;
   /** The name of its period, for a note whose disc finds no place either. */
   where: string;
+  /**
+   * False when its point is not drawn - its period has no value, or its
+   * series is not drawn. It then gets no dot, label or disc, and its note
+   * names its period; `x`, `y` and `sides` go unused. Default true.
+   */
+  drawn?: boolean;
 }
 
 /** A callout, resolved: where its label went, or its note number and disc. */
@@ -104,8 +112,10 @@ function clearanceOf(s: CalloutSpec): number {
 /**
  * Place the callouts: every label first, in the order given; then a disc for
  * each callout left without a place, numbered in order, placed beside its
- * point the same way. `obstacles` must hold everything else the chart draws
- * in `bounds` (the callouts' own dots included, see {@link dotBox}).
+ * point the same way. A callout whose point is not drawn is numbered in the
+ * same order, with no label or disc. `obstacles` must hold everything else
+ * the chart draws in `bounds` (the callouts' own dots included, see
+ * {@link dotBox}).
  */
 export function resolveCallouts(
   specs: readonly CalloutSpec[],
@@ -121,7 +131,7 @@ export function resolveCallouts(
       clearance: clearanceOf(s),
       reach: edgeOf(s),
       tie: s.dot == null,
-      sides: s.sides,
+      sides: s.drawn === false ? [] : s.sides,
     })),
     obstacles,
     bounds,
@@ -135,7 +145,7 @@ export function resolveCallouts(
   const discs = placeLabels(
     specs.flatMap((s, i) => {
       const n = numbers[i];
-      if (n == null) return [];
+      if (n == null || s.drawn === false) return [];
       const d = badgeRadius(n) * 2;
       return [
         {
@@ -159,7 +169,7 @@ export function resolveCallouts(
   return specs.map((spec, i) => {
     const label = labels[i] ?? null;
     const number = numbers[i] ?? null;
-    if (number == null) return { spec, label, number, badge: null };
+    if (number == null || spec.drawn === false) return { spec, label, number, badge: null };
     const disc = discs[d++] ?? null;
     const badge = disc
       ? {
@@ -174,7 +184,8 @@ export function resolveCallouts(
 
 /**
  * The notes of the callouts written as numbered notes, in number order; a
- * note whose disc found no place names its period before its text.
+ * note without a disc - none found a place, or its point is not drawn -
+ * names its period before its text.
  */
 export function calloutNotes(
   callouts: readonly ResolvedCallout[],
@@ -186,9 +197,9 @@ export function calloutNotes(
   );
 }
 
-/** Whether every callout's label, or else its note's disc, found a place beside its point. */
+/** Whether every callout with a drawn point found a place for its label beside it. */
 export function allPlaced(callouts: readonly ResolvedCallout[]): boolean {
-  return callouts.every((c) => c.label != null);
+  return callouts.every((c) => c.label != null || c.spec.drawn === false);
 }
 
 /** The callouts' leaders and ties, under the marks: drawn before them so a line stays whole. */
