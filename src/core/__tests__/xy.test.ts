@@ -108,12 +108,14 @@ describe("computeTicks - degenerate input", () => {
       [5e-324, 1e-323],
     ];
     for (const [min, max] of cases) {
-      const t0 = performance.now();
       const ticks = vm.runInNewContext(
         "computeTicks(min, max)",
         { computeTicks, min, max },
         { timeout: 2000 },
       ) as number[];
+      // It returned: now the call alone, timed without the vm's new context.
+      const t0 = performance.now();
+      computeTicks(min, max);
       expect(performance.now() - t0).toBeLessThan(50);
       expect(ticks.length).toBeGreaterThan(0);
       for (const [i, t] of ticks.entries()) {

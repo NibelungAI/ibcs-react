@@ -7,13 +7,21 @@
  * the narrowest range's ends apart, in the caller's words. Geometry is read
  * from the server markup.
  */
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { renderToStaticMarkup } from "react-dom/server";
 import type { ReactElement } from "react";
 
 import { RangeBarChart, defaultTokens, type RangeDatum } from "../../index";
+import { placeLabels } from "../../core/labelPlacement";
 import { estTextW } from "../internal/text";
+
+// The placement engine, watched, unchanged: the crowded-columns test counts
+// the labels the chart asks it to place.
+vi.mock("../../core/labelPlacement", async (importOriginal) => {
+  const real = await importOriginal<typeof import("../../core/labelPlacement")>();
+  return { ...real, placeLabels: vi.fn(real.placeLabels) };
+});
 
 afterEach(cleanup);
 
@@ -394,16 +402,18 @@ describe("RangeBarChart: nothing overlaps", () => {
     expect(cells.map((td) => td.textContent)).toEqual(["1,234,567.89", "1,234,569.12"]);
   });
 
-  it("columns: a thousand at 200px label their first and last ends at once, inside the chart", () => {
-    // Two thousand labels cannot fit in a chart 200 px wide: the ends alone are
-    // tried, at once (2.2 s here when every label was tried first).
+  it("columns: a thousand at 200px try their first and last ends alone, at once, inside the chart", () => {
+    // Two thousand labels' boxes cannot fit in a chart 200 px wide, so the
+    // engine is asked for the ends alone - never for all two thousand, four
+    // times over, before them (2.2 s; the ends alone take milliseconds).
     const thousand = crowdedShapes[0]![1](1000);
-    const t0 = performance.now();
-    const html = renderToStaticMarkup(
-      <RangeBarChart data={thousand} orientation="columns" width={200} height={260} />,
+    vi.mocked(placeLabels).mockClear();
+    const { bars, texts } = marks(
+      ssr(<RangeBarChart data={thousand} orientation="columns" width={200} height={260} />),
     );
-    expect(performance.now() - t0).toBeLessThan(1000);
-    const { bars, texts } = marks(new DOMParser().parseFromString(html, "text/html").body);
+    const asked = vi.mocked(placeLabels).mock.calls.map(([requests]) => requests.length);
+    expect(asked.length).toBeGreaterThan(0);
+    expect(Math.max(...asked)).toBeLessThanOrEqual(4);
     expect(bars.length).toBe(1000);
     const labels = texts.map(textBox);
     expect(labels.length).toBeGreaterThan(0);
