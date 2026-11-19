@@ -213,7 +213,10 @@ describe("labels reach every fixed word", () => {
     ]) {
       expect(shown).toContain(name);
     }
-  });
+    // It hovers every hit target of every fixture - the timeline fixture alone
+    // has one per cast and per span - so it outlasts the 5 s default on a slow
+    // CI runner: 1.9 s on a laptop, more than 5 s on GitHub's Node 22 runner.
+  }, 30_000);
 
   it("writes StatementTable's tooltip Δ caption from the delta template once one is set", () => {
     const lines = [{ id: "rev", label: "Revenue", values: { AC: 500, PY: 460 } }];

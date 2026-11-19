@@ -249,7 +249,10 @@ describe("placeLabels", () => {
     expect(placedCount).toBeGreaterThan(600);
     expect(movedCount).toBeGreaterThan(50);
     expect(missing).toBeGreaterThan(5);
-  });
+    // 300 scenes of 50 segments and up to 7 labels each: about 0.5 s on a
+    // laptop, 2.8 s on GitHub's Node 22 runner, so the 5 s default is too
+    // close. Each scene keeps its own 250 ms bound above.
+  }, 30_000);
 
   it("is bounded by the bounds, not by the values, for a point far outside them", () => {
     const t0 = performance.now();
