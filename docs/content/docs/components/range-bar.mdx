@@ -92,10 +92,12 @@ estimate ± its half-width:
 - **The ends are labelled** outside the bar and past the dot. In `"bars"`
   orientation each row's labels stay in its own band; in `"columns"`
   orientation an end label that would touch another label, a column or a dot
-  moves away from its end, with a leader back to it. Columns too narrow for
-  every end label - about two thirds of a label's width each - have only the
-  first and the last column's ends labelled, the start and the end of the
-  sequence; every value stays in the tooltip and the screen-reader table.
+  moves away from its end, with a leader back to it, and the rows above and
+  below the plot grow, up to three each, to make room. Columns too crowded for
+  every end label have only the first and the last column's ends labelled,
+  the start and the end of the sequence; an end label that finds no place even
+  then is left out, never drawn over a column or past the chart's edge. Every
+  value stays in the tooltip and the screen-reader table.
 
 The chart draws the ends and marks it is given: which percentiles, which
 interval and which mean they are is yours to compute, and to name with

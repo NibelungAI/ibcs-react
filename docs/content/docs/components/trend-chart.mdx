@@ -174,8 +174,11 @@ Labels are placed clear of every column, value label, line and other
 callout, moved away with a leader where they must be. The plot keeps room
 above its tallest column for them (and below its lowest, for a negative
 column's callout), and grows that room, at most twice, before it writes a
-callout as a numbered note under the chart. The screen-reader table carries
-each callout's text in its period's row (`labels.note`).
+callout as a numbered note under the chart. A callout on a period without its
+point - a run without a value, a line that is not drawn, a total's line - is
+written under the chart too, after the name of its period ("R2: Missing"). The
+screen-reader table carries each callout's text in its period's row
+(`labels.note`).
 
 ## Props
 

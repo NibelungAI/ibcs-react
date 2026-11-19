@@ -56,7 +56,8 @@ import { TimelineChart } from "ibcs-react";
 Each row draws what it is given:
 
 - **`ticks`** are moments - the casts of an ability - drawn as short vertical
-  lines over a thin halo in the surface colour, so a cast reads on a bar too.
+  lines in ink, taller than a bar, so a cast stands out of the bar it falls on
+  and the bar stays whole: a buff refreshed while it is up reads as one bar.
 - **`spans`** are intervals. An `"active"` span (the default) - a buff up, a
   cast or a channel - is a bar; a `"waiting"` span - a cooldown - is a thin
   light line. The two never look alike.
@@ -86,7 +87,9 @@ their labels leave room for: no two labels ever touch, and none leaves the
 chart. There is no grid line. Times in the tooltip and the table take
 `format.fractionDigits` (on a clock, one digit by default: "1:05.5"); without
 a clock, `format.suffix` carries the unit (`{ suffix: " s" }`) and values are
-written in full unless `compact` is `true`.
+written in full unless `compact` is `true`. Compact times take the fewest more
+digits that tell two neighbours apart: an axis from 1,000 to 1,100 s reads
+"1.00K" to "1.10K", never "1K" six times, and so do the tooltip and the table.
 
 Write the same times outside the chart with `formatClock` (from
 `ibcs-react/core`): `formatClock(65.5, { fractionDigits: 1 })` is "1:05.5".

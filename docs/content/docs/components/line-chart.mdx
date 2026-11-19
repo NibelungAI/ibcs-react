@@ -116,10 +116,13 @@ end label, reference caption and other callout: right beside the point -
 above a peak, below a trough (or the side `placement` names) - else moved
 away with a leader. The plot keeps room above its highest point for the
 labels. A callout that finds no room anywhere is numbered beside its point
-and written under the chart, which grows by that list, so none is left out;
-when even its number has no place, its note names its period instead. The
-screen-reader table carries each callout's text in its period's row
-(`labels.note`, "Note").
+and written under the chart, which grows by that list; when even its number
+has no place, its note names its period instead. A callout on a period where
+its series draws no point - no value there, or the series is not drawn - is
+written under the chart the same way, after the name of its period ("b: On the
+gap"). So none on a period is left out, and the screen-reader table carries
+each one's text in its period's row (`labels.note`, "Note"). An `index` that
+names no period is ignored.
 
 ## Fans
 
