@@ -435,3 +435,29 @@ export type {
 
 /* ./rowIcon - a small picture (or several) before a row's label */
 export type { RowIcon } from "./rowIcon";
+
+/* ./timeline - rows of moments and intervals on one time axis (a Gantt chart) */
+export { computeTimeline, formatClock } from "./timeline";
+export type {
+  ClockFormatOptions,
+  TimelineAnnotation,
+  TimelineLayout,
+  TimelineLayoutAnnotation,
+  TimelineLayoutRow,
+  TimelineLayoutSpan,
+  TimelineMark,
+  TimelineOptions,
+  TimelineRow,
+  TimelineSpan,
+  TimelineSpanKind,
+} from "./timeline";
+
+/* ./rangeBar - a range of values per category, with a value marked across it */
+export { computeRangeBars } from "./rangeBar";
+export type { RangeBarLayout, RangeDatum, RangeRow } from "./rangeBar";
+
+/* ./callout - labelled points of line and trend charts */
+export type { PointCallout } from "./callout";
+
+/* ./fan - bands whose edges vary along x */
+export type { FanBand } from "./fan";

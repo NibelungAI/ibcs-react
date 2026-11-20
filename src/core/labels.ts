@@ -116,11 +116,47 @@ export interface IbcsLabels {
   /** `HistogramChart`'s number of values. Default "n = {n}". Optional (added in 1.6): the default fills it. */
   sampleSize?: string;
   /**
-   * The chips a ranking row has no room for, after the ones it draws
-   * (`RankingVarianceChart`). Default "+{count}". Optional (added in 1.6): the
-   * default fills it.
+   * The chips a row has no room for, after the ones it draws
+   * (`RankingVarianceChart`, `TimelineChart`, `RangeBarChart`). Default
+   * "+{count}". Optional (added in 1.6): the default fills it.
    */
   moreIcons?: string;
+  /**
+   * `TimelineChart`'s table column of a row's ticks (its casts). Default
+   * "Events". Optional (added in 1.7): the default fills it.
+   */
+  events?: string;
+  /** One tick in `TimelineChart`'s tooltip. Default "Event". Optional (added in 1.7). */
+  event?: string;
+  /**
+   * `TimelineChart`'s active spans (a buff's uptime): table column and
+   * tooltip. Default "Active". Optional (added in 1.7).
+   */
+  active?: string;
+  /**
+   * `TimelineChart`'s waiting spans (a cooldown): table column and tooltip.
+   * Default "Waiting". Optional (added in 1.7).
+   */
+  waiting?: string;
+  /**
+   * `RangeBarChart`'s lower end (table column, tooltip) - "p10" for a 10th to
+   * 90th percentile range. Default "Low". Optional (added in 1.7).
+   */
+  rangeLow?: string;
+  /** `RangeBarChart`'s upper end - "p90". Default "High". Optional (added in 1.7). */
+  rangeHigh?: string;
+  /** `RangeBarChart`'s marked value. Default "Mean". Optional (added in 1.7). */
+  rangeMark?: string;
+  /**
+   * The table column of the point callouts (`LineChart`, `TrendChart`), and
+   * of the fan captions. Default "Note". Optional (added in 1.7).
+   */
+  note?: string;
+  /**
+   * The table column of a `LineChart` fan band without a `label`. Default
+   * "Band {n}". Optional (added in 1.7).
+   */
+  band?: string;
   /** The latest value of `RatioTreeChart`. Default "Latest". */
   latest: string;
   /** A bridge step's own size (waterfalls). Default "Contribution". */
@@ -220,7 +256,12 @@ export interface IbcsLabels {
  */
 export type IbcsLabelsComplete = Required<IbcsLabels>;
 
-/** The 1.4 words, byte for byte, and the words of components added since (`count`, `mean`, `spread`, `sampleSize`, `moreIcons`). */
+/**
+ * The 1.4 words, byte for byte, and the words of components added since: 1.6's
+ * `count`, `mean`, `spread`, `sampleSize` and `moreIcons`; 1.7's `events`,
+ * `event`, `active`, `waiting`, `rangeLow`, `rangeHigh`, `rangeMark`, `note`
+ * and `band`.
+ */
 const allWords: IbcsLabelsComplete = {
   scenario: { AC: "AC", PY: "PY", PL: "PL", FC: "FC" },
   scenarioTitle: { AC: "Actual", PY: "PY", PL: "Plan / budget", FC: "Forecast" },
@@ -238,6 +279,15 @@ const allWords: IbcsLabelsComplete = {
   spread: "Middle half {range}",
   sampleSize: "n = {n}",
   moreIcons: "+{count}",
+  events: "Events",
+  event: "Event",
+  active: "Active",
+  waiting: "Waiting",
+  rangeLow: "Low",
+  rangeHigh: "High",
+  rangeMark: "Mean",
+  note: "Note",
+  band: "Band {n}",
   latest: "Latest",
   contribution: "Contribution",
   runningTotal: "Running total",
@@ -313,7 +363,22 @@ function assignDefined<T extends object>(base: T, override: Partial<T> | undefin
 }
 
 /** The words that are optional in {@link IbcsLabels} (added after 1.5.0). */
-const ADDED_WORDS = ["count", "mean", "spread", "sampleSize", "moreIcons"] as const;
+const ADDED_WORDS = [
+  "count",
+  "mean",
+  "spread",
+  "sampleSize",
+  "moreIcons",
+  "events",
+  "event",
+  "active",
+  "waiting",
+  "rangeLow",
+  "rangeHigh",
+  "rangeMark",
+  "note",
+  "band",
+] as const;
 
 /** A dictionary with every word: the defaults fill the optional ones it lacks (the same object when it lacks none). */
 function complete(base: IbcsLabels): IbcsLabelsComplete {

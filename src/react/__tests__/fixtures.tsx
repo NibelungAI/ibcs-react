@@ -53,8 +53,16 @@ import {
   ExportMenu,
   ErrorBar,
   HistogramChart,
+  TimelineChart,
+  RangeBarChart,
 } from "../index";
-import type { DataTableColumn, DataTableRow, RankingDatum, RowIcon } from "../../index";
+import type {
+  DataTableColumn,
+  DataTableRow,
+  RankingDatum,
+  RowIcon,
+  TimelineRow,
+} from "../../index";
 
 /* ------------------------------------------------------------------ *
  * Tiny shared data fixtures (reused across many charts).
@@ -513,6 +521,32 @@ export const cases: SmokeCase[] = [
     name: "HistogramChart",
     element: <HistogramChart values={fightSample(1000, 910, 30, 11)} width={400} height={240} />,
   },
+  {
+    // Two rows: casts as ticks, a buff as a span.
+    name: "TimelineChart",
+    element: (
+      <TimelineChart
+        rows={[
+          { label: "Cast", ticks: [1, 4, 7] },
+          { label: "Buff", spans: [{ from: 2, to: 6 }] },
+        ]}
+        width={400}
+      />
+    ),
+  },
+  {
+    // Two ranges with their marks, on one value axis.
+    name: "RangeBarChart",
+    element: (
+      <RangeBarChart
+        data={[
+          { label: "A", from: 80, to: 120, mark: 100 },
+          { label: "B", from: 90, to: 130, mark: 112 },
+        ]}
+        width={400}
+      />
+    ),
+  },
 ];
 
 /* ------------------------------------------------------------------ *
@@ -755,6 +789,68 @@ const fightsSd = Math.sqrt(
 );
 const fightsHalf = (1.959964 * fightsSd) / Math.sqrt(fights.length);
 
+/**
+ * One fight of 180 s, as a combat log's shaper would hand it over (made-up
+ * moments): auto shots every 2.9 s, Aimed Shot and Multi-Shot with their
+ * cooldowns as waiting spans, Rapid Fire's 15 s and its 5 min cooldown, a
+ * proc and a potion as active spans, and three numbered notes.
+ */
+const autoShots = Array.from({ length: 63 }, (_, i) => Math.round(i * 29) / 10);
+const aimedShots = Array.from({ length: 17 }, (_, i) => Math.round(15 + i * 104) / 10);
+const multiShots = Array.from({ length: 17 }, (_, i) => Math.round(46 + i * 104) / 10);
+const fightRows: TimelineRow[] = [
+  { label: "Auto Shot", icon: { src: icons.arrow, naturalSize: 56 }, ticks: autoShots },
+  {
+    label: "Aimed Shot",
+    icon: { src: icons.arrow, naturalSize: 56 },
+    ticks: aimedShots,
+    spans: aimedShots.map((t) => ({ from: t, to: t + 6, kind: "waiting" as const })),
+  },
+  {
+    label: "Multi-Shot",
+    icon: { src: icons.arrow, naturalSize: 56 },
+    ticks: multiShots,
+    spans: multiShots.map((t) => ({ from: t, to: t + 10, kind: "waiting" as const })),
+  },
+  {
+    label: "Rapid Fire",
+    icon: { src: icons.flame, naturalSize: 56 },
+    ticks: [30],
+    spans: [
+      { from: 30, to: 45 },
+      { from: 30, to: 330, kind: "waiting" },
+    ],
+  },
+  {
+    label: "Quick Shots",
+    spans: [
+      { from: 8, to: 20 },
+      { from: 41, to: 53 },
+      { from: 77, to: 89 },
+      { from: 118, to: 130 },
+      { from: 161, to: 173 },
+    ],
+  },
+  { label: "Haste Potion", ticks: [60], spans: [{ from: 60, to: 75 }] },
+];
+
+/** Twenty runs of one character; three gear changes called out, and one more than the room above the line holds. */
+const runDps = [
+  884.1, 886.0, 885.2, 887.9, 899.8, 901.2, 900.4, 903.0, 902.1, 904.6, 905.0, 914.9, 916.2, 915.0,
+  917.7, 918.3, 919.4, 921.1, 931.2, 930.4,
+];
+
+/** DPS over one fight every 3 s (made up), and a fan of all fights per moment: two nested bands. */
+const fightSeconds = Array.from({ length: 61 }, (_, i) => i * 3);
+const fightDps = fightSeconds.map(
+  (t, i) =>
+    Math.round((910 + 140 * Math.exp(-t / 25) * Math.cos(i / 2.2) - (i > 40 ? 12 : 0)) * 10) / 10,
+);
+const fanEdge = (k: number, spread: number) =>
+  fightSeconds.map(
+    (t) => Math.round((910 + k * (spread * Math.exp(-t / 40) + spread / 7)) * 10) / 10,
+  );
+
 export const featureCases: SmokeCase[] = [
   {
     name: "VarianceColumnChart-errors",
@@ -848,6 +944,142 @@ export const featureCases: SmokeCase[] = [
         format={{ compact: false, fractionDigits: 1 }}
         width={480}
         height={240}
+      />
+    ),
+  },
+  {
+    // One fight: casts as ticks, cooldowns as waiting lines, buffs as bars,
+    // spell icons, a clock axis and three numbered notes.
+    name: "TimelineChart-annotations",
+    element: (
+      <TimelineChart
+        title="One of 6,000 fights: an example, not a guide"
+        timeFormat="clock"
+        domain={[0, 180]}
+        rows={fightRows}
+        annotations={[
+          { at: 30, row: 3, text: "Rapid Fire: 15 s of 40% faster shots" },
+          { at: 60, text: "The potion while Quick Shots is up" },
+          { at: 165.5, row: 1, text: "Mana runs low: one Aimed Shot is skipped" },
+        ]}
+        width={480}
+      />
+    ),
+  },
+  {
+    // Each variant's fights: the 10th to the 90th percentile and the mean,
+    // the items' chips and quality colours in the row labels.
+    name: "RangeBarChart-spread",
+    element: (
+      <RangeBarChart
+        title="DPS of each variant's fights"
+        data={[
+          { label: "Best set", from: 870.2, to: 952.6, mark: 914.3, icon: [ringChip, swordChip] },
+          {
+            label: "Signet of Embers",
+            labelColor: EPIC,
+            from: 869.9,
+            to: 952.1,
+            mark: 914.1,
+            icon: { ...ringChip, alt: "" },
+          },
+          { label: "Equipped", from: 866.5, to: 948.9, mark: 910.8 },
+          {
+            label: "Runed Greatsword",
+            labelColor: RARE,
+            from: 862.0,
+            to: 946.4,
+            mark: 906.3,
+            icon: { ...swordChip, alt: "" },
+          },
+        ]}
+        format={{ compact: false, fractionDigits: 1 }}
+        labels={{ rangeLow: "p10", rangeHigh: "p90" }}
+        width={480}
+      />
+    ),
+  },
+  {
+    // The precision ladder's GTM form: the estimate ± its half-width after
+    // each wave, narrowing, in sr-Latn at the digits the narrowest range needs.
+    name: "RangeBarChart-ladder",
+    element: (
+      <RangeBarChart
+        orientation="columns"
+        title="Procena se sužava sa svakim talasom"
+        data={[
+          { label: "Talas 1", from: 902.1, to: 919.5, mark: 910.8 },
+          { label: "Talas 2", from: 905.0, to: 917.2, mark: 911.1 },
+          { label: "Talas 3", from: 907.9, to: 914.1, mark: 911.0 },
+          { label: "Talas 4", from: 909.5, to: 912.6, mark: 911.05 },
+          { label: "Talas 5", from: 910.3, to: 911.8, mark: 911.07 },
+        ]}
+        format={{ locale: "sr-Latn" }}
+        labels={{
+          rangeLow: "procena − polovina",
+          rangeHigh: "procena + polovina",
+          rangeMark: "procena",
+        }}
+        width={480}
+        height={260}
+      />
+    ),
+  },
+  {
+    // GTM p. 4: gear changes called out on a run of results; the fourth has no
+    // room left above the line, so it is numbered and written under the chart.
+    name: "LineChart-callouts",
+    element: (
+      <LineChart
+        title="DPS across 20 runs"
+        data={runDps.map((v, i) => ({ category: `${i + 1}`, AC: v }))}
+        format={{ compact: false, fractionDigits: 1 }}
+        callouts={[
+          { index: 4, label: "Run 5: T1 helm\n899.8" },
+          { index: 11, label: "Run 12: Signet of Embers\n914.9" },
+          { index: 17, label: "Run 18: Runed Greatsword\n921.1" },
+          { index: 18, label: "Run 19: the best set\n931.2" },
+        ]}
+        width={480}
+        height={260}
+      />
+    ),
+  },
+  {
+    // DPS over one fight with a fan of all fights per moment: the 10th to the
+    // 90th percentile and the middle half, captioned and tied to their edges.
+    name: "LineChart-fan",
+    element: (
+      <LineChart
+        title="DPS over one fight, against all fights"
+        data={fightSeconds.map((t, i) => ({ category: `${t}`, AC: fightDps[i]! }))}
+        format={{ compact: false, fractionDigits: 0 }}
+        fans={[
+          { from: fanEdge(-1, 210), to: fanEdge(1, 240), label: "10th to 90th percentile" },
+          { from: fanEdge(-1, 90), to: fanEdge(1, 100), label: "Middle half" },
+        ]}
+        references={[{ axis: "x", kind: "band", from: 10, to: 15, label: "Rapid Fire" }]}
+        width={480}
+        height={260}
+      />
+    ),
+  },
+  {
+    // A trend of runs with two gear changes called out above their columns.
+    name: "TrendChart-callouts",
+    element: (
+      <TrendChart
+        title="DPS per run"
+        data={runDps.slice(0, 13).map((v, i) => ({ category: `R${i + 1}`, AC: v }))}
+        variance="none"
+        referenceLines={[]}
+        format={{ compact: false, fractionDigits: 0 }}
+        callouts={[
+          { index: 4, label: "T1 helm" },
+          { index: 11, label: "Signet of Embers" },
+        ]}
+        width={480}
+        height={260}
       />
     ),
   },

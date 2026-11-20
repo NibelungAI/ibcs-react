@@ -4,6 +4,7 @@ description: The IBCS line chart (template C07) - dense multi-series time lines 
 ---
 
 import { LineChart } from "ibcs-react";
+import { fightDps, fightFans, runs } from "@/lib/demo-data/marks";
 
 Scenario lines in IBCS notation with point markers, plus an optional variance
 panel against a chosen base.
@@ -76,6 +77,87 @@ format - its end label and its column of the screen-reader table - merged over
 
 See [Numbers and words](/docs/localization) for decimals, locales and the whole
 word dictionary.
+
+## Point callouts
+
+`callouts` label the points you name - the inflection points of J.P.
+Morgan's _Guide to the Markets_ (p. 4), each written with its date and value
+beside its point; the gear changes in a run of results. A callout names a
+period (`index`), optionally a `series` (default AC), and its text, with `"\n"`
+for a new line:
+
+<Frame center>
+  <LineChart
+    title="DPS across 20 runs"
+    data={runs}
+    format={{ compact: false, fractionDigits: 1 }}
+    callouts={[
+      { index: 4, label: "Run 5: T1 helm\n899.8" },
+      { index: 11, label: "Run 12: Signet of Embers\n914.9" },
+      { index: 18, label: "Run 19: the best set\n931.2" },
+    ]}
+    width={640}
+    height={300}
+  />
+</Frame>
+
+```tsx
+<LineChart
+  data={runs}
+  callouts={[
+    { index: 4, label: "Run 5: T1 helm\n899.8" },
+    { index: 18, label: "Run 19: the best set\n931.2" },
+  ]}
+/>
+```
+
+Each point gets a dot, and its label a place clear of every line, marker,
+end label, reference caption and other callout: right beside the point -
+above a peak, below a trough (or the side `placement` names) - else moved
+away with a leader. The plot keeps room above its highest point for the
+labels. A callout that finds no room anywhere is numbered beside its point
+and written under the chart, which grows by that list; when even its number
+has no place, its note names its period instead. A callout on a period where
+its series draws no point - no value there, or the series is not drawn - is
+written under the chart the same way, after the name of its period ("b: On the
+gap"). So none on a period is left out, and the screen-reader table carries
+each one's text in its period's row (`labels.note`, "Note"). An `index` that
+names no period is ignored.
+
+## Fans
+
+`fans` are bands whose edges vary from period to period - the 10th to the
+90th percentile of all fights at every moment, say - drawn faint beneath the
+lines, a later band over an earlier one. Each edge is a value per period,
+aligned with `data`; a missing value breaks the band, as it breaks a line,
+and the value axis grows to hold the bands. A band's `label` is placed beside
+its right end like a callout, tied to the edge it names:
+
+<Frame center>
+  <LineChart
+    title="DPS over one fight, against all fights"
+    data={fightDps}
+    fans={fightFans}
+    format={{ compact: false, fractionDigits: 0 }}
+    references={[{ axis: "x", kind: "band", from: 10, to: 15, label: "Rapid Fire" }]}
+    width={640}
+    height={300}
+  />
+</Frame>
+
+```tsx
+<LineChart
+  data={dpsEvery3s} // { category: "0", AC: 1050 }, …
+  fans={[
+    { from: p10, to: p90, label: "10th to 90th percentile" }, // one value per period
+    { from: q1, to: q3, label: "Middle half" },
+  ]}
+/>
+```
+
+The chart draws the edges it is given. Each band has its column in the
+screen-reader table - its `label`, else `labels.band` ("Band {n}") - with
+"from–to" per period.
 
 ## Props
 

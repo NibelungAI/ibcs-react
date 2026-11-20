@@ -177,6 +177,7 @@ template set** - every standard chart (C01-C13) and table (T01-T04):
 |            | C13 small multiples                            | `SmallMultiples`, `MiniVarianceMultiples`                  |
 |            | _(extras)_ integrated / ranking variance       | `IntegratedVarianceChart`, `RankingVarianceChart`          |
 |            | _(extras)_ distribution (histogram)            | `HistogramChart`                                           |
+|            | _(extras)_ ranges · timeline (Gantt)           | `RangeBarChart` · `TimelineChart`                          |
 
 ### Tables (IBCS templates T01-T04)
 
@@ -221,14 +222,17 @@ uncontrolled mode, as observers.
   with an absolute/relative variance panel beneath; optional vertical error bars
   (`acError`, `absError`, `pctError`).
 - **`TrendChart`** - a many-period time series (built for 13): AC solid / FC
-  hatched columns, PY & PL reference lines, variance panel.
+  hatched columns, PY & PL reference lines, variance panel, and labelled
+  periods (`callouts`).
 - **`StructureChart`** - ranked horizontal bars for composition / contribution,
   AC vs PY overlap and % share.
 - **`WaterfallChart`** - the IBCS vertical waterfall chart (**C12**): a
   standalone add / subtract / result bridge.
 - **`StackedChart`** - the IBCS stacked column chart (**C01**, over time) or
   stacked bar chart (**C02**, over a structure), with category totals.
-- **`LineChart`** - dense multi-series time lines with markers (**C07**).
+- **`LineChart`** - dense multi-series time lines with markers (**C07**);
+  labelled points (`callouts`, placed clear of every line and label) and fans
+  (`fans`: bands whose edges vary along x).
 - **`AreaChart`** - one scenario filled to the zero baseline (**C08**), optional
   reference line on top.
 - **`ScatterChart`** - a value/value scattergram (**C09**) with optional
@@ -252,6 +256,13 @@ uncontrolled mode, as observers.
   engine's `bins`; the mean's interval (an error bar above the columns) and the
   spread of the values (a band behind them) drawn apart, with labels instead of
   grid lines.
+- **`RangeBarChart`** - floating range bars from one end of a range to the
+  other - the 10th to the 90th percentile of each variant, or an estimate ± its
+  half-width per wave - with the value marked on each and both ends labelled;
+  in rows for categories or in columns for a sequence.
+- **`TimelineChart`** - a Gantt chart of one run: time across, a row per
+  ability or buff, casts as ticks, buffs as bars, cooldowns as thin waiting
+  lines, and numbered annotations on the moments they explain.
 - **`HorizontalWaterfallChart`** - the IBCS horizontal waterfall chart
   (**C05**); plus the
   composites **`ColumnVarianceWaterfallChart`** (**C05**),
@@ -515,7 +526,7 @@ digits and the caller's words:
 </tr>
 </table>
 
-## Icons and distributions
+## Icons, distributions, ranges and timelines
 
 `DataTable` rows and `RankingVarianceChart` data take an `icon` - an image
 with its `naturalSize` (and a `pixelRatio` for dense screens), drawn at the
@@ -523,7 +534,11 @@ component's `iconSize` but never above `naturalSize / pixelRatio` CSS px - and
 a `labelColor`; `renderIcon` puts an element of your own in the slot, around
 the component's own icons if you like. `HistogramChart` draws a distribution
 with the mean's interval and the spread of the values apart, so neither is read
-for the other (see [HistogramChart](docs/content/docs/components/histogram.mdx)):
+for the other (see [HistogramChart](docs/content/docs/components/histogram.mdx)).
+`RangeBarChart` draws ranges with a marked value, `TimelineChart` one run in
+time with numbered notes, and `LineChart` and `TrendChart` take `callouts`,
+labels placed clear of every mark - a callout with no room is numbered and
+written under the chart, never left out:
 
 <table>
 <tr>
@@ -533,6 +548,18 @@ for the other (see [HistogramChart](docs/content/docs/components/histogram.mdx))
 <tr>
 <td width="50%" valign="top"><img src="assets/histogram.png" alt="HistogramChart with the mean's interval and the middle half of the values" width="100%"/><br/><sub><b>HistogramChart</b> - the mean ± its 95% half-width above the columns, the middle half of the fights as a band, in <code>sr-Latn</code> with the caller's words.</sub></td>
 <td width="50%" valign="top"><img src="assets/histogram-engine-bins.png" alt="HistogramChart from an engine's bins, hatched" width="100%"/><br/><sub><b>HistogramChart</b> - an engine's own classes, hatched as a forecast, every count labelled where all fit.</sub></td>
+</tr>
+<tr>
+<td width="50%" valign="top"><img src="assets/timeline.png" alt="TimelineChart of one fight with numbered notes" width="100%"/><br/><sub><b>TimelineChart</b> - one fight: casts as ticks, cooldowns as waiting lines, buffs as bars, spell icons and three numbered notes.</sub></td>
+<td width="50%" valign="top"><img src="assets/range-bars.png" alt="RangeBarChart of each variant's 10th to 90th percentile" width="100%"/><br/><sub><b>RangeBarChart</b> - each variant's 10th to 90th percentile, the mean marked, the items' chips in the row labels.</sub></td>
+</tr>
+<tr>
+<td width="50%" valign="top"><img src="assets/range-ladder.png" alt="RangeBarChart columns narrowing wave by wave" width="100%"/><br/><sub><b>RangeBarChart</b> - an estimate ± its half-width per wave, narrowing, in <code>sr-Latn</code> at the digits the narrowest range needs.</sub></td>
+<td width="50%" valign="top"><img src="assets/line-callouts.png" alt="LineChart with point callouts" width="100%"/><br/><sub><b>LineChart</b> - gear changes called out on a run of results, each label clear of the line and the others.</sub></td>
+</tr>
+<tr>
+<td width="50%" valign="top"><img src="assets/line-fan.png" alt="LineChart with two fan bands" width="100%"/><br/><sub><b>LineChart</b> - a fan of all fights per moment: two nested bands, each caption tied to the edge it names.</sub></td>
+<td width="50%" valign="top"><img src="assets/trend-callouts.png" alt="TrendChart with callouts above columns" width="100%"/><br/><sub><b>TrendChart</b> - labelled periods above their columns' value labels, tied to them.</sub></td>
 </tr>
 </table>
 

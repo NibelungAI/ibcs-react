@@ -7,9 +7,12 @@ import {
   HistogramChart,
   IbcsThemeProvider,
   KpiCard,
+  LineChart,
   MatrixTable,
+  RangeBarChart,
   Skeleton,
   StatementTable,
+  TimelineChart,
   TrendChart,
 } from "../index";
 import { defaultTokens, tokenPresets } from "../../core/tokens";
@@ -57,6 +60,30 @@ function scene() {
         scenario="PL"
         mean={{ value: 1.4, halfWidth: 0.2, level: 0.95 }}
         width={300}
+      />
+      {/* Hollow plan range bars and their mark dots, the annotations' and the
+        callouts' numbered discs: surface colour, not white. */}
+      <RangeBarChart
+        data={[{ label: "A", from: 1, to: 3, mark: 2 }]}
+        scenario="PL"
+        orientation="columns"
+        width={300}
+      />
+      <TimelineChart
+        rows={[{ label: "Cast", ticks: [1, 2], spans: [{ from: 1, to: 3 }] }]}
+        annotations={[{ at: 2, text: "note" }]}
+        width={300}
+      />
+      <LineChart
+        data={[
+          { category: "a", AC: 1 },
+          { category: "b", AC: 2 },
+          { category: "c", AC: 1 },
+        ]}
+        callouts={Array.from({ length: 6 }, (_, k) => ({ index: 1, label: `Callout ${k}` }))}
+        fans={[{ from: [0.5, 1.5, 0.5], to: [1.5, 2.5, 1.5], label: "band" }]}
+        width={200}
+        height={120}
       />
       <Skeleton variant="table" />
       <ChartState error={new Error("boom")} onRetry={() => {}} />

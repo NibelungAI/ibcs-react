@@ -1,0 +1,114 @@
+---
+title: TimelineChart
+description: A Gantt chart of one run - time across, one row per ability or buff, casts as ticks, buffs and cooldowns as spans, and numbered annotations on the moments they explain.
+---
+
+import { TimelineChart } from "ibcs-react";
+import { fightNotes, fightRows } from "@/lib/demo-data/marks";
+
+A timeline lays one run out in time: time runs horizontally (IBCS UN 3.3)
+and each ability, buff or task has a row of its own (UN 3.4). It answers
+"what happened when?": the casts of one simulated fight, the steps of a
+project, the stages of a batch job.
+
+## When to use
+
+When the order and overlap of events matter - which buffs were up during a
+burst, how often an ability waited on its cooldown. For how a value evolved,
+use a line chart; for how often something happened across many runs, a table
+or a histogram.
+
+## Example
+
+<Frame center>
+  <TimelineChart
+    title="One of 6,000 fights: an example, not a guide"
+    timeFormat="clock"
+    domain={[0, 180]}
+    rows={fightRows}
+    annotations={fightNotes}
+    width={640}
+  />
+</Frame>
+
+```tsx
+import { TimelineChart } from "ibcs-react";
+
+<TimelineChart
+  title="One of 6,000 fights: an example, not a guide"
+  timeFormat="clock" // times in seconds, written as minutes and seconds
+  domain={[0, 180]} // the fight's length
+  rows={[
+    { label: "Auto Shot", icon: shotIcon, ticks: [0, 2.9, 5.8 /* … */] },
+    {
+      label: "Aimed Shot",
+      ticks: [1.5, 11.9 /* … */],
+      spans: [{ from: 1.5, to: 7.5, kind: "waiting" } /* its cooldown after each cast */],
+    },
+    { label: "Rapid Fire", ticks: [30], spans: [{ from: 30, to: 45 }] }, // a buff's uptime
+  ]}
+  annotations={[{ at: 30, row: 2, text: "Rapid Fire: 15 s of 40% faster shots" }]}
+/>;
+```
+
+## Ticks, bars and lines
+
+Each row draws what it is given:
+
+- **`ticks`** are moments - the casts of an ability - drawn as short vertical
+  lines in ink, taller than a bar, so a cast stands out of the bar it falls on
+  and the bar stays whole: a buff refreshed while it is up reads as one bar.
+- **`spans`** are intervals. An `"active"` span (the default) - a buff up, a
+  cast or a channel - is a bar; a `"waiting"` span - a cooldown - is a thin
+  light line. The two never look alike.
+
+The chart derives nothing. Turning a combat log into rows - which cast is a
+tick, how long a cooldown runs - is the caller's work, and so is choosing the
+run to show: label it as one example, as the title above does. Marks outside
+`domain` are clipped (a span) or left out (a tick); the screen-reader table
+still lists them.
+
+## Numbered annotations
+
+An annotation names a moment and, optionally, the row whose mark it explains.
+Its number sits in a disc above the rows, with an assisting line down to the
+moment - to just above that row's marks, or across every row to the axis -
+and its text is written beside the same number under the chart (IBCS UN 2.4:
+annotations integrated in the chart and linked by references). Numbers too
+close to sit at their moments are set side by side, each line still at its
+exact moment. A long note wraps between words; none is cut. An annotation
+outside `domain` keeps its number, at the nearest end, without a line.
+
+## The time axis
+
+The axis is labelled at nice steps - 1, 2 or 5 times a power of ten, or on a
+clock (`timeFormat="clock"`) whole seconds, minutes and hours - as many as
+their labels leave room for: no two labels ever touch, and none leaves the
+chart. There is no grid line. Times in the tooltip and the table take
+`format.fractionDigits` (on a clock, one digit by default: "1:05.5"); without
+a clock, `format.suffix` carries the unit (`{ suffix: " s" }`) and values are
+written in full unless `compact` is `true`. Compact times take the fewest more
+digits that tell two neighbours apart: an axis from 1,000 to 1,100 s reads
+"1.00K" to "1.10K", never "1K" six times, and so do the tooltip and the table.
+
+Write the same times outside the chart with `formatClock` (from
+`ibcs-react/core`): `formatClock(65.5, { fractionDigits: 1 })` is "1:05.5".
+
+## Icons in the row labels
+
+A row's `icon` is drawn before its label, as in `DataTable`: at `iconSize`
+(default 16), never above `naturalSize / pixelRatio` CSS px, every label
+aligned after the widest row's icons. `renderIcon` wraps or replaces a row's
+icons - in a tooltip trigger of your own, say.
+
+## Words and accessibility
+
+The svg is one labelled image: its title, then "Timeline of 6 rows, 0:00.0
+to 3:00.0." for the example above (`ariaLabel` replaces both). Beside it, a visually hidden table lists
+every row's moments and intervals, with the notes in its caption. Its
+columns, and the tooltip on a mark, take the chart's words: `events`
+("Events"), `event` ("Event"), `active` ("Active") and `waiting` ("Waiting").
+
+## Props
+
+<AutoTypeTable path="../src/react/TimelineChart.tsx" name="TimelineChartProps" />

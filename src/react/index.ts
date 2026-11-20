@@ -75,6 +75,18 @@ export type {
   HistogramMean,
   HistogramSpread,
 } from "./HistogramChart";
+export { TimelineChart } from "./TimelineChart";
+export type {
+  TimelineChartProps,
+  TimelineAnnotation,
+  TimelineLayoutRow,
+  TimelineMark,
+  TimelineRow,
+  TimelineSpan,
+  TimelineSpanKind,
+} from "./TimelineChart";
+export { RangeBarChart } from "./RangeBarChart";
+export type { RangeBarChartProps, RangeDatum, RangeRow } from "./RangeBarChart";
 export { HorizontalWaterfallChart } from "./HorizontalWaterfallChart";
 export type { HorizontalWaterfallChartProps } from "./HorizontalWaterfallChart";
 export { GroupedVarianceChart } from "./GroupedVarianceChart";
@@ -95,7 +107,7 @@ export type {
 export { RatioTreeChart } from "./RatioTreeChart";
 export type { RatioTreeChartProps, RatioNode } from "./RatioTreeChart";
 export type { IsoLineConfig } from "./ScatterChart";
-export type { ReferenceLine, ReferenceBand } from "./LineChart";
+export type { ReferenceLine, ReferenceBand, PointCallout, FanBand } from "./LineChart";
 export { ResponsiveChart } from "./ResponsiveChart";
 export type { ResponsiveChartProps } from "./ResponsiveChart";
 export { ChartBox } from "./ChartBox";

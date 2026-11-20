@@ -1,5 +1,21 @@
 import { describe, it, expect } from "vitest";
+import { ulpOf } from "../histogram";
 import { computeTicks, assignGroupColors, distinctGroups, computeXyScale } from "../xy";
+
+/**
+ * Node's `vm`, whose `timeout` stops even a loop that never yields. The
+ * library's tsconfig has no Node types, so it is reached as
+ * `exportMenu.test.tsx` reaches `process`: through `globalThis`, typed here.
+ */
+const vm = (
+  globalThis as unknown as {
+    process: {
+      getBuiltinModule(id: "node:vm"): {
+        runInNewContext(code: string, context: object, options: { timeout: number }): unknown;
+      };
+    };
+  }
+).process.getBuiltinModule("node:vm");
 
 describe("computeTicks - tick count", () => {
   it("returns about the requested number of ticks (D3 error-based step)", () => {
@@ -76,6 +92,64 @@ describe("computeTicks - degenerate input", () => {
 
   it("survives an infinite tick count request", () => {
     expect(computeTicks(0, 10, Infinity)).toEqual([0]);
+  });
+
+  it("walks on past a tick that repeats, to the range's end", () => {
+    // On a range a few doubles wide, toFixed writes two neighbouring multiples
+    // of the step as one value. That tick is skipped, not the end of the axis:
+    // ending the walk there stopped computeTicks(1, 1.000000000000003, 10) at
+    // 1.0000000000000009. 1.6.0 reached the end, with two ticks written twice.
+    for (const [min, max, count] of [
+      [1, 1.000000000000003, 15],
+      [0.001, 0.001000000000000003, 15],
+      [1e-9, 1.0000000000000032e-9, 16],
+    ] as const) {
+      const ticks = computeTicks(min, max, 10);
+      expect(ticks.length).toBe(count);
+      expect(ticks[0]).toBe(min);
+      expect(ticks[ticks.length - 1]).toBe(max);
+      for (const [i, t] of ticks.entries()) if (i > 0) expect(t).toBeGreaterThan(ticks[i - 1]!);
+    }
+  });
+
+  it("returns on narrow ranges far from zero, its ticks strictly increasing", () => {
+    // Up to 1.6, `computeTicks(1e17, 1e17 + 16)` never returned: past 2^53 its
+    // integer step index could not move. The call runs under a vm deadline, so
+    // a loop that never ends fails this test instead of hanging the run.
+    const cases: Array<[number, number]> = [
+      [1e17, 1e17 + 16],
+      [2 ** 53, 2 ** 53 + 8],
+      [1e300, 1e300 + ulpOf(1e300) * 4],
+      [1.7e18, 1.7e18 + 1e3],
+      [1e6, 1e6 + ulpOf(1e6)],
+      [-Number.MAX_VALUE, Number.MAX_VALUE],
+      [5e-324, 1e-323],
+    ];
+    for (const [min, max] of cases) {
+      const ticks = vm.runInNewContext(
+        "computeTicks(min, max)",
+        { computeTicks, min, max },
+        { timeout: 2000 },
+      ) as number[];
+      // It returned: now the call alone, timed without the vm's new context.
+      const t0 = performance.now();
+      computeTicks(min, max);
+      expect(performance.now() - t0).toBeLessThan(50);
+      expect(ticks.length).toBeGreaterThan(0);
+      for (const [i, t] of ticks.entries()) {
+        expect(Number.isFinite(t)).toBe(true);
+        if (i > 0) expect(t).toBeGreaterThan(ticks[i - 1]!);
+      }
+    }
+    // Its two ends, though the steps between them round to one or the other.
+    expect(computeTicks(1e17, 1e17 + 16)).toEqual([1e17, 1e17 + 16]);
+    expect(computeTicks(2 ** 53, 2 ** 53 + 8)).toEqual([
+      2 ** 53,
+      2 ** 53 + 2,
+      2 ** 53 + 4,
+      2 ** 53 + 6,
+      2 ** 53 + 8,
+    ]);
   });
 });
 

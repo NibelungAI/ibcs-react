@@ -1,0 +1,127 @@
+---
+title: RangeBarChart
+description: Floating range bars - from one end of a range to the other, a value marked on each, both ends labelled - for the spread of each variant's results or an estimate narrowing wave by wave.
+---
+
+import { RangeBarChart } from "ibcs-react";
+import { variantSpread, waves } from "@/lib/demo-data/marks";
+
+A range bar runs from one end of a range to the other, with a value marked
+on it and both ends labelled, after J.P. Morgan's _Guide to the Markets_: its
+manager dispersion (p. 67) draws each category's 10th to 90th percentile
+this way, and its range of returns (p. 60) shows ranges narrowing as the
+horizon grows. It answers "how far apart are the results, and where is the
+middle?".
+
+## When to use
+
+To compare the spread of a few groups at a glance - one bar per variant - or
+to show an interval narrowing over a sequence. For the shape of one
+distribution, use a histogram; for one value per category, a bar chart.
+
+## The spread of each variant
+
+The default orientation, `"bars"`, gives each category a row (IBCS UN 3.4:
+categories run down), with icons and quality-coloured names in the row labels
+as in `DataTable`:
+
+<Frame center>
+  <RangeBarChart
+    title="DPS of each variant's fights"
+    data={variantSpread}
+    format={{ compact: false, fractionDigits: 1 }}
+    labels={{ rangeLow: "p10", rangeHigh: "p90" }}
+    width={640}
+  />
+</Frame>
+
+```tsx
+import { RangeBarChart } from "ibcs-react";
+
+<RangeBarChart
+  title="DPS of each variant's fights"
+  data={[
+    { label: "Best set", from: 870.2, to: 952.6, mark: 914.3, icon: [ringChip, swordChip] },
+    { label: "Equipped", from: 866.5, to: 948.9, mark: 910.8 },
+  ]}
+  format={{ compact: false, fractionDigits: 1 }}
+  labels={{ rangeLow: "p10", rangeHigh: "p90" }} // the table's and tooltip's words
+/>;
+```
+
+## An estimate narrowing wave by wave
+
+`orientation="columns"` gives each category a column, left to right - for a
+sequence in time (UN 3.3), such as the waves of a simulation, each an
+estimate ± its half-width:
+
+<Frame center>
+  <RangeBarChart
+    title="The estimate narrows wave by wave"
+    orientation="columns"
+    data={waves}
+    labels={{ rangeMark: "Estimate" }}
+    width={640}
+    height={280}
+  />
+</Frame>
+
+```tsx
+<RangeBarChart
+  orientation="columns"
+  data={waveResults.map((w) => ({
+    label: w.name, // "Wave 1"
+    from: w.estimate - w.halfWidth,
+    to: w.estimate + w.halfWidth,
+    mark: w.estimate,
+  }))}
+  labels={{ rangeMark: "Estimate" }}
+/>
+```
+
+## Marks and labels
+
+- **The bars float.** A bar's length is its range, not a value from zero, so
+  the value axis spans the data - from the lowest end or mark to the highest -
+  and the end labels stand in for an axis (IBCS SI 3.1: labels instead of
+  axes and grid lines).
+- **The mark** is a hollow dot at its value: a point on its range, which
+  reads on a solid, hatched or outlined bar alike and never as a gap that cuts
+  the bar in two. A mark outside its range is drawn where it is, and the end
+  label on that side moves past it.
+- **The ends are labelled** outside the bar and past the dot. In `"bars"`
+  orientation each row's labels stay in its own band; in `"columns"`
+  orientation an end label that would touch another label, a column or a dot
+  moves away from its end, with a leader back to it, and the rows above and
+  below the plot grow, up to three each, to make room. Columns too crowded for
+  every end label have only the first and the last column's ends labelled,
+  the start and the end of the sequence; an end label that finds no place even
+  then is left out, never drawn over a column or past the chart's edge. Every
+  value stays in the tooltip and the screen-reader table.
+
+The chart draws the ends and marks it is given: which percentiles, which
+interval and which mean they are is yours to compute, and to name with
+`labels`. The bars wear their `scenario`'s IBCS notation: AC solid (the
+default), PY grey, PL outlined, FC hatched.
+
+## Numbers
+
+Values follow `format`'s `locale`, and are written in full unless `format`
+sets `compact: true`. Without `fractionDigits` they take one decimal place
+past the first significant digit of the narrowest range - a range 82.2 wide
+is written in whole numbers, one 1.5 wide with one digit - so no range's two
+ends ever read alike, and a narrowing range keeps its width readable. One
+digit count serves the whole chart.
+
+## Accessibility
+
+The svg is one labelled image: its title, then "Ranges of 4 categories." for
+the first example above (`ariaLabel` replaces both). Beside it, a visually hidden table lists every
+category - an icon's `alt` before its label - with its low end, its mark and
+its high end, in the chart's words: `rangeLow` ("Low"), `rangeMark` ("Mean")
+and `rangeHigh` ("High"). A category whose ends are not both finite keeps its
+row, written as not available.
+
+## Props
+
+<AutoTypeTable path="../src/react/RangeBarChart.tsx" name="RangeBarChartProps" />

@@ -14,7 +14,12 @@ import {
   type LinePoint,
   type LineSeries,
 } from "../core/lineArea";
-import { resolveReferences, type ReferenceLine, type ReferenceBand } from "../core/reference";
+import {
+  resolveReferences,
+  type ReferenceLine,
+  type ReferenceBand,
+  type ResolvedReference,
+} from "../core/reference";
 import { bandScale, resolveBandPadding, type BandPadding } from "../core/bandScale";
 import {
   formatPercent,
@@ -24,12 +29,31 @@ import {
   percentFormatOf,
   type FormatOptions,
 } from "../core/format";
+import { calloutSides, type PointCallout } from "../core/callout";
+import { fanRuns, type FanBand } from "../core/fan";
+import { fillLabel } from "../core/labels";
+import type { PlacementBox, PlacementSegment } from "../core/labelPlacement";
 import { useMountGrow, useDataTween } from "./hooks";
 import { ChartDataTable, type ChartDataRow } from "./a11y";
-import { useIbcsLabels, useIbcsTokens } from "./theme";
+import { useIbcsTokens, useResolvedLabels } from "./theme";
+import {
+  CALLOUT_FONT,
+  CALLOUT_LINE_H,
+  CalloutLeaders,
+  CalloutMarks,
+  calloutNotes,
+  dotBox,
+  resolveCallouts,
+  type CalloutSpec,
+} from "./internal/callouts";
+import { NoteList, layoutNotes, notesHeight } from "./internal/notes";
+import { wrapText } from "./internal/text";
+import { rangeFormat } from "./internal/rangeFormat";
 
 export type { LineDatum } from "../core/lineArea";
 export type { Reference, ReferenceLine, ReferenceBand } from "../core/reference";
+export type { PointCallout } from "../core/callout";
+export type { FanBand } from "../core/fan";
 
 /**
  * At or below this many points per series, point markers are drawn (IBCS asks
@@ -37,6 +61,9 @@ export type { Reference, ReferenceLine, ReferenceBand } from "../core/reference"
  * Above it, markers are omitted so hundreds of points stay one cheap `<path>`.
  */
 export const MARKER_DENSITY_THRESHOLD = 40;
+
+/** Opacity of a fan band's fill: faint, so the lines and a nested band read over it. */
+const FAN_OPACITY = 0.2;
 
 export interface LineChartProps {
   /** The periods, in order. Handles a handful up to hundreds of points. */
@@ -73,7 +100,36 @@ export interface LineChartProps {
    * carries an optional in-box label. See {@link Reference}.
    */
   references?: (ReferenceLine | ReferenceBand)[];
+  /**
+   * Labelled points (GTM p. 4): each names a period and a series, and its
+   * text - "\n" for a new line - is written beside the point, marked with a
+   * dot. Labels are placed clear of every line, marker and other label: right
+   * beside the point (above a peak, below a trough), else moved away with a
+   * leader; the plot keeps room above its highest point for them. A callout
+   * with no room anywhere is numbered at its point and written under the
+   * chart (the svg grows by that list). A callout on a period where its
+   * series draws no point - no value there, or the series is not drawn - is
+   * written under the chart too, after the name of its period ("b: On the
+   * gap"). So none on a period is left out, and the screen-reader table
+   * carries each one's text in its period's row (`labels.note`). An `index`
+   * that names no period (-1, 1.5, past the end) is ignored.
+   */
+  callouts?: PointCallout[];
+  /**
+   * Bands whose edges vary along x - a fan: e.g. the 10th to the 90th
+   * percentile at every moment - drawn faint beneath the lines, in the order
+   * given (a later band over an earlier one). Each edge is a value per
+   * period, aligned with `data`; a gap breaks the band. The value axis grows
+   * to hold them. A band's `label` is placed beside its right end like a
+   * callout and names its column of the screen-reader table (`labels.band`,
+   * "Band {n}", without one).
+   */
+  fans?: FanBand[];
   width?: number;
+  /**
+   * Height in px. Default 360. A chart whose callouts could not all be placed
+   * beside their points grows by the list of their notes.
+   */
   height?: number;
   /**
    * Horizontal point spacing - the lead-in/out gutter at the plot edges. Omit
@@ -232,6 +288,8 @@ export const LineChart = forwardRef<SVGSVGElement, LineChartProps>(function Line
     showMarkers,
     forecastFrom,
     references,
+    callouts,
+    fans,
     width = 720,
     height = 360,
     bandPadding,
@@ -247,7 +305,7 @@ export const LineChart = forwardRef<SVGSVGElement, LineChartProps>(function Line
   ref,
 ) {
   const tokens = useIbcsTokens(tokenOverride);
-  const words = useIbcsLabels(labels);
+  const words = useResolvedLabels(labels);
   /** A series' own number format: its `seriesFormat` entry merged over the chart's. */
   const formatOf = (scenario: ScenarioKey): FormatOptions => {
     const own = seriesFormat?.[scenario];
@@ -291,8 +349,60 @@ export const LineChart = forwardRef<SVGSVGElement, LineChartProps>(function Line
   const topH = height - padT - labelH - (varH ? varH + gap : 0);
   const plotBottom = padT + topH;
 
-  const vRange = domainMax - domainMin || 1;
-  const y = (v: number) => plotBottom - ((v - domainMin) / vRange) * topH;
+  // Fans widen the value axis to hold their edges; without fans the axis is
+  // the lines' alone, as before.
+  const fanList = fans ?? [];
+  const fanPoints = fanList.map((f) => fanRuns(f, categories.length));
+  let scaleMin = domainMin;
+  let scaleMax = domainMax;
+  for (const runs of fanPoints) {
+    for (const run of runs) {
+      for (const p of run) {
+        if (p.low < scaleMin) scaleMin = p.low;
+        if (p.high > scaleMax) scaleMax = p.high;
+      }
+    }
+  }
+
+  // Each callout's point: its series' value at its period - undefined for a
+  // callout that names no period, null where its series draws no point.
+  const seriesValues = new Map(
+    lines.map((s) => [s.scenario, new Map(s.points.map((p) => [p.index, p.value]))]),
+  );
+  const calloutPoints = (callouts ?? []).map((c) => {
+    if (!c || !Number.isInteger(c.index) || c.index < 0 || c.index >= categories.length) {
+      return undefined;
+    }
+    const s =
+      c.series != null
+        ? lines.find((l) => l.scenario === c.series)
+        : (lines.find((l) => l.scenario === "AC") ?? lines[0]);
+    const values = s ? seriesValues.get(s.scenario) : undefined;
+    const v = values?.get(c.index);
+    return s && values && v != null ? { s, values, v } : null;
+  });
+
+  // Callouts and fan captions, as lines of text: the plot keeps room above its
+  // highest point for the tallest of those beside a point (without any, it
+  // keeps none).
+  const calloutMaxW = Math.max(60, Math.min(180, innerW * 0.6));
+  const calloutLines = (callouts ?? []).map((c) =>
+    c && typeof c.label === "string" && c.label.trim() !== ""
+      ? wrapText(c.label, calloutMaxW, CALLOUT_FONT, textWidthPx)
+      : null,
+  );
+  const captionLines = fanList.map((f) =>
+    f?.label ? wrapText(f.label, calloutMaxW, CALLOUT_FONT, textWidthPx) : null,
+  );
+  const tallest = [
+    ...calloutLines.filter((_, ci) => calloutPoints[ci] != null),
+    ...captionLines,
+  ].reduce((h, ls) => (ls ? Math.max(h, ls.length * CALLOUT_LINE_H) : h), 0);
+  const headroom = tallest > 0 ? Math.min(tallest + 12, topH * 0.4) : 0;
+  const scaleH = topH - headroom;
+
+  const vRange = scaleMax - scaleMin || 1;
+  const y = (v: number) => plotBottom - ((v - scaleMin) / vRange) * scaleH;
   const zeroY = y(0);
   // Grow lines up from the zero baseline on mount / data change.
   const yA = (v: number) => zeroY + (y(v) - zeroY) * grow;
@@ -346,20 +456,174 @@ export const LineChart = forwardRef<SVGSVGElement, LineChartProps>(function Line
     destackEndLabels();
   }
 
+  // Where each end label and reference caption is written - shared by their
+  // drawing and by the callouts, which keep clear of them.
+  const endLabelOf = (e: (typeof endLabels)[number]) => {
+    const text = endLabelText(
+      words,
+      words.scenario[e.scenario],
+      formatValue(e.point.value, formatOf(e.scenario)),
+    );
+    // Clamp x so a wide value label never spills past the right edge.
+    const estW = textWidthPx(text, 10);
+    const tx = Math.max(padL, Math.min(x(e.point.index) + 6, width - 2 - estW));
+    return { text, tx, estW };
+  };
+  const refCaptionOf = (r: ResolvedReference) => {
+    if (!r.label) return null;
+    const left = padL;
+    const right = width - padR;
+    // Horizontal annotation (axis "y"): caption pinned to the left edge,
+    // just above the line / inside the band top, clamped vertically.
+    if (r.axis === "y") {
+      const anchorY = r.kind === "line" ? r.y1 - 3 : r.y + 10;
+      const ty = Math.min(Math.max(anchorY, padT + 9), plotBottom - 2);
+      return {
+        x: left + 2,
+        y: ty,
+        anchor: "start" as const,
+        text: fitText(r.label, innerW - 4, 9.5),
+      };
+    }
+    // Vertical annotation (axis "x"): caption centered on the line /
+    // band, near the top, clamped horizontally inside the plot.
+    const fitted = fitText(r.label, innerW - 4, 9.5);
+    const estW = textWidthPx(fitted, 9.5);
+    const center = r.kind === "line" ? r.x1 : r.x + r.width / 2;
+    const tx = Math.min(Math.max(center, left + estW / 2 + 1), right - estW / 2 - 1);
+    return { x: tx, y: padT + 9, anchor: "middle" as const, text: fitted };
+  };
+
+  // --- callouts and fan captions: placed clear of everything else ------------
+  const calloutSpecs: CalloutSpec[] = [];
+  const calloutTexts = new Map<number, string[]>();
+  (callouts ?? []).forEach((c, ci) => {
+    const textLines = calloutLines[ci];
+    const point = calloutPoints[ci];
+    if (!c || !textLines || point === undefined) return;
+    const note = c.label
+      .split("\n")
+      .map((t) => t.trim())
+      .filter(Boolean)
+      .join(", ");
+    const where = categories[c.index]!;
+    // The table carries every callout on a period, its point drawn or not.
+    calloutTexts.set(c.index, [...(calloutTexts.get(c.index) ?? []), note]);
+    if (point === null) {
+      calloutSpecs.push({
+        x: x(c.index),
+        y: plotBottom,
+        lines: textLines,
+        sides: [],
+        dot: null,
+        note,
+        where,
+        drawn: false,
+      });
+      return;
+    }
+    const { s, values, v } = point;
+    calloutSpecs.push({
+      x: x(c.index),
+      y: y(v),
+      lines: textLines,
+      sides: calloutSides(v, values.get(c.index - 1), values.get(c.index + 1), c.placement),
+      dot: lineStyle(s.scenario, tokens).stroke,
+      note,
+      where,
+    });
+  });
+  fanList.forEach((f, fi) => {
+    const textLines = captionLines[fi];
+    const runs = fanPoints[fi] ?? [];
+    const lastRun = runs[runs.length - 1];
+    const p = lastRun?.[lastRun.length - 1];
+    if (!textLines || !p) return;
+    // The band's right end: its caption goes above or below it, never inside.
+    const yHi = y(p.high);
+    const yLo = y(p.low);
+    calloutSpecs.push({
+      x: x(p.index),
+      y: (yHi + yLo) / 2,
+      lines: textLines,
+      sides: ["above", "below"],
+      dot: null,
+      edge: (yLo - yHi) / 2,
+      note: f.label!.trim(),
+      where: categories[p.index] ?? String(p.index + 1),
+    });
+  });
+  const resolvedCallouts = (() => {
+    if (calloutSpecs.length === 0) return [];
+    const segments: PlacementSegment[] = [];
+    for (const s of lines) {
+      const pad = lineStyle(s.scenario, tokens).width / 2;
+      for (let k = 1; k < s.points.length; k++) {
+        const a = s.points[k - 1]!;
+        const b = s.points[k]!;
+        if (b.index !== a.index + 1) continue;
+        segments.push({ x1: x(a.index), y1: y(a.value), x2: x(b.index), y2: y(b.value), pad });
+      }
+    }
+    segments.push({ x1: padL, y1: zeroY, x2: width - padR, y2: zeroY, pad: 0.5 });
+    for (const r of resolvedRefs) {
+      if (r.kind === "line") segments.push({ x1: r.x1, y1: r.y1, x2: r.x2, y2: r.y2, pad: 0.5 });
+    }
+    const boxes: PlacementBox[] = [];
+    if (markers) {
+      for (const s of lines) {
+        for (const p of s.points) {
+          const px = x(p.index);
+          const py = y(p.value);
+          boxes.push({ left: px - 3.2, top: py - 3.2, right: px + 3.2, bottom: py + 3.2 });
+        }
+      }
+    }
+    for (const e of endLabels) {
+      const { tx, estW } = endLabelOf(e);
+      boxes.push({ left: tx, top: e.y + 3.5 - 8, right: tx + estW, bottom: e.y + 3.5 + 2.5 });
+    }
+    for (const r of resolvedRefs) {
+      const c = refCaptionOf(r);
+      if (!c) continue;
+      const w = textWidthPx(c.text, 9.5);
+      const left = c.anchor === "start" ? c.x : c.x - w / 2;
+      boxes.push({ left, top: c.y - 7.6, right: left + w, bottom: c.y + 2.4 });
+    }
+    for (const s of calloutSpecs) if (s.dot) boxes.push(dotBox(s.x, s.y));
+    return resolveCallouts(
+      calloutSpecs,
+      { boxes, segments },
+      { left: padL, top: padT, right: width - 2, bottom: plotBottom },
+      textWidthPx,
+    );
+  })();
+  const noteLines = layoutNotes(calloutNotes(resolvedCallouts), width - padL * 2);
+  const svgH = height + notesHeight(noteLines);
+
   // Screen-reader data table: each period's value per scenario, plus the shown
   // variance - so SR users read the actual numbers, not the decorative svg.
   const hasVarTable = showVariancePanel && variancePoints.length > 0;
   // Headers never go blank: an empty word falls back to the scenario's title.
   const S = scenarioHeadings(words);
   const comparisonName = S[comparison];
+  // A fan's column is its label, else "Band {n}"; the callouts' column follows.
+  const fanColumns = fanList.map((f, i) => f?.label || fillLabel(words.band, { n: i + 1 }));
+  const hasNotes = calloutTexts.size > 0;
   const a11yColumns = [
     ...lines.map((s) => S[s.scenario]),
     ...(hasVarTable
       ? [deltaHeading(words, comparisonName), deltaHeading(words, comparisonName, true)]
       : []),
+    ...fanColumns,
+    ...(hasNotes ? [words.note] : []),
   ];
   const lineByIndex = lines.map((s) => new Map(s.points.map((p) => [p.index, p.value])));
   const varByIndex = new Map(variancePoints.map((vp) => [vp.index, vp.variance]));
+  const fanByIndex = fanPoints.map((runs) => new Map(runs.flat().map((p) => [p.index, p])));
+  // A band's two ends never read alike ("1.4K–1.4K"): in full unless the
+  // caller asks for compact, at the digits of the narrowest band.
+  const fanFmt = rangeFormat(format, fanPoints.flat(2));
   const na = notAvailableOf(format);
   const a11yRows: ChartDataRow[] = categories.map((c, i) => {
     const cells: Array<string | number> = lineByIndex.map((byIndex, si) => {
@@ -372,6 +636,11 @@ export const LineChart = forwardRef<SVGSVGElement, LineChartProps>(function Line
       cells.push(v ? formatSigned(v.abs, format) : na);
       cells.push(v ? formatPercent(v.pct, pctFmt) : na);
     }
+    for (const byIndex of fanByIndex) {
+      const p = byIndex.get(i);
+      cells.push(p ? `${formatValue(p.low, fanFmt)}–${formatValue(p.high, fanFmt)}` : na);
+    }
+    if (hasNotes) cells.push((calloutTexts.get(i) ?? []).join("; "));
     return { label: c, cells };
   });
 
@@ -380,8 +649,8 @@ export const LineChart = forwardRef<SVGSVGElement, LineChartProps>(function Line
       <svg
         ref={ref}
         width={width}
-        height={height}
-        viewBox={`0 0 ${width} ${height}`}
+        height={svgH}
+        viewBox={`0 0 ${width} ${svgH}`}
         className={className}
         // A single labelled image - no `aria-hidden`, which would cancel the
         // label out and leave assistive tech with nothing but the sr-only table.
@@ -404,6 +673,52 @@ export const LineChart = forwardRef<SVGSVGElement, LineChartProps>(function Line
           <text x={padL} y={20} fontSize={13} fontWeight={500} fill={tokens.color.text}>
             {fitText(title, width - padL - 4, 13)}
           </text>
+        )}
+
+        {/* Fans - bands whose edges vary along x - faint, beneath everything,
+          so the baseline, the references and the lines read over them. */}
+        {fanPoints.some((runs) => runs.length > 0) && (
+          <g>
+            {fanPoints.flatMap((runs, fi) =>
+              runs.map((run, ri) => {
+                const color = fanList[fi]?.color ?? tokens.color.axis;
+                if (run.length === 1) {
+                  // One period between gaps: a narrow strip, so it still shows.
+                  const p = run[0]!;
+                  const w = Math.min(4, band / 2);
+                  return (
+                    <rect
+                      key={`fan-${fi}-${ri}`}
+                      x={x(p.index) - w / 2}
+                      y={yA(p.high)}
+                      width={w}
+                      height={Math.max(yA(p.low) - yA(p.high), 0.5)}
+                      fill={color}
+                      opacity={FAN_OPACITY}
+                    />
+                  );
+                }
+                const upper = run
+                  .map(
+                    (p, k) =>
+                      `${k === 0 ? "M" : "L"}${x(p.index).toFixed(1)},${yA(p.high).toFixed(1)}`,
+                  )
+                  .join(" ");
+                const lower = [...run]
+                  .reverse()
+                  .map((p) => `L${x(p.index).toFixed(1)},${yA(p.low).toFixed(1)}`)
+                  .join(" ");
+                return (
+                  <path
+                    key={`fan-${fi}-${ri}`}
+                    d={`${upper} ${lower} Z`}
+                    fill={color}
+                    opacity={FAN_OPACITY}
+                  />
+                );
+              }),
+            )}
+          </g>
         )}
 
         {/* Zero baseline */}
@@ -449,49 +764,26 @@ export const LineChart = forwardRef<SVGSVGElement, LineChartProps>(function Line
               ) : null,
             )}
             {resolvedRefs.map((r, i) => {
-              if (!r.label) return null;
-              const col = r.color ?? tokens.color.textMuted;
-              const left = padL;
-              const right = width - padR;
-              // Horizontal annotation (axis "y"): caption pinned to the left edge,
-              // just above the line / inside the band top, clamped vertically.
-              if (r.axis === "y") {
-                const anchorY = r.kind === "line" ? r.y1 - 3 : r.y + 10;
-                const ty = Math.min(Math.max(anchorY, padT + 9), plotBottom - 2);
-                return (
-                  <text
-                    key={`reft-${i}`}
-                    x={left + 2}
-                    y={ty}
-                    fontSize={9.5}
-                    fill={col}
-                    textAnchor="start"
-                  >
-                    {fitText(r.label, innerW - 4, 9.5)}
-                  </text>
-                );
-              }
-              // Vertical annotation (axis "x"): caption centered on the line /
-              // band, near the top, clamped horizontally inside the plot.
-              const fitted = fitText(r.label, innerW - 4, 9.5);
-              const estW = textWidthPx(fitted, 9.5);
-              const center = r.kind === "line" ? r.x1 : r.x + r.width / 2;
-              const tx = Math.min(Math.max(center, left + estW / 2 + 1), right - estW / 2 - 1);
+              const caption = refCaptionOf(r);
+              if (!caption) return null;
               return (
                 <text
                   key={`reft-${i}`}
-                  x={tx}
-                  y={padT + 9}
+                  x={caption.x}
+                  y={caption.y}
                   fontSize={9.5}
-                  fill={col}
-                  textAnchor="middle"
+                  fill={r.color ?? tokens.color.textMuted}
+                  textAnchor={caption.anchor}
                 >
-                  {fitted}
+                  {caption.text}
                 </text>
               );
             })}
           </g>
         )}
+
+        {/* Callout leaders, beneath the lines so every line stays whole. */}
+        <CalloutLeaders callouts={resolvedCallouts} tokens={tokens} />
 
         {/* Scenario lines - one path each, drawn back-to-front so AC sits on top.
           The measured (AC) line splits at `forecastFrom` into a solid run plus a
@@ -580,14 +872,7 @@ export const LineChart = forwardRef<SVGSVGElement, LineChartProps>(function Line
         {/* Integrated end labels beside each line's last point (no legend box) */}
         {endLabels.map((e) => {
           const st = lineStyle(e.scenario, tokens);
-          const label = endLabelText(
-            words,
-            words.scenario[e.scenario],
-            formatValue(e.point.value, formatOf(e.scenario)),
-          );
-          // Clamp x so a wide value label never spills past the right edge.
-          const estW = textWidthPx(label, 10);
-          const tx = Math.max(padL, Math.min(x(e.point.index) + 6, width - 2 - estW));
+          const { text, tx } = endLabelOf(e);
           return (
             <text
               key={`end-${e.scenario}`}
@@ -598,10 +883,15 @@ export const LineChart = forwardRef<SVGSVGElement, LineChartProps>(function Line
               fill={st.stroke}
               textAnchor="start"
             >
-              {label}
+              {text}
             </text>
           );
         })}
+
+        {/* Callouts: their dots, their labels, and the numbers of those written as notes. */}
+        {resolvedCallouts.length > 0 && (
+          <CalloutMarks callouts={resolvedCallouts} tokens={tokens} />
+        )}
 
         {/* Period labels (thinned for dense series) */}
         {categories.map((c, i) =>
@@ -614,7 +904,15 @@ export const LineChart = forwardRef<SVGSVGElement, LineChartProps>(function Line
               fill={tokens.color.textMuted}
               textAnchor="middle"
             >
-              {fitText(c, band, 10.5)}
+              {fitText(
+                c,
+                // A thinned label takes the room of the periods it stands for,
+                // and never reaches past the chart's left or right edge.
+                labelStep > 1
+                  ? Math.min(band * labelStep - 2, 2 * x(i) - 2, 2 * (width - x(i)) - 2)
+                  : band,
+                10.5,
+              )}
             </text>
           ) : null,
         )}
@@ -671,6 +969,9 @@ export const LineChart = forwardRef<SVGSVGElement, LineChartProps>(function Line
             })}
           </>
         )}
+
+        {/* The callouts that found no place beside their points, by number. */}
+        <NoteList lines={noteLines} x={padL} y={height} tokens={tokens} />
       </svg>
       <ChartDataTable
         caption={
