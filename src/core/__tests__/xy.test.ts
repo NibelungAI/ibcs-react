@@ -94,6 +94,24 @@ describe("computeTicks - degenerate input", () => {
     expect(computeTicks(0, 10, Infinity)).toEqual([0]);
   });
 
+  it("walks on past a tick that repeats, to the range's end", () => {
+    // On a range a few doubles wide, toFixed writes two neighbouring multiples
+    // of the step as one value. That tick is skipped, not the end of the axis:
+    // ending the walk there stopped computeTicks(1, 1.000000000000003, 10) at
+    // 1.0000000000000009. 1.6.0 reached the end, with two ticks written twice.
+    for (const [min, max, count] of [
+      [1, 1.000000000000003, 15],
+      [0.001, 0.001000000000000003, 15],
+      [1e-9, 1.0000000000000032e-9, 16],
+    ] as const) {
+      const ticks = computeTicks(min, max, 10);
+      expect(ticks.length).toBe(count);
+      expect(ticks[0]).toBe(min);
+      expect(ticks[ticks.length - 1]).toBe(max);
+      for (const [i, t] of ticks.entries()) if (i > 0) expect(t).toBeGreaterThan(ticks[i - 1]!);
+    }
+  });
+
   it("returns on narrow ranges far from zero, its ticks strictly increasing", () => {
     // Up to 1.6, `computeTicks(1e17, 1e17 + 16)` never returned: past 2^53 its
     // integer step index could not move. The call runs under a vm deadline, so
@@ -123,7 +141,8 @@ describe("computeTicks - degenerate input", () => {
         if (i > 0) expect(t).toBeGreaterThan(ticks[i - 1]!);
       }
     }
-    expect(computeTicks(1e17, 1e17 + 16)).toEqual([1e17]);
+    // Its two ends, though the steps between them round to one or the other.
+    expect(computeTicks(1e17, 1e17 + 16)).toEqual([1e17, 1e17 + 16]);
     expect(computeTicks(2 ** 53, 2 ** 53 + 8)).toEqual([
       2 ** 53,
       2 ** 53 + 2,

@@ -242,14 +242,16 @@ export function computeTicks(min: number, max: number, count = 5): number[] {
   // Bounded by the count, never by the values: past 2^53 an integer index
   // cannot move (`i + 1 === i`), so a narrow range far from zero - 1e17 to
   // 1e17 + 16 - once looped forever. The error-based step gives at most about
-  // √2·count + 2 ticks, so 4·count + 3 never cuts a real axis short; a value
-  // that does not increase ends the walk.
+  // √2·count + 2 ticks, so 4·count + 3 never cuts a real axis short. A value
+  // that does not increase is skipped, and the walk goes on to the range's
+  // end: on a range a few doubles wide, toFixed writes two neighbouring
+  // multiples of the step as one value.
   const most = Math.min(last - first, 4 * count + 2);
   for (let k = 0; k <= most; k++) {
     // toFixed at the step's own precision snaps away the multiplication residue
     // (and makes the zero tick exactly 0).
     const v = Number(((first + k) * step).toFixed(decimals));
-    if (ticks.length > 0 && v <= ticks[ticks.length - 1]!) break;
+    if (ticks.length > 0 && v <= ticks[ticks.length - 1]!) continue;
     ticks.push(v);
   }
   return ticks.length > 0 ? ticks : [min];

@@ -298,8 +298,9 @@ export function timeStepDigits(step: number): number {
 /**
  * Axis ticks from `start` to `end`: the multiples of {@link niceTimeStep}
  * `((end - start) / count)` that lie within the range, at most `count + 1`
- * of them. A range of zero width, or one so narrow at its distance from zero
- * that the step cannot move a double, gives `[start]` alone: the loop is
+ * of them. A range of zero width gives `[start]` alone. On a range so narrow
+ * at its distance from zero that two steps land on one double, a tick that
+ * repeats is skipped and the walk goes on to the range's end. The loop is
  * bounded by `count`, never by the range.
  */
 export function timeTicks(start: number, end: number, count: number, clock = false): number[] {
@@ -318,7 +319,7 @@ export function timeTicks(start: number, end: number, count: number, clock = fal
     // Written at the step's own precision: snaps away the residue of the
     // multiplication (0.1 * 3), and makes a zero tick exactly 0.
     const v = digits <= 20 && Math.abs(raw) < 1e21 ? Number(raw.toFixed(digits)) : raw;
-    if (out.length > 0 && v <= out[out.length - 1]!) break;
+    if (out.length > 0 && v <= out[out.length - 1]!) continue;
     if (v >= start - step * 1e-9) out.push(v);
   }
   return out.length > 0 ? out : [start];

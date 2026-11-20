@@ -158,11 +158,15 @@ describe("timeTicks", () => {
       expect(performance.now() - t0).toBeLessThan(50);
       expect(ticks.length).toBeGreaterThan(0);
       expect(ticks.length).toBeLessThanOrEqual(10);
-      // Never the same moment twice: past 2^53 the walk stops where a tick
-      // would not move.
+      // Never the same moment twice: past 2^53 a step may not move a tick,
+      // and that tick is skipped.
       for (const [i, t] of ticks.entries()) if (i > 0) expect(t).toBeGreaterThan(ticks[i - 1]!);
     }
-    expect(timeTicks(1e17, 1e17 + 16, 8)).toEqual([1e17]);
+    // The walk goes on to the range's end past a tick that repeats.
+    expect(timeTicks(1e17, 1e17 + 16, 8)).toEqual([1e17, 1e17 + 16]);
+    expect(timeTicks(1e9, 1000000000.0000002, 8)).toEqual([
+      1e9, 1000000000.0000001, 1000000000.0000002,
+    ]);
   });
 
   it("gives the start alone for a range of zero width, and nothing for one that is not finite", () => {
